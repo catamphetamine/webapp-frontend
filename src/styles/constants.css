@@ -1,0 +1,48 @@
+@import "./grid.mixins";
+
+:root
+{
+	--white-color        : #ffffff;
+	--black-color        : #000000;
+
+	--gray-color-lightest : #C7CBD1;
+	--gray-color-light    : #B1B5BA;
+	--gray-color          : #A6AAAD;
+	--gray-color-dark     : #888C91;
+	--gray-color-darkest  : #797D82;
+
+	--base-color-lighter : #30CFFF;
+	--base-color         : #00A6ED;
+	--base-color-darker  : #0084BD;
+
+	--unit : 0.7rem;
+	--column-gap : var(--unit);
+	--page-content-padding : calc(var(--column-gap) * 2);
+
+	/*
+	Mobile font size must be at least 16px
+	to prevent automatic zoom on input focus.
+	*/
+	--font-size : 20px;
+	--font-size-xs : 16px;
+
+	--preloading-screen-z-index : 10;
+
+	--border-radius : 0.2rem;
+	--shadow : 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+
+	--content-section-margin : calc(var(--unit) * 3.5);
+	--content-section-padding : var(--unit);
+	--background-section-vertical-margin : var(--unit);
+
+	--button-on-background-background-color : rgba(0, 0, 0, 0.6);
+	--button-on-background-color : var(--white-color);
+	--primary-button-on-background-background-color : rgba(0, 166, 237, 0.8);
+
+	@mixin xs
+	{
+		--content-section-margin : calc(var(--unit) * 2);
+		--content-section-padding : 0px;
+		--background-section-vertical-margin : calc(var(--unit) * 2);
+	}
+}

@@ -1,0 +1,78 @@
+.uploadable-picture
+{
+	position : relative;
+}
+
+.uploadable-picture
+{
+	transition : box-shadow 100ms ease-out;
+}
+
+.uploadable-picture .rrui__file-upload__area--dragged-over
+
+.uploadable-picture__progress-indicator
+{
+	display : block;
+}
+
+.uploadable-picture__droppable-overlay,
+.uploadable-picture__change-overlay
+{
+	position : absolute;
+	top  : 0;
+	left : 0;
+	width  : 100%;
+	height : 100%;
+	border-radius : inherit;
+}
+
+.layout--dragging .uploadable-picture--accepts-drop
+{
+	box-shadow : 0 0 0 0.15rem var(--accent-color-lighter);
+}
+
+.uploadable-picture__droppable-overlay
+{
+	z-index : 1;
+	opacity : 0.5;
+	transition : background-color 100ms ease-out;
+}
+
+.uploadable-picture .rrui__file-upload__area--dragged-over .uploadable-picture__droppable-overlay
+{
+	background-color : var(--accent-color-lighter);
+}
+
+/* CSS selector specificity for replacing border color. */
+/* .layout--dragging .uploadable-picture--can-drop
+{
+	border-color : var(--accent-color-lighter);
+}
+*/
+
+.uploadable-picture__droppable-overlay--cannot-drop
+{
+	background-color : var(--error-color);
+}
+
+.uploadable-picture__change-overlay
+{
+	display          : flex;
+	align-items      : center;
+	justify-content  : center;
+	text-align       : center;
+	color            : var(--white-color);
+	text-shadow      : 0 0.05em 0.1em rgba(0, 0, 0, 0.75);
+	user-select      : none;
+	background-color : rgba(0, 0, 0, 0.5);
+}
+
+.uploadable-picture__change-overlay--uploaded
+{
+	background-color : transparent;
+}
+
+.uploadable-picture__indicator
+{
+	color : var(--white-color);
+}

@@ -1,0 +1,72 @@
+.content-section, .content-section-padding
+{
+	padding : var(--content-section-padding);
+}
+
+.content-section__errors
+{
+	margin-bottom : var(--content-section-padding);
+}
+
+.content-section__errors--top
+{
+	margin        : calc(-1 * var(--content-section-padding));
+	margin-bottom : var(--content-section-padding);
+	padding       : var(--content-section-padding);
+}
+
+.content-section--no-padding
+{
+	padding : 0;
+
+	.content-section-header
+	{
+		margin-top : 0;
+	}
+}
+
+.background-section
+{
+	padding-left   : var(--content-section-padding);
+	padding-right  : var(--content-section-padding);
+	padding-top    : calc(var(--content-section-padding) - 2 * var(--content-section-margin));
+	padding-bottom : calc(var(--content-section-padding) - 2 * var(--content-section-margin));
+}
+
+.content-section-header
+{
+	margin        : calc(-1 * var(--content-section-padding));
+	margin-bottom : var(--content-section-padding);
+	padding-left  : var(--content-section-padding);
+	padding-right : var(--content-section-padding);
+}
+
+.content-section-divider
+{
+	left  : var(--content-section-padding);
+	right : var(--content-section-padding);
+}
+
+.content-section,
+.background-section,
+.content-sections
+{
+	margin : calc(var(--content-section-margin) / 2);
+}
+
+.background-section
+{
+	margin-top    : var(--background-section-vertical-margin);
+	margin-bottom : var(--background-section-vertical-margin);
+}
+
+.sections
+{
+	margin     : calc(var(--content-section-margin) / 2);
+	margin-top : calc(-1 * var(--content-section-margin) / 2);
+
+	&:first-child
+	{
+		margin-top : calc(var(--content-section-margin) / 2);
+	}
+}
