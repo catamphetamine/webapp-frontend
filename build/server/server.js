@@ -2577,7 +2577,8 @@ function (_React$Component) {
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_website__WEBPACK_IMPORTED_MODULE_3__["Link"], {
         to: "/".concat(account.id),
         className: classnames__WEBPACK_IMPORTED_MODULE_6___default()('account-profile__picture', {
-          'account-profile__picture-container': !uploadable
+          'account-profile__picture-container': !uploadable,
+          'card': !uploadable
         })
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_components_AccountPicture__WEBPACK_IMPORTED_MODULE_16__["default"], {
         account: account,
