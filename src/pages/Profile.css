@@ -163,7 +163,8 @@
 	bottom : calc(-1 * var(--account-profile-picture-bottom-offset));
 }
 
-.account-profile__picture
+.account-profile__picture,
+.account-profile__uploadable-picture .rrui__file-upload__area
 {
 	border-radius : var(--border-radius);
 }
@@ -190,20 +191,6 @@
 	right    : var(--content-section-margin);
 	top      : var(--content-section-margin);
 	z-index  : 1;
-
-	.card__action
-	{
-		color : var(--button-on-background-color);
-		background-color : var(--button-on-background-background-color);
-		border-radius: var(--border-radius);
-		padding-left: var(--unit);
-		padding-right: var(--unit);
-	}
-
-	.card__action--primary
-	{
-		background-color : var(--primary-button-on-background-background-color);
-	}
 }
 
 /* Account info. */
@@ -268,7 +255,7 @@
 {
 	margin-bottom : var(--icon-liftup);
 	margin-right  : var(--icon-right-margin);
-	fill          : var(--base-color-darker);
+	fill          : var(--base-color-dark);
 	transition    : var(--button-icon-transition);
 }
 
@@ -310,7 +297,7 @@
 	padding-left  : var(--unit);
 	padding-right : var(--unit);
 
-	color : var(--black-color-light);
+	color : var(--black-color);
 }
 
 .account-profile__tab

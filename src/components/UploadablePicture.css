@@ -15,7 +15,7 @@
 	display : block;
 }
 
-.uploadable-picture__droppable-overlay,
+/*.uploadable-picture__droppable-overlay,*/
 .uploadable-picture__change-overlay
 {
 	position : absolute;
@@ -24,8 +24,10 @@
 	width  : 100%;
 	height : 100%;
 	border-radius : inherit;
+	transition : background-color 100ms ease-out;
 }
 
+/*
 .layout--dragging .uploadable-picture--accepts-drop
 {
 	box-shadow : 0 0 0 0.15rem var(--accent-color-lighter);
@@ -33,14 +35,14 @@
 
 .uploadable-picture__droppable-overlay
 {
-	z-index : 1;
+	z-index : 2;
 	opacity : 0.5;
 	transition : background-color 100ms ease-out;
-}
+}*/
 
-.uploadable-picture .rrui__file-upload__area--dragged-over .uploadable-picture__droppable-overlay
+.uploadable-picture--accepts-drop .rrui__file-upload__area--dragged-over .uploadable-picture__change-overlay
 {
-	background-color : var(--accent-color-lighter);
+	background-color : rgba(0, 166, 237, 0.5);
 }
 
 /* CSS selector specificity for replacing border color. */
@@ -50,10 +52,10 @@
 }
 */
 
-.uploadable-picture__droppable-overlay--cannot-drop
+/*.uploadable-picture__droppable-overlay--cannot-drop
 {
 	background-color : var(--error-color);
-}
+}*/
 
 .uploadable-picture__change-overlay
 {

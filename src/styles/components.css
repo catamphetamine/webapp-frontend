@@ -1,6 +1,7 @@
 @import "../components/Card.css";
 @import "../components/ContentSection.css";
 @import "../components/Loading.css";
+@import "../components/Snackbar.css";
 
 .page-header
 {

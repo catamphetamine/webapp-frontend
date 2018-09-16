@@ -12,7 +12,7 @@ import { accountShape } from '../PropTypes'
 import {
 	getAccount,
 	getLatestActivityTime,
-	setNewBackgroundPicture,
+	// setNewBackgroundPicture,
 	uploadPicture
 } from '../redux/account'
 
@@ -95,7 +95,7 @@ function translate(key)
 	account: account.account
 }), {
 	getLatestActivityTime,
-	setNewBackgroundPicture,
+	// setNewBackgroundPicture,
 	uploadPicture
 })
 export default class Profile extends React.Component
@@ -256,7 +256,7 @@ export default class Profile extends React.Component
 	{
 		const {
 			account,
-			setNewBackgroundPicture,
+			// setNewBackgroundPicture,
 			uploadingNewBackgroundPicture,
 			newBackgroundPicture
 		} = this.props
@@ -293,11 +293,12 @@ export default class Profile extends React.Component
 						className="account-profile__background-picture"/>
 				}
 
+				{/* onUploaded={setNewBackgroundPicture} */}
 				{/* Account picture (editable). */}
 				{ editingHeader &&
 					<UploadablePicture
+						editMode={editingHeader}
 						disabled={savingChangesHeader}
-						onUploaded={setNewBackgroundPicture}
 						className={classNames('account-profile__uploadable-picture', 'account-profile__picture-container', 'card')}>
 
 						{this.renderAccountPicture({ uploadable: true })}
@@ -360,7 +361,7 @@ export default class Profile extends React.Component
 				{ !editingHeader &&
 					<Button
 						onClick={this.toggleEditModeHeader}
-						className="card__action">
+						className="card__action card__action--on-background">
 						{translate('edit')}
 					</Button>
 				}
@@ -369,7 +370,7 @@ export default class Profile extends React.Component
 				{ editingHeader &&
 					<Button
 						onClick={this.toggleEditModeHeader}
-						className="card__action"
+						className="card__action card__action--on-background"
 						disabled={savingChangesHeader}>
 						{translate('cancel')}
 					</Button>
@@ -378,8 +379,9 @@ export default class Profile extends React.Component
 				{/* "Save changes". */}
 				{ editingHeader &&
 					<Submit
+						submit
 						component={Button}
-						className="card__action card__action--primary">
+						className="card__action card__action--on-background card__action--primary">
 						{translate('save')}
 					</Submit>
 				}

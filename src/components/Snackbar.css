@@ -1,0 +1,4 @@
+.rrui__snackbar--error
+{
+	background-color : var(--error-color-dark);
+}

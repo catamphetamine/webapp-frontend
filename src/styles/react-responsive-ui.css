@@ -8,10 +8,10 @@
 :root
 {
 	--rrui-unit               : var(--unit);
-	--rrui-white-color        : var(--white-color);
-	--rrui-black-color        : var(--black-color);
+	--rrui-white-color        : white;
+	--rrui-black-color        : black;
 	--rrui-accent-color       : var(--base-color);
-	--rrui-accent-color-light : var(--base-color-lighter);
+	--rrui-accent-color-light : var(--base-color-light);
 	--rrui-gray-color         : var(--gray-color);
 }
 

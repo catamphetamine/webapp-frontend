@@ -48,7 +48,7 @@ a
 
 a:active
 {
-	color: var(--base-color-darker);
+	color: var(--base-color-dark);
 }
 
 /* Internet Explorer adds borders around all images */

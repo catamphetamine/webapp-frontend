@@ -3,7 +3,7 @@
 :root
 {
 	--white-color        : #ffffff;
-	--black-color        : #000000;
+	--black-color        : #49515C;
 
 	--gray-color-lightest : #C7CBD1;
 	--gray-color-light    : #B1B5BA;
@@ -11,9 +11,16 @@
 	--gray-color-dark     : #888C91;
 	--gray-color-darkest  : #797D82;
 
-	--base-color-lighter : #30CFFF;
-	--base-color         : #00A6ED;
-	--base-color-darker  : #0084BD;
+	--base-color-light : #30CFFF;
+	--base-color       : #00A6ED;
+	--base-color-dark  : #0084BD;
+
+	--accent-color-dark  : #C70049;
+	--accent-color       : #FC005D;
+	--accent-color-light : #FF4086;
+
+	--error-color-dark : #BD0016;
+	--error-color      : #E6001B;
 
 	--unit : 0.7rem;
 	--column-gap : var(--unit);

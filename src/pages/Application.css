@@ -34,6 +34,8 @@
 {
 	padding-top    : calc(var(--unit) * 1);
 	padding-bottom : calc(var(--unit) * 1);
+	background-color : var(--black-color);
+	color : var(--white-color);
 }
 
 .react-website__loading--initial

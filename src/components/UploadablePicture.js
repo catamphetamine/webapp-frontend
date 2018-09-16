@@ -11,6 +11,8 @@ import ResponsivePicture, { getPreferredSize } from './Picture'
 import { uploadPicture } from '../redux/uploadablePicture'
 import { notify } from '../redux/notifications'
 
+const PICTURE_COMPONENT_CLASS = <ResponsivePicture/>.type
+
 @connect(() => ({}), {
 	uploadPicture,
 	notify
@@ -22,9 +24,9 @@ export default class UploadablePicture extends Component
 		editMode        : PropTypes.bool.isRequired,
 		changeLabel     : PropTypes.node,
 		disabled        : PropTypes.bool.isRequired,
-		onUpload        : PropTypes.func,
+		// onUpload        : PropTypes.func,
 		onError         : PropTypes.func,
-		onUploaded      : PropTypes.func.isRequired,
+		// onUploaded      : PropTypes.func.isRequired,
 		maxFileSize     : PropTypes.number.isRequired,
 		acceptedFileTypes : PropTypes.arrayOf(PropTypes.string).isRequired,
 		// children        : PropTypes.element.isRequired,
@@ -53,13 +55,13 @@ export default class UploadablePicture extends Component
 
 	componentDidUpdate(prevProps)
 	{
-		// Reset the uploaded picture on "cancel".
+		// Reset state on "cancel".
 		if (prevProps.editMode && !this.props.editMode)
 		{
-			// const { onFinished } = this.props
-
-			// onFinished()
-			this.setState({ uploadedPicture: undefined })
+			this.setState({
+				uploading: false,
+				newPicture: undefined
+			})
 		}
 	}
 
@@ -77,7 +79,7 @@ export default class UploadablePicture extends Component
 
 		const {
 			uploading,
-			uploadedPicture
+			newPicture
 		} = this.state
 
 		return (
@@ -94,17 +96,16 @@ export default class UploadablePicture extends Component
 				{
 					React.Children.map(children, (child) =>
 					{
-						if (child.type && typeof(child.type) !== 'string' &&
-							child.type.propTypes.picture && child.type.propTypes.uploaded)
+						if (child.type === PICTURE_COMPONENT_CLASS)
 						{
-							if (uploadedPicture)
+							if (newPicture)
 							{
 								return React.cloneElement(child,
 								{
-									picture   : uploadedPicture,
-									className : classNames(child.props.className, {
-										// 'uploadable-picture__picture--change' : uploading
-									})
+									sizes : newPicture.sizes,
+									// className : classNames(child.props.className, {
+									// 	// 'uploadable-picture__picture--change' : uploading
+									// })
 								})
 							}
 						}
@@ -117,11 +118,7 @@ export default class UploadablePicture extends Component
 				{ editMode &&
 					<DropFileUpload
 						disabled={ disabled }
-						onChange={ this.upload }
-						className={ classNames('uploadable-picture__change-overlay', {
-							'uploadable-picture__change-overlay--uploading' : uploading,
-							'uploadable-picture__change-overlay--uploaded'  : uploadedPicture
-						}) }>
+						onChange={ this.upload }>
 						{/* A colored overlay indicating "can drop image file here" situation */}
 						<div
 							className={ classNames('uploadable-picture__droppable-overlay', {
@@ -129,8 +126,15 @@ export default class UploadablePicture extends Component
 								// 'uploadable-picture__droppable-overlay--cannot-drop' : draggedOver && !canDrop
 							}) }/>
 
-						{/* "Change picture" label */}
-						{ !uploadedPicture && !uploading && changeLabel }
+						{/* An overlay indicating that a picture can be uploaded */}
+						<div
+							className={ classNames('uploadable-picture__change-overlay', {
+								'uploadable-picture__change-overlay--uploading' : uploading,
+								'uploadable-picture__change-overlay--uploaded'  : newPicture
+							}) }>
+							{/* "Change picture" label */}
+							{ !newPicture && !uploading && changeLabel }
+						</div>
 
 						{/* "Uploading picture" spinner */}
 						{ uploading &&
@@ -163,9 +167,10 @@ export default class UploadablePicture extends Component
 		const {
 			editMode,
 			acceptedFileTypes,
+			maxFileSize,
 			uploadPicture,
-			onUpload,
-			onUploaded
+			// onUpload,
+			// onUploaded
 		} = this.props
 
 		const { uploading } = this.state
@@ -183,12 +188,12 @@ export default class UploadablePicture extends Component
 
 		// Check file format
 		if (acceptedFileTypes && acceptedFileTypes.indexOf(file.type) < 0) {
-			return this.onError('UNSUPPORTED_FILE_TYPE')
+			return this.onError(new Error('UNSUPPORTED_FILE_TYPE'))
 		}
 
 		// Check file size limit
-		if (maxFixSize && file.size > maxFileSize) {
-			return this.onError('MAX_FILE_SIZE_EXCEEDED')
+		if (maxFileSize && file.size > maxFileSize) {
+			return this.onError(new Error('MAX_FILE_SIZE_EXCEEDED'))
 		}
 
 		// Set "uploading" flag.
@@ -196,28 +201,26 @@ export default class UploadablePicture extends Component
 			uploading : true
 		})
 
-		if (onUpload) {
-			onUpload()
-		}
-
-		let uploadedPicture
+		// if (onUpload) {
+		// 	onUpload()
+		// }
 
 		try
 		{
 			// Upload the picture.
-			uploadedPicture = await uploadPicture(file)
+			const newPicture = await uploadPicture(file)
 			// Prefetch the uploaded picture to avoid a flash of a not yet loaded image.
-			await prefetchImage(getPreferredSize(uploadedPicture.sizes, component.width()).url)
+			await prefetchImage(getPreferredSize(newPicture.sizes, component.width()).url)
 			// Show the uploaded picture.
-			onUploaded(uploadedPicture)
+			this.setState({ newPicture })
+			// onUploaded(newPicture)
 		}
 		catch (error)
 		{
 			console.error(error)
-			error = error.message
 			// Who returns such an error? Sharp?
-			if (error.indexOf('unsupported image format') >= 0) {
-				error = 'UNSUPPORTED_FILE_TYPE'
+			if (error.message.indexOf('unsupported image format') >= 0) {
+				error = new Error('UNSUPPORTED_FILE_TYPE')
 			}
 			return this.onError(error)
 		}
@@ -227,14 +230,6 @@ export default class UploadablePicture extends Component
 			this.setState({
 				uploading : false
 			})
-
-			// If the picture was uploaded then render it.
-			if (uploadedPicture)
-			{
-				this.setState({
-					uploadedPicture
-				})
-			}
 		}
 	}
 }

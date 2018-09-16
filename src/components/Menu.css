@@ -86,8 +86,8 @@
 {
 	path
 	{
-		stroke : var(--black-color);
-		fill   : var(--black-color);
+		stroke : currentColor;
+		fill   : currentColor;
 	}
 }
 
@@ -95,7 +95,7 @@
 {
 	path, circle
 	{
-		stroke : var(--black-color);
+		stroke : currentColor;
 	}
 }
 
