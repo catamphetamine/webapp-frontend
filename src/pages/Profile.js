@@ -338,7 +338,8 @@ export default class Profile extends React.Component
 			<Link
 				to={`/${account.id}`}
 				className={classNames('account-profile__picture', {
-					'account-profile__picture-container': !uploadable
+					'account-profile__picture-container': !uploadable,
+					'card': !uploadable
 				})}>
 				<AccountPicture
 					account={account}
