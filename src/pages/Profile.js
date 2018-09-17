@@ -12,6 +12,7 @@ import { accountShape } from '../PropTypes'
 import {
 	getAccount,
 	getLatestActivityTime,
+	// setNewAccountPicture,
 	// setNewBackgroundPicture,
 	uploadPicture
 } from '../redux/account'
@@ -65,13 +66,17 @@ const messages =
 	en: {
 		cancel : 'Cancel',
 		save : 'Save',
-		edit : 'Edit'
+		edit : 'Edit',
+		profile: {
+			change_background_picture : 'Change background picture'
+		}
 	}
 }
 
 function translate(key)
 {
-	return messages.en[key]
+	const language = 'en'
+	return key.split('.').reduce((messages, key) => messages[key], messages[language])
 }
 
 @meta(({ account: { account } }) => ({
@@ -95,6 +100,7 @@ function translate(key)
 	account: account.account
 }), {
 	getLatestActivityTime,
+	// setNewAccountPicture,
 	// setNewBackgroundPicture,
 	uploadPicture
 })
@@ -132,6 +138,9 @@ export default class Profile extends React.Component
 		return account // && account.user.id === user.id
 	}
 
+	setNewAccountPicture = (picture) => this.setState({ newAccountPicture: picture })
+	setNewBackgroundPicture = (picture) => this.setState({ newBackgroundPicture: picture })
+
 	render()
 	{
 		const {
@@ -141,7 +150,7 @@ export default class Profile extends React.Component
 		const {
 			editing,
 			editingHeader,
-			previewingNewBanner
+			// previewingNewBanner
 		} = this.state
 
 		if (!account) {
@@ -165,8 +174,6 @@ export default class Profile extends React.Component
 		const show_banner_while_editing = false
 
 		const submitting = false
-
-		const showBannerWhileEditing = previewingNewBanner || account.banner
 
 		account.data.backgroundPicture = DEFAULT_BACKGROUND_PICTURE
 
@@ -256,15 +263,14 @@ export default class Profile extends React.Component
 	{
 		const {
 			account,
+			// setNewAccountPicture,
 			// setNewBackgroundPicture,
-			uploadingNewBackgroundPicture,
-			newBackgroundPicture
+			// uploadingNewBackgroundPicture
 		} = this.props
 
 		const {
 			editingHeader,
-			savingChangesHeader,
-			previewingNewBanner
+			savingChangesHeader
 		} = this.state
 
 		const submitting = false
@@ -273,10 +279,20 @@ export default class Profile extends React.Component
 			<React.Fragment>
 				{/* Background picture. */}
 				{ !editingHeader && account.data.backgroundPicture &&
-					<Picture
-						fit="cover"
-						sizes={account.data.backgroundPicture.sizes}
-						className="account-profile__background-picture"/>
+					this.renderBackgroundPicture()
+				}
+
+				{/* Background picture (editable). */}
+				{ editingHeader &&
+					<UploadablePicture
+						editMode={editingHeader}
+						onChange={this.setNewBackgroundPicture}
+						disabled={savingChangesHeader}
+						changeLabel={translate('profile.change_background_picture')}
+						className="account-profile__uploadable-background-picture">
+
+						{this.renderBackgroundPicture({ uploadable: true })}
+					</UploadablePicture>
 				}
 
 				{/* Background picture shadow. */}
@@ -286,18 +302,12 @@ export default class Profile extends React.Component
 				}
 				*/}
 
-				{/* Preview new background picture. */}
-				{ editingHeader && newBackgroundPicture &&
-					<Picture
-						picture={newBackgroundPicture}
-						className="account-profile__background-picture"/>
-				}
-
 				{/* onUploaded={setNewBackgroundPicture} */}
 				{/* Account picture (editable). */}
 				{ editingHeader &&
 					<UploadablePicture
 						editMode={editingHeader}
+						onChange={this.setNewAccountPicture}
 						disabled={savingChangesHeader}
 						className={classNames('account-profile__uploadable-picture', 'account-profile__picture-container', 'card')}>
 
@@ -330,10 +340,25 @@ export default class Profile extends React.Component
 		)
 	}
 
+	renderBackgroundPicture(props = {})
+	{
+		const { account } = this.props
+		const { uploadable } = props
+		const { newBackgroundPicture } = this.state
+
+		return (
+			<Picture
+				fit="cover"
+				sizes={newBackgroundPicture ? newBackgroundPicture.sizes : account.data.backgroundPicture.sizes}
+				className="account-profile__background-picture"/>
+		);
+	}
+
 	renderAccountPicture(props = {})
 	{
 		const { account } = this.props
 		const { uploadable } = props
+		const { newAccountPicture } = this.state
 
 		return (
 			<Link
@@ -344,6 +369,7 @@ export default class Profile extends React.Component
 				})}>
 				<AccountPicture
 					account={account}
+					picture={newAccountPicture}
 					className="account-profile__picture-image"/>
 			</Link>
 		);

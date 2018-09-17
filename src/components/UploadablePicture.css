@@ -15,30 +15,17 @@
 	display : block;
 }
 
-/*.uploadable-picture__droppable-overlay,*/
 .uploadable-picture__change-overlay
 {
 	position : absolute;
 	top  : 0;
 	left : 0;
+	z-index : 1;
 	width  : 100%;
 	height : 100%;
 	border-radius : inherit;
 	transition : background-color 100ms ease-out;
 }
-
-/*
-.layout--dragging .uploadable-picture--accepts-drop
-{
-	box-shadow : 0 0 0 0.15rem var(--accent-color-lighter);
-}
-
-.uploadable-picture__droppable-overlay
-{
-	z-index : 2;
-	opacity : 0.5;
-	transition : background-color 100ms ease-out;
-}*/
 
 .uploadable-picture--accepts-drop .rrui__file-upload__area--dragged-over .uploadable-picture__change-overlay
 {

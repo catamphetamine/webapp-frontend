@@ -169,12 +169,9 @@
 	border-radius : var(--border-radius);
 }
 
-.account-profile__uploadable-picture
+.account-profile__uploadable-background-picture
 {
-	.upload-picture__change-overlay
-	{
-		font-size : 80%;
-	}
+	height : 100%;
 }
 
 .account-profile__picture .picture__image,

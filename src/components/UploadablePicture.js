@@ -24,12 +24,11 @@ export default class UploadablePicture extends Component
 		editMode        : PropTypes.bool.isRequired,
 		changeLabel     : PropTypes.node,
 		disabled        : PropTypes.bool.isRequired,
-		// onUpload        : PropTypes.func,
+		onChange        : PropTypes.func,
 		onError         : PropTypes.func,
-		// onUploaded      : PropTypes.func.isRequired,
 		maxFileSize     : PropTypes.number.isRequired,
 		acceptedFileTypes : PropTypes.arrayOf(PropTypes.string).isRequired,
-		// children        : PropTypes.element.isRequired,
+		children        : PropTypes.node.isRequired,
 		style           : PropTypes.object,
 		className       : PropTypes.string
 	}
@@ -55,6 +54,8 @@ export default class UploadablePicture extends Component
 
 	componentDidUpdate(prevProps)
 	{
+		const { onChange } = this.props
+
 		// Reset state on "cancel".
 		if (prevProps.editMode && !this.props.editMode)
 		{
@@ -62,6 +63,9 @@ export default class UploadablePicture extends Component
 				uploading: false,
 				newPicture: undefined
 			})
+			if (onChange) {
+				onChange(newPicture)
+			}
 		}
 	}
 
@@ -114,29 +118,22 @@ export default class UploadablePicture extends Component
 					})
 				}
 
-				{/* "Change picture" file uploader and overlay */}
+				{/* "Change picture" file uploader and overlay. */}
 				{ editMode &&
 					<DropFileUpload
 						disabled={ disabled }
 						onChange={ this.upload }>
-						{/* A colored overlay indicating "can drop image file here" situation */}
-						<div
-							className={ classNames('uploadable-picture__droppable-overlay', {
-								// 'uploadable-picture__droppable-overlay--can-drop',
-								// 'uploadable-picture__droppable-overlay--cannot-drop' : draggedOver && !canDrop
-							}) }/>
-
-						{/* An overlay indicating that a picture can be uploaded */}
+						{/* An overlay indicating that a picture can be uploaded. */}
 						<div
 							className={ classNames('uploadable-picture__change-overlay', {
 								'uploadable-picture__change-overlay--uploading' : uploading,
 								'uploadable-picture__change-overlay--uploaded'  : newPicture
 							}) }>
-							{/* "Change picture" label */}
+							{/* "Change picture" label. */}
 							{ !newPicture && !uploading && changeLabel }
 						</div>
 
-						{/* "Uploading picture" spinner */}
+						{/* "Uploading picture" spinner. */}
 						{ uploading &&
 							<ActivityIndicator
 								className="uploadable-picture__progress-indicator"/>
@@ -169,8 +166,7 @@ export default class UploadablePicture extends Component
 			acceptedFileTypes,
 			maxFileSize,
 			uploadPicture,
-			// onUpload,
-			// onUploaded
+			onChange
 		} = this.props
 
 		const { uploading } = this.state
@@ -213,7 +209,9 @@ export default class UploadablePicture extends Component
 			await prefetchImage(getPreferredSize(newPicture.sizes, component.width()).url)
 			// Show the uploaded picture.
 			this.setState({ newPicture })
-			// onUploaded(newPicture)
+			if (onChange) {
+				onChange(newPicture)
+			}
 		}
 		catch (error)
 		{

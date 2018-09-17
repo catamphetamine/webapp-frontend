@@ -18,6 +18,7 @@ export default class AccountPicture extends React.Component
 {
 	static propTypes =
 	{
+		picture   : PropTypes.object,
 		account   : PropTypes.object.isRequired,
 		style     : PropTypes.object,
 		className : PropTypes.string,
@@ -30,6 +31,7 @@ export default class AccountPicture extends React.Component
 	{
 		const
 		{
+			picture,
 			account,
 			className,
 			...rest
@@ -39,7 +41,7 @@ export default class AccountPicture extends React.Component
 		return (
 			<Picture
 				{...rest}
-				sizes={ account.data.picture ? account.data.picture.sizes : DEFAULT_ACCOUNT_PICTURE.sizes }
+				sizes={ picture ? picture.sizes : (account.data.picture ? account.data.picture.sizes : DEFAULT_ACCOUNT_PICTURE.sizes) }
 				className={ classNames('account-picture', className) }/>
 		)
 	}

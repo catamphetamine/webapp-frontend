@@ -25,17 +25,25 @@ export const uploadPicture = redux.action
 	(file) => (http) => http.post(`/images/upload`, { file })
 )
 
-// `setNewBackgroundPicture` is called after the uploaded image is prefetched.
-// Prefetching is done to avoid a flash of a not yet loaded image.
-export const setNewBackgroundPicture = redux.action
-(
-	picture => picture,
-	(state, picture) => ({
-		...state,
-		uploadingNewBackgroundPicture : false,
-		newBackgroundPicture : picture
-	})
-)
+// export const setNewBackgroundPicture = redux.simpleAction
+// (
+// 	picture => picture,
+// 	(state, picture) => ({
+// 		...state,
+// 		// uploadingNewBackgroundPicture : false,
+// 		newBackgroundPicture : picture
+// 	})
+// )
+
+// export const setNewAccountPicture = redux.simpleAction
+// (
+// 	picture => picture,
+// 	(state, picture) => ({
+// 		...state,
+// 		// uploadingNewAccountPicture : false,
+// 		newAccountPicture : picture
+// 	})
+// )
 
 export const getLatestActivityTime = redux.action
 (
