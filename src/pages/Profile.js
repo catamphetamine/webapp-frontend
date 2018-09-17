@@ -68,7 +68,7 @@ const messages =
 		save : 'Save',
 		edit : 'Edit',
 		profile: {
-			change_background_picture : 'Change background picture'
+			change_background_picture : 'Change background'
 		}
 	}
 }
@@ -318,21 +318,24 @@ export default class Profile extends React.Component
 				{/* Account picture. */}
 				{ !editingHeader && this.renderAccountPicture() }
 
-				{ !editingHeader &&
-					<Link
-						to={`/${account.id}`}
-						className="account-profile__name">
-						{ account.name }
-					</Link>
-				}
+				{/* Account name. */}
+				<div className="account-profile__name-container">
+					{ !editingHeader &&
+						<Link
+							to={`/${account.id}`}
+							className="account-profile__name">
+							{ account.name }
+						</Link>
+					}
 
-				{ editingHeader &&
-					<Field
-						name="name"
-						value={account.name}
-						component={TextInput}
-						className="account-profile__name-input"/>
-				}
+					{ editingHeader &&
+						<Field
+							name="name"
+							value={account.name}
+							component={TextInput}
+							className="account-profile__name-input"/>
+					}
+				</div>
 
 				{/* Edit/Save own profile. */}
 				{this.canEdit() && this.renderEditActionsHeader()}

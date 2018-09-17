@@ -54,6 +54,11 @@
 	text-shadow      : 0 0.05em 0.1em rgba(0, 0, 0, 0.75);
 	user-select      : none;
 	background-color : rgba(0, 0, 0, 0.5);
+
+	&:active
+	{
+		background-color : rgba(0, 0, 0, 0.4);
+	}
 }
 
 .uploadable-picture__change-overlay--uploaded

@@ -51,11 +51,6 @@
 .account-profile__name,
 .account-profile__name-input
 {
-	position : absolute;
-	left     : calc(var(--content-section-padding) + var(--content-section-margin) + var(--account-profile-picture-size));
-	bottom   : 0;
-	z-index  : 1;
-
 	margin-left   : calc(var(--unit) * 2.5);
 	margin-bottom : calc(var(--unit) * 1.5);
 
@@ -73,6 +68,8 @@
 
 .account-profile__name
 {
+	display: inline-block;
+
 	&, &:hover
 	{
 		text-decoration: none;
@@ -154,13 +151,24 @@
 .account-profile__picture-container
 {
 	position : absolute;
-	left : calc(var(--content-section-padding) + var(--content-section-margin));
-	z-index  : 1;
+	left     : calc(var(--content-section-padding) + var(--content-section-margin));
+	bottom   : calc(-1 * var(--account-profile-picture-bottom-offset));
+	/* Must be above the account name layer for clickability. */
+	z-index  : 2;
 
 	width  : var(--account-profile-picture-size);
 	height : var(--account-profile-picture-size);
+}
 
-	bottom : calc(-1 * var(--account-profile-picture-bottom-offset));
+.account-profile__name-container
+{
+	position : absolute;
+	left     : 0;
+	bottom   : 0;
+	z-index  : 1;
+	width    : 100%;
+	padding-left : calc(var(--content-section-padding) + var(--content-section-margin) + var(--account-profile-picture-size));
+	padding-right : var(--content-section-margin);
 }
 
 .account-profile__picture,
@@ -172,6 +180,15 @@
 .account-profile__uploadable-background-picture
 {
 	height : 100%;
+
+	@mixin xs
+	{
+		.uploadable-picture__change-overlay
+		{
+			justify-content : flex-end;
+			padding-right : var(--content-section-margin);
+		}
+	}
 }
 
 .account-profile__picture .picture__image,
@@ -187,7 +204,8 @@
 	position : absolute;
 	right    : var(--content-section-margin);
 	top      : var(--content-section-margin);
-	z-index  : 1;
+	/* Must be above the account picture layer for clickability. */
+	z-index  : 3;
 }
 
 /* Account info. */
