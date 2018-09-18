@@ -1,0 +1,51 @@
+@import "../styles/common";
+
+:root
+{
+	--account-tabs-height : calc(var(--unit) * 7);
+
+	@mixin xs
+	{
+		--account-tabs-height : calc(var(--unit) * 5);
+	}
+}
+
+/* Tabs */
+
+.account-tabs
+{
+	display          : inline-block;
+	height           : var(--account-tabs-height);
+	margin-left      : auto;
+	margin-right     : auto;
+	white-space      : nowrap;
+}
+
+.account-tabs__tab
+{
+	display : inline-block;
+	height  : 100%;
+	border-bottom : calc(var(--unit) / 2) solid transparent;
+}
+
+.account-tabs__tab-button
+{
+	height      : 100%;
+	display     : inline-flex;
+	align-items : center;
+
+	padding-left  : var(--unit);
+	padding-right : var(--unit);
+
+	color : var(--black-color);
+}
+
+.account-tabs__tab--active
+{
+	border-color : var(--base-color);
+
+	.account-tabs__tab-button
+	{
+		cursor : default;
+	}
+}

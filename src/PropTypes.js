@@ -22,3 +22,8 @@ export const accountShape = shape({
 		})
 	}).isRequired
 })
+
+export const locationShape = shape({
+	pathname: string.isRequired,
+	query: object.isRequired
+})

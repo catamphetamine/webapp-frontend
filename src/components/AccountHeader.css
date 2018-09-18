@@ -1,0 +1,172 @@
+@import "../styles/common";
+
+:root
+{
+	--account-header-picture-size : calc(var(--unit) * 18);
+	--account-header-picture-bottom-offset : calc(var(--unit) * 2.5);
+
+	@mixin xs
+	{
+		--account-header-picture-size : calc(var(--unit) * 14);
+		--account-header-picture-bottom-offset : calc(var(--unit) * 2);
+	}
+}
+
+.account-header
+{
+	position : relative;
+	height   : 25vw;
+	min-height : calc(var(--account-header-picture-size) + var(--unit));
+	/*max-height : calc(var(--unit) * 35);*/
+	background-color : var(--gray-color);
+	border-bottom : 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Short info (to the right of the account picture) */
+
+.account-header__name,
+.account-header__name-input
+{
+	margin-left   : calc(var(--unit) * 2.5);
+	margin-bottom : calc(var(--unit) * 1.5);
+
+	font-size : 3rem;
+	color : var(--white-color);
+	text-shadow : 0 0 0.2em rgba(0, 0, 0, 0.8);
+
+	@mixin xs
+	{
+		margin-left   : calc(var(--unit) * 1.5);
+		margin-bottom : calc(var(--unit) * 1.5);
+		font-size : 2rem;
+	}
+}
+
+.account-header__name
+{
+	display: inline-block;
+
+	&, &:hover
+	{
+		text-decoration: none;
+	}
+}
+
+.account-header__name-input
+{
+	.rrui__input
+	{
+		height: 1.2em;
+	}
+
+	.rrui__input-field
+	{
+		width: 100%;
+		color: inherit;
+		border-color: var(--white-color);
+	}
+}
+
+/* Background picture */
+
+.account-header__background-picture
+{
+	position : absolute;
+	z-index  : 1;
+	height   : 100%;
+	width    : 100%;
+
+	.picture__image
+	{
+		height : 100%;
+	}
+}
+
+/*
+@include xl
+{
+	.account-header__tabs-container
+	{
+		position : relative;
+		top      : calc(-1 * var(--content-section-margin) / 2);
+	}
+}
+*/
+
+/*
+.account-header__background-picture-shadow
+{
+	position : absolute;
+	z-index  : 1;
+	height   : 100%;
+	width    : 100%;
+	background : linear-gradient(rgba(0,0,0,0) 71%, rgba(0,0,0, .53));
+}
+*/
+
+.account-header__background-picture-toggler--off
+{
+	pointer-events : none;
+}
+
+/* Account picture. */
+
+.account-header__picture-container
+{
+	position : absolute;
+	left     : calc(var(--content-section-padding) + var(--content-section-margin));
+	bottom   : calc(-1 * var(--account-header-picture-bottom-offset));
+	/* Must be above the account name layer for clickability. */
+	z-index  : 2;
+
+	width  : var(--account-header-picture-size);
+	height : var(--account-header-picture-size);
+}
+
+.account-header__name-container
+{
+	position : absolute;
+	left     : 0;
+	bottom   : 0;
+	z-index  : 1;
+	width    : 100%;
+	padding-left : calc(var(--content-section-padding) + var(--content-section-margin) + var(--account-header-picture-size));
+	padding-right : var(--content-section-margin);
+}
+
+.account-header__picture,
+.account-header__uploadable-picture .rrui__file-upload__area
+{
+	border-radius : var(--border-radius);
+}
+
+.account-header__uploadable-background-picture
+{
+	height : 100%;
+
+	@mixin xs
+	{
+		.uploadable-picture__change-overlay
+		{
+			justify-content : flex-end;
+			padding-right : var(--content-section-margin);
+		}
+	}
+}
+
+.account-header__picture .picture__image,
+.account-header__uploadable-picture .uploadable-picture__change-overlay
+{
+	border : 0.12rem solid var(--white-color);
+}
+
+/* Edit actions */
+
+.account-header__edit-actions
+{
+	position : absolute;
+	right    : var(--content-section-margin);
+	top      : var(--content-section-margin);
+	/* Must be above the account picture layer for clickability. */
+	z-index  : 3;
+}

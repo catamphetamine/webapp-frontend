@@ -1,0 +1,38 @@
+@import "../styles/common";
+
+/* Actions ("Send message", etc) */
+
+.account-actions
+{
+	margin-top: calc(var(--unit) * 4);
+}
+
+.account-action
+{
+	.rrui__button__contents
+	{
+		display     : flex;
+		align-items : center;
+	}
+}
+
+.account-action
+{
+	height : calc(var(--unit) * 5);
+}
+
+.account-action-icon
+{
+	margin-bottom : var(--icon-liftup);
+	margin-right  : var(--icon-right-margin);
+	fill          : var(--base-color-dark);
+	transition    : var(--button-icon-transition);
+}
+
+.account-action:active
+{
+	.account-action-icon
+	{
+		fill : var(--base-color);
+	}
+}

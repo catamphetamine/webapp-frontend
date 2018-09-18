@@ -1,0 +1,41 @@
+@import "../styles/common";
+
+.account-summary
+{
+	position : relative;
+}
+
+.account-summary__description
+{
+	margin-bottom : var(--unit);
+}
+
+.account-summary__whereabouts
+{
+	margin-bottom : var(--unit);
+	color : var(--gray-color-dark);
+}
+
+/* "Last seen" */
+
+/*
+.account-summary__last-seen
+{
+	display     : flex;
+	align-items : center;
+
+	margin-top : calc(var(--unit) * 1);
+	color : var(--gray-color-darkest);
+}
+
+.account-summary__last-seen-icon
+{
+	margin-bottom : var(--icon-liftup);
+	margin-right  : var(--icon-right-margin);
+
+	width  : 1em;
+	height : 1em;
+
+	fill : var(--gray-color-darkest);
+}
+*/
