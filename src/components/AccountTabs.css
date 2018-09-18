@@ -3,6 +3,7 @@
 :root
 {
 	--account-tabs-height : calc(var(--unit) * 5);
+	--account-tabs-active-tab-marker-height : 0.2em;
 
 	@mixin xs
 	{
@@ -19,14 +20,15 @@
 	margin      : 0;
 	padding     : 0;
 	white-space : nowrap;
-	background-color : var(--white-color);
+	/*background-color : var(--white-color);*/
 }
 
 .account-tabs__tab
 {
 	display : inline-block;
 	height  : 100%;
-	border-bottom : calc(var(--unit) / 2) solid transparent;
+	padding-top   : var(--account-tabs-active-tab-marker-height);
+	border-bottom : var(--account-tabs-active-tab-marker-height) solid transparent;
 }
 
 .account-tabs__tab-link

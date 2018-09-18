@@ -32,6 +32,7 @@ didn't work and was buggy so margins were replaced with paddings.
 {
 	padding : var(--content-section-padding);
 	background-color : var(--white-color);
+	border-radius : var(--border-radius);
 }
 
 .content-section--background

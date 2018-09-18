@@ -78,7 +78,7 @@
 	flex-shrink : 1;
 }
 
-.account-profile .account-tabs
+.account-profile .account-tabs-section
 {
-	margin-bottom : calc(var(--content-section-margin) * -1 + 1px);
+	/*margin-bottom : calc(var(--content-section-margin) * -1 + 1px);*/
 }
