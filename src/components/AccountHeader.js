@@ -16,6 +16,8 @@ import UploadablePicture from './UploadablePicture'
 import Picture from './Picture'
 import AccountPicture from './AccountPicture'
 
+import { accountLink } from './AccountLink'
+
 import './AccountHeader.css'
 
 const DEFAULT_BACKGROUND_PICTURE =
@@ -137,7 +139,7 @@ export default class AccountHeader extends React.Component
 				<div className="account-header__name-container">
 					{ !editing &&
 						<Link
-							to={`/${account.id}`}
+							to={accountLink(account)}
 							className="account-header__name">
 							{ account.name }
 						</Link>
@@ -180,7 +182,7 @@ export default class AccountHeader extends React.Component
 
 		return (
 			<Link
-				to={`/${account.id}`}
+				to={accountLink(account)}
 				className={classNames('account-header__picture', {
 					'account-header__picture-container': !uploadable,
 					'card': !uploadable

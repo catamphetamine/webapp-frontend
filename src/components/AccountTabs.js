@@ -4,6 +4,8 @@ import { connect } from 'react-redux'
 import { Link } from 'react-website'
 import classNames from 'classnames'
 
+import { accountLink } from './AccountLink'
+
 import { accountShape, locationShape } from '../PropTypes'
 import _translate from '../translate'
 
@@ -36,7 +38,7 @@ export default class AccountTabs extends React.Component
 							'account-tabs__tab--active' : tab === 'feed' ? !contentType : contentType === tab
 						}) }>
 						<Link
-							to={`/${account.nameId}${tab === 'feed' ? '' : '/' + tab}`}
+							to={`${accountLink(account)}${tab === 'feed' ? '' : '/' + tab}`}
 							className="account-tabs__tab-link">
 							{translate(`account.tabs.${tab}`)}
 						</Link>
