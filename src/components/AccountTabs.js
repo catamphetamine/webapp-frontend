@@ -37,7 +37,7 @@ export default class AccountTabs extends React.Component
 						}) }>
 						<Link
 							to={`/${account.nameId}${tab === 'feed' ? '' : '/' + tab}`}
-							className="account-tabs__tab">
+							className="account-tabs__tab-link">
 							{translate(`account.tabs.${tab}`)}
 						</Link>
 					</li>

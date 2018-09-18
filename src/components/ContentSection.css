@@ -1,7 +1,77 @@
-.content-section, .content-section-padding
+@import "../styles/common";
+
+:root
+{
+	--content-section-margin : calc(var(--unit) * 3.5);
+	--content-section-padding : calc(var(--unit) * 2);
+	/*--background-section-vertical-margin : var(--unit);*/
+
+	@mixin xs
+	{
+		--content-section-margin : calc(var(--unit) * 2);
+		--content-section-padding : 0px;
+		/*--background-section-vertical-margin : calc(var(--unit) * 2);*/
+	}
+}
+
+/*
+Margin collapse won't work for cases
+where content section siblings are flex columns
+therefore disabling margin collapse for all cases
+to rule out the confusion could be a solution.
+Still, the `border: 1px; margin: -1px;` workaround
+didn't work and was buggy so margins were replaced with paddings.
+*/
+.content-sections,
+.content-section__spacer
+{
+	padding : calc(var(--content-section-margin) / 2);
+}
+
+.content-section
 {
 	padding : var(--content-section-padding);
+	background-color : var(--white-color);
 }
+
+.content-section--background
+{
+	background-color : transparent;
+}
+
+.content-section--busy
+{
+	cursor : wait;
+}
+
+.content-section__header
+{
+	margin        : calc(-1 * var(--content-section-padding));
+	margin-bottom : var(--content-section-padding);
+	padding-left  : var(--content-section-padding);
+	padding-right : var(--content-section-padding);
+	padding-top      : 0.5em;
+	padding-bottom   : 0.45em;
+	border-bottom    : 1px solid var(--background-color);
+	color            : var(--black-color);
+	font-weight      : bolder;
+	text-align       : left;
+	/*background-color : var(--gray-color-lightest);*/
+}
+
+/*.content-section__divider
+{
+	position         : absolute;
+	top              : 0;
+	height           : 1px;
+	background-color : var(--gray-color);
+}*/
+
+/*.content-section__divider
+{
+	left  : var(--content-section-padding);
+	right : var(--content-section-padding);
+}*/
 
 .content-section__errors
 {
@@ -19,48 +89,16 @@
 {
 	padding : 0;
 
-	.content-section-header
+	.content-section__header
 	{
-		margin-top : 0;
+		margin-top    : 0;
+		margin-bottom : 0;
+		margin-left   : 0;
+		margin-right  : 0;
 	}
 }
 
-.background-section
-{
-	padding-left   : var(--content-section-padding);
-	padding-right  : var(--content-section-padding);
-	padding-top    : calc(var(--content-section-padding) - 2 * var(--content-section-margin));
-	padding-bottom : calc(var(--content-section-padding) - 2 * var(--content-section-margin));
-}
-
-.content-section-header
-{
-	margin        : calc(-1 * var(--content-section-padding));
-	margin-bottom : var(--content-section-padding);
-	padding-left  : var(--content-section-padding);
-	padding-right : var(--content-section-padding);
-}
-
-.content-section-divider
-{
-	left  : var(--content-section-padding);
-	right : var(--content-section-padding);
-}
-
-.content-section,
-.background-section,
-.content-sections
-{
-	margin : calc(var(--content-section-margin) / 2);
-}
-
-.background-section
-{
-	margin-top    : var(--background-section-vertical-margin);
-	margin-bottom : var(--background-section-vertical-margin);
-}
-
-.sections
+/*.sections
 {
 	margin     : calc(var(--content-section-margin) / 2);
 	margin-top : calc(-1 * var(--content-section-margin) / 2);
@@ -69,4 +107,4 @@
 	{
 		margin-top : calc(var(--content-section-margin) / 2);
 	}
-}
+}*/

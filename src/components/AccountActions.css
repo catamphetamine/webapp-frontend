@@ -9,11 +9,8 @@
 
 .account-action
 {
-	.rrui__button__contents
-	{
-		display     : flex;
-		align-items : center;
-	}
+	display     : flex;
+	align-items : center;
 }
 
 .account-action

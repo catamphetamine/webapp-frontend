@@ -78,18 +78,7 @@
 	flex-shrink : 1;
 }
 
-/*.account-profile
+.account-profile .account-tabs
 {
-	.rrui__text-input__input
-	{
-		width: calc(var(--unit) * 50);
-	}
-}*/
-
-.account-profile--editing
-{
-	.account-profile__tabs-container
-	{
-		display: none;
-	}
+	margin-bottom : calc(var(--content-section-margin) * -1);
 }

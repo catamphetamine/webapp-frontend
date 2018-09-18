@@ -11,7 +11,7 @@ export const getAccount = redux.action
 			name: 'Alice Green',
 			nameId: 'alice',
 			description: 'Modelling clay is any of a group of malleable substances used in building and sculpting. The material compositions and production processes vary considerably.',
-			whereabouts: 'Oregon, TX',
+			whereabouts: 'Portland, OR',
 			user: {
 				id: 123,
 				firstName: 'Alex',
