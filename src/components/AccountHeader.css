@@ -2,13 +2,13 @@
 
 :root
 {
-	--account-header-picture-size : calc(var(--unit) * 18);
-	--account-header-picture-bottom-offset : calc(var(--unit) * 2.5);
+	--account-header-picture-size : calc(var(--unit) * 14);
+	--account-header-picture-bottom-offset : calc(var(--unit) * 2);
 
 	@mixin xs
 	{
-		--account-header-picture-size : calc(var(--unit) * 14);
-		--account-header-picture-bottom-offset : calc(var(--unit) * 2);
+		--account-header-picture-size : calc(var(--unit) * 8);
+		--account-header-picture-bottom-offset : calc(var(--unit) * 1);
 	}
 }
 

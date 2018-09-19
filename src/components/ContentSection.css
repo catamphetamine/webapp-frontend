@@ -2,14 +2,14 @@
 
 :root
 {
-	--content-section-margin : calc(var(--unit) * 3.5);
-	--content-section-padding : calc(var(--unit) * 2);
+	--content-section-margin : calc(var(--unit) * 2);
+	--content-section-padding : calc(var(--unit) * 1.5);
 	/*--background-section-vertical-margin : var(--unit);*/
 
 	@mixin xs
 	{
-		--content-section-margin : calc(var(--unit) * 2);
-		--content-section-padding : 0px;
+		--content-section-margin : calc(var(--unit) * 1);
+		--content-section-padding : var(--unit);
 		/*--background-section-vertical-margin : calc(var(--unit) * 2);*/
 	}
 }

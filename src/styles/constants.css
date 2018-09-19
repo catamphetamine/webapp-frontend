@@ -24,7 +24,7 @@
 
 	--background-color : #e6ecf0;
 
-	--unit : 0.7rem;
+	--unit : 0.9rem;
 	--column-gap : var(--unit);
 	--page-content-padding : calc(var(--column-gap) * 2);
 

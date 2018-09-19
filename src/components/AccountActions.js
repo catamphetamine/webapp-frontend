@@ -38,7 +38,7 @@ export default class AccountActions extends React.Component
 					action={this.subscribe}
 					className="account-action">
 					{/* Icon */}
-					<PersonAddIcon className="account-action-icon"/>
+					<PersonAddIcon className="account-action__icon"/>
 					{/* Text */}
 					{translate('account.actions.subscribe')}
 				</Button>
@@ -48,7 +48,7 @@ export default class AccountActions extends React.Component
 					action={this.sendMessage}
 					className="account-action">
 					{/* Icon */}
-					<MessageIcon className="account-action-icon"/>
+					<MessageIcon className="account-action__icon"/>
 					{/* Text */}
 					{translate('account.actions.sendMessage')}
 				</Button>

@@ -36,7 +36,8 @@
 .menu-item
 {
 	display : inline-flex;
-	align-items : baseline;
+	align-items : center;
+	height : calc(var(--unit) * 4);
 
 	padding-bottom : 0;
 
@@ -65,10 +66,10 @@
 .menu-item__icon
 {
 	position : relative;
-	bottom   : -0.1em;
+	top   : -0.05em;
 
-	width  : calc(var(--unit) * 2.5);
-	height : calc(var(--unit) * 2.5);
+	width  : calc(var(--unit) * 2);
+	height : calc(var(--unit) * 2);
 
 	margin-right : var(--unit);
 

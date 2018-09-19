@@ -13,23 +13,9 @@
 	align-items : center;
 }
 
-.account-action
+.account-action__icon
 {
-	height : calc(var(--unit) * 5);
-}
-
-.account-action-icon
-{
-	margin-bottom : var(--icon-liftup);
-	margin-right  : var(--icon-right-margin);
-	fill          : var(--base-color-dark);
+	margin-right  : 0.3em;
+	fill          : currentColor;
 	transition    : var(--button-icon-transition);
-}
-
-.account-action:active
-{
-	.account-action-icon
-	{
-		fill : var(--base-color);
-	}
 }

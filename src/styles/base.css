@@ -56,3 +56,10 @@ img
 {
 	border: none;
 }
+
+p
+{
+	line-height   : 1.52947em;
+	margin-top    : var(--content-section-padding);
+	margin-bottom : 0;
+}

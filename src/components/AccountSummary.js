@@ -16,6 +16,7 @@ import { accountShape } from '../PropTypes'
 import _translate from '../translate'
 
 import ClockIcon from '../../assets/images/icons/clock.svg'
+import GeoPointIcon from '../../assets/images/icons/geopoint.svg'
 
 import './AccountSummary.css'
 
@@ -107,14 +108,15 @@ export default class AccountSummary extends React.Component
 			<React.Fragment>
 				{/* Description. */}
 				{!editing && account.description &&
-					<div className="account-summary__description">
+					<p className="account-summary__description">
 						{account.description}
-					</div>
+					</p>
 				}
 
 				{/* Whereabouts. */}
 				{!editing && account.whereabouts &&
-					<div className="account-whereabouts">
+					<div className="account-summary__whereabouts">
+						<GeoPointIcon className="account-summary__icon"/>
 						{account.whereabouts}
 					</div>
 				}
