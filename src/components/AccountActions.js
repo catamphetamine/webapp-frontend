@@ -7,8 +7,8 @@ import classNames from 'classnames'
 import { accountShape } from '../PropTypes'
 import _translate from '../translate'
 
-import MessageIcon from '../../assets/images/icons/message.svg'
-import PersonAddIcon from '../../assets/images/icons/person-add.svg'
+// import MessageIcon from '../../assets/images/icons/message.svg'
+// import PersonAddIcon from '../../assets/images/icons/person-add.svg'
 
 import './AccountActions.css'
 
@@ -33,22 +33,18 @@ export default class AccountActions extends React.Component
 
 		return (
 			<div className="account-actions">
-				{/* "Subscribe" */}
+				{/* "Follow" */}
 				<Button
 					action={this.subscribe}
-					className="account-action">
-					{/* Icon */}
-					<PersonAddIcon className="account-action__icon"/>
+					className="account-action button--outline button--outline-base-color">
 					{/* Text */}
-					{translate('account.actions.subscribe')}
+					{translate('account.actions.follow')}
 				</Button>
 
 				{/* "Send message" */}
 				<Button
 					action={this.sendMessage}
-					className="account-action">
-					{/* Icon */}
-					<MessageIcon className="account-action__icon"/>
+					className="account-action button--outline button--outline-base-color">
 					{/* Text */}
 					{translate('account.actions.sendMessage')}
 				</Button>
@@ -65,7 +61,7 @@ export default class AccountActions extends React.Component
 				{/* "Block" */}
 				<Button
 					action={this.subscribe}
-					className="account-action">
+					className="account-action button--generic">
 					{/* Text */}
 					{translate('account.actions.block')}
 				</Button>
@@ -73,7 +69,7 @@ export default class AccountActions extends React.Component
 				{/* "Unblock" */}
 				<Button
 					action={this.sendMessage}
-					className="account-action">
+					className="account-action button--generic">
 					{/* Text */}
 					{translate('account.actions.unblock')}
 				</Button>
@@ -95,8 +91,8 @@ const messages =
 		edit : 'Edit',
 		account : {
 			actions: {
-				sendMessage: 'Send Message',
-				subscribe: 'Subscribe',
+				sendMessage: 'Contact',
+				follow: 'Follow',
 				block: 'Block',
 				unblock: 'Unblock'
 			}

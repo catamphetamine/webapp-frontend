@@ -9,8 +9,8 @@
 
 .account-action
 {
-	display     : flex;
-	align-items : center;
+	margin-top : var(--unit);
+	width : 100%;
 }
 
 .account-action__icon

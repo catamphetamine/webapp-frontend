@@ -11,9 +11,11 @@
 	--gray-color-dark     : #888C91;
 	--gray-color-darkest  : #797D82;
 
-	--base-color-light : #30CFFF;
+	--base-color-light : #00B3FF;
 	--base-color       : #00A6ED;
 	--base-color-dark  : #0084BD;
+
+	/* Base color transparency: rgba(0, 179, 255, 0.7); */
 
 	--accent-color-dark  : #C70049;
 	--accent-color       : #FC005D;
