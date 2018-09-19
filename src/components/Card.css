@@ -21,6 +21,7 @@
 	border-radius: var(--border-radius);
 	padding-left: var(--unit);
 	padding-right: var(--unit);
+	letter-spacing : 0.05em;
 
 	&:active {
 		color: var(--button-on-background-background-color);
