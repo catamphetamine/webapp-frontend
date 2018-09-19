@@ -2,6 +2,8 @@
 
 :root
 {
+	--divider-color : #e3e4e8;
+
 	--content-section-margin : calc(var(--unit) * 1);
 	--content-section-padding : calc(var(--unit) * 1.5);
 	/*--background-section-vertical-margin : var(--unit);*/
@@ -33,7 +35,7 @@ didn't work and was buggy so margins were replaced with paddings.
 	padding : var(--content-section-padding);
 	background-color : var(--white-color);
 	border-radius : var(--border-radius);
-	box-shadow : 0 1px 0 0 #d7d8db, 0 0 0 1px #e3e4e8;
+	box-shadow : 0 1px 0 0 #d7d8db, 0 0 0 1px var(--divider-color);
 }
 
 .content-section--background
@@ -55,9 +57,9 @@ didn't work and was buggy so margins were replaced with paddings.
 	padding-right : var(--content-section-padding);
 	padding-top      : 0.5em;
 	padding-bottom   : 0.45em;
-	border-bottom    : 1px solid var(--background-color);
+	border-bottom    : 1px solid var(--divider-color);
 	color            : var(--black-color);
-	font-weight      : bolder;
+	font-weight      : normal;
 	text-align       : left;
 	/*background-color : var(--gray-color-lightest);*/
 }
