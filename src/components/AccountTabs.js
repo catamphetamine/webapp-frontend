@@ -57,7 +57,7 @@ const messages =
 		account : {
 			tabs : {
 				feed: 'Feed',
-				subscriptions: 'Subscriptions',
+				subscriptions: 'Following',
 				photos: 'Photos',
 				videos: 'Videos'
 			}
