@@ -24,6 +24,25 @@
 	color : var(--gray-color-darkest);
 }
 
+.account-summary__links
+{
+	margin-top : calc(var(--unit) * 2);
+	margin-bottom : 0;
+	padding : 0;
+	list-style-type : none;
+}
+
+.account-summary__link
+{
+	display : inline-block;
+	line-height : var(--line-height);
+	color : var(--black-color);
+
+	&:hover {
+		color : var(--base-color);
+	}
+}
+
 /* "Last seen" */
 
 /*

@@ -107,18 +107,34 @@ export default class AccountSummary extends React.Component
 		return (
 			<React.Fragment>
 				{/* Description. */}
-				{!editing && account.description &&
+				{!editing && account.data.description &&
 					<p className="account-summary__description">
-						{account.description}
+						{account.data.description}
 					</p>
 				}
 
 				{/* Whereabouts. */}
-				{!editing && account.whereabouts &&
+				{!editing && account.data.whereabouts &&
 					<div className="account-summary__whereabouts">
 						<GeoPointIcon className="account-summary__icon"/>
-						{account.whereabouts}
+						{account.data.whereabouts}
 					</div>
+				}
+
+				{/* Links. */}
+				{!editing && account.data.links &&
+					<ul className="account-summary__links">
+						{account.data.links.map((link, i) => (
+							<li key={i}>
+								<a
+									target="_blank"
+									href={link.url}
+									className="account-summary__link">
+									{link.text}
+								</a>
+							</li>
+						))}
+					</ul>
 				}
 
 				{/* User online status: "Last seen: an hour ago". */}
