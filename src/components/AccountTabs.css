@@ -2,12 +2,12 @@
 
 :root
 {
-	--account-tabs-height : calc(var(--unit) * 5);
+	--account-tabs-height : calc(var(--unit) * 4);
 	--account-tabs-active-tab-marker-height : 0.2em;
 
 	@mixin xs
 	{
-		--account-tabs-height : calc(var(--unit) * 5);
+		/*--account-tabs-height : calc(var(--unit) * 5);*/
 	}
 }
 
@@ -27,8 +27,6 @@
 {
 	display : inline-block;
 	height  : 100%;
-	padding-top   : var(--account-tabs-active-tab-marker-height);
-	border-bottom : var(--account-tabs-active-tab-marker-height) solid transparent;
 }
 
 .account-tabs__tab-link
@@ -36,6 +34,13 @@
 	display : flex;
 	height  : 100%;
 	align-items : center;
+
+	color : var(--black-color);
+
+	padding-top   : var(--account-tabs-active-tab-marker-height);
+	border-bottom : var(--account-tabs-active-tab-marker-height) solid transparent;
+
+	transition : all 60ms ease-in-out;
 
 	padding-left : var(--content-section-padding);
 	padding-right : var(--content-section-padding);
@@ -56,26 +61,36 @@
 	&, &:hover {
 		text-decoration : none;
 	}
+
+	&:hover {
+		/*border-color : var(--base-color);*/
+		color : var(--base-color);
+	}
 }
 
-.account-tabs__tab-button
+.account-tabs__tab
 {
-	height      : 100%;
-	display     : inline-flex;
-	align-items : center;
+	&:first-child {
+		.account-tabs__tab-link {
+			border-bottom-left-radius: var(--border-radius);
+		}
+	}
 
-	padding-left  : var(--unit);
-	padding-right : var(--unit);
-
-	color : var(--black-color);
+	&:last-child {
+		.account-tabs__tab-link {
+			border-bottom-left-radius: var(--border-radius);
+		}
+	}
 }
 
-.account-tabs__tab--active
+.account-tabs__tab-link--active
 {
+	font-weight  : bolder;
+
 	border-color : var(--base-color);
+	cursor : default;
 
-	.account-tabs__tab-button
-	{
-		cursor : default;
+	&:hover {
+		color : var(--black-color);
 	}
 }

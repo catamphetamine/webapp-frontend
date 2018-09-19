@@ -135,6 +135,8 @@ export default class AccountSummary extends React.Component
 		// const { translate } = this.props
 		const { editing, savingChanges } = this.state
 
+		return null
+
 		return (
 			<div className="account-header__edit-actions card__actions">
 

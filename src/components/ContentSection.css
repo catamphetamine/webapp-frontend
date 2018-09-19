@@ -2,7 +2,7 @@
 
 :root
 {
-	--content-section-margin : calc(var(--unit) * 2);
+	--content-section-margin : calc(var(--unit) * 1);
 	--content-section-padding : calc(var(--unit) * 1.5);
 	/*--background-section-vertical-margin : var(--unit);*/
 
@@ -33,11 +33,13 @@ didn't work and was buggy so margins were replaced with paddings.
 	padding : var(--content-section-padding);
 	background-color : var(--white-color);
 	border-radius : var(--border-radius);
+	box-shadow : 0 1px 0 0 #d7d8db, 0 0 0 1px #e3e4e8;
 }
 
 .content-section--background
 {
 	background-color : transparent;
+	box-shadow : none;
 }
 
 .content-section--busy

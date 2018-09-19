@@ -34,12 +34,12 @@ export default class AccountTabs extends React.Component
 				{TABS.map((tab) => (
 					<li
 						key={tab}
-						className={ classNames('account-tabs__tab', {
-							'account-tabs__tab--active' : tab === 'feed' ? !contentType : contentType === tab
-						}) }>
+						className="account-tabs__tab">
 						<Link
 							to={`${accountLink(account)}${tab === 'feed' ? '' : '/' + tab}`}
-							className="account-tabs__tab-link">
+							className={ classNames('account-tabs__tab-link', {
+								'account-tabs__tab-link--active' : tab === 'feed' ? !contentType : contentType === tab
+							}) }>
 							{translate(`account.tabs.${tab}`)}
 						</Link>
 					</li>
