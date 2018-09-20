@@ -2,7 +2,7 @@
 
 :root
 {
-	--account-tabs-height : calc(var(--unit) * 4);
+	--account-tabs-height : calc(var(--unit) * 5);
 	--account-tabs-active-tab-marker-height : 0.2em;
 
 	@mixin xs
@@ -21,6 +21,7 @@
 	padding     : 0;
 	white-space : nowrap;
 	/*background-color : var(--white-color);*/
+	border-bottom : 1px solid var(--gray-color-lightest);
 }
 
 .account-tabs__tab
@@ -65,29 +66,6 @@
 	&:hover {
 		/*border-color : var(--base-color);*/
 		color : var(--base-color);
-	}
-}
-
-.account-tabs__tab
-{
-	&:first-child {
-		.account-tabs__tab-link {
-			border-bottom-left-radius: var(--border-radius);
-
-			@mixin xs {
-				border-bottom-left-radius: 0;
-			}
-		}
-	}
-
-	&:last-child {
-		.account-tabs__tab-link {
-			border-bottom-right-radius: var(--border-radius);
-
-			@mixin xs {
-				border-bottom-right-radius: 0;
-			}
-		}
 	}
 }
 

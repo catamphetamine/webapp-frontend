@@ -79,9 +79,7 @@ export default class Profile extends React.Component
 
 						<div className="col-8 col-xs-12 col--no-padding">
 							{/* Tabs */}
-							<ContentSection padding={false} className="account-tabs-section">
-								<AccountTabs account={account}/>
-							</ContentSection>
+							<AccountTabs account={account}/>
 
 							{/* Page content */}
 							{/* children */}

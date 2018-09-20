@@ -48,12 +48,11 @@
 	flex-shrink : 1;
 }
 
-.account-profile .account-tabs-section
-{
-	/*margin-bottom : calc(var(--content-section-margin) * -1 + 1px);*/
-}
-
 .account-profile .account-summary
 {
 	margin-top : var(--unit);
 }
+
+/*.account-profile .account-tabs
+{
+}*/
