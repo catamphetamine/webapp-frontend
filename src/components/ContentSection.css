@@ -24,6 +24,10 @@
 	background-color : var(--white-color);
 	border-radius : var(--border-radius);
 	box-shadow : 0 1px 0 0 #d7d8db, 0 0 0 1px var(--divider-color);
+
+	@mixin xs {
+		border-radius : 0;
+	}
 }
 
 .content-section--background

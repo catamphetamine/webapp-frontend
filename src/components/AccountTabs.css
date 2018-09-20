@@ -73,12 +73,20 @@
 	&:first-child {
 		.account-tabs__tab-link {
 			border-bottom-left-radius: var(--border-radius);
+
+			@mixin xs {
+				border-bottom-left-radius: 0;
+			}
 		}
 	}
 
 	&:last-child {
 		.account-tabs__tab-link {
-			border-bottom-left-radius: var(--border-radius);
+			border-bottom-right-radius: var(--border-radius);
+
+			@mixin xs {
+				border-bottom-right-radius: 0;
+			}
 		}
 	}
 }

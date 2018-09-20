@@ -28,7 +28,6 @@
 
 	--unit : 14px;
 	--column-gap : var(--unit);
-	--page-content-padding : calc(var(--column-gap) * 2);
 
 	/* Some magic number seen on the Internet. */
 	--line-height : 1.52947;

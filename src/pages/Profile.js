@@ -63,7 +63,7 @@ export default class Profile extends React.Component
 				{/* Account summary and action buttons on the left side. */}
 				<div className="container">
 					<div className="row">
-						<div className="col-4 col-xs-12">
+						<div className="col-4 col-xs-12 col--no-padding">
 
 							{/* Account summary info */}
 							<ContentSection
@@ -77,7 +77,7 @@ export default class Profile extends React.Component
 							</ContentSection>
 						</div>
 
-						<div className="col-8 col-xs-12">
+						<div className="col-8 col-xs-12 col--no-padding">
 							{/* Tabs */}
 							<ContentSection padding={false} className="account-tabs-section">
 								<AccountTabs account={account}/>

@@ -25,6 +25,7 @@
 {
 	position : relative;
 	height : 100%;
+	padding : 0;
 }
 
 /* Short info (to the right of the account picture) */
@@ -42,7 +43,7 @@
 	@mixin xs
 	{
 		margin-left   : calc(var(--unit) * 1.5);
-		margin-bottom : calc(var(--unit) * 1.5);
+		margin-bottom : calc(var(--unit) * 1);
 		font-size : 2rem;
 	}
 }
@@ -119,7 +120,7 @@
 .account-header__picture-container
 {
 	position : absolute;
-	left     : calc(var(--content-section-padding) + var(--content-section-margin));
+	left     : calc(var(--content-section-padding));
 	bottom   : calc(-1 * var(--account-header-picture-bottom-offset));
 	/* Must be above the account name layer for clickability. */
 	z-index  : 2;
@@ -135,7 +136,7 @@
 	bottom   : 0;
 	z-index  : 1;
 	width    : 100%;
-	padding-left : calc(var(--content-section-padding) + var(--content-section-margin) + var(--account-header-picture-size));
+	padding-left : calc(var(--content-section-padding) + var(--account-header-picture-size));
 	padding-right : var(--content-section-margin);
 }
 

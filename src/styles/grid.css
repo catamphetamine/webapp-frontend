@@ -1,4 +1,4 @@
-// @import "./constants";
+@import "./constants";
 @import "./grid.mixins";
 
 // Bootstrap grid
@@ -16,10 +16,10 @@
 {
 	margin-left   : auto;
 	margin-right  : auto;
-	padding-left  : var(--page-content-padding);
-	padding-right : var(--page-content-padding);
+	padding-left  : var(--column-gap);
+	padding-right : var(--column-gap);
 	box-sizing    : border-box;
-	// For cases when a container is inside a modal, for example
+	/* For cases when a container is inside a modal, for example. */
 	max-width : 100%;
 }
 
@@ -170,8 +170,7 @@
   // }
 }
 
-@mixin define_columns ;
-@mixin define_columns -md;
+@mixin define_columns;
 
 /* Responsive grid */
 
@@ -198,6 +197,12 @@
 	{
 		width: $screen-xl-min;
 	}
+}
+
+.col--no-padding
+{
+	padding-left : 0;
+	padding-right : 0;
 }
 
 @mixin xs {
