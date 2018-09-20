@@ -6,6 +6,11 @@ const id = oneOfType([
 ]).isRequired
 
 export const pictureShape = shape({
+	type: oneOf([
+		'image/svg+xml',
+		'image/jpeg',
+		'image/png'
+	]).isRequired,
 	sizes: arrayOf(shape({
 		url: string.isRequired,
 		// Dimensions are not required for SVGs.

@@ -22,6 +22,7 @@ import './AccountHeader.css'
 
 const DEFAULT_BACKGROUND_PICTURE =
 {
+	type: 'image/jpeg',
 	sizes:
 	[{
 		width  : 2429,

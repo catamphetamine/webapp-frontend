@@ -8,8 +8,8 @@ import DefaultAccountPicture from '../../assets/images/account-picture.svg'
 
 const DEFAULT_ACCOUNT_PICTURE =
 {
-	sizes:
-	[{
+	type: 'image/svg+xml',
+	sizes: [{
 		url : DefaultAccountPicture
 	}]
 }
