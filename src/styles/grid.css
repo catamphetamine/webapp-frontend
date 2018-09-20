@@ -170,28 +170,19 @@
   // }
 }
 
-@mixin define_columns "";
+@mixin define_columns ;
+@mixin define_columns -md;
 
-// Responsive grid
+/* Responsive grid */
 
 @media (max-width: $screen-xs-max)
 {
-	@mixin define_columns "-xs";
-}
-
-@media (min-width: $screen-sm-min) and (max-width: $screen-sm-max)
-{
-	@mixin define_columns "-sm";
-
-	.container
-	{
-		width: $screen-sm-min;
-	}
+	@mixin define_columns -xs;
 }
 
 @media (min-width: $screen-md-min) and (max-width: $screen-md-max)
 {
-	@mixin define_columns "-md";
+	@mixin define_columns -md;
 
 	.container
 	{
@@ -199,39 +190,13 @@
 	}
 }
 
-@media (min-width: $screen-lg-min)
+@media (min-width: $screen-xl-min)
 {
-	@mixin define_columns "-lg";
+	@mixin define_columns -xl;
 
 	.container
 	{
-		width: $screen-lg-min;
-	}
-}
-
-// Responsive CSS classes.
-
-@mixin xs {
-	.s, .m, .l, .s-m, .s-l, .m-l {
-		display: none !important;
-	}
-}
-
-@mixin s {
-	.xs, .m, .l, .m-l {
-		display: none !important;
-	}
-}
-
-@mixin m {
-	.xs, .s, .l, .xs-s {
-		display: none !important;
-	}
-}
-
-@mixin l {
-	.xs, .xs-s, .xs-m, .s-m {
-		display: none !important;
+		width: $screen-xl-min;
 	}
 }
 

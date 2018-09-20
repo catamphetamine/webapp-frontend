@@ -2,20 +2,6 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 
-export function ContentSections({ className, children})
-{
-	return (
-		<div className={classNames('content-sections', className)}>
-			{children}
-		</div>
-	)
-}
-
-ContentSections.propTypes = {
-	className: PropTypes.string,
-	children: PropTypes.node.isRequired
-}
-
 export function ContentSection({ className, padding, background, children })
 {
 	// Margin collapse won't work for cases
@@ -23,13 +9,11 @@ export function ContentSection({ className, padding, background, children })
 	// therefore disabling margin collapse for all cases
 	// to rule out the confusion.
 	return (
-		<div className="content-section__spacer">
-			<div className={classNames(className, 'content-section', {
-				'content-section--no-padding': !padding,
-				'content-section--background': background
-			})}>
-				{children}
-			</div>
+		<div className={classNames(className, 'content-section', {
+			'content-section--no-padding': !padding,
+			'content-section--background': background
+		})}>
+			{children}
 		</div>
 	)
 }

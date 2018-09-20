@@ -15,29 +15,6 @@
 	}
 }
 
-/* Layout */
-
-.account-profile__body
-{
-	display        : flex;
-	flex-direction : column;
-}
-
-.account-profile__content
-{
-	position : relative;
-
-	/* https://www.mobila.name/post/55c3b664d1e6e/ */
-	max-width    : var(--content-column-width);
-	margin-left  : auto;
-	margin-right : auto;
-}
-
-.account-profile__right-aside
-{
-	display : none;
-}
-
 /*
 // .account-profile__background-picture
 // {
@@ -52,13 +29,6 @@
 .account-profile__body
 {
 	flex-direction : row;
-}
-
-.account-profile__left-aside
-{
-	flex-basis  : calc(var(--unit) * 40);
-	flex-grow   : 1;
-	flex-shrink : 1;
 }
 
 .account-profile__content

@@ -21,6 +21,12 @@
 	border-bottom : 1px solid rgba(0, 0, 0, 0.1);
 }
 
+.account-header__container
+{
+	position : relative;
+	height : 100%;
+}
+
 /* Short info (to the right of the account picture) */
 
 .account-header__name,

@@ -120,42 +120,44 @@ export default class AccountHeader extends React.Component
 				}
 				*/}
 
-				{/* Account picture (editable). */}
-				{ editing &&
-					<UploadablePicture
-						editMode={editing}
-						onChange={this.setNewAccountPicture}
-						disabled={savingChanges}
-						className={classNames('account-header__uploadable-picture', 'account-header__picture-container', 'card')}>
-
-						{this.renderAccountPicture({ uploadable: true })}
-					</UploadablePicture>
-				}
-
-				{/* Account picture. */}
-				{ !editing && this.renderAccountPicture() }
-
-				{/* Account name. */}
-				<div className="account-header__name-container">
-					{ !editing &&
-						<Link
-							to={accountLink(account)}
-							className="account-header__name">
-							{ account.name }
-						</Link>
-					}
-
+				<div className="container account-header__container">
+					{/* Account picture (editable). */}
 					{ editing &&
-						<Field
-							name="name"
-							value={account.name}
-							component={TextInput}
-							className="account-header__name-input"/>
-					}
-				</div>
+						<UploadablePicture
+							editMode={editing}
+							onChange={this.setNewAccountPicture}
+							disabled={savingChanges}
+							className={classNames('account-header__uploadable-picture', 'account-header__picture-container', 'card')}>
 
-				{/* "Edit"/"Save". */}
-				{this.canEdit() && this.renderEditActions()}
+							{this.renderAccountPicture({ uploadable: true })}
+						</UploadablePicture>
+					}
+
+					{/* Account picture. */}
+					{ !editing && this.renderAccountPicture() }
+
+					{/* Account name. */}
+					<div className="account-header__name-container">
+						{ !editing &&
+							<Link
+								to={accountLink(account)}
+								className="account-header__name">
+								{ account.name }
+							</Link>
+						}
+
+						{ editing &&
+							<Field
+								name="name"
+								value={account.name}
+								component={TextInput}
+								className="account-header__name-input"/>
+						}
+					</div>
+
+					{/* "Edit"/"Save". */}
+					{this.canEdit() && this.renderEditActions()}
+				</div>
 			</React.Fragment>
 		)
 	}

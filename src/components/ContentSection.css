@@ -16,22 +16,10 @@
 	}
 }
 
-/*
-Margin collapse won't work for cases
-where content section siblings are flex columns
-therefore disabling margin collapse for all cases
-to rule out the confusion could be a solution.
-Still, the `border: 1px; margin: -1px;` workaround
-didn't work and was buggy so margins were replaced with paddings.
-*/
-.content-sections,
-.content-section__spacer
-{
-	padding : calc(var(--content-section-margin) / 2);
-}
-
 .content-section
 {
+	margin-top : var(--content-section-margin);
+	margin-bottom : var(--content-section-margin);
 	padding : var(--content-section-padding);
 	background-color : var(--white-color);
 	border-radius : var(--border-radius);

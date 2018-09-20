@@ -3,9 +3,7 @@ import { Route } from 'react-website'
 
 import Application from './pages/Application'
 
-import Users from './pages/Users'
 import Profile from './pages/Profile'
-import Home from './pages/Home'
 
 import GenericError from './pages/Error'
 import Unauthenticated from './pages/Unauthenticated'
@@ -17,13 +15,6 @@ export default
 	<Route
 		path="/"
 		Component={Application}>
-
-		<Route
-			Component={Home}/>
-
-		<Route
-			path="users"
-			Component={Users}/>
 
 		<Route
 			path="unauthenticated"
