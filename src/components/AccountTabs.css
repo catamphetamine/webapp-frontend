@@ -2,8 +2,8 @@
 
 :root
 {
-	--account-tabs-height : calc(var(--unit) * 5);
-	--account-tabs-active-tab-marker-height : 0.2em;
+	--account-tabs-height : calc(var(--unit) * 4);
+	--account-tabs-active-tab-marker-height : 0.13em;
 
 	@mixin xs
 	{
