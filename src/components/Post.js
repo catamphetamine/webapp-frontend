@@ -18,7 +18,9 @@ export default function Post({ post }) {
 						className="post__account-picture"/>
 				</Link>
 				<div className="post__name-and-date">
-					<Link to={accountLink(post.account)}>
+					<Link
+						to={accountLink(post.account)}
+						className="post__name">
 						{post.account.name}
 					</Link>
 					<div className="post__date">
