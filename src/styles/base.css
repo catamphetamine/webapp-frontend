@@ -23,7 +23,8 @@ body
 	touch-action: manipulation;
 }
 
-body, input, textarea, select
+/* `html` is required for `rem`s to work. */
+html, body, input, textarea, select
 {
 	font-family : Arial, Helvetica, Sans;
 	font-size   : var(--font-size);
@@ -43,7 +44,7 @@ body
 
 a
 {
-	color: inherit;
+	color: var(--base-color);
 	text-decoration: none;
 }
 

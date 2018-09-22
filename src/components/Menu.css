@@ -46,6 +46,7 @@
 	border-bottom-style : solid;
 
 	text-decoration : none;
+	color : var(--white-color);
 
 	&:first-child
 	{

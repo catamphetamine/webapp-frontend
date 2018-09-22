@@ -25,6 +25,7 @@
 	--error-color      : #E6001B;
 
 	--background-color : #edeef0;
+	--content-section-divider-color : #e3e4e8;
 
 	--unit : 14px;
 	--column-gap : var(--unit);

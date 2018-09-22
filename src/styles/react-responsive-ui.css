@@ -19,3 +19,13 @@
 {
 	background-color: transparent;
 }
+
+.rrui__tooltip--after-show
+{
+	opacity : 0.85;
+}
+
+.rrui__tooltip--before-hide
+{
+	opacity : 0;
+}

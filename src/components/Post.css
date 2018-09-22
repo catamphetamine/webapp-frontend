@@ -1,0 +1,37 @@
+@import "../styles/common";
+
+.post__summary
+{
+	display : flex;
+	align-items : center;
+}
+
+.post__name-and-date
+{
+	display : flex;
+	flex-direction : column;
+	margin-left : var(--unit);
+}
+
+.post__date
+{
+	margin-top : 0.1em;
+	color : var(--gray-color-darkest);
+}
+
+.post__date-tooltip
+{
+	height        : calc(var(--unit) * 3);
+	margin-top    : -0.1em;
+	padding-left  : 0.85em;
+	padding-right : 0.85em;
+	font-size     : 0.85rem;
+}
+
+.post__account-picture
+{
+	width  : calc(var(--unit) * 4);
+	height : calc(var(--unit) * 4);
+	border-radius : var(--border-radius);
+	box-shadow : 0 0 0 1px var(--content-section-divider-color);
+}
