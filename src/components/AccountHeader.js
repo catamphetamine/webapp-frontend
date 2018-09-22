@@ -8,6 +8,7 @@ import classNames from 'classnames'
 
 import { accountShape } from '../PropTypes'
 import _translate from '../translate'
+import { accountName } from '../utility/account'
 
 // import DefaultBackground from '../../assets/images/account-background-pattern.svg'
 import DefaultBackgroundPicture from '../../assets/images/account-background-picture.jpg'
@@ -143,11 +144,11 @@ export default class AccountHeader extends React.Component
 							<Link
 								to={accountLink(account)}
 								className="account-header__name">
-								{ account.name }
+								{ accountName(account) }
 							</Link>
 						}
 
-						{ editing &&
+						{ editing && !account.user &&
 							<Field
 								name="name"
 								value={account.name}

@@ -3,7 +3,7 @@ import { shape, arrayOf, number, string, object, oneOf, oneOfType } from 'prop-t
 const id = oneOfType([
 	number,
 	string
-]).isRequired
+])
 
 export const pictureShape = shape({
 	type: oneOf([
@@ -20,27 +20,59 @@ export const pictureShape = shape({
 })
 
 export const userShape = shape({
-	id,
+	id: id,
 	firstName: string,
 	lastName: string
 })
 
-export const accountShape = shape({
-	id,
+const accountProperties = {
+	id: id.isRequired,
 	name: string.isRequired,
 	nameId: string,
+	picture: pictureShape
+}
+
+export const accountShape = shape(accountProperties)
+
+export const accountShapeProfile = shape({
+	...accountProperties,
 	user: userShape,
-	banner: string,
+	users: arrayOf(userShape),
+	description: string,
 	data: shape({
-		picture: pictureShape,
 		backgroundPicture: pictureShape,
-		description: string,
 		whereabouts: string,
 		links: arrayOf(shape({
 			url: string.isRequired,
 			text: string.isRequired
 		}))
 	}).isRequired
+})
+
+const linkShape = shape({
+	type: oneOf(['link']).isRequired,
+	url: string.isRequired,
+	text: string.isRequired
+})
+
+export const listShape = shape({
+	type: oneOf(['list']).isRequired,
+	items: arrayOf(string).isRequired
+})
+
+const postPartShape = oneOfType([
+	string,
+	listShape,
+	arrayOf(oneOfType([
+		string,
+		linkShape
+	]))
+])
+
+export const postShape = shape({
+	id: id.isRequired,
+	content: arrayOf(postPartShape).isRequired,
+	account: accountShape.isRequired
 })
 
 export const locationShape = shape({

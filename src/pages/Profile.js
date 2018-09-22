@@ -4,16 +4,21 @@ import { connect } from 'react-redux'
 import { meta, preload, Link } from 'react-website'
 import classNames from 'classnames'
 
-import { accountShape } from '../PropTypes'
+import {
+	accountShapeProfile,
+	postShape
+} from '../PropTypes'
 
 import {
-	getAccount
+	getAccount,
+	getAccountPosts
 } from '../redux/account'
 
 import AccountHeader from '../components/AccountHeader'
 import AccountSummary from '../components/AccountSummary'
 import AccountActions from '../components/AccountActions'
 import AccountTabs from '../components/AccountTabs'
+import Post from '../components/Post'
 
 import {
 	ContentSection,
@@ -32,21 +37,29 @@ import './Profile.css'
 	'og:image:height': account && account.data.picture && account.data.picture.sizes[0].height || '',
 	'og:image:type': account && account.data.picture && account.data.picture.sizes[0].type || ''
 }))
-@preload(({ dispatch, params }) => dispatch(getAccount(params.id)), { client: true })
+@preload(async ({ dispatch, params }) => {
+	// `id` could be an `id` and it could be a `nameId`.
+	const account = await dispatch(getAccount(params.id))
+	// Get the list of account's posts.
+	await dispatch(getAccountPosts(account.id))
+}, { client: true })
 @connect(({ account }) => ({
-	account: account.account
+	account: account.account,
+	posts: account.posts
 }), {
 })
 export default class Profile extends React.Component
 {
 	static propTypes = {
-		account: accountShape
+		account: accountShapeProfile,
+		posts: PropTypes.arrayOf(postShape)
 	}
 
 	render()
 	{
 		const {
-			account
+			account,
+			posts
 		} = this.props
 
 		if (!account) {
@@ -82,18 +95,14 @@ export default class Profile extends React.Component
 							<AccountTabs account={account}/>
 
 							{/* Page content */}
-							{/* children */}
-							<ContentSection>
-								<ContentSectionHeader>
-									Craft
-								</ContentSectionHeader>
-								<p>
-									A craft or trade is a pastime or a profession that requires particular skills and knowledge of skilled work. In a historical sense, particularly the Middle Ages and earlier, the term is usually applied to people occupied in small-scale production of goods, or their maintenance, for example by tinkers. The traditional term craftsman is nowadays often replaced by artisan and rarely by craftsperson (craftspeople).
-								</p>
-								<p>
-									Historically, the more specialized crafts with high value products tended to concentrate in urban centers and formed guilds. The skill required by their professions and the need to be permanently involved in the exchange of goods often demanded a generally higher level of education, and craftsmen were usually in a more privileged position than the peasantry in societal hierarchy. The households of craftsmen were not as self-sufficient as those of people engaged in agricultural work and therefore had to rely on the exchange of goods. Some crafts, especially in areas such as pottery, woodworking, and the various stages of textile production, could be practiced on a part-time basis by those also working in agriculture, and often formed part of village life.
-								</p>
-							</ContentSection>
+							{posts && posts.map((post) => (
+								<ContentSection key={post.id}>
+									{/*<ContentSectionHeader>
+										Craft
+									</ContentSectionHeader>*/}
+									<Post post={post}/>
+								</ContentSection>
+							))}
 						</div>
 					</div>
 				</div>

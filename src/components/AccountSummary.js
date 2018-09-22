@@ -107,9 +107,9 @@ export default class AccountSummary extends React.Component
 		return (
 			<React.Fragment>
 				{/* Description. */}
-				{!editing && account.data.description &&
+				{!editing && account.description &&
 					<p className="account-summary__description">
-						{account.data.description}
+						{account.description}
 					</p>
 				}
 
