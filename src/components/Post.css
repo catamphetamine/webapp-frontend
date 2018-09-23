@@ -1,5 +1,10 @@
 @import "../styles/common";
 
+.post
+{
+	--post-content-spacing : var(--content-section-padding);
+}
+
 .post__summary
 {
 	display : flex;
@@ -45,7 +50,7 @@
 .post__video,
 .post__thumbnail-attachments-container
 {
-	margin-top : var(--content-section-padding);
+	margin-top : var(--post-content-spacing);
 }
 
 .post__picture,
@@ -58,19 +63,19 @@
 
 .post__thumbnail-attachments
 {
-	display : flex;
-	flex-wrap : wrap;
+	display         : flex;
+	flex-wrap       : wrap;
 	justify-content : space-between;
-	padding : 0;
-	margin-top : calc(var(--content-section-padding) * -1);
-	margin-bottom : 0;
+	padding         : 0;
+	margin-top      : calc(var(--post-content-spacing) * -1);
+	margin-bottom   : 0;
 	list-style-type : none;
 }
 
 .post__thumbnail-attachment
 {
-	margin-top : var(--content-section-padding);
-	flex : 0 0 calc((100% - var(--content-section-padding) * 1) / 2);
+	margin-top : var(--post-content-spacing);
+	flex : 0 0 calc((100% - var(--post-content-spacing) * 1) / 2);
 
 	@mixin xs
 	{
@@ -79,7 +84,7 @@
 
 	@mixin xl
 	{
-		flex : 0 0 calc((100% - var(--content-section-padding) * 2) / 3);
+		flex : 0 0 calc((100% - var(--post-content-spacing) * 2) / 3);
 	}
 }
 
@@ -90,5 +95,5 @@
 
 .post__attachments
 {
-	margin-top : var(--content-section-padding);
+	margin-top : var(--post-content-spacing);
 }
