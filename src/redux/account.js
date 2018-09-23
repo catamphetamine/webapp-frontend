@@ -77,6 +77,26 @@ export const getAccountPosts = redux.action
 						height: 720
 					}]
 				}
+			}, {
+				type: 'video',
+				video: {
+					"source": {
+						"provider": "YouTube",
+						"id": "P3DGwyl0mJQ"
+					},
+					"picture": {
+						"type": "image/jpeg",
+						"sizes": [{
+							"url": "https://img.youtube.com/vi/P3DGwyl0mJQ/sddefault.jpg",
+							"width": 640,
+							"height": 480
+						}, {
+							"url": "https://img.youtube.com/vi/P3DGwyl0mJQ/maxresdefault.jpg",
+							"width": 1280,
+							"height": 720
+						}]
+					}
+				}
 			}]
 		}, {
 			id: 2,
@@ -99,6 +119,27 @@ export const getAccountPosts = redux.action
 						width: 1280,
 						height: 720
 					}]
+				}
+			}, {
+				type: 'video',
+				video: {
+					"title": "Dewhorn",
+					"description": "A young boy escapes to the woods to indulge his fantasies but finds himself consumed by them, longing to return home.<br />\n<br />\nBased on the song \"Dewhorn\" by Tispur.<br />\n<br />\nLittle Boy - Alasdair McLenna<br />\nMother - Juliana McLenna<br />\nSchool Teacher - Kyra Bernauer<br />\nBuried Muse - Samwise Carlson<br />\nForest Spirit - Easton Dufur<br />\nExtras - Baron Wilson, Grayson Carter, Liam Sweeney, Desmond McLenna<br />\n<br />\nDirector + Writer: Brandon Kapelow<br />\nProducers: Matthew Wordell, Jesse Hays, Brandon Kapelow<br />\nEP: Jennifer Goodridge<br />\nAssoc. Producers: Charlie Balch, Laurel Thomson, Loren Hill<br />\n1st AD: Jesse Hays<br />\n<br />\nDP: Luke Orlando<br />\n1st AC: Lila Streicher<br />\nDrone Pilot: Matthew Wordell<br />\nSteadicam: Brandon Kapelow<br />\n<br />\nProd. Coordinator: Izze Rump<br />\nPAs: James Richardson, Parker Nettles, Aaron Rodriguez, Sara Greyfox, Louie Bash<br />\n<br />\nWatercolor Animation: Bobby Moser<br />\n<br />\nProduction Designer: Alyssa Pearson<br />\nArt Director: Caitlin Goff<br />\nCostume & Creature Design: Odette Mattha<br />\nWardrobe Stylist: Bronwyn Leslie<br />\nSet Decorator: Kyra Bernauer<br />\n<br />\nEditor: Brandon Kapelow<br />\nSound Design: Jackie! Zhou<br />\nSound Mixer: Tucker Grindstaff<br />\n<br />\nHarp - Matthew Tutsky<br />\nViolin - Brynn Givans<br />\nViola - Judah Claffey<br />\nCello - Jake Saunders<br />\n<br />\nThe Mill, Chicago<br />\nVFX Producer - Mike Pullan<br />\nColor EP - Laurie Adrianopoli<br />\nColor Producer - Dan Butler<br />\nColorist - Mikey Pehanich<br />\nCompositor - Jonny Freeman<br />\nNuke Artist - Ruth Meridjen<br />\nColor Assist - Lindsey Mazur<br />\n<br />\nDI - Cinelicious<br />\nDI Producer - Estelle Mataranga<br />\nFilm Processing & Scanning - Fotokem, Pro8mm<br />\n<br />\nSpecial Thanks - Ben McLenna, Spencer Creigh, Laurel Thomson, Mishka Kornai, Ariel Fisher, Drew Heskett, Fotokem, Judy Engle, Nico Aguilar, Kevin Calero, Pro8mm, Heidi Parker, Eric Gilbert, Cinelicious, Dan Carr, Nick Roney, Matt Carter, The Mill, Dan Thomas, Edwards Greenhouse, Luke Lucas, Sean Conaty, Duck Club, Kylie George MacEntee, Kauai Moliterno, Chef Amy, Alex Satterlee, Erin Sweeney, Erich Wilhelm Zander, Beyond Ideas, Thomas Wilson, Daniel Frantz, Eastside Camera, Kaelin Wilson, John McGrath, Brigette Nelson",
+					"width": 1920,
+					"height": 1080,
+					"duration": 399,
+					"source": {
+						"provider": "Vimeo",
+						"id": "289902998"
+					},
+					"picture": {
+						"type": "image/jpeg",
+						"sizes": [{
+							"url": "https://i.vimeocdn.com/video/726258668_640.jpg",
+							"width": 640,
+							"height": 360
+						}]
+					}
 				}
 			}]
 		}]

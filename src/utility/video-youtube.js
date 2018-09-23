@@ -2,10 +2,10 @@ import { parseURL, parseQueryString } from './url'
 import { getImageSizes } from './image'
 
 const PICTURE_SIZE_NAMES = [
-	// 1280 x 720.
-	'maxresdefault',
 	// 629 x 472.
-	'sddefault'
+	'sddefault',
+	// 1280 x 720.
+	'maxresdefault'
 ]
 
 const PICTURE_SIZE_NAMES_FALLBACK = [

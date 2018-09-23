@@ -70,28 +70,30 @@ export default function Post({ post }) {
 							className="post__video"/>
 					}
 					{(pictures.length > 1 || videos.length > 1) &&
-						<ul className="post__thumbnail-attachments">
-							{pictures.length > 1 && pictures.map((picture, i) => (
-								<li
-									key={`picture-${i}`}
-									className="post__thumbnail-attachment">
-									<Picture
-										fit="cover"
-										sizes={picture.sizes}
-										className="post__attachment-thumbnail"/>
-								</li>
-							))}
-							{videos.length > 1 && videos.map((video, i) => (
-								<li
-									key={`video-${i}`}
-									className="post__thumbnail-attachment">
-									<Picture
-										fit="cover"
-										sizes={video.source.provider ? video.source.provider.picture.sizes : video.source.sizes}
-										className="post__attachment-thumbnail"/>
-								</li>
-							))}
-						</ul>
+						<div className="post__thumbnail-attachments-container">
+							<ul className="post__thumbnail-attachments">
+								{pictures.length > 1 && pictures.map((picture, i) => (
+									<li
+										key={`picture-${i}`}
+										className="post__thumbnail-attachment">
+										<Picture
+											fit="cover"
+											sizes={picture.sizes}
+											className="post__attachment-thumbnail"/>
+									</li>
+								))}
+								{videos.length > 1 && videos.map((video, i) => (
+									<li
+										key={`video-${i}`}
+										className="post__thumbnail-attachment">
+										<Picture
+											fit="cover"
+											sizes={video.source.provider ? video.source.provider.picture.sizes : video.source.sizes}
+											className="post__attachment-thumbnail"/>
+									</li>
+								))}
+							</ul>
+						</div>
 					}
 					{audios.length > 0 &&
 						<ul className="post__audios">

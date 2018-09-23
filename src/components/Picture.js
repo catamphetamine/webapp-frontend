@@ -198,6 +198,7 @@ export default class Picture extends PureComponent
 	}
 }
 
+// `sizes` must be sorted from smallest to largest.
 export function getPreferredSize(sizes, width, maxWidth)
 {
 	if (!width) {

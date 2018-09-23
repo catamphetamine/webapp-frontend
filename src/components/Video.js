@@ -1,12 +1,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import classNames from 'classnames'
 
 import { videoShape } from '../PropTypes'
 import { getEmbeddedVideoURL } from '../utility/video'
 
 import './Video.css'
 
-export default function Video({ video }) {
+export default function Video({ video, width, height, className }) {
 	if (video.source.provider) {
 		let aspectRatio
 		if (video.source.width && video.source.height) {
@@ -16,10 +17,10 @@ export default function Video({ video }) {
 		}
 		return (
 			<div
-				className="video"
+				className={classNames('video', className)}
 				style={{ paddingBottom: 100 / aspectRatio + '%' }}>
 				<iframe
-					src={getEmbeddedVideoURL(video.id, video.source.provider)}
+					src={getEmbeddedVideoURL(video.source.id, video.source.provider)}
 					width={width}
 					height={height}
 					frameBorder={0}
@@ -38,5 +39,6 @@ export default function Video({ video }) {
 Video.propTypes = {
 	video: videoShape.isRequired,
 	width: PropTypes.number,
-	height: PropTypes.number
+	height: PropTypes.number,
+	className: PropTypes.string
 }

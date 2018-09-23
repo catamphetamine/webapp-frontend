@@ -33,9 +33,7 @@ export const pictureShape = shape({
 
 const providerVideoSourceShape = shape({
 	provider: string.isRequired,
-	id: string.isRequired,
-	width: number.isRequired,
-	height: number.isRequired
+	id: string.isRequired
 })
 
 const fileVideoSourceShape = shape({
