@@ -27,12 +27,30 @@ body
 html, body, input, textarea, select
 {
 	font-family : Arial, Helvetica, Sans;
-	font-size   : var(--font-size);
 
-	// For XS screens.
 	@mixin xs
 	{
 		font-size : var(--font-size-xs);
+	}
+
+	@mixin xs-plus
+	{
+		font-size : var(--font-size-xs-plus);
+	}
+
+	@mixin ms
+	{
+		font-size : var(--font-size-m);
+	}
+
+	@mixin ml
+	{
+		font-size : var(--font-size-xl);
+	}
+
+	@mixin xl
+	{
+		font-size : var(--font-size-xl);
 	}
 }
 

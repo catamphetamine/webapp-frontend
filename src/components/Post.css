@@ -83,10 +83,10 @@
 	margin-top : var(--post-content-spacing);
 	flex : 0 0 calc((100% - var(--post-content-spacing) * 1) / 2);
 
-	@mixin xs
+	/*@mixin xs
 	{
 		flex : 0 0 100%;
-	}
+	}*/
 
 	@mixin xl
 	{

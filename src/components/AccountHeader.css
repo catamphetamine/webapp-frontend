@@ -9,6 +9,16 @@
 	{
 		--account-header-picture-size : calc(var(--unit) * 10);
 	}
+
+	@mixin ms
+	{
+		--account-header-picture-size : calc(var(--unit) * 10);
+	}
+
+	@mixin ml
+	{
+		--account-header-picture-size : calc(var(--unit) * 12);
+	}
 }
 
 .account-header

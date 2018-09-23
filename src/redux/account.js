@@ -75,6 +75,10 @@ export const getAccountPosts = redux.action
 						url: 'https://img.youtube.com/vi/Jhd_r-mI1_M/maxresdefault.jpg',
 						width: 1280,
 						height: 720
+						// Vertical image.
+						// url: 'https://pp.userapi.com/c844417/v844417210/ea738/18xV5BPN9Lg.jpg',
+						// width: 864,
+						// height: 1296
 					}]
 				}
 			}, {

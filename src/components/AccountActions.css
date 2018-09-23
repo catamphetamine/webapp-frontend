@@ -5,12 +5,23 @@
 .account-actions
 {
 	margin-top: calc(var(--unit) * 2);
+
+	@mixin m
+	{
+		display : flex;
+		justify-content : space-between;
+	}
 }
 
 .account-action
 {
 	margin-top : var(--unit);
 	width : 100%;
+
+	@mixin m
+	{
+		width : calc((100% - var(--unit)) / 2);
+	}
 }
 
 .account-action__icon

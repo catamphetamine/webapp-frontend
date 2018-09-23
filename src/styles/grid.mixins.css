@@ -1,7 +1,10 @@
-$screen-xs-max : 770px; /* 14 * 55 */
-$screen-md-min : 771px;
-$screen-md-max : 1399px;
-$screen-xl-min : 1400px; /* 14 * 100 */
+$screen-xs-plus-min : 588px; /* 14 * 42 */
+$screen-xs-max : 700px; /* 14 * 50 */
+$screen-ms-min : 701px;
+$screen-ms-max : 980px; /* 14 * 70 */
+$screen-ml-min : 981px;
+$screen-ml-max : 1400px; /* 14 * 100 */
+$screen-xl-min : 1401px;
 
 @define-mixin xs
 {
@@ -11,9 +14,33 @@ $screen-xl-min : 1400px; /* 14 * 100 */
   }
 }
 
+@define-mixin xs-plus
+{
+  @media all and (min-width: $screen-xs-plus-min) and (max-width: $screen-xs-max)
+  {
+    @mixin-content;
+  }
+}
+
 @define-mixin m
 {
-  @media all and (min-width: $screen-md-min) and (max-width: $screen-md-max)
+  @media all and (min-width: $screen-ms-min) and (max-width: $screen-ml-max)
+  {
+    @mixin-content;
+  }
+}
+
+@define-mixin ms
+{
+  @media all and (min-width: $screen-ms-min) and (max-width: $screen-ms-max)
+  {
+    @mixin-content;
+  }
+}
+
+@define-mixin ml
+{
+  @media all and (min-width: $screen-ml-min) and (max-width: $screen-ml-max)
   {
     @mixin-content;
   }

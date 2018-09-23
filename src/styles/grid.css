@@ -21,8 +21,8 @@ https://github.com/kristoferjoseph/flexboxgrid/blob/master/src/css/flexboxgrid.c
 {
 	margin-left   : auto;
 	margin-right  : auto;
-	padding-left  : var(--column-gap);
-	padding-right : var(--column-gap);
+	padding-left  : calc(var(--column-gap) * 2);
+	padding-right : calc(var(--column-gap) * 2);
 	box-sizing    : border-box;
 	/* For cases when a container is inside a modal, for example. */
 	/*max-width : 100%;*/
@@ -141,7 +141,6 @@ https://github.com/kristoferjoseph/flexboxgrid/blob/master/src/css/flexboxgrid.c
 	.col$(infix)-12
 	{
 		flex-grow: 1;
-		flex-basis: 0;
 		max-width: 100%;
 	}
 }
@@ -150,22 +149,31 @@ https://github.com/kristoferjoseph/flexboxgrid/blob/master/src/css/flexboxgrid.c
 
 /* Responsive grid */
 
-@media (max-width: $screen-xs-max)
+@mixin xs
+{
+	@mixin define_columns -xs;
+
+	.container
+	{
+		padding-left  : var(--column-gap);
+		padding-right : var(--column-gap);
+	}
+}
+
+@mixin m
 {
 	@mixin define_columns -xs;
 }
 
-@media (min-width: $screen-md-min) and (max-width: $screen-md-max)
+@mixin ml
 {
-	@mixin define_columns -md;
-
 	.container
 	{
-		width: $screen-md-min;
+		max-width: $screen-ms-max;
 	}
 }
 
-@media (min-width: $screen-xl-min)
+@mixin xl
 {
 	@mixin define_columns -xl;
 
