@@ -8,6 +8,8 @@ import AccountPicture from './AccountPicture'
 import Picture from './Picture'
 import Video from './Video'
 
+import PlayVideoIcon from '../../assets/images/video-player-play-icon-overlay.svg'
+
 import './Post.css'
 
 export default class Post extends React.Component
@@ -77,10 +79,13 @@ export default class Post extends React.Component
 								className="post__picture"/>
 						}
 						{videos.length === 1 && videos[0].picture && !showVideo &&
-							<Picture
-								onClick={this.showVideo}
-								sizes={videos[0].picture.sizes}
-								className="post__video"/>
+							<div className="post__video">
+								<Picture
+									onClick={this.showVideo}
+									sizes={videos[0].picture.sizes}/>
+								<PlayVideoIcon
+									className="play-video-icon post__video-icon"/>
+							</div>
 						}
 						{videos.length === 1 && (!videos[0].picture || showVideo) &&
 							<Video
@@ -108,6 +113,8 @@ export default class Post extends React.Component
 												fit="cover"
 												sizes={video.source.provider ? video.source.provider.picture.sizes : video.source.sizes}
 												className="post__attachment-thumbnail"/>
+											<PlayVideoIcon
+												className="play-video-icon post__thumbnail-video-icon"/>
 										</li>
 									))}
 								</ul>
