@@ -87,10 +87,6 @@ export const getAccountPosts = redux.action
 					"picture": {
 						"type": "image/jpeg",
 						"sizes": [{
-							"url": "https://img.youtube.com/vi/P3DGwyl0mJQ/sddefault.jpg",
-							"width": 640,
-							"height": 480
-						}, {
 							"url": "https://img.youtube.com/vi/P3DGwyl0mJQ/maxresdefault.jpg",
 							"width": 1280,
 							"height": 720

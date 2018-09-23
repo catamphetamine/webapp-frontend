@@ -11,17 +11,17 @@ export function getImageSize(url)
 	})
 }
 
-export async function getImageSizes(urls) {
-	const images = []
-	for (const url of urls) {
-		try {
-			images.push({
-				url,
-				...(await getImageSize(url))
-			})
-		} catch (error) {
-			console.error(error)
-		}
-	}
-	return images
-}
+// export async function getImageSizes(urls) {
+// 	const images = []
+// 	for (const url of urls) {
+// 		try {
+// 			images.push({
+// 				url,
+// 				...(await getImageSize(url))
+// 			})
+// 		} catch (error) {
+// 			console.error(error)
+// 		}
+// 	}
+// 	return images
+// }

@@ -57,8 +57,14 @@
 .post__video,
 .post__attachment-thumbnail
 {
+	background-color : var(--background-color);
 	box-shadow : 0 0 0 1px var(--content-section-divider-color);
 	cursor : pointer;
+}
+
+.post__video .picture__image
+{
+	width : 100%;
 }
 
 .post__thumbnail-attachments

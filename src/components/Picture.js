@@ -94,7 +94,10 @@ export default class Picture extends PureComponent
 			fit,
 			border,
 			className,
-			children
+			children,
+			// Rest.
+			sizes,
+			...rest
 		}
 		= this.props
 
@@ -117,7 +120,8 @@ export default class Picture extends PureComponent
 					'picture--cover' : fit === 'cover',
 					'picture--border' : border
 				},
-				className) }>
+				className) }
+				{...rest}>
 
 				{ fit === 'width' &&
 					<img

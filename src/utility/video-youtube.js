@@ -1,14 +1,13 @@
 import { parseURL, parseQueryString } from './url'
-import { getImageSizes } from './image'
+import { getImageSize } from './image'
 
 const PICTURE_SIZE_NAMES = [
-	// 629 x 472.
-	'sddefault',
 	// 1280 x 720.
-	'maxresdefault'
-]
-
-const PICTURE_SIZE_NAMES_FALLBACK = [
+	// HD aspect ratio.
+	'maxresdefault',
+	// 629 x 472.
+	// non-HD aspect ratio.
+	'sddefault',
 	// For really old videos not having `maxresdefault`/`sddefault`.
 	'hqdefault'
 ]
@@ -44,17 +43,21 @@ export default
 	},
 
 	getPicture: async (id) => {
-		let pictures = await getImageSizes(PICTURE_SIZE_NAMES.map(_ => getPictureSizeURL(id, _)))
-		if (pictures.length === 0) {
-			pictures = await getImageSizes(PICTURE_SIZE_NAMES_FALLBACK.map(_ => getPictureSizeURL(id, _)))
+		for (const sizeName of PICTURE_SIZE_NAMES) {
+			try {
+				const url = getPictureSizeURL(id, sizeName)
+				return {
+					type: 'image/jpeg',
+					sizes: [{
+						url,
+						...(await getImageSize(url))
+					}]
+				}
+			} catch (error) {
+				console.error(error)
+			}
 		}
-		if (pictures.length === 0) {
-			throw new Error(`No picture found for YouTube video ${id}`)
-		}
-		return {
-			type: 'image/jpeg',
-			sizes: pictures
-		}
+		throw new Error(`No picture found for YouTube video ${id}`)
 	},
 
 	getEmbeddedVideoURL(id, options = {}) {
