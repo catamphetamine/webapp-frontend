@@ -40,3 +40,48 @@
 	border-radius : var(--border-radius);
 	box-shadow : 0 0 0 1px var(--content-section-divider-color);
 }
+
+.post__picture,
+.post__video,
+.post__attachment-thumbnail
+{
+	box-shadow : 0 0 0 1px var(--content-section-divider-color);
+	cursor : pointer;
+}
+
+.post__thumbnail-attachments
+{
+	display : flex;
+	flex-wrap : wrap;
+	justify-content : space-between;
+	padding : 0;
+	margin-top : calc(var(--unit) * -1);
+	margin-bottom : 0;
+	list-style-type : none;
+}
+
+.post__thumbnail-attachment
+{
+	margin-top : var(--unit);
+	flex : 0 0 calc((100% - var(--unit) * 1) / 2);
+
+	@mixin xs
+	{
+		flex : 0 0 100%;
+	}
+
+	@mixin xl
+	{
+	flex : 0 0 calc((100% - var(--unit) * 2) / 3);
+	}
+}
+
+.post__attachment-thumbnail
+{
+	height : calc(var(--unit) * 10);
+}
+
+.post__attachments
+{
+	margin-top : var(--unit);
+}

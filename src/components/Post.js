@@ -5,10 +5,17 @@ import { Link } from 'react-website'
 import { postShape } from '../PropTypes'
 import { accountLink } from './AccountLink'
 import AccountPicture from './AccountPicture'
+import Picture from './Picture'
+import Video from './Video'
 
 import './Post.css'
 
 export default function Post({ post }) {
+	const attachments = post.attachments || []
+	const pictures = attachments.filter(_ => _.type === 'picture').map(_ => _.picture)
+	const videos = attachments.filter(_ => _.type === 'video').map(_ => _.video)
+	const audios = attachments.filter(_ => _.type === 'audio').map(_ => _.audio)
+	const links = attachments.filter(_ => _.type === 'link').map(_ => _.link)
 	return (
 		<div className="post">
 			<div className="post__summary">
@@ -50,6 +57,70 @@ export default function Post({ post }) {
 					return <p key={i}/>
 				}
 			})}
+			{attachments.length > 0 &&
+				<div className="post__attachments">
+					{pictures.length === 1 &&
+						<Picture
+							sizes={pictures[0].sizes}
+							className="post__picture"/>
+					}
+					{videos.length === 1 &&
+						<Video
+							video={videos[0]}
+							className="post__video"/>
+					}
+					{(pictures.length > 1 || videos.length > 1) &&
+						<ul className="post__thumbnail-attachments">
+							{pictures.length > 1 && pictures.map((picture, i) => (
+								<li
+									key={`picture-${i}`}
+									className="post__thumbnail-attachment">
+									<Picture
+										fit="cover"
+										sizes={picture.sizes}
+										className="post__attachment-thumbnail"/>
+								</li>
+							))}
+							{videos.length > 1 && videos.map((video, i) => (
+								<li
+									key={`video-${i}`}
+									className="post__thumbnail-attachment">
+									<Picture
+										fit="cover"
+										sizes={video.source.provider ? video.source.provider.picture.sizes : video.source.sizes}
+										className="post__attachment-thumbnail"/>
+								</li>
+							))}
+						</ul>
+					}
+					{audios.length > 0 &&
+						<ul className="post__audios">
+							{audios.map((audio, i) => (
+								<li
+									key={i}
+									className="post__audio">
+									...
+								</li>
+							))}
+						</ul>
+					}
+					{links.length > 0 &&
+						<ul className="post__links">
+							{links.map((link, i) => (
+								<li
+									key={i}
+									className="link">
+									<a
+										target="_blank"
+										href={link.url}>
+										{link.text}
+									</a>
+								</li>
+							))}
+						</ul>
+					}
+				</div>
+			}
 		</div>
 	);
 }

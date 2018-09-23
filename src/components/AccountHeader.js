@@ -148,7 +148,7 @@ export default class AccountHeader extends React.Component
 							</Link>
 						}
 
-						{ editing && !account.user &&
+						{ editing && account.name &&
 							<Field
 								name="name"
 								value={account.name}

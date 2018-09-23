@@ -1,0 +1,23 @@
+/*
+http://embedresponsively.com/
+`padding-bottom` is in width percentage
+and that's how the embedded video's aspect ratio is set.
+*/
+.video
+{
+	position  : relative;
+	height    : 0;
+	overflow  : hidden;
+	max-width : 100%;
+}
+
+.video iframe,
+.video object,
+.video embed
+{
+	position : absolute;
+	top      : 0;
+	left     : 0;
+	width    : 100%;
+	height   : 100%;
+}
