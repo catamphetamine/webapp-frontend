@@ -15,7 +15,7 @@ export default function Post({ post }) {
 	const pictures = attachments.filter(_ => _.type === 'picture').map(_ => _.picture)
 	const videos = attachments.filter(_ => _.type === 'video').map(_ => _.video)
 	const audios = attachments.filter(_ => _.type === 'audio').map(_ => _.audio)
-	const links = attachments.filter(_ => _.type === 'link').map(_ => _.link)
+	const links = attachments.filter(_ => _.type === 'link')
 	return (
 		<div className="post">
 			<div className="post__summary">
@@ -99,7 +99,7 @@ export default function Post({ post }) {
 								<li
 									key={i}
 									className="post__audio">
-									...
+									{audio.author} — {audio.title}
 								</li>
 							))}
 						</ul>
@@ -109,11 +109,24 @@ export default function Post({ post }) {
 							{links.map((link, i) => (
 								<li
 									key={i}
-									className="link">
+									className="post__link-item">
 									<a
+										href={link.url}
 										target="_blank"
-										href={link.url}>
-										{link.text}
+										className="post__link-attachment">
+										{link.picture &&
+											<Picture
+												sizes={link.picture.sizes}
+												className="post__link-picture"/>
+										}
+										<div className="post__link-title-and-description">
+											<h2 className="post__link-title">
+												{link.title}
+											</h2>
+											<p className="post__link-description">
+												{link.description}
+											</p>
+										</div>
 									</a>
 								</li>
 							))}

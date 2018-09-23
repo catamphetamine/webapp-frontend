@@ -5,6 +5,8 @@ const id = oneOfType([
 	string
 ])
 
+const date = instanceOf(Date)
+
 export const pictureShape = shape({
 	type: oneOf([
 		'image/svg+xml',
@@ -12,6 +14,15 @@ export const pictureShape = shape({
 		'image/png',
 		'image/webp'
 	]).isRequired,
+	title: string,
+	description: string,
+	date: date,
+	dateUTC0: date,
+	coordinates: shape({
+		latitude: number,
+		longitude: number,
+		altitude: number
+	}),
 	sizes: arrayOf(shape({
 		url: string.isRequired,
 		// Dimensions are not required for SVGs.
@@ -41,6 +52,7 @@ const fileVideoSourceShape = shape({
 
 export const videoShape = shape({
 	title: string,
+	description: string,
 	width: number,
 	height: number,
 	duration: number,
@@ -71,6 +83,7 @@ const fileAudioSourceShape = shape({
 export const audioShape = shape({
 	author: string.isRequired,
 	title: string.isRequired,
+	description: string,
 	picture: pictureShape,
 	source: oneOfType([
 		providerAudioSourceShape,
@@ -84,7 +97,7 @@ export const personShape = shape({
 	lastName: string,
 	middleName: string,
 	gender: string,
-	birthDate: instanceOf(Date),
+	birthDate: date,
 	country: string,
 	state: string,
 	city: string
@@ -94,7 +107,7 @@ export const userShape = shape({
 	id: id.isRequired,
 	email: string,
 	phone: string,
-	blockedAt: instanceOf(Date),
+	blockedAt: date,
 	blockedBy: id,
 	blockedReason: string,
 	// person: personShape,
@@ -164,7 +177,10 @@ const audioAttachmentShape = shape({
 
 const linkAttachmentShape = shape({
 	type: oneOf(['link']).isRequired,
-	link: linkShape.isRequired
+	title: string.isRequired,
+	description: string.isRequired,
+	url: string.isRequired,
+	picture: pictureShape
 })
 
 export const postShape = shape({
