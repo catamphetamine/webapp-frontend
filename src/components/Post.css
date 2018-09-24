@@ -173,6 +173,16 @@
 .post__attachment-thumbnail
 {
 	height : calc(var(--unit) * 10);
+
+	@mixin ms
+	{
+		height : calc(var(--unit) * 8);
+	}
+
+	@mixin xs-plus
+	{
+		height : calc(var(--unit) * 11);
+	}
 }
 
 .post__attachments
