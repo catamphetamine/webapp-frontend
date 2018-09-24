@@ -29,7 +29,7 @@
     "react-color": "^2.14.1",
     "react-dom": "^16.4.0",
     "react-redux": "^5.0.2",
-    "react-responsive-ui": "^0.14.32",
+    "react-responsive-ui": "^0.14.34",
     "react-time-ago": "^3.0.3",
     "react-website": "^3.0.0",
     "redux": "^4.0.0"
