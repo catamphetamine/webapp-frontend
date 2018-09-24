@@ -10,7 +10,7 @@ export function ContentSection({ className, padding, background, children })
 	// to rule out the confusion.
 	return (
 		<div className={classNames(className, 'content-section', {
-			'content-section--no-padding': !padding,
+			// 'content-section--no-padding': !padding,
 			'content-section--background': background
 		})}>
 			{children}

@@ -205,7 +205,7 @@ export default class AccountHeader extends React.Component
 		const { editing, savingChanges } = this.state
 
 		return (
-			<div className="account-header__edit-actions card__actions">
+			<div className="account-header__actions card__actions">
 
 				{/* "Edit". */}
 				{ !editing &&

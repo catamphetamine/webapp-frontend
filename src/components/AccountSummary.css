@@ -20,16 +20,25 @@
 
 .account-summary__whereabouts
 {
-	margin-top : calc(var(--unit) * 2);
 	color : var(--gray-color-darkest);
 }
 
 .account-summary__links
 {
-	margin-top : calc(var(--unit) * 2);
 	margin-bottom : 0;
 	padding : 0;
 	list-style-type : none;
+}
+
+.account-summary__whereabouts,
+.account-summary__links
+{
+	margin-top : calc(var(--unit) * 2);
+
+	@mixin sm
+	{
+		margin-top : calc(var(--unit) * 1);
+	}
 }
 
 .account-summary__link

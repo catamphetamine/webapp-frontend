@@ -46,6 +46,14 @@ $screen-xl-min : 1401px;
   }
 }
 
+@define-mixin sm
+{
+  @media all and (max-width: $screen-ml-max)
+  {
+    @mixin-content;
+  }
+}
+
 @define-mixin xl
 {
   @media all and (min-width: $screen-xl-min)

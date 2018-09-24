@@ -25,7 +25,7 @@ import {
 	ContentSectionHeader
 } from '../components/ContentSection'
 
-import './Profile.css'
+import './AccountProfile.css'
 
 @meta(({ account: { account } }) => ({
 	title: account && account.name || '',
@@ -76,21 +76,15 @@ export default class Profile extends React.Component
 				{/* Account summary and action buttons on the left side. */}
 				<div className="container">
 					<div className="row">
-						<div className="col-4 col-xs-12 col--no-padding">
+						<div className="col-12 col-xl-4">
+							{/* Account blocked notice */}
+							{ account.blockedAt && this.render_account_blocked_notice() }
 
-							{/* Account summary info */}
-							<ContentSection
-								background={!editing}>
-
-								{/* Account blocked notice */}
-								{ account.blockedAt && this.render_account_blocked_notice() }
-
-								<AccountSummary account={account}/>
-								<AccountActions account={account}/>
-							</ContentSection>
+							<AccountSummary account={account}/>
+							<AccountActions account={account}/>
 						</div>
 
-						<div className="col-8 col-xs-12 col--no-padding">
+						<div className="col-12 col-xl-8">
 							{/* Tabs */}
 							<AccountTabs account={account}/>
 

@@ -2,12 +2,14 @@
 
 :root
 {
-	--account-header-picture-size : calc(var(--unit) * 14);
-	--account-header-picture-bottom-offset : calc(var(--unit) * 2);
-
 	@mixin xs
 	{
-		--account-header-picture-size : calc(var(--unit) * 10);
+		--account-header-picture-size : calc(var(--unit) * 8);
+	}
+
+	@mixin xs-plus
+	{
+		--account-header-picture-size : calc(var(--unit) * 9);
 	}
 
 	@mixin ms
@@ -18,6 +20,11 @@
 	@mixin ml
 	{
 		--account-header-picture-size : calc(var(--unit) * 12);
+	}
+
+	@mixin xl
+	{
+		--account-header-picture-size : calc(var(--unit) * 14);
 	}
 }
 
@@ -55,6 +62,12 @@
 		margin-left   : calc(var(--unit) * 1.5);
 		margin-bottom : calc(var(--unit) * 1);
 		font-size : 2rem;
+	}
+
+	@mixin ms
+	{
+		margin-left   : calc(var(--unit) * 2);
+		margin-bottom : calc(var(--unit) * 1);
 	}
 }
 
@@ -99,17 +112,6 @@
 }
 
 /*
-@include xl
-{
-	.account-header__tabs-container
-	{
-		position : relative;
-		top      : calc(-1 * var(--content-section-margin) / 2);
-	}
-}
-*/
-
-/*
 .account-header__background-picture-shadow
 {
 	position : absolute;
@@ -130,13 +132,23 @@
 .account-header__picture-container
 {
 	position : absolute;
-	left     : calc(var(--content-section-padding));
-	bottom   : calc(-1 * var(--account-header-picture-bottom-offset));
+	left     : calc(var(--column-gap));
+	bottom   : calc(-1 * var(--unit) * 2);
 	/* Must be above the account name layer for clickability. */
 	z-index  : 2;
 
 	width  : var(--account-header-picture-size);
 	height : var(--account-header-picture-size);
+
+	@mixin xs
+	{
+		bottom : calc(-1 * var(--unit) * 1);
+	}
+
+	@mixin ms
+	{
+		bottom : calc(-1 * var(--unit) * 1.5);
+	}
 }
 
 .account-header__name-container
@@ -146,8 +158,8 @@
 	bottom   : 0;
 	z-index  : 1;
 	width    : 100%;
-	padding-left : calc(var(--content-section-padding) + var(--account-header-picture-size));
-	padding-right : var(--content-section-margin);
+	padding-left : calc(var(--column-gap) + var(--account-header-picture-size));
+	padding-right : var(--column-gap);
 }
 
 .account-header__picture,
@@ -167,7 +179,7 @@
 		.uploadable-picture__change-overlay
 		{
 			justify-content : flex-end;
-			padding-right : var(--content-section-margin);
+			padding-right : var(--column-gap);
 		}
 	}
 }
@@ -180,11 +192,11 @@
 
 /* Edit actions */
 
-.account-header__edit-actions
+.account-header__actions
 {
 	position : absolute;
-	right    : var(--content-section-margin);
-	top      : var(--content-section-margin);
+	right    : var(--column-gap);
+	top      : var(--column-gap);
 	/* Must be above the account picture layer for clickability. */
 	z-index  : 3;
 }

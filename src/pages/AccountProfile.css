@@ -26,33 +26,33 @@
 // }
 */
 
-.account-profile__body
-{
-	flex-direction : row;
-}
-
-.account-profile__content
-{
-	max-width : none;
-	/* https://www.mobila.name/post/55c3b664d1e6e/ */
-	flex-basis  : var(--content-column-width);
-	flex-grow   : 0;
-	flex-shrink : 1;
-}
-
-.account-profile__right-aside
-{
-	display     : block;
-	flex-basis  : auto;
-	flex-grow   : 3;
-	flex-shrink : 1;
-}
-
 .account-profile .account-summary
 {
-	margin-top : var(--unit);
+	margin-top : calc(var(--unit) * 4);
+	margin-bottom : calc(var(--unit) * 2);
+
+	@mixin xs
+	{
+		margin-top : calc(var(--unit) * 2);
+	}
+
+	@mixin m
+	{
+		margin-top : calc(var(--unit) * 3);
+	}
+
+	@mixin sm
+	{
+		margin-bottom : 0;
+	}
 }
 
-/*.account-profile .account-tabs
+.account-profile .account-actions
 {
-}*/
+	margin-bottom : calc(var(--unit) * 1);
+
+	@mixin xs
+	{
+		margin-bottom : calc(var(--unit) * 1);
+	}
+}

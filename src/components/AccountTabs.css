@@ -22,6 +22,33 @@
 	white-space : nowrap;
 	/*background-color : var(--white-color);*/
 	border-bottom : 1px solid var(--gray-color-lightest);
+
+	@mixin sm
+	{
+		background-color : var(--white-color);
+		border-bottom : none;
+		border-radius : var(--border-radius);
+		box-shadow : var(--content-section-shadow);
+
+		.account-tabs__tab
+		{
+			&:first-child
+			{
+				.account-tabs__tab-link--active
+				{
+					border-bottom-left-radius : var(--border-radius);
+				}
+			}
+
+			&:last-child
+			{
+				.account-tabs__tab-link--active
+				{
+					border-bottom-right-radius : var(--border-radius);
+				}
+			}
+		}
+	}
 }
 
 .account-tabs__tab

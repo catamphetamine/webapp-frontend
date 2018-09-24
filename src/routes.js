@@ -3,7 +3,7 @@ import { Route } from 'react-website'
 
 import Application from './pages/Application'
 
-import Profile from './pages/Profile'
+import AccountProfile from './pages/AccountProfile'
 
 import GenericError from './pages/Error'
 import Unauthenticated from './pages/Unauthenticated'
@@ -38,6 +38,6 @@ export default
 
 		<Route
 			path=":id"
-			Component={Profile}/>
+			Component={AccountProfile}/>
 	</Route>
 )

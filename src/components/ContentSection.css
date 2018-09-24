@@ -21,7 +21,7 @@
 	padding : var(--content-section-padding);
 	background-color : var(--white-color);
 	border-radius : var(--border-radius);
-	box-shadow : 0 1px 0 0 #d7d8db, 0 0 0 1px var(--content-section-divider-color);
+	box-shadow : var(--content-section-shadow);
 
 	@mixin xs {
 		border-radius : 0;
@@ -80,7 +80,7 @@
 	padding       : var(--content-section-padding);
 }
 
-.content-section--no-padding
+/*.content-section--no-padding
 {
 	padding : 0;
 
@@ -91,7 +91,7 @@
 		margin-left   : 0;
 		margin-right  : 0;
 	}
-}
+}*/
 
 /*.sections
 {

@@ -26,6 +26,7 @@
 
 	--background-color : #edeef0;
 	--content-section-divider-color : #e3e4e8;
+	--content-section-shadow : 0 1px 0 0 #d7d8db, 0 0 0 1px var(--content-section-divider-color);
 
 	--unit : 14px;
 	--column-gap : var(--unit);

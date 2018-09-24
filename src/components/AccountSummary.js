@@ -154,7 +154,7 @@ export default class AccountSummary extends React.Component
 		return null
 
 		return (
-			<div className="account-header__edit-actions card__actions">
+			<div className="account-header__actions card__actions">
 
 				{/* "Edit". */}
 				{ !editing &&

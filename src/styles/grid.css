@@ -21,8 +21,8 @@ https://github.com/kristoferjoseph/flexboxgrid/blob/master/src/css/flexboxgrid.c
 {
 	margin-left   : auto;
 	margin-right  : auto;
-	padding-left  : calc(var(--column-gap) * 2);
-	padding-right : calc(var(--column-gap) * 2);
+	padding-left  : var(--column-gap);
+	padding-right : var(--column-gap);
 	box-sizing    : border-box;
 	/* For cases when a container is inside a modal, for example. */
 	/*max-width : 100%;*/
@@ -152,12 +152,6 @@ https://github.com/kristoferjoseph/flexboxgrid/blob/master/src/css/flexboxgrid.c
 @mixin xs
 {
 	@mixin define_columns -xs;
-
-	.container
-	{
-		padding-left  : var(--column-gap);
-		padding-right : var(--column-gap);
-	}
 }
 
 @mixin m
@@ -183,8 +177,8 @@ https://github.com/kristoferjoseph/flexboxgrid/blob/master/src/css/flexboxgrid.c
 	}
 }
 
-.col--no-padding
+/*.col--no-padding
 {
 	padding-left  : 0;
 	padding-right : 0;
-}
+}*/
