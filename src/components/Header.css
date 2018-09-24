@@ -1,0 +1,7 @@
+@import "../styles/common";
+
+.webpage__header
+{
+	background-color : var(--black-color);
+	color : var(--white-color);
+}

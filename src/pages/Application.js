@@ -17,11 +17,9 @@ import TimeAgo from 'javascript-time-ago'
 import en from 'javascript-time-ago/locale/en'
 TimeAgo.locale(en)
 
-import Menu, { MenuLink } from '../components/Menu'
 import Snackbar from '../components/Snackbar'
-
-import Home  from '../../assets/images/home.svg'
-import Users from '../../assets/images/users.svg'
+import Header from '../components/Header'
+import Footer from '../components/Footer'
 
 import './Application.css'
 
@@ -54,28 +52,13 @@ export default class App extends Component
 				<Snackbar/>
 
 				<div className="webpage">
-					<nav className="webpage__header">
-						<div className="container">
-							<Menu>
-								<MenuLink to="/" exact>
-									<Home className="menu-item__icon menu-item__icon--home"/>
-									Home
-								</MenuLink>
-								<MenuLink to="/users">
-									<Users className="menu-item__icon menu-item__icon--users"/>
-									Users
-								</MenuLink>
-							</Menu>
-						</div>
-					</nav>
+					<Header/>
 
 					<div className="webpage__content">
 						{ children }
 					</div>
 
-					<footer className="webpage__footer">
-						{/* */}
-					</footer>
+					<Footer/>
 				</div>
 			</div>
 		)

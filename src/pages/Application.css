@@ -32,12 +32,6 @@
 	background-color : var(--background-color);
 }
 
-.webpage__header
-{
-	background-color : var(--black-color);
-	color : var(--white-color);
-}
-
 .react-website__loading--initial
 {
 	background-color : white;
