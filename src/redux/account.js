@@ -141,6 +141,22 @@ export const getAccountPosts = redux.action
 						}]
 					}
 				}
+			}, {
+				type: 'video',
+				video: {
+					"source": {
+						"provider": "YouTube",
+						"id": "P3DGwyl0mJQ"
+					},
+					"picture": {
+						"type": "image/jpeg",
+						"sizes": [{
+							"url": "https://img.youtube.com/vi/P3DGwyl0mJQ/maxresdefault.jpg",
+							"width": 1280,
+							"height": 720
+						}]
+					}
+				}
 			}]
 		}]
 	},

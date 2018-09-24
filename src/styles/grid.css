@@ -154,9 +154,19 @@ https://github.com/kristoferjoseph/flexboxgrid/blob/master/src/css/flexboxgrid.c
 	@mixin define_columns -xs;
 }
 
+@mixin xs-plus
+{
+	@mixin define_columns -xs-plus;
+}
+
 @mixin m
 {
-	@mixin define_columns -xs;
+	@mixin define_columns -m;
+
+	.container
+	{
+		max-width: calc($screen-ms-max - 4 * var(--unit));
+	}
 }
 
 @mixin ml
@@ -173,7 +183,17 @@ https://github.com/kristoferjoseph/flexboxgrid/blob/master/src/css/flexboxgrid.c
 
 	.container
 	{
-		width: $screen-xl-min;
+		max-width: $screen-xl-min;
+	}
+}
+
+@mixin xxl
+{
+	@mixin define_columns -xxl;
+
+	.container
+	{
+		max-width: $screen-xxl-min;
 	}
 }
 

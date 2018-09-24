@@ -1,10 +1,11 @@
 $screen-xs-plus-min : 588px; /* 14 * 42 */
 $screen-xs-max : 700px; /* 14 * 50 */
 $screen-ms-min : 701px;
-$screen-ms-max : 980px; /* 14 * 70 */
-$screen-ml-min : 981px;
-$screen-ml-max : 1400px; /* 14 * 100 */
-$screen-xl-min : 1401px;
+$screen-ms-max : 882px; /* 14 * 63 */
+$screen-ml-min : 883px;
+$screen-ml-max : 1302px; /* 14 * 93 */
+$screen-xl-min : 1303px;
+$screen-xxl-min : 1764px; /* $screen-ms-max * 2 */
 
 @define-mixin xs
 {
@@ -57,6 +58,14 @@ $screen-xl-min : 1401px;
 @define-mixin xl
 {
   @media all and (min-width: $screen-xl-min)
+  {
+    @mixin-content;
+  }
+}
+
+@define-mixin xxl
+{
+  @media all and (min-width: $screen-xxl-min)
   {
     @mixin-content;
   }

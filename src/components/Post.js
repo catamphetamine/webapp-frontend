@@ -94,11 +94,11 @@ export default class Post extends React.Component
 						}
 						{(pictures.length > 1 || videos.length > 1) &&
 							<div className="post__thumbnail-attachments-container">
-								<ul className="post__thumbnail-attachments">
+								<ul className="post__thumbnail-attachments row">
 									{pictures.length > 1 && pictures.map((picture, i) => (
 										<li
 											key={`picture-${i}`}
-											className="post__thumbnail-attachment">
+											className="post__thumbnail-attachment col-xs-12 col-xs-plus-6 col-m-4 col-xl-4">
 											<Picture
 												fit="cover"
 												sizes={picture.sizes}
@@ -108,13 +108,15 @@ export default class Post extends React.Component
 									{videos.length > 1 && videos.map((video, i) => (
 										<li
 											key={`video-${i}`}
-											className="post__thumbnail-attachment">
-											<Picture
-												fit="cover"
-												sizes={video.source.provider ? video.source.provider.picture.sizes : video.source.sizes}
-												className="post__attachment-thumbnail"/>
-											<PlayVideoIcon
-												className="play-video-icon post__thumbnail-video-icon"/>
+											className="post__thumbnail-attachment col-xs-12 col-xs-plus-6 col-m-4 col-xl-4">
+											<div className="position-relative">
+												<Picture
+													fit="cover"
+													sizes={video.picture.sizes}
+													className="post__attachment-thumbnail"/>
+												<PlayVideoIcon
+													className="play-video-icon post__thumbnail-video-icon"/>
+											</div>
 										</li>
 									))}
 								</ul>

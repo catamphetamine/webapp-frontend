@@ -3,7 +3,7 @@
 :root
 {
 	--content-section-margin : calc(var(--unit) * 1);
-	--content-section-padding : calc(var(--unit) * 1.5);
+	--content-section-padding : calc(var(--unit) * 2);
 	/*--background-section-vertical-margin : var(--unit);*/
 
 	@mixin xs

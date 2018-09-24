@@ -2,7 +2,7 @@
 
 .post
 {
-	--post-content-spacing : var(--content-section-padding);
+	--post-content-spacing : var(--unit);
 }
 
 .post__summary
@@ -114,37 +114,60 @@
 	--icon-size : calc(var(--unit) * 4);
 
 	position : absolute;
+	/*
 	top  : calc((100% - var(--icon-size)) / 2);
 	left : calc((100% - var(--icon-size)) / 2);
+	*/
+	right  : var(--unit);
+	bottom : var(--unit);
 	width  : var(--icon-size);
 	height : var(--icon-size);
 }
 
 .post__thumbnail-attachments
 {
+	/*
 	display         : flex;
 	flex-wrap       : wrap;
 	justify-content : space-between;
+	*/
 	padding         : 0;
 	margin-top      : calc(var(--post-content-spacing) * -1);
 	margin-bottom   : 0;
+	margin-left     : calc(-1 * var(--post-content-spacing) / 2);
+	margin-right    : calc(-1 * var(--post-content-spacing) / 2);
 	list-style-type : none;
 }
 
 .post__thumbnail-attachment
 {
-	margin-top : var(--post-content-spacing);
-	flex : 0 0 calc((100% - var(--post-content-spacing) * 1) / 2);
+	margin-top    : var(--post-content-spacing);
+	padding-left  : calc(var(--post-content-spacing) / 2);
+	padding-right : calc(var(--post-content-spacing) / 2);
 
-	/*@mixin xs
+	/*
+	flex : 0 0 auto;
+
+	@mixin xs
 	{
-		flex : 0 0 100%;
-	}*/
+		flex-basis : 100%;
+	}
+
+	@mixin xs-plus
+	{
+		flex-basis : calc((100% - var(--post-content-spacing) * 1) / 2);
+	}
+
+	@mixin m
+	{
+		flex-basis : calc((100% - var(--post-content-spacing) * 2) / 3);
+	}
 
 	@mixin xl
 	{
-		flex : 0 0 calc((100% - var(--post-content-spacing) * 2) / 3);
+		flex-basis : calc((100% - var(--post-content-spacing) * 2) / 3);
 	}
+	*/
 }
 
 .post__attachment-thumbnail
@@ -154,5 +177,5 @@
 
 .post__attachments
 {
-	margin-top : var(--post-content-spacing);
+	margin-top : 1em;
 }

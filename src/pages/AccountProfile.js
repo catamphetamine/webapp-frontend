@@ -76,7 +76,7 @@ export default class Profile extends React.Component
 				{/* Account summary and action buttons on the left side. */}
 				<div className="container">
 					<div className="row">
-						<div className="col-12 col-xl-4">
+						<div className="col-12 col-xl-4 col-xxl-3">
 							{/* Account blocked notice */}
 							{ account.blockedAt && this.render_account_blocked_notice() }
 
@@ -84,7 +84,7 @@ export default class Profile extends React.Component
 							<AccountActions account={account}/>
 						</div>
 
-						<div className="col-12 col-xl-8">
+						<div className="col-12 col-xl-8 col-xxl-6">
 							{/* Tabs */}
 							<AccountTabs account={account}/>
 
