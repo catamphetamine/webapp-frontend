@@ -140,7 +140,7 @@ https://github.com/kristoferjoseph/flexboxgrid/blob/master/src/css/flexboxgrid.c
 
 	.col$(infix)-12
 	{
-		flex-grow: 1;
+		flex-basis: 100%;
 		max-width: 100%;
 	}
 }
