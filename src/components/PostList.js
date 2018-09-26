@@ -7,7 +7,7 @@ export default function PostList({ children: { list } }) {
 	return (
 		<ul className="post__list">
 			{list.items.map((item, i) => (
-				<li key={i}>
+				<li key={i} className="post__list-item">
 					{item}
 				</li>
 			))}

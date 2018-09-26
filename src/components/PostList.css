@@ -1,4 +1,35 @@
+@import "../styles/common";
+
 .post__list
 {
+	padding-left : calc(var(--unit) * 2);
 
+	@mixin xs
+	{
+		padding-left : var(--unit);
+	}
+
+	@mixin xs-plus
+	{
+		padding-left : calc(var(--unit) * 2);
+	}
+}
+
+/** Change bullet color of list item by replacing it with CSS. */
+
+.post__list-item
+{
+	list-style: none;
+
+	&:before
+	{
+		position : relative;
+		top      : 0;
+
+		padding-right : 0.45em;
+
+		color     : var(--gray-color-dark);
+		content   : "\2022";
+		font-size : 1em;
+	}
 }
