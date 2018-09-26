@@ -10,12 +10,8 @@
 	--icon-size : 35%;
 
 	position : absolute;
-	/*
-	top  : calc((100% - var(--icon-size)) / 2);
-	left : calc((100% - var(--icon-size)) / 2);
-	*/
-	right  : 0;
-	bottom : 0;
+	right    : 0;
+	bottom   : 0;
 	margin-right  : 6%;
 	margin-bottom : 6%;
 	width  : auto;
@@ -29,11 +25,6 @@
 
 .post__thumbnail-attachments
 {
-	/*
-	display         : flex;
-	flex-wrap       : wrap;
-	justify-content : space-between;
-	*/
 	padding         : 0;
 	margin-top      : calc(var(--post-content-spacing) * -1);
 	margin-bottom   : 0;
@@ -47,48 +38,10 @@
 	margin-top    : var(--post-content-spacing);
 	padding-left  : calc(var(--post-content-spacing) / 2);
 	padding-right : calc(var(--post-content-spacing) / 2);
-
-	/*
-	flex : 0 0 auto;
-
-	@mixin xs
-	{
-		flex-basis : 100%;
-	}
-
-	@mixin xs-plus
-	{
-		flex-basis : calc((100% - var(--post-content-spacing) * 1) / 2);
-	}
-
-	@mixin m
-	{
-		flex-basis : calc((100% - var(--post-content-spacing) * 2) / 3);
-	}
-
-	@mixin xl
-	{
-		flex-basis : calc((100% - var(--post-content-spacing) * 2) / 3);
-	}
-	*/
 }
 
 .post__attachment-thumbnail
 {
 	/* 16:9 aspect ratio */
 	padding-bottom : 56.25%;
-
-	/*
-	height : calc(var(--unit) * 10);
-
-	@mixin ms
-	{
-		height : calc(var(--unit) * 8);
-	}
-
-	@mixin xs-plus
-	{
-		height : calc(var(--unit) * 11);
-	}
-	*/
 }
