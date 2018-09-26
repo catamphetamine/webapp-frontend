@@ -8,11 +8,6 @@
 	{
 		padding-left : var(--unit);
 	}
-
-	@mixin xs-plus
-	{
-		padding-left : calc(var(--unit) * 2);
-	}
 }
 
 /** Change bullet color of list item by replacing it with CSS. */
