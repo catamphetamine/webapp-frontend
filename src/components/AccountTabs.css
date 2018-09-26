@@ -114,8 +114,6 @@
 
 .account-tabs__tab-link--active
 {
-	font-weight  : bolder;
-
 	border-color : var(--base-color);
 	cursor : default;
 
