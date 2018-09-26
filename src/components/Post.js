@@ -6,7 +6,21 @@ import { postShape } from '../PropTypes'
 import { accountLink } from './AccountLink'
 import AccountPicture from './AccountPicture'
 import Picture from './Picture'
-import Video from './Video'
+
+import PostParagraph from './PostParagraph'
+import PostList from './PostList'
+import PostQuote from './PostQuote'
+import PostPicture from './PostPicture'
+import PostVideo from './PostVideo'
+import PostAudio from './PostAudio'
+
+import PostText from './PostText'
+import PostLink from './PostLink'
+
+// import PostAttachmentPicture from './PostAttachmentPicture'
+// import PostAttachmentVideo from './PostAttachmentVideo'
+// import PostAttachmentAudio from './PostAttachmentAudio'
+import PostAttachmentLink from './PostAttachmentLink'
 
 import PlayVideoIcon from '../../assets/images/video-player-play-icon-overlay.svg'
 
@@ -26,9 +40,9 @@ export default class Post extends React.Component
 		const { post } = this.props
 		const { showVideo } = this.state
 		const attachments = post.attachments || []
-		const pictures = attachments.filter(_ => _.type === 'picture').map(_ => _.picture)
-		const videos = attachments.filter(_ => _.type === 'video').map(_ => _.video)
-		const audios = attachments.filter(_ => _.type === 'audio').map(_ => _.audio)
+		const pictures = attachments.filter(_ => _.type === 'picture')
+		const videos = attachments.filter(_ => _.type === 'video')
+		const audios = attachments.filter(_ => _.type === 'audio')
 		const links = attachments.filter(_ => _.type === 'link')
 		return (
 			<div className="post">
@@ -52,50 +66,50 @@ export default class Post extends React.Component
 					</div>
 				</div>
 				{post.content && post.content.map((content, i) => {
-					if (typeof content === 'string') {
-						return (
-							<p key={i}>
-								{content}
-							</p>
-						);
+					if (Array.isArray(content)) {
+						return content.map((content, i) => {
+							if (typeof content === 'string') {
+								return <PostText key={i}>{content}</PostText>
+							} else if (content.type === 'link') {
+								return <PostLink key={i}>{content}</PostLink>
+							} else {
+								console.error(`Unsupported post inline content:\n`, content)
+								return null
+							}
+						})
+					} else if (typeof content === 'string') {
+						return <PostParagraph key={i}>{content}</PostParagraph>
 					} else if (content.type === 'list') {
-						return (
-							<ul key={i}>
-								{content.items.map((item, i) => (
-									<li>{item}</li>
-								))}
-							</ul>
-						);
+						return <PostList key={i}>{content}</PostList>
+					} else if (content.type === 'quote') {
+						return <PostQuote key={i}>{content}</PostQuote>
+					} else if (content.type === 'picture') {
+						return <PostPicture key={i}>{content}</PostPicture>
+					} else if (content.type === 'video') {
+						return <PostVideo key={i}>{content}</PostVideo>
+					} else if (content.type === 'audio') {
+						return <PostAudio key={i}>{content}</PostAudio>
 					} else {
 						console.error(`Unsupported post content:\n`, content)
-						return <p key={i}/>
+						return null
 					}
 				})}
 				{attachments.length > 0 &&
 					<div className="post__attachments">
 						{pictures.length === 1 &&
-							<Picture
-								sizes={pictures[0].sizes}
-								className="post__picture"/>
+							<PostPicture>
+								{pictures[0]}
+							</PostPicture>
 						}
-						{videos.length === 1 && videos[0].picture && !showVideo &&
-							<div className="post__video">
-								<Picture
-									onClick={this.showVideo}
-									sizes={videos[0].picture.sizes}/>
-								<PlayVideoIcon
-									className="play-video-icon post__video-icon"/>
-							</div>
-						}
-						{videos.length === 1 && (!videos[0].picture || showVideo) &&
-							<Video
-								video={videos[0]}
-								className="post__video"/>
+						{videos.length === 1 &&
+							<PostVideo>
+								{videos[0]}
+							</PostVideo>
 						}
 						{(pictures.length > 1 || videos.length > 1) &&
 							<div className="post__thumbnail-attachments-container">
 								<ul className="post__thumbnail-attachments row">
-									{pictures.length > 1 && pictures.map((picture, i) => (
+									{pictures.length > 1 && pictures.map(_ => _.picture).map((picture, i) => (
 										<li
 											key={`picture-${i}`}
 											className="post__thumbnail-attachment col-xs-12 col-xs-plus-6 col-m-4 col-xl-4">
@@ -105,7 +119,7 @@ export default class Post extends React.Component
 												className="post__attachment-thumbnail"/>
 										</li>
 									))}
-									{videos.length > 1 && videos.map((video, i) => (
+									{videos.length > 1 && videos.map(_ => _.video).map((video, i) => (
 										<li
 											key={`video-${i}`}
 											className="post__thumbnail-attachment col-xs-12 col-xs-plus-6 col-m-4 col-xl-4">
@@ -125,10 +139,10 @@ export default class Post extends React.Component
 						{audios.length > 0 &&
 							<ul className="post__audios">
 								{audios.map((audio, i) => (
-									<li
-										key={i}
-										className="post__audio">
-										{audio.author} — {audio.title}
+									<li key={i}>
+										<PostAudio>
+											{audio}
+										</PostAudio>
 									</li>
 								))}
 							</ul>
@@ -136,27 +150,10 @@ export default class Post extends React.Component
 						{links.length > 0 &&
 							<ul className="post__links">
 								{links.map((link, i) => (
-									<li
-										key={i}
-										className="post__link-item">
-										<a
-											href={link.url}
-											target="_blank"
-											className="post__link-attachment">
-											{link.picture &&
-												<Picture
-													sizes={link.picture.sizes}
-													className="post__link-picture"/>
-											}
-											<div className="post__link-title-and-description">
-												<h2 className="post__link-title">
-													{link.title}
-												</h2>
-												<p className="post__link-description">
-													{link.description}
-												</p>
-											</div>
-										</a>
+									<li key={i}>
+										<PostAttachmentLink>
+											{link}
+										</PostAttachmentLink>
 									</li>
 								))}
 							</ul>

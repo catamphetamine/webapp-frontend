@@ -89,6 +89,11 @@ export const audioShape = shape({
 	]).isRequired
 })
 
+const linkShape = shape({
+	url: string.isRequired,
+	text: string.isRequired
+})
+
 export const personShape = shape({
 	id: id.isRequired,
 	firstName: string,
@@ -138,42 +143,71 @@ export const accountShapeProfile = shape({
 	}).isRequired
 })
 
-const linkShape = shape({
+export const postTextShape = string
+
+export const postLinkShape = shape({
 	type: oneOf(['link']).isRequired,
-	url: string.isRequired,
-	text: string.isRequired
+	link: linkShape.isRequired
 })
 
-export const listShape = shape({
+export const postParagraphShape = string
+
+export const postListShape = shape({
 	type: oneOf(['list']).isRequired,
 	items: arrayOf(string).isRequired
 })
 
-const postPartShape = oneOfType([
-	string,
-	listShape,
-	arrayOf(oneOfType([
-		string,
-		linkShape
-	]))
-])
-
-const pictureAttachmentShape = shape({
+export const postPictureShape = shape({
 	type: oneOf(['picture']).isRequired,
 	picture: pictureShape.isRequired
 })
 
-const videoAttachmentShape = shape({
+export const postVideoShape = shape({
 	type: oneOf(['video']).isRequired,
 	video: videoShape.isRequired
 })
 
-const audioAttachmentShape = shape({
+export const postAudioShape = shape({
 	type: oneOf(['audio']).isRequired,
 	audio: audioShape.isRequired
 })
 
-const linkAttachmentShape = shape({
+export const postQuoteShape = shape({
+	type: oneOf(['quote']).isRequired,
+	text: string.isRequired,
+	source: string,
+	url: string
+})
+
+export const postPartShape = oneOfType([
+	postParagraphShape,
+	postListShape,
+	postQuoteShape,
+	postPictureShape,
+	postVideoShape,
+	postAudioShape,
+	arrayOf(oneOfType([
+		postTextShape,
+		postLinkShape
+	]))
+])
+
+export const pictureAttachmentShape = shape({
+	type: oneOf(['picture']).isRequired,
+	picture: pictureShape.isRequired
+})
+
+export const videoAttachmentShape = shape({
+	type: oneOf(['video']).isRequired,
+	video: videoShape.isRequired
+})
+
+export const audioAttachmentShape = shape({
+	type: oneOf(['audio']).isRequired,
+	audio: audioShape.isRequired
+})
+
+export const linkAttachmentShape = shape({
 	type: oneOf(['link']).isRequired,
 	title: string.isRequired,
 	description: string.isRequired,
