@@ -2,13 +2,7 @@
 
 :root
 {
-	--account-tabs-height : calc(var(--unit) * 4);
 	--account-tabs-active-tab-marker-height : 0.13em;
-
-	@mixin xs
-	{
-		/*--account-tabs-height : calc(var(--unit) * 5);*/
-	}
 }
 
 /* Tabs */
@@ -16,20 +10,24 @@
 .account-tabs
 {
 	display     : block;
-	height      : var(--account-tabs-height);
+	height      : calc(var(--unit) * 4);
 	margin      : 0;
+	margin-top  : var(--unit);
 	padding     : 0;
 	white-space : nowrap;
 	/*background-color : var(--white-color);*/
-	border-bottom : 1px solid var(--gray-color-lightest);
+	/*border-bottom : 1px solid var(--gray-color-lightest);*/
 
 	@mixin sm
 	{
-		background-color : var(--white-color);
+		height : calc(var(--unit) * 3);
+
+		/*background-color : var(--white-color);
 		border-bottom : none;
 		border-radius : var(--border-radius);
-		box-shadow : var(--content-section-shadow);
+		box-shadow : var(--content-section-shadow);*/
 
+		/*
 		.account-tabs__tab
 		{
 			&:first-child
@@ -48,30 +46,49 @@
 				}
 			}
 		}
+		*/
 	}
 }
 
 .account-tabs__tab
 {
-	display : inline-block;
-	height  : 100%;
+	display : inline-flex;
+	align-items : center;
+	height : 100%;
+
+	margin-right : calc(var(--unit) * 2);
+
+	@mixin xl
+	{
+		margin-right : calc(var(--unit) * 3);
+	}
+
+  @media all and (max-width: 390px)
+  {
+		margin-right : calc(var(--unit) * 1);
+  }
+
+	&:last-child
+	{
+		margin-right : 0;
+	}
 }
 
 .account-tabs__tab-link
 {
 	display : flex;
-	height  : 100%;
+	height  : calc(var(--unit) * 3);
 	align-items : center;
 
-	color : var(--black-color);
+	color : var(--gray-color-darkest);
 
 	padding-top   : var(--account-tabs-active-tab-marker-height);
 	border-bottom : var(--account-tabs-active-tab-marker-height) solid transparent;
 
-	transition : all 60ms ease-in-out;
+	transition : color 60ms ease-in-out;
 
-	padding-left : var(--content-section-padding);
-	padding-right : var(--content-section-padding);
+	padding-left : 0.1em;
+	padding-right : 0.1em;
 
 	/*
 	padding-left : var(--unit);
@@ -90,10 +107,9 @@
 		text-decoration : none;
 	}
 
-	&:hover {
-		/*border-color : var(--base-color);*/
+	/*&:hover {
 		color : var(--base-color);
-	}
+	}*/
 }
 
 .account-tabs__tab-link--active
@@ -102,6 +118,8 @@
 
 	border-color : var(--base-color);
 	cursor : default;
+
+	color : var(--black-color);
 
 	&:hover {
 		color : var(--black-color);
