@@ -34,6 +34,8 @@
 	/* Some magic number seen on the Internet. */
 	--line-height : 1.52947;
 
+	--header-height : calc(var(--unit) * 3);
+
 	/*
 	Mobile font size must be at least 16px
 	to prevent automatic zoom on input focus.

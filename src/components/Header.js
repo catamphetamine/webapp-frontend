@@ -1,5 +1,6 @@
 import React from 'react'
 import MenuButtonIconLinesCloseAnimated from 'react-responsive-ui/modules/MenuButtonIconLinesCloseAnimated'
+import { Link } from 'react-website'
 
 import Menu, { MenuLink } from './Menu'
 
@@ -13,7 +14,7 @@ export default function Header() {
 		<nav className="webpage__header">
 			<div className="container">
 				<div className="webpage__header__row">
-					<Menu>
+					{/*<Menu>
 						<MenuLink to="/" exact>
 							<HomeIcon className="menu-item__icon menu-item__icon--home"/>
 							Home
@@ -22,7 +23,11 @@ export default function Header() {
 							<UsersIcon className="menu-item__icon menu-item__icon--users"/>
 							Users
 						</MenuLink>
-					</Menu>
+					</Menu>*/}
+
+					<Link to="/alice" style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+						<HomeIcon style={{ height: '60%' }}/>
+					</Link>
 
 					<MenuButtonIconLinesCloseAnimated
 						className="menu-button"/>

@@ -2,8 +2,15 @@
 
 .webpage__header
 {
-	background-color : var(--black-color);
-	color : var(--white-color);
+	position : fixed;
+	top   : 0;
+	left  : 0;
+	right : 0;
+	z-index : 1;
+
+	background-color : var(--white-color);
+	color : var(--black-color);
+	border-bottom : 1px solid rgba(0,0,0,.0975);
 }
 
 .webpage__header__row
@@ -11,6 +18,8 @@
 	display : flex;
 	justify-content : space-between;
 	align-items : center;
+
+	height : var(--header-height);
 }
 
 .menu-button
