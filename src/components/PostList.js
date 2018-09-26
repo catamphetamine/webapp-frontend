@@ -3,7 +3,7 @@ import { postListShape } from '../PropTypes'
 
 import './PostList.css'
 
-export default function PostList({ children: list }) {
+export default function PostList({ children: { list } }) {
 	return (
 		<ul className="post__list">
 			{list.items.map((item, i) => (

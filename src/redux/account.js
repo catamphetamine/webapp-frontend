@@ -44,6 +44,12 @@ export const getAccountPosts = redux.action
 				nameId: 'alice'
 			},
 			content: [
+				{
+					type: 'heading',
+					heading: {
+						text: 'Clay'
+					}
+				},
 				`
 					A craft or trade is a pastime or a profession
 					that requires particular skills and knowledge
@@ -74,11 +80,13 @@ export const getAccountPosts = redux.action
 				},
 				{
 					type: 'list',
-					items: [
-						'Coffee',
-						'Tea',
-						'Milk'
-					]
+					list: {
+						items: [
+							'Coffee',
+							'Tea',
+							'Milk'
+						]
+					}
 				},
 				[
 					`

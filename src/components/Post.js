@@ -7,6 +7,7 @@ import { accountLink } from './AccountLink'
 import AccountPicture from './AccountPicture'
 import Picture from './Picture'
 
+import PostHeading from './PostHeading'
 import PostParagraph from './PostParagraph'
 import PostList from './PostList'
 import PostQuote from './PostQuote'
@@ -83,6 +84,8 @@ export default class Post extends React.Component
 						)
 					} else if (typeof content === 'string') {
 						return <PostParagraph key={i}>{content}</PostParagraph>
+					} else if (content.type === 'heading') {
+						return <PostHeading key={i}>{content}</PostHeading>
 					} else if (content.type === 'list') {
 						return <PostList key={i}>{content}</PostList>
 					} else if (content.type === 'quote') {

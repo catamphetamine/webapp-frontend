@@ -150,11 +150,20 @@ export const postLinkShape = shape({
 	link: linkShape.isRequired
 })
 
+export const postHeadingShape = shape({
+	type: oneOf(['heading']).isRequired,
+	heading: shape({
+		text: string.isRequired
+	}).isRequired
+})
+
 export const postParagraphShape = string
 
 export const postListShape = shape({
 	type: oneOf(['list']).isRequired,
-	items: arrayOf(string).isRequired
+	list: shape({
+		items: arrayOf(string).isRequired
+	}).isRequired
 })
 
 export const postPictureShape = shape({
@@ -180,6 +189,7 @@ export const postQuoteShape = shape({
 })
 
 export const postPartShape = oneOfType([
+	postHeadingShape,
 	postParagraphShape,
 	postListShape,
 	postQuoteShape,
