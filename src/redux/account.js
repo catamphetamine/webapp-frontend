@@ -47,7 +47,7 @@ export const getAccountPosts = redux.action
 				{
 					type: 'heading',
 					heading: {
-						text: 'Clay'
+						text: 'Craft'
 					}
 				},
 				`
