@@ -82,6 +82,8 @@
 
 .play-video-icon
 {
+	pointer-events : none;
+
 	.play-icon-background
 	{
 		fill : rgba(0, 0, 0, 0.7);

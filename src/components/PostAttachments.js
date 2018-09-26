@@ -39,7 +39,7 @@ export default function PostAttachments({ children: attachments }) {
 						{pictures.length > 1 && pictures.map(_ => _.picture).map((picture, i) => (
 							<li
 								key={`picture-${i}`}
-								className="post__thumbnail-attachment col-xs-12 col-xs-plus-6 col-m-4 col-xl-4">
+								className="post__thumbnail-attachment col-4">
 								<Picture
 									fit="cover"
 									sizes={picture.sizes}
@@ -49,7 +49,7 @@ export default function PostAttachments({ children: attachments }) {
 						{videos.length > 1 && videos.map(_ => _.video).map((video, i) => (
 							<li
 								key={`video-${i}`}
-								className="post__thumbnail-attachment col-xs-12 col-xs-plus-6 col-m-4 col-xl-4">
+								className="post__thumbnail-attachment col-4">
 								<div className="position-relative">
 									<Picture
 										fit="cover"

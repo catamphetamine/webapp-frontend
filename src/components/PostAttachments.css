@@ -7,17 +7,24 @@
 
 .post__thumbnail-video-icon
 {
-	--icon-size : calc(var(--unit) * 4);
+	--icon-size : 35%;
 
 	position : absolute;
 	/*
 	top  : calc((100% - var(--icon-size)) / 2);
 	left : calc((100% - var(--icon-size)) / 2);
 	*/
-	right  : var(--unit);
-	bottom : var(--unit);
-	width  : var(--icon-size);
+	right  : 0;
+	bottom : 0;
+	margin-right  : 6%;
+	margin-bottom : 6%;
+	width  : auto;
 	height : var(--icon-size);
+
+	@mixin xs
+	{
+		--icon-size : 45%;
+	}
 }
 
 .post__thumbnail-attachments
@@ -68,6 +75,10 @@
 
 .post__attachment-thumbnail
 {
+	/* 16:9 aspect ratio */
+	padding-bottom : 56.25%;
+
+	/*
 	height : calc(var(--unit) * 10);
 
 	@mixin ms
@@ -79,4 +90,5 @@
 	{
 		height : calc(var(--unit) * 11);
 	}
+	*/
 }

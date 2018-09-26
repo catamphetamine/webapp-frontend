@@ -10,11 +10,21 @@
 
 .post__video-icon
 {
-	--icon-size : calc(var(--unit) * 6);
+	--icon-size : 25%;
 
 	position : absolute;
 	top  : calc((100% - var(--icon-size)) / 2);
 	left : calc((100% - var(--icon-size)) / 2);
 	width  : var(--icon-size);
 	height : var(--icon-size);
+
+	@mixin xs
+	{
+		--icon-size : 30%;
+	}
+
+	@mixin xs-plus
+	{
+		--icon-size : 25%;
+	}
 }
