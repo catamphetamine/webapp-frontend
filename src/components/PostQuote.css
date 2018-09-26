@@ -1,4 +1,21 @@
+@import "../styles/common";
+
 .post__quote
 {
+	padding-left : 1em;
+	border-left  : 0.1em solid var(--gray-color-lightest);
+	color        : var(--black-color);
+}
 
+.post__quote-text
+{
+	margin-left   : 0;
+	margin-bottom : 0;
+	font-size     : 115%;
+	line-height   : var(--line-height);
+}
+
+.post__quote-source
+{
+	margin-top : 1em;
 }

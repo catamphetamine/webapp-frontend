@@ -67,16 +67,20 @@ export default class Post extends React.Component
 				</div>
 				{post.content && post.content.map((content, i) => {
 					if (Array.isArray(content)) {
-						return content.map((content, i) => {
-							if (typeof content === 'string') {
-								return <PostText key={i}>{content}</PostText>
-							} else if (content.type === 'link') {
-								return <PostLink key={i}>{content}</PostLink>
-							} else {
-								console.error(`Unsupported post inline content:\n`, content)
-								return null
-							}
-						})
+						return (
+							<p key={i}>
+								{content.map((content, i) => {
+									if (typeof content === 'string') {
+										return <PostText key={i}>{content}</PostText>
+									} else if (content.type === 'link') {
+										return <PostLink key={i}>{content}</PostLink>
+									} else {
+										console.error(`Unsupported post inline content:\n`, content)
+										return null
+									}
+								})}
+							</p>
+						)
 					} else if (typeof content === 'string') {
 						return <PostParagraph key={i}>{content}</PostParagraph>
 					} else if (content.type === 'list') {
