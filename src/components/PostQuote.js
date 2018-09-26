@@ -3,7 +3,7 @@ import { postQuoteShape } from '../PropTypes'
 
 import './PostQuote.css'
 
-export default function PostQuote({ children: quote }) {
+export default function PostQuote({ children: { quote } }) {
 	return (
 		<div className="post__quote">
 			<blockquote

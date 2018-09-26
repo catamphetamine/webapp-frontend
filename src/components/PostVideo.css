@@ -1,4 +1,20 @@
-.post__video .picture__image
+@import "../styles/common";
+
+.post__video
 {
-	width : 100%;
+	.picture__image
+	{
+		width : 100%;
+	}
+}
+
+.post__video-icon
+{
+	--icon-size : calc(var(--unit) * 6);
+
+	position : absolute;
+	top  : calc((100% - var(--icon-size)) / 2);
+	left : calc((100% - var(--icon-size)) / 2);
+	width  : var(--icon-size);
+	height : var(--icon-size);
 }

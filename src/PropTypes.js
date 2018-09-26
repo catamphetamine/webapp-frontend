@@ -166,26 +166,33 @@ export const postListShape = shape({
 	}).isRequired
 })
 
-export const postPictureShape = shape({
-	type: oneOf(['picture']).isRequired,
-	picture: pictureShape.isRequired
-})
-
-export const postVideoShape = shape({
-	type: oneOf(['video']).isRequired,
-	video: videoShape.isRequired
-})
-
-export const postAudioShape = shape({
-	type: oneOf(['audio']).isRequired,
-	audio: audioShape.isRequired
-})
-
 export const postQuoteShape = shape({
 	type: oneOf(['quote']).isRequired,
-	text: string.isRequired,
-	source: string,
-	url: string
+	quote: shape({
+		text: string.isRequired,
+		source: string,
+		url: string
+	}).isRequired
+})
+
+// export const postPictureShape = shape({
+// 	type: oneOf(['picture']).isRequired,
+// 	picture: pictureShape.isRequired
+// })
+
+// export const postVideoShape = shape({
+// 	type: oneOf(['video']).isRequired,
+// 	video: videoShape.isRequired
+// })
+
+// export const postAudioShape = shape({
+// 	type: oneOf(['audio']).isRequired,
+// 	audio: audioShape.isRequired
+// })
+
+export const postEmbeddedAttachmentShape = shape({
+	type: oneOf(['attachment']).isRequired,
+	attachmentId: number.isRequired
 })
 
 export const postPartShape = oneOfType([
@@ -193,9 +200,7 @@ export const postPartShape = oneOfType([
 	postParagraphShape,
 	postListShape,
 	postQuoteShape,
-	postPictureShape,
-	postVideoShape,
-	postAudioShape,
+	postEmbeddedAttachmentShape,
 	arrayOf(oneOfType([
 		postTextShape,
 		postLinkShape
@@ -203,38 +208,46 @@ export const postPartShape = oneOfType([
 ])
 
 export const pictureAttachmentShape = shape({
+	id: id.isRequired,
 	type: oneOf(['picture']).isRequired,
 	picture: pictureShape.isRequired
 })
 
 export const videoAttachmentShape = shape({
+	id: id.isRequired,
 	type: oneOf(['video']).isRequired,
 	video: videoShape.isRequired
 })
 
 export const audioAttachmentShape = shape({
+	id: id.isRequired,
 	type: oneOf(['audio']).isRequired,
 	audio: audioShape.isRequired
 })
 
 export const linkAttachmentShape = shape({
+	id: id.isRequired,
 	type: oneOf(['link']).isRequired,
-	title: string.isRequired,
-	description: string.isRequired,
-	url: string.isRequired,
-	picture: pictureShape
+	link: shape({
+		title: string.isRequired,
+		description: string.isRequired,
+		url: string.isRequired,
+		picture: pictureShape
+	})
 })
+
+export const postAttachmentShape = oneOfType([
+	pictureAttachmentShape,
+	videoAttachmentShape,
+	audioAttachmentShape,
+	linkAttachmentShape
+])
 
 export const postShape = shape({
 	id: id.isRequired,
 	content: arrayOf(postPartShape).isRequired,
 	account: accountShape.isRequired,
-	attachments: arrayOf(oneOfType([
-		pictureAttachmentShape,
-		videoAttachmentShape,
-		audioAttachmentShape,
-		linkAttachmentShape
-	]))
+	attachments: arrayOf(postAttachmentShape)
 })
 
 export const locationShape = shape({
