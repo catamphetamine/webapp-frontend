@@ -1,5 +1,5 @@
 import React from 'react'
-import MenuButtonIconLinesCloseAnimated from 'react-responsive-ui/modules/MenuButtonIconLinesCloseAnimated'
+import { MenuIcon } from 'react-responsive-ui'
 import { Link } from 'react-website'
 
 import Menu, { MenuLink } from './Menu'
@@ -29,7 +29,7 @@ export default function Header() {
 						<HomeIcon style={{ height: '60%' }}/>
 					</Link>
 
-					<MenuButtonIconLinesCloseAnimated
+					<MenuIcon
 						className="menu-button"/>
 				</div>
 			</div>
