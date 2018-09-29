@@ -18,13 +18,8 @@
 	width  : var(--icon-size);
 	height : var(--icon-size);
 
-	@mixin xs
+	@mixin xs-small
 	{
 		--icon-size : 30%;
-	}
-
-	@mixin xs-plus
-	{
-		--icon-size : 25%;
 	}
 }

@@ -31,11 +31,22 @@
 .account-header
 {
 	position : relative;
-	height   : 25vw;
-	min-height : calc(var(--account-header-picture-size) + var(--unit));
+	height   : 35vw;
+	min-height : calc(var(--account-header-picture-size) + var(--unit) * 4);
+	max-height : calc(var(--account-header-picture-size) + var(--unit) * 12);
 	/*max-height : calc(var(--unit) * 35);*/
 	background-color : var(--gray-color);
 	border-bottom : 1px solid rgba(0, 0, 0, 0.1);
+
+	@mixin xs
+	{
+		.card__action
+		{
+			height : calc(var(--unit) * 2);
+			padding-left : 0.5em;
+			padding-right : 0.5em;
+		}
+	}
 }
 
 .account-header__container
@@ -43,32 +54,6 @@
 	position : relative;
 	height : 100%;
 	padding : 0;
-}
-
-/* Short info (to the right of the account picture) */
-
-.account-header__name,
-.account-header__name-input
-{
-	margin-left   : calc(var(--unit) * 2.5);
-	margin-bottom : calc(var(--unit) * 1.5);
-
-	font-size : 2.3rem;
-	color : var(--white-color);
-	text-shadow : 0 0 0.2em rgba(0, 0, 0, 0.8);
-
-	@mixin xs
-	{
-		margin-left   : calc(var(--unit) * 1.5);
-		margin-bottom : calc(var(--unit) * 1);
-		font-size : 2rem;
-	}
-
-	@mixin ms
-	{
-		margin-left   : calc(var(--unit) * 2);
-		margin-bottom : calc(var(--unit) * 1);
-	}
 }
 
 .account-header__name
@@ -190,6 +175,11 @@
 	border : 0.12rem solid var(--white-color);
 }
 
+.account-header__uploadable-picture .uploadable-picture__change-overlay
+{
+	padding : calc(var(--unit) - 0.12rem);
+}
+
 /* Edit actions */
 
 .account-header__actions
@@ -199,4 +189,10 @@
 	top      : var(--column-gap);
 	/* Must be above the account picture layer for clickability. */
 	z-index  : 3;
+}
+
+.account-header__change-background
+{
+	text-transform : none;
+	letter-spacing : 0;
 }

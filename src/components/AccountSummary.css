@@ -5,6 +5,13 @@
 	position : relative;
 }
 
+.account-summary__name,
+.account-summary__name-input
+{
+	font-size : 1.8rem;
+	color : var(--black-color);
+}
+
 .account-summary__icon
 {
 	height : 1em;
@@ -15,7 +22,7 @@
 
 .account-summary__description
 {
-	margin-top : 0;
+	margin-top : var(--unit);
 }
 
 .account-summary__whereabouts

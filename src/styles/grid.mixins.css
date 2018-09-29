@@ -1,3 +1,4 @@
+$screen-xs-small-max : 587px; /* 14 * 42 - 1 */
 $screen-xs-plus-min : 588px; /* 14 * 42 */
 $screen-xs-max : 700px; /* 14 * 50 */
 $screen-ms-min : 701px;
@@ -10,6 +11,14 @@ $screen-xxl-min : 1764px; /* $screen-ms-max * 2 */
 @define-mixin xs
 {
   @media all and (max-width: $screen-xs-max)
+  {
+    @mixin-content;
+  }
+}
+
+@define-mixin xs-small
+{
+  @media all and (max-width: $screen-xs-small-max)
   {
     @mixin-content;
   }

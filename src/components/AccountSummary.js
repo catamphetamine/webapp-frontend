@@ -8,6 +8,9 @@ import classNames from 'classnames'
 
 // import { periodical } from '../utility/timer'
 
+import { accountName } from '../utility/account'
+import { accountLink } from './AccountLink'
+
 import {
 	getLatestActivityTime
 } from '../redux/account'
@@ -106,6 +109,24 @@ export default class AccountSummary extends React.Component
 
 		return (
 			<React.Fragment>
+				{/* Account name. */}
+				{ !editing &&
+					<Link
+						to={accountLink(account)}
+						className="account-summary__name">
+						{ accountName(account) }
+					</Link>
+				}
+
+				{/* Edit account name. */}
+				{ editing && account.name &&
+					<Field
+						name="name"
+						value={account.name}
+						component={TextInput}
+						className="account-summary__name-input"/>
+				}
+
 				{/* Description. */}
 				{!editing && account.description &&
 					<p className="account-summary__description">

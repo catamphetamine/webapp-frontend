@@ -23,7 +23,9 @@
 	border-radius : var(--border-radius);
 	box-shadow : var(--content-section-shadow);
 
-	@mixin xs {
+	@mixin xs-small {
+		margin-left  : calc(var(--column-gap) * -1);
+		margin-right : calc(var(--column-gap) * -1);
 		border-radius : 0;
 	}
 }

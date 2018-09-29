@@ -2,13 +2,12 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { Link } from 'react-website'
-import { Button, TextInput } from 'react-responsive-ui'
+import { Button } from 'react-responsive-ui'
 import { Form, Field, Submit } from 'easy-react-form'
 import classNames from 'classnames'
 
 import { accountShape } from '../PropTypes'
 import _translate from '../translate'
-import { accountName } from '../utility/account'
 
 // import DefaultBackground from '../../assets/images/account-background-pattern.svg'
 import DefaultBackgroundPicture from '../../assets/images/account-background-picture.jpg'
@@ -78,7 +77,7 @@ export default class AccountHeader extends React.Component
 				className: classNames('account-header', {
 					'account-header--editing' : editing
 				}),
-				...(editing ? { onSubmit: this.saveChanges, autoFocus: true } : null)
+				...(editing ? { onSubmit: this.saveChanges } : null)
 			},
 			this.renderContent()
 		)
@@ -108,7 +107,12 @@ export default class AccountHeader extends React.Component
 						editMode={editing}
 						onChange={this.setNewBackgroundPicture}
 						disabled={savingChanges}
-						changeLabel={translate('account.header.change_background_picture')}
+						changeLabel={(
+							<Button
+								className="account-header__change-background card__action card__action--on-background">
+								{translate('account.header.change_background_picture')}
+							</Button>
+						)}
 						className="account-header__uploadable-background-picture">
 
 						{this.renderBackgroundPicture({ uploadable: true })}
@@ -137,25 +141,6 @@ export default class AccountHeader extends React.Component
 
 					{/* Account picture. */}
 					{ !editing && this.renderAccountPicture() }
-
-					{/* Account name. */}
-					<div className="account-header__name-container">
-						{ !editing &&
-							<Link
-								to={accountLink(account)}
-								className="account-header__name">
-								{ accountName(account) }
-							</Link>
-						}
-
-						{ editing && account.name &&
-							<Field
-								name="name"
-								value={account.name}
-								component={TextInput}
-								className="account-header__name-input"/>
-						}
-					</div>
 
 					{/* "Edit"/"Save". */}
 					{this.canEdit() && this.renderEditActions()}
