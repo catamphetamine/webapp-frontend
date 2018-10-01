@@ -2,6 +2,8 @@
 
 .menu
 {
+	display : flex;
+
 	margin  : 0;
 	padding : 0;
 	list-style-type : none;
@@ -9,114 +11,47 @@
 
 .menu-list-item
 {
-	display : inline-flex;
-	align-items : center;
-
-	margin-left  : calc(var(--unit) * 2);
-	margin-right : calc(var(--unit) * 2);
-
-	// For XS screens.
-	@mixin xs
-	{
-		margin-left  : calc(var(--unit) * 1);
-		margin-right : calc(var(--unit) * 1);
-	}
-
-	&:first-child
-	{
-		margin-left : 0;
-	}
-
-	&:last-child
-	{
-		margin-right : 0;
-	}
+	flex : 1;
 }
 
 .menu-item
 {
-	display : inline-flex;
+	display : flex;
 	align-items : center;
-	height : calc(var(--unit) * 4);
+	justify-content : center;
 
-	padding-bottom : 0;
+	height : 100%;
 
-	border-bottom-width : 0.12em;
-	border-bottom-color : transparent;
-	border-bottom-style : solid;
+	/*
+	padding-top    : calc(var(--unit) * 0.625);
+	padding-bottom : calc(var(--unit) * 0.625);
+	*/
 
-	text-decoration : none;
-	color : var(--white-color);
-
-	&:first-child
-	{
-		margin-left : 0;
-	}
-
-	&:last-child
-	{
-		margin-right : 0;
-	}
-}
-
-.menu-item--selected
-{
-	border-bottom-color : var(--base-color);
+	color : var(--black-color);
 }
 
 .menu-item__icon
 {
-	position : relative;
-	top   : -0.05em;
-
-	width  : calc(var(--unit) * 2);
-	height : calc(var(--unit) * 2);
-
-	margin-right : var(--unit);
-
-	// For XS screens.
-	@mixin xs
-	{
-		width  : calc(var(--unit) * 1.5);
-		height : calc(var(--unit) * 1.5);
-
-		margin-right : calc(var(--unit) * 0.5);
-	}
+	width  : calc(var(--unit) * 1.75);
+	height : calc(var(--unit) * 1.75);
 }
 
-.menu-item__icon--home
+.menu-item__icon--outline
 {
-	path
-	{
-		stroke : currentColor;
-		fill   : currentColor;
-	}
+	display : block;
 }
 
-.menu-item__icon--users
+.menu-item__icon--fill
 {
-	path, circle
-	{
-		stroke : currentColor;
-	}
+	display : none;
 }
 
-.menu-item--selected
+.menu-item--selected .menu-item__icon--outline
 {
-	.menu-item__icon--home
-	{
-		path
-		{
-			stroke : var(--base-color);
-			fill   : var(--base-color);
-		}
-	}
+	display : none;
+}
 
-	.menu-item__icon--users
-	{
-		path, circle
-		{
-			stroke : var(--base-color);
-		}
-	}
+.menu-item--selected .menu-item__icon--fill
+{
+	display : block;
 }

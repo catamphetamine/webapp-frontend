@@ -2,10 +2,10 @@ import React from 'react'
 import { MenuIcon } from 'react-responsive-ui'
 import { Link } from 'react-website'
 
-import Menu, { MenuLink } from './Menu'
+import ApplicationMenu from './ApplicationMenu'
 
-import HomeIcon  from '../../assets/images/home.svg'
-import UsersIcon from '../../assets/images/users.svg'
+// import HomeIcon  from '../../assets/images/home.svg'
+// import UsersIcon from '../../assets/images/users.svg'
 
 import './Header.css'
 
@@ -25,12 +25,11 @@ export default function Header() {
 						</MenuLink>
 					</Menu>*/}
 
-					<Link to="/alice" style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
-						<HomeIcon style={{ height: '60%' }}/>
+					<Link to="/alice" className="header__link">
+						<MenuIcon className="menu-button"/>
 					</Link>
 
-					<MenuIcon
-						className="menu-button"/>
+					<ApplicationMenu/>
 				</div>
 			</div>
 		</nav>

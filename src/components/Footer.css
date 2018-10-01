@@ -1,0 +1,23 @@
+@import "../styles/common";
+
+.webpage__footer .application-menu
+{
+	position : fixed;
+	left     : 0;
+	right    : 0;
+	bottom   : 0;
+
+	height : calc(var(--unit) * 3);
+	background-color : var(--white-color);
+	border-top : 1px solid rgba(0,0,0,.0975);
+
+	@mixin ml
+	{
+		display : none;
+	}
+
+	@mixin xl
+	{
+		display : none;
+	}
+}

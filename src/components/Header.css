@@ -27,4 +27,42 @@
 	width  : calc(var(--unit) * 2);
 	height : calc(var(--unit) * 2);
 	cursor : pointer;
+	color  : var(--black-color);
+}
+
+.header__link
+{
+	height : 100%;
+	display : flex;
+	align-items : center;
+}
+
+/*.header__links
+{
+	height : 100%;
+	display : flex;
+}*/
+
+.webpage__header
+{
+	@mixin xs
+	{
+		display : none;
+	}
+
+	@mixin ms
+	{
+		display : none;
+	}
+
+	.menu
+	{
+		margin-right : calc(var(--unit) * -1);
+	}
+
+	.menu-item
+	{
+		padding-left : var(--unit);
+		padding-right : var(--unit);
+	}
 }
