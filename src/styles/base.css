@@ -26,7 +26,7 @@ body
 /* `html` is required for `rem`s to work. */
 html, body, input, textarea, select
 {
-	font-family : Arial, Helvetica, Sans;
+	font-family : sans-serif;
 
 	@mixin xs
 	{
