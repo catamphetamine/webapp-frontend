@@ -13,40 +13,62 @@ import PlayVideoIcon from '../../assets/images/video-player-play-icon-overlay.sv
 
 import './PostAttachments.css'
 
-export default function PostAttachments({ children: attachments }) {
+const MAX_THUMBNAIL_PICTURES = 6
+
+export default function PostAttachments({ children: attachments })
+{
 	if (attachments.length === 0) {
 		return null
 	}
+
 	const pictures = attachments.filter(_ => _.type === 'picture')
 	const videos = attachments.filter(_ => _.type === 'video')
 	const audios = attachments.filter(_ => _.type === 'audio')
 	const links = attachments.filter(_ => _.type === 'link')
+
+	const shouldExpandFirstPicture = pictures.length === 1 || (pictures.length > 1 && videos.length !== 1)
+	const shouldExpandFirstVideo = videos.length === 1 || (videos.length > 1 && pictures.length !== 1)
+
+	let thumbnailPictures = shouldExpandFirstPicture ? pictures.slice(1) : pictures
+	const thumbnailVideos = shouldExpandFirstVideo ? videos.slice(1) : videos
+
+	const thumbnailPicturesMoreCount = thumbnailPictures.length - MAX_THUMBNAIL_PICTURES
+	if (thumbnailPicturesMoreCount > 0) {
+		thumbnailPictures = thumbnailPictures.slice(0, MAX_THUMBNAIL_PICTURES)
+	}
+
 	return (
 		<div className="post__attachments">
-			{pictures.length === 1 &&
+			{shouldExpandFirstPicture &&
 				<PostPicture>
 					{pictures[0]}
 				</PostPicture>
 			}
-			{videos.length === 1 &&
+			{shouldExpandFirstVideo &&
 				<PostVideo>
 					{videos[0]}
 				</PostVideo>
 			}
-			{(pictures.length > 1 || videos.length > 1) &&
+			{(thumbnailPictures.length > 1 || thumbnailVideos.length > 1) &&
 				<div className="post__thumbnail-attachments-container">
 					<ul className="post__thumbnail-attachments row">
-						{pictures.length > 1 && pictures.map(_ => _.picture).map((picture, i) => (
+						{thumbnailPictures.length > 1 && thumbnailPictures.map(_ => _.picture).map((picture, i) => (
 							<li
 								key={`picture-${i}`}
 								className="post__thumbnail-attachment col-4">
 								<Picture
 									fit="cover"
 									sizes={picture.sizes}
-									className="post__attachment-thumbnail"/>
+									className="post__attachment-thumbnail">
+									{(i === thumbnailPictures.length - 1 && thumbnailPicturesMoreCount > 0) &&
+										<div className="post__attachment-thumbnail-more">
+											+{thumbnailPicturesMoreCount + 1}
+										</div>
+									}
+								</Picture>
 							</li>
 						))}
-						{videos.length > 1 && videos.map(_ => _.video).map((video, i) => (
+						{thumbnailVideos.length > 1 && thumbnailVideos.map(_ => _.video).map((video, i) => (
 							<li
 								key={`video-${i}`}
 								className="post__thumbnail-attachment col-4">

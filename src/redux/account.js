@@ -143,6 +143,80 @@ export const getAccountPosts = redux.action
 					}]
 				}
 			}, {
+				id: 21,
+				type: 'picture',
+				picture: {
+					type: 'image/jpeg',
+					sizes: [{
+						url: 'https://img.youtube.com/vi/jq1M-EQZblU/maxresdefault.jpg',
+						width: 1280,
+						height: 720
+					}]
+				}
+			}, {
+				id: 22,
+				type: 'picture',
+				picture: {
+					type: 'image/jpeg',
+					sizes: [{
+						url: 'https://img.youtube.com/vi/DMmi7_P8XKo/maxresdefault.jpg',
+						width: 1280,
+						height: 720
+					}]
+				}
+			}, {
+				id: 23,
+				type: 'picture',
+				picture: {
+					type: 'image/jpeg',
+					sizes: [{
+						url: 'https://img.youtube.com/vi/Jhd_r-mI1_M/maxresdefault.jpg',
+						width: 1280,
+						height: 720
+						// Vertical image.
+						// url: 'https://pp.userapi.com/c844417/v844417210/ea738/18xV5BPN9Lg.jpg',
+						// width: 864,
+						// height: 1296
+					}]
+				}
+			}, {
+				id: 31,
+				type: 'picture',
+				picture: {
+					type: 'image/jpeg',
+					sizes: [{
+						url: 'https://img.youtube.com/vi/jq1M-EQZblU/maxresdefault.jpg',
+						width: 1280,
+						height: 720
+					}]
+				}
+			}, {
+				id: 32,
+				type: 'picture',
+				picture: {
+					type: 'image/jpeg',
+					sizes: [{
+						url: 'https://img.youtube.com/vi/DMmi7_P8XKo/maxresdefault.jpg',
+						width: 1280,
+						height: 720
+					}]
+				}
+			}, {
+				id: 33,
+				type: 'picture',
+				picture: {
+					type: 'image/jpeg',
+					sizes: [{
+						url: 'https://img.youtube.com/vi/Jhd_r-mI1_M/maxresdefault.jpg',
+						width: 1280,
+						height: 720
+						// Vertical image.
+						// url: 'https://pp.userapi.com/c844417/v844417210/ea738/18xV5BPN9Lg.jpg',
+						// width: 864,
+						// height: 1296
+					}]
+				}
+			}, {
 				id: 4,
 				type: 'video',
 				video: {

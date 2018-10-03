@@ -45,3 +45,37 @@
 	/* 16:9 aspect ratio */
 	padding-bottom : 56.25%;
 }
+
+.post__attachment-thumbnail-more
+{
+	position : absolute;
+	top      : 0;
+	left     : 0;
+	width    : 100%;
+	height   : 100%;
+
+	display         : flex;
+	align-items     : center;
+	justify-content : center;
+
+	color            : var(--white-color);
+	background-color : rgba(0,0,0,0.3);
+
+	font-size : 5rem;
+
+	@mixin xs {
+		font-size : 3rem;
+	}
+
+	@mixin xs-plus {
+		font-size : 4rem;
+	}
+
+	@mixin m {
+		font-size : 4rem;
+	}
+
+	@mixin ml {
+		font-size : 5rem;
+	}
+}
