@@ -6,6 +6,7 @@ import { postShape } from '../PropTypes'
 import { accountLink } from './AccountLink'
 import AccountPicture from './AccountPicture'
 import Picture from './Picture'
+import Slideshow from './Slideshow'
 
 import PostHeading from './PostHeading'
 import PostParagraph from './PostParagraph'
@@ -32,12 +33,25 @@ export default class Post extends React.Component
 		post: postShape.isRequired
 	}
 
-	showVideo = () => this.setState({ showVideo: true })
+	state = {}
+
+	showSlideshow = (i) => this.setState({
+		slideshowIndex: i,
+		showSlideshow: true
+	})
+
+	hideSlideshow = () => this.setState({
+		slideshowIndex: undefined,
+		showSlideshow: false
+	})
 
 	render() {
 		const { post } = this.props
+		const { showSlideshow, slideshowIndex } = this.state
 		const attachments = post.attachments || []
 		const embeddedAttachmentIds = []
+		const pictures = attachments.filter(_ => _.type === 'picture').map(_ => _.picture)
+		const embeddedPictures = []
 		return (
 			<div className="post">
 				<div className="post__summary">
@@ -92,7 +106,14 @@ export default class Post extends React.Component
 						embeddedAttachmentIds.push(content.attachmentId)
 						switch (attachment.type) {
 							case 'picture':
-								return <PostPicture key={i}>{attachment}</PostPicture>
+								embeddedPictures.push(attachment.picture)
+								return (
+									<PostPicture
+										onClick={() => this.showSlideshow(embeddedPictures.length - 1)}
+										key={i}>
+										{attachment}
+									</PostPicture>
+								)
 							case 'video':
 								return <PostVideo key={i}>{attachment}</PostVideo>
 							case 'audio':
@@ -106,9 +127,17 @@ export default class Post extends React.Component
 						return null
 					}
 				})}
-				<PostAttachments>
+				<PostAttachments showSlideshow={(i) => this.showSlideshow(embeddedPictures.length + i)}>
 					{attachments.filter(_ => !embeddedAttachmentIds.includes(_.id))}
 				</PostAttachments>
+				{pictures.length > 0 &&
+					<Slideshow
+						i={slideshowIndex}
+						isOpen={showSlideshow}
+						onClose={this.hideSlideshow}>
+						{embeddedPictures.concat(attachments.filter(_ => _.type === 'picture').map(_ => _.picture).filter(_ => embeddedPictures.indexOf(_) < 0))}
+					</Slideshow>
+				}
 			</div>
 		);
 	}

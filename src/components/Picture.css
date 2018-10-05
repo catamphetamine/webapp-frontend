@@ -5,6 +5,7 @@
 	position      : relative;
 	font-size     : 0;
 	border-radius : inherit;
+	user-select   : none;
 }
 
 .picture--cover

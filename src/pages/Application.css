@@ -32,17 +32,9 @@
 	flex-grow   : 1;
 	flex-basis  : auto;
 
+	margin-top : var(--header-height);
+
 	background-color : var(--background-color);
-
-	@mixin ml
-	{
-		margin-top : var(--header-height);
-	}
-
-	@mixin xl
-	{
-		margin-top : var(--header-height);
-	}
 }
 
 .react-website__loading--initial

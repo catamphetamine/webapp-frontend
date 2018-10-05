@@ -1,0 +1,1 @@
+* Sort post attachments in their order of embedding in the post, e.g. pictures. This is better for slideshow. Remove re-sorting in `Post.js` after that.

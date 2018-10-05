@@ -206,7 +206,7 @@ export default class UploadablePicture extends Component
 			// Upload the picture.
 			const newPicture = await uploadPicture(file)
 			// Prefetch the uploaded picture to avoid a flash of a not yet loaded image.
-			await prefetchImage(getPreferredSize(newPicture.sizes, component.width()).url)
+			await prefetchImage(getPreferredSize(newPicture.sizes, this.container.current.clientWidth).url)
 			// Show the uploaded picture.
 			this.setState({ newPicture })
 			if (onChange) {

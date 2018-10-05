@@ -157,7 +157,9 @@ export default class Picture extends PureComponent
 
 	getContainerHeight = () => this.container.current.offsetHeight
 
-	width = () => this.picture.current ? this.picture.current.offsetWidth : this.container.current.offsetWidth
+	getWidth = () => {
+		return this.picture.current ? this.picture.current.offsetWidth : this.container.current.offsetWidth
+	}
 
 	getPreferredSize(sizes)
 	{
@@ -174,11 +176,11 @@ export default class Picture extends PureComponent
 
 		switch (fit) {
 			case 'width':
-				return this.width()
+				return this.getWidth()
 			case 'repeat-x':
 				return this.getContainerHeight() * this.getAspectRatio()
 			case 'cover':
-				return Math.max(this.width(), this.getContainerHeight() * this.getAspectRatio())
+				return Math.max(this.getWidth(), this.getContainerHeight() * this.getAspectRatio())
 			default:
 				throw new Error(`Unknown picture fit: ${fit}.`)
 		}
