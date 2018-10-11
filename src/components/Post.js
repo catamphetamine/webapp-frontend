@@ -1,5 +1,6 @@
 import React from 'react'
 import ReactTimeAgo from 'react-time-ago'
+import { connect } from 'react-redux'
 import { Link } from 'react-website'
 
 import { postShape } from '../PropTypes'
@@ -25,33 +26,40 @@ import PostLink from './PostLink'
 // import PostAttachmentAudio from './PostAttachmentAudio'
 import PostAttachmentLink from './PostAttachmentLink'
 
+import { openSlideshow } from '../redux/slideshow'
+
 import './Post.css'
 
+@connect(() => ({}), {
+	openSlideshow
+})
 export default class Post extends React.Component
 {
 	static propTypes = {
 		post: postShape.isRequired
 	}
 
-	state = {}
+	openSlideshowForAttachments = (i) => {
+		const { post, openSlideshow } = this.props
+		const attachments = post.attachments || []
 
-	showSlideshow = (i) => this.setState({
-		slideshowIndex: i,
-		showSlideshow: true
-	})
+		const embeddedAttachments = (post.content || [])
+			.filter(_ => _.type === 'attachment')
+			.map(content => attachments.filter(_ => _.id === content.attachmentId)[0])
+			.filter(attachment => attachment.type === 'picture')
 
-	hideSlideshow = () => this.setState({
-		slideshowIndex: undefined,
-		showSlideshow: false
-	})
+		const pictures = attachments
+			.filter(_ => _.type === 'picture' && embeddedAttachments.indexOf(_) < 0)
+			.map(_ => _.picture)
+
+		openSlideshow(pictures, i)
+	}
 
 	render() {
-		const { post } = this.props
-		const { showSlideshow, slideshowIndex } = this.state
+		const { post, openSlideshow } = this.props
 		const attachments = post.attachments || []
 		const embeddedAttachmentIds = []
-		const pictures = attachments.filter(_ => _.type === 'picture').map(_ => _.picture)
-		const embeddedPictures = []
+		// const embeddedPictures = []
 		return (
 			<div className="post">
 				<div className="post__summary">
@@ -106,10 +114,10 @@ export default class Post extends React.Component
 						embeddedAttachmentIds.push(content.attachmentId)
 						switch (attachment.type) {
 							case 'picture':
-								embeddedPictures.push(attachment.picture)
+								// embeddedPictures.push(attachment.picture)
 								return (
 									<PostPicture
-										onClick={() => this.showSlideshow(embeddedPictures.length - 1)}
+										onClick={() => openSlideshow([attachment.picture])}
 										key={i}>
 										{attachment}
 									</PostPicture>
@@ -127,17 +135,9 @@ export default class Post extends React.Component
 						return null
 					}
 				})}
-				<PostAttachments showSlideshow={(i) => this.showSlideshow(embeddedPictures.length + i)}>
+				<PostAttachments openSlideshow={this.openSlideshowForAttachments}>
 					{attachments.filter(_ => !embeddedAttachmentIds.includes(_.id))}
 				</PostAttachments>
-				{pictures.length > 0 &&
-					<Slideshow
-						i={slideshowIndex}
-						isOpen={showSlideshow}
-						onClose={this.hideSlideshow}>
-						{embeddedPictures.concat(attachments.filter(_ => _.type === 'picture').map(_ => _.picture).filter(_ => embeddedPictures.indexOf(_) < 0))}
-					</Slideshow>
-				}
 			</div>
 		);
 	}

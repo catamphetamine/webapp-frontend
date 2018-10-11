@@ -15,7 +15,7 @@ import './PostAttachments.css'
 
 const MAX_THUMBNAIL_PICTURES = 6
 
-export default function PostAttachments({ showSlideshow, children: attachments })
+export default function PostAttachments({ openSlideshow, children: attachments })
 {
 	if (attachments.length === 0) {
 		return null
@@ -40,7 +40,7 @@ export default function PostAttachments({ showSlideshow, children: attachments }
 	return (
 		<div className="post__attachments">
 			{shouldExpandFirstPicture &&
-				<PostPicture onClick={() => showSlideshow(0)}>
+				<PostPicture onClick={() => openSlideshow(0)}>
 					{pictures[0]}
 				</PostPicture>
 			}
@@ -59,7 +59,7 @@ export default function PostAttachments({ showSlideshow, children: attachments }
 								<Picture
 									fit="cover"
 									sizes={picture.sizes}
-									onClick={() => showSlideshow(shouldExpandFirstPicture ? i + 1 : i)}
+									onClick={() => openSlideshow(shouldExpandFirstPicture ? i + 1 : i)}
 									className="post__attachment-thumbnail">
 									{(i === thumbnailPictures.length - 1 && thumbnailPicturesMoreCount > 0) &&
 										<div className="post__attachment-thumbnail-more">
@@ -113,6 +113,6 @@ export default function PostAttachments({ showSlideshow, children: attachments }
 }
 
 PostAttachments.propTypes = {
-	showSlideshow: PropTypes.func,
+	openSlideshow: PropTypes.func,
 	children: PropTypes.arrayOf(postAttachmentShape)
 }

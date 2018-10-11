@@ -20,6 +20,9 @@ TimeAgo.locale(en)
 import Snackbar from '../components/Snackbar'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
+import Slideshow from '../components/Slideshow'
+
+import { closeSlideshow } from '../redux/slideshow'
 
 import './Application.css'
 
@@ -32,6 +35,13 @@ import './Application.css'
 	locales     : ['ru_RU', 'en_US']
 }))
 @DragAndDrop()
+@connect(({ slideshow }) => ({
+	slideshowIndex: slideshow.index,
+	slideshowIsOpen: slideshow.isOpen,
+	slideshowPictures: slideshow.pictures
+}), {
+	closeSlideshow
+})
 export default class App extends Component
 {
 	static propTypes =
@@ -41,7 +51,13 @@ export default class App extends Component
 
 	render()
 	{
-		const { children } = this.props
+		const {
+			slideshowIndex,
+			slideshowIsOpen,
+			slideshowPictures,
+			closeSlideshow,
+			children
+		} = this.props
 
 		return (
 			<div>
@@ -50,6 +66,14 @@ export default class App extends Component
 
 				{/* Pop-up messages */}
 				<Snackbar/>
+
+				{/* Picture Slideshow */}
+				<Slideshow
+					i={slideshowIndex}
+					isOpen={slideshowIsOpen}
+					onClose={closeSlideshow}>
+					{slideshowPictures}
+				</Slideshow>
 
 				<div className="webpage">
 					<Header/>

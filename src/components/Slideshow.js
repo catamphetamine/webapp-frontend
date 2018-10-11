@@ -20,7 +20,7 @@ class Slideshow extends React.Component {
 		isOpen: PropTypes.bool,
 		onClose: PropTypes.func.isRequired,
 		i: PropTypes.number.isRequired,
-		children: PropTypes.arrayOf(pictureShape).isRequired
+		children: PropTypes.arrayOf(pictureShape) // .isRequired
 	}
 
 	static defaultProps = {
