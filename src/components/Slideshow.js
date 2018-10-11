@@ -29,8 +29,9 @@ class Slideshow extends React.Component {
 
 	state = {}
 
-	slide = React.createRef()
+	container = React.createRef()
 	slides = React.createRef()
+	slide = React.createRef()
 
 	constructor(props)
 	{
@@ -45,6 +46,7 @@ class Slideshow extends React.Component {
 	}
 
 	componentDidMount() {
+		this.container.current.focus()
 		// `this.slides.current` is now available for `this.getSlideshowWidth()`.
 		this.forceUpdate()
 	}
@@ -69,15 +71,13 @@ class Slideshow extends React.Component {
 	getSlideWidth = () => this.slide.current.getWidth()
 
 	onBackgroundClick = (event) => {
-		const { onClose } = this.props
-
 		if (!event.defaultPrevented) {
-			onClose()
+			this.close()
 		}
 	}
 
 	onSlideClick = (event) => {
-		const { onClose, children: pictures } = this.props
+		const { children: pictures } = this.props
 		const { i } = this.state
 
 		// Make background clicks fall through.
@@ -91,30 +91,83 @@ class Slideshow extends React.Component {
 		const showPrevious = (event.clientX - deltaWidth / 2) / this.getSlideWidth() < 0.33
 
 		if (showPrevious) {
-			if (i > 0) {
-				this.showPicture(i - 1)
-			} else {
-				onClose()
-			}
+			this.showPrevious()
 		} else {
-			if (i + 1 < pictures.length) {
-				this.showPicture(i + 1)
-			} else {
-				onClose()
-			}
+			this.showNext()
+		}
+	}
+
+	close = () => {
+		const { onClose } = this.props
+		onClose()
+	}
+
+	showPrevious() {
+		const { i } = this.state
+
+		if (i > 0) {
+			this.showPicture(i - 1)
+		} else {
+			this.close()
+		}
+	}
+
+	showNext() {
+		const { children: pictures } = this.props
+		const { i } = this.state
+
+		if (i + 1 < pictures.length) {
+			this.showPicture(i + 1)
+		} else {
+			this.close()
+		}
+	}
+
+	onKeyDown = (event) => {
+		if (event.ctrlKey || event.altKey || event.shiftKey || event.metaKey) {
+			return
+		}
+
+		switch (event.keyCode) {
+			// "Left Arrow".
+			// Show previous picture.
+			case 37:
+				event.preventDefault()
+				this.showPrevious()
+				return
+
+			// "Right Arrow".
+			// Show next picture.
+			case 39:
+				event.preventDefault()
+				this.showNext()
+				return
+
+			// "Escape".
+			// Close.
+			case 27:
+				event.preventDefault()
+				this.close()
+				return
 		}
 	}
 
 	render() {
-		const { isOpen, onClose, children: pictures } = this.props
+		const { isOpen, children: pictures } = this.props
 		const { i, picturesShown } = this.state
 
 		if (!isOpen) {
 			return null
 		}
 
+		// `tabIndex={ -1 }` makes the `<div/>` focusable.
+
 		return (
-			<div className="slideshow">
+			<div
+				ref={this.container}
+				tabIndex={-1}
+				className="slideshow"
+				onKeyDown={this.onKeyDown}>
 				<ul
 					ref={this.slides}
 					style={{
@@ -140,7 +193,7 @@ class Slideshow extends React.Component {
 
 				<button
 					type="button"
-					onClick={onClose}
+					onClick={this.close}
 					className="rrui__button-reset slideshow__close">
 					<Close className="slideshow__close-icon"/>
 				</button>
