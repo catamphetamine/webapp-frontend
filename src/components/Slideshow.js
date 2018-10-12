@@ -46,9 +46,18 @@ class Slideshow extends React.Component {
 	}
 
 	componentDidMount() {
+		if (document.activeElement) {
+			this.returnFocusTo = document.activeElement
+		}
 		this.container.current.focus()
 		// `this.slides.current` is now available for `this.getSlideshowWidth()`.
 		this.forceUpdate()
+	}
+
+	componentWillUnmount() {
+		if (this.returnFocusTo) {
+			this.returnFocusTo.focus()
+		}
 	}
 
 	markPicturesShown(i) {
@@ -204,3 +213,13 @@ class Slideshow extends React.Component {
 
 SlideshowWrapper.propTypes = Slideshow.propTypes
 SlideshowWrapper.defaultProps = Slideshow.defaultProps
+
+function requestFullScreen(element) {
+	if (element.requestFullscreen) {
+		element.requestFullscreen()
+	} else if (element.mozRequestFullScreen) {
+		element.mozRequestFullScreen()
+	} else if (element.webkitRequestFullscreen) {
+		element.webkitRequestFullscreen()
+	}
+}
