@@ -20,11 +20,13 @@ class Slideshow extends React.Component {
 		isOpen: PropTypes.bool,
 		onClose: PropTypes.func.isRequired,
 		i: PropTypes.number.isRequired,
+		fullScreen: PropTypes.bool.isRequired,
 		children: PropTypes.arrayOf(pictureShape) // .isRequired
 	}
 
 	static defaultProps = {
-		i: 0
+		i: 0,
+		fullScreen: true
 	}
 
 	state = {}
@@ -46,18 +48,33 @@ class Slideshow extends React.Component {
 	}
 
 	componentDidMount() {
+		const { fullScreen } = this.props
 		if (document.activeElement) {
 			this.returnFocusTo = document.activeElement
 		}
 		this.container.current.focus()
+		if (fullScreen) {
+			requestFullScreen(this.container.current)
+			this.unlistenFullScreen = onFullScreenChange(this.onFullScreenChange)
+		}
 		// `this.slides.current` is now available for `this.getSlideshowWidth()`.
 		this.forceUpdate()
 	}
 
 	componentWillUnmount() {
+		const { fullScreen } = this.props
+		if (fullScreen) {
+			exitFullScreen()
+			this.unlistenFullScreen()
+		}
 		if (this.returnFocusTo) {
 			this.returnFocusTo.focus()
 		}
+	}
+
+	onFullScreenChange = () => {
+		const { i } = this.state
+		this.showPicture(i)
 	}
 
 	markPicturesShown(i) {
@@ -215,11 +232,37 @@ SlideshowWrapper.propTypes = Slideshow.propTypes
 SlideshowWrapper.defaultProps = Slideshow.defaultProps
 
 function requestFullScreen(element) {
+	if (document.fullscreenElement ||
+		document.mozFullScreenElement ||
+		document.webkitFullscreenElement) {
+		return
+	}
 	if (element.requestFullscreen) {
 		element.requestFullscreen()
 	} else if (element.mozRequestFullScreen) {
 		element.mozRequestFullScreen()
 	} else if (element.webkitRequestFullscreen) {
 		element.webkitRequestFullscreen()
+	}
+}
+
+function exitFullScreen(element) {
+	if (document.cancelFullScreen) {
+		document.cancelFullScreen()
+	} else if (document.mozCancelFullScreen) {
+		document.mozCancelFullScreen()
+	} else if (document.webkitCancelFullScreen) {
+		document.webkitCancelFullScreen()
+	}
+}
+
+function onFullScreenChange(handler) {
+	document.addEventListener('webkitfullscreenchange', handler)
+	document.addEventListener('mozfullscreenchange', handler)
+	document.addEventListener('fullscreenchange', handler)
+	return () => {
+		document.removeEventListener('webkitfullscreenchange', handler)
+		document.removeEventListener('mozfullscreenchange', handler)
+		document.removeEventListener('fullscreenchange', handler)
 	}
 }
