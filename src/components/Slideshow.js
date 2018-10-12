@@ -122,12 +122,17 @@ class Slideshow extends React.Component {
 			return
 		}
 
+		const deltaWidth = this.getSlideshowWidth() - this.getSlideWidth()
+		const clickPosition = (event.clientX - deltaWidth / 2) / this.getSlideWidth()
+
+		// If clicked outside the image then fall through.
+		if (clickPosition < 0 || clickPosition > 1) {
+			return
+		}
+
 		event.preventDefault()
 
-		const deltaWidth = this.getSlideshowWidth() - this.getSlideWidth()
-		const showPrevious = (event.clientX - deltaWidth / 2) / this.getSlideWidth() < 0.33
-
-		if (showPrevious) {
+		if (clickPosition < 0.33) {
 			this.showPrevious()
 		} else {
 			this.showNext()
