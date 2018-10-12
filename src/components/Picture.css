@@ -10,8 +10,23 @@
 
 .picture--cover
 {
+	/*
 	background-size : cover;
 	background-position : center center;
+	*/
+
+	.picture__image
+	{
+		object-fit: cover;
+	}
+}
+
+.picture--contain
+{
+	.picture__image
+	{
+		object-fit: contain;
+	}
 }
 
 .picture--repeat-x

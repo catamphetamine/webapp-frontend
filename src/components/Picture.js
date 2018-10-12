@@ -32,7 +32,12 @@ export default class Picture extends PureComponent
 		children : PropTypes.node,
 
 		// The image sizing algorythm.
-		fit : PropTypes.oneOf(['cover', 'repeat-x', 'width']).isRequired,
+		fit : PropTypes.oneOf([
+			'cover',
+			'contain',
+			'width',
+			'repeat-x'
+		]).isRequired,
 
 		// Available image sizes.
 		sizes : PropTypes.arrayOf(PropTypes.shape
@@ -103,7 +108,7 @@ export default class Picture extends PureComponent
 
 		let { style } = this.props
 
-		if (fit !== 'width')
+		if (fit === 'repeat-x')
 		{
 			style = {
 				...style,
@@ -118,16 +123,17 @@ export default class Picture extends PureComponent
 				className={ classNames('picture', {
 					'picture--repeat-x' : fit === 'repeat-x',
 					'picture--cover' : fit === 'cover',
+					'picture--contain' : fit === 'contain',
 					'picture--border' : border
 				},
 				className) }
 				{...rest}>
 
-				{ fit === 'width' &&
+				{ fit !== 'repeat-x' &&
 					<img
 						ref={ this.picture }
 						src={ typeof window === 'undefined' ? TRANSPARENT_PIXEL : (this.url() || TRANSPARENT_PIXEL) }
-						style={ IMAGE_STYLE }
+						style={ getImageStyle(fit) }
 						className="picture__image"/>
 				}
 
@@ -181,6 +187,8 @@ export default class Picture extends PureComponent
 				return this.getContainerHeight() * this.getAspectRatio()
 			case 'cover':
 				return Math.max(this.getWidth(), this.getContainerHeight() * this.getAspectRatio())
+			case 'contain':
+				return Math.min(this.getWidth(), this.getContainerHeight() * this.getAspectRatio())
 			default:
 				throw new Error(`Unknown picture fit: ${fit}.`)
 		}
@@ -234,12 +242,38 @@ export function getPreferredSize(sizes, width, maxWidth)
 	return sizes[sizes.length - 1]
 }
 
-const IMAGE_STYLE =
+const IMAGE_STYLE_FIT_WIDTH =
 {
-	// boxSizing : 'content-box',
 	maxWidth  : '100%',
 	maxHeight : '100%',
 	borderRadius : 'inherit'
+}
+
+const IMAGE_STYLE_COVER =
+{
+	width  : '100%',
+	height : '100%',
+	objectFit : 'cover',
+	borderRadius : 'inherit'
+}
+
+const IMAGE_STYLE_CONTAIN =
+{
+	width  : '100%',
+	height : '100%',
+	objectFit : 'contain',
+	borderRadius : 'inherit'
+}
+
+function getImageStyle(fit) {
+	switch (fit) {
+		case 'cover':
+			return IMAGE_STYLE_COVER
+		case 'contain':
+			return IMAGE_STYLE_CONTAIN
+		default:
+			return IMAGE_STYLE_FIT_WIDTH
+	}
 }
 
 class InteractiveResize

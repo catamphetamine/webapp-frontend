@@ -94,7 +94,18 @@ class Slideshow extends React.Component {
 	}
 
 	getSlideshowWidth = () => this.slides.current.clientWidth
-	getSlideWidth = () => this.slide.current.getWidth()
+	getSlideshowHeight = () => this.slides.current.clientHeight
+
+	// For `<img/>` centered horizontally inside an `<li/>`.
+	// getSlideWidth = () => this.slide.current.getWidth()
+
+	// For `<img/>` with `object-fit: contain`.
+	getSlideWidth = () => {
+		return Math.min(
+			this.getSlideshowHeight() + this.slide.current.getAspectRatio(),
+			this.getSlideshowWidth()
+		)
+	}
 
 	onBackgroundClick = (event) => {
 		if (!event.defaultPrevented) {
@@ -211,6 +222,7 @@ class Slideshow extends React.Component {
 									ref={j === i ? this.slide : undefined}
 									sizes={picture.sizes}
 									onClick={this.onSlideClick}
+									fit="contain"
 									className="slideshow__picture"/>
 							}
 						</li>
