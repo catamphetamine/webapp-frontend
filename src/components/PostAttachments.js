@@ -60,7 +60,7 @@ export default function PostAttachments({ openSlideshow, children: attachments }
 									fit="cover"
 									sizes={picture.sizes}
 									onClick={() => openSlideshow(shouldExpandFirstPicture ? i + 1 : i)}
-									className="post__attachment-thumbnail">
+									className="post__attachment-thumbnail picture--hd">
 									{(i === thumbnailPictures.length - 1 && thumbnailPicturesMoreCount > 0) &&
 										<div className="post__attachment-thumbnail-more">
 											+{thumbnailPicturesMoreCount + 1}
@@ -73,11 +73,11 @@ export default function PostAttachments({ openSlideshow, children: attachments }
 							<li
 								key={`video-${i}`}
 								className="post__thumbnail-attachment col-4">
-								<div className="position-relative">
+								<div className="position-relative aspect-ratio--hd">
 									<Picture
 										fit="cover"
 										sizes={video.picture.sizes}
-										className="post__attachment-thumbnail"/>
+										className="post__attachment-thumbnail aspect-ratio__content--hd"/>
 									<PlayVideoIcon
 										className="play-video-icon post__thumbnail-video-icon"/>
 								</div>

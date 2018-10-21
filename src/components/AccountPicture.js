@@ -10,7 +10,9 @@ const DEFAULT_ACCOUNT_PICTURE =
 {
 	type: 'image/svg+xml',
 	sizes: [{
-		url : DefaultAccountPicture
+		url : DefaultAccountPicture,
+		width : 1,
+		height : 1
 	}]
 }
 

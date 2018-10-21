@@ -28,7 +28,7 @@
     "react-color": "^2.14.1",
     "react-dom": "^16.4.0",
     "react-redux": "^5.0.2",
-    "react-responsive-ui": "^0.14.52",
+    "react-responsive-ui": "^0.14.58",
     "react-time-ago": "^3.0.3",
     "react-website": "^3.0.1",
     "redux": "^4.0.0"

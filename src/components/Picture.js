@@ -2,6 +2,8 @@ import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 
+import { ActivityIndicator, FadeInOut } from 'react-responsive-ui'
+
 import './Picture.css'
 
 // When no picture is available for display.
@@ -27,6 +29,9 @@ export default class Picture extends PureComponent
 		// By default a border will be added around the picture.
 		// Set to `false` to not add border for picture.
 		border : PropTypes.bool.isRequired,
+
+		// Can show a spinner while the initial image is loading.
+		showLoadingPlaceholder : PropTypes.bool.isRequired,
 
 		// Any "child" content will be displayed if no picture is present.
 		children : PropTypes.node,
@@ -55,7 +60,8 @@ export default class Picture extends PureComponent
 	static defaultProps =
 	{
 		fit : 'width',
-		border : false
+		border : false,
+		showLoadingPlaceholder : false
 	}
 
 	state = {}
@@ -66,6 +72,8 @@ export default class Picture extends PureComponent
 	componentDidMount()
 	{
 		const { sizes } = this.props
+
+		this._isMounted = true
 
 		// When the DOM node has been mounted
 		// its width in pixels is known
@@ -81,6 +89,7 @@ export default class Picture extends PureComponent
 
 	componentWillUnmount()
 	{
+		this._isMounted = false
 		window.interactiveResize.remove(this.refreshSize)
 	}
 
@@ -98,6 +107,7 @@ export default class Picture extends PureComponent
 		{
 			fit,
 			border,
+			showLoadingPlaceholder,
 			className,
 			children,
 			// Rest.
@@ -108,8 +118,21 @@ export default class Picture extends PureComponent
 
 		let { style } = this.props
 
-		if (fit === 'repeat-x')
-		{
+		const { initialImageLoaded } = this.state
+
+		// For some reason on component mount `this.getWidth()`
+		// returns screen width and not the actual `<div/>` width
+		// which is weird, so not maintaining aspect ratio here.
+		// if (fit === 'width') {
+		// 	if (this._isMounted) {
+		// 		style = {
+		// 			...style,
+		// 			minHeight: `${this.getHeight()}px`
+		// 		}
+		// 	}
+		// }
+
+		if (fit === 'repeat-x') {
 			style = {
 				...style,
 				backgroundImage: `url(${ this.url() || TRANSPARENT_PIXEL })`
@@ -122,14 +145,25 @@ export default class Picture extends PureComponent
 				style={ style }
 				className={ classNames('picture', {
 					'picture--repeat-x' : fit === 'repeat-x',
-					'picture--cover' : fit === 'cover',
-					'picture--contain' : fit === 'contain',
+					// 'picture--cover' : fit === 'cover',
+					// 'picture--contain' : fit === 'contain',
 					'picture--border' : border
 				},
 				className) }
 				{...rest}>
 
-				{ fit !== 'repeat-x' &&
+				{/* Excluding `fit: width` here because until the image loads
+				the container height is 0 so it's collapsed vertically
+				and the aspect ratio is also incorrect due to a browser bug. */}
+				{ !initialImageLoaded && fit !== 'width' && showLoadingPlaceholder &&
+					<div className="picture__loading-container">
+						<FadeInOut show fadeInInitially fadeInDuration={3000} fadeOutDuration={3000}>
+							<ActivityIndicator className="picture__loading"/>
+						</FadeInOut>
+					</div>
+				}
+
+				{ initialImageLoaded && fit !== 'repeat-x' &&
 					<img
 						ref={ this.picture }
 						src={ typeof window === 'undefined' ? TRANSPARENT_PIXEL : (this.url() || TRANSPARENT_PIXEL) }
@@ -157,7 +191,19 @@ export default class Picture extends PureComponent
 			!size ||
 			(preferredSize && preferredSize.width > size.width))
 		{
+			this.onImageChange(preferredSize)
 			this.setState({ size: preferredSize })
+		}
+	}
+
+	onImageChange(newSize) {
+		const { size } = this.state
+		if (!size) {
+			prefetchImage(newSize.url).then(() => {
+				if (this._isMounted) {
+					this.setState({ initialImageLoaded: true })
+				}
+			})
 		}
 	}
 
@@ -189,6 +235,23 @@ export default class Picture extends PureComponent
 				return Math.max(this.getWidth(), this.getContainerHeight() * this.getAspectRatio())
 			case 'contain':
 				return Math.min(this.getWidth(), this.getContainerHeight() * this.getAspectRatio())
+			default:
+				throw new Error(`Unknown picture fit: ${fit}.`)
+		}
+	}
+
+	getHeight() {
+		const { fit } = this.props
+
+		switch (fit) {
+			case 'width':
+				return this.getWidth() / this.getAspectRatio()
+			case 'repeat-x':
+				return this.getContainerHeight()
+			case 'cover':
+				return Math.max(this.getContainerHeight(), this.getWidth() / this.getAspectRatio())
+			case 'contain':
+				return Math.min(this.getContainerHeight(), this.getWidth() / this.getAspectRatio())
 			default:
 				throw new Error(`Unknown picture fit: ${fit}.`)
 		}
@@ -310,4 +373,16 @@ class InteractiveResize
 		}
 		window.removeEventListener('resize', this.onResize)
 	}
+}
+
+// Preloads an image before displaying it.
+function prefetchImage(url)
+{
+	return new Promise((resolve, reject) =>
+	{
+		const image = new Image()
+		image.onload = () => resolve()
+		image.onerror = reject
+		image.src = url
+	})
 }

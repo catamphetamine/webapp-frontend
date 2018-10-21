@@ -12,6 +12,12 @@
 
 	/* Slideshow is focused upon opening. */
 	outline : none;
+
+	/* Enable only single-finger vertical panning gestures. */
+	/* (disable all other touch gestures). */
+	/* Don't know what exactly does it do. */
+	/* Just copy-pasted it from Instagram. */
+	touch-action : pan-y;
 }
 
 .slideshow__slides
@@ -26,6 +32,9 @@
 	list-style : none;
 	padding : 0;
 	margin : 0;
+
+	/* For touch paging. */
+	transition-property : transform;
 }
 
 .slideshow__slide
@@ -53,11 +62,21 @@
 	display : flex;
 	align-items : center;
 	justify-content : center;
+}
 
-	.picture__image
-	{
-		cursor : pointer;
-	}
+.slideshow__picture .picture__image
+{
+	cursor : pointer;
+}
+
+.slideshow--panning .slideshow__picture .picture__image
+{
+	cursor : grabbing;
+}
+
+.slideshow__picture .picture__loading
+{
+	color : var(--white-color);
 }
 
 .slideshow__close

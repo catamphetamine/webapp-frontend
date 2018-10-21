@@ -8,26 +8,13 @@
 	user-select   : none;
 }
 
+/*
 .picture--cover
 {
-	/*
 	background-size : cover;
 	background-position : center center;
-	*/
-
-	.picture__image
-	{
-		object-fit: cover;
-	}
 }
-
-.picture--contain
-{
-	.picture__image
-	{
-		object-fit: contain;
-	}
-}
+*/
 
 .picture--repeat-x
 {
@@ -45,4 +32,26 @@
 	content       : '';
 	border        : 1px solid var(--black-color);
 	border-radius : inherit;
+}
+
+.picture--hd
+{
+	/* 16:9 aspect ratio */
+	padding-bottom : 56.25%;
+}
+
+.picture--hd .picture__image
+{
+	position : absolute;
+}
+
+.picture__loading-container
+{
+	position        : absolute;
+	width           : 100%;
+	height          : 100%;
+	display         : flex;
+	align-items     : center;
+	justify-content : center;
+	overflow        : hidden;
 }

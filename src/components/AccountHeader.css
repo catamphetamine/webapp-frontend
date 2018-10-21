@@ -196,3 +196,8 @@
 	text-transform : none;
 	letter-spacing : 0;
 }
+
+.account-header__picture-image
+{
+	height : 100%;
+}

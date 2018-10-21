@@ -42,13 +42,6 @@
 
 .post__attachment-thumbnail
 {
-	/* 16:9 aspect ratio */
-	padding-bottom : 56.25%;
-
-	.picture__image
-	{
-		position: absolute;
-	}
 }
 
 .post__attachment-thumbnail-more

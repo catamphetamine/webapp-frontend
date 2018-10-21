@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import classNames from 'classnames'
 
 import Picture from './Picture'
 import { pictureShape } from '../PropTypes'
@@ -21,12 +22,22 @@ class Slideshow extends React.Component {
 		onClose: PropTypes.func.isRequired,
 		i: PropTypes.number.isRequired,
 		fullScreen: PropTypes.bool.isRequired,
+		previousNextClickRatio: PropTypes.number.isRequired,
+		closeOnOverlayClick: PropTypes.bool.isRequired,
+		panOffsetThresholdWidthRatio: PropTypes.number.isRequired,
+		slideInDuration: PropTypes.number.isRequired,
+		minSlideInDuration: PropTypes.number.isRequired,
 		children: PropTypes.arrayOf(pictureShape) // .isRequired
 	}
 
 	static defaultProps = {
 		i: 0,
-		fullScreen: true
+		fullScreen: true,
+		previousNextClickRatio: 0.33,
+		closeOnOverlayClick: true,
+		panOffsetThresholdWidthRatio: 0.05,
+		slideInDuration: 500,
+		minSlideInDuration: 100
 	}
 
 	state = {}
@@ -34,6 +45,9 @@ class Slideshow extends React.Component {
 	container = React.createRef()
 	slides = React.createRef()
 	slide = React.createRef()
+
+	panOffset = 0
+	transitionDuration = 0
 
 	constructor(props)
 	{
@@ -70,6 +84,7 @@ class Slideshow extends React.Component {
 		if (this.returnFocusTo) {
 			this.returnFocusTo.focus()
 		}
+		clearTimeout(this.transitionEndTimer)
 	}
 
 	onFullScreenChange = () => {
@@ -83,7 +98,9 @@ class Slideshow extends React.Component {
 
 		let j = 0
 		while (j < pictures.length) {
-			picturesShown[j] = j === i - 1 || j === i || j === i + 1
+			// Also prefetch previous and next images for mobile scrolling.
+			// picturesShown[j] = j === i - 1 || j === i || j === i + 1
+			picturesShown[j] = j === i
 			j++
 		}
 	}
@@ -102,19 +119,25 @@ class Slideshow extends React.Component {
 	// For `<img/>` with `object-fit: contain`.
 	getSlideWidth = () => {
 		return Math.min(
-			this.getSlideshowHeight() + this.slide.current.getAspectRatio(),
+			this.getSlideshowHeight() * this.slide.current.getAspectRatio(),
 			this.getSlideshowWidth()
 		)
 	}
 
 	onBackgroundClick = (event) => {
-		if (!event.defaultPrevented) {
+		const { closeOnOverlayClick } = this.props
+		if (!event.defaultPrevented && closeOnOverlayClick) {
 			this.close()
 		}
 	}
 
 	onSlideClick = (event) => {
-		const { children: pictures } = this.props
+		const {
+			previousNextClickRatio,
+			closeOnOverlayClick,
+			children: pictures
+		} = this.props
+
 		const { i } = this.state
 
 		// Make background clicks fall through.
@@ -122,17 +145,19 @@ class Slideshow extends React.Component {
 			return
 		}
 
+		this.finishTransition()
+
 		const deltaWidth = this.getSlideshowWidth() - this.getSlideWidth()
 		const clickPosition = (event.clientX - deltaWidth / 2) / this.getSlideWidth()
 
 		// If clicked outside the image then fall through.
-		if (clickPosition < 0 || clickPosition > 1) {
+		if ((clickPosition < 0 || clickPosition > 1) && closeOnOverlayClick) {
 			return
 		}
 
 		event.preventDefault()
 
-		if (clickPosition < 0.33) {
+		if (clickPosition < previousNextClickRatio) {
 			this.showPrevious()
 		} else {
 			this.showNext()
@@ -175,6 +200,7 @@ class Slideshow extends React.Component {
 			// Show previous picture.
 			case 37:
 				event.preventDefault()
+				this.finishTransition()
 				this.showPrevious()
 				return
 
@@ -182,6 +208,7 @@ class Slideshow extends React.Component {
 			// Show next picture.
 			case 39:
 				event.preventDefault()
+				this.finishTransition()
 				this.showNext()
 				return
 
@@ -192,6 +219,98 @@ class Slideshow extends React.Component {
 				this.close()
 				return
 		}
+	}
+
+	onDragStart = (event) => {
+		event.preventDefault()
+	}
+
+	onMouseDown = (event) => {
+		this.onPanStart(event.clientX)
+	}
+
+	onMouseUp = () => {
+		if (this.isPanning) {
+			this.onPanEnd()
+		}
+	}
+
+	onMouseMove = (event) => {
+		if (this.isPanning) {
+			this.onPan(event.clientX - this.panOrigin)
+		}
+	}
+
+	onMouseLeave = () => {
+		if (this.isPanning) {
+			this.onPanEnd()
+		}
+	}
+
+	onPanStart(startingPosition) {
+		this.finishTransition()
+		this.isPanning = true
+		this.panOrigin = startingPosition
+		this.container.current.classList.add('slideshow--panning')
+	}
+
+	onPanEnd() {
+		const {
+			panOffsetThresholdWidthRatio,
+			slideInDuration,
+			minSlideInDuration
+		} = this.props
+
+		const pannedWidthRatio = this.panOffset / this.getSlideshowWidth()
+		if (pannedWidthRatio < -1 * panOffsetThresholdWidthRatio) {
+			this.showNext()
+		} else if (pannedWidthRatio > panOffsetThresholdWidthRatio) {
+			this.showPrevious()
+		}
+		this.transitionDuration = minSlideInDuration + Math.abs(pannedWidthRatio) * (slideInDuration - minSlideInDuration)
+		this.updateSlideTransitionDuration()
+		this.panOffset = 0
+		this.updateSlidePosition()
+		this.transitionOngoing = true
+		this.transitionEndTimer = setTimeout(this.onTransitionEnd, this.transitionDuration)
+		this.container.current.classList.remove('slideshow--panning')
+		this.isPanning = false
+	}
+
+	onPanMove(position) {
+		this.onPan(position - this.panOffset)
+	}
+
+	onPan(offset) {
+		this.panOffset = offset
+		this.updateSlidePosition()
+	}
+
+	finishTransition() {
+		if (this.transitionOngoing) {
+			// this.panOffset = current transitionX
+			this.onTransitionEnd()
+			clearTimeout(this.transitionEndTimer)
+		}
+	}
+
+	onTransitionEnd = () => {
+		this.transitionDuration = 0
+		this.updateSlideTransitionDuration()
+		this.transitionOngoing = false
+	}
+
+	updateSlideTransitionDuration() {
+		this.slides.current.style.transitionDuration = `${this.transitionDuration}ms`
+	}
+
+	updateSlidePosition() {
+		this.slides.current.style.transform = this.getTransform()
+	}
+
+	getTransform() {
+		const { i } = this.state
+		return `translateX(${-1 * (this.getSlideshowWidth() * i - this.panOffset)}px)`
 	}
 
 	render() {
@@ -208,12 +327,20 @@ class Slideshow extends React.Component {
 			<div
 				ref={this.container}
 				tabIndex={-1}
-				className="slideshow"
-				onKeyDown={this.onKeyDown}>
+				className={classNames('slideshow', {
+					'slideshow--panning': this.isPanning
+				})}
+				onKeyDown={this.onKeyDown}
+				onDragStart={this.onDragStart}
+				onMouseDown={this.onMouseDown}
+				onMouseUp={this.onMouseUp}
+				onMouseMove={this.onMouseMove}
+				onMouseLeave={this.onMouseLeave}>
 				<ul
 					ref={this.slides}
 					style={{
-						transform: this.slides.current ? `translateX(-${this.getSlideshowWidth() * i}px)` : undefined,
+						transitionDuration: this.transitionDuration,
+						transform: this.slides.current ? this.getTransform() : undefined,
 						opacity: this.slides.current ? 1 : 0
 					}}
 					className="slideshow__slides">
@@ -228,6 +355,7 @@ class Slideshow extends React.Component {
 									sizes={picture.sizes}
 									onClick={this.onSlideClick}
 									fit="contain"
+									showLoadingPlaceholder
 									className="slideshow__picture"/>
 							}
 						</li>

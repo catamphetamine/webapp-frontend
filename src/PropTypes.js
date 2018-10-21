@@ -25,9 +25,9 @@ export const pictureShape = shape({
 	}),
 	sizes: arrayOf(shape({
 		url: string.isRequired,
-		// Dimensions are not required for SVGs.
-		width: number,
-		height: number
+		// Dimensions are also required for SVGs for calculating aspect ratio.
+		width: number.isRequired,
+		height: number.isRequired
 	})).isRequired
 })
 
