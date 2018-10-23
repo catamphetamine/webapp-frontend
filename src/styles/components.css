@@ -29,7 +29,11 @@
 	padding-bottom: 56.25%;
 }
 
-.aspect-ratio__content--hd
+.aspect-ratio--hd
 {
-	position: absolute;
+	.aspect-ratio__content--hd
+	{
+		/* Selector specificity overrides `postition: relative` on `<Picture/>`. */
+		position: absolute;
+	}
 }
