@@ -55,6 +55,8 @@
 	--button-on-background-color : var(--white-color);
 	--primary-button-on-background-background-color : rgba(0, 166, 237, 0.8);
 
+	--footer-menu-height : calc(var(--unit) * 3);
+
 	@mixin xs
 	{
 		--header-height : 0;
