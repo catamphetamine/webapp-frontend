@@ -55,3 +55,16 @@
 	justify-content : center;
 	overflow        : hidden;
 }
+
+.picture__loading
+{
+	width  : calc(var(--unit) * 2);
+	height : calc(var(--unit) * 2);
+	color  : var(--white-color);
+}
+
+.picture__loading--error
+{
+	transform : scale(0.7);
+	cursor : pointer;
+}

@@ -6,6 +6,8 @@ import { ActivityIndicator, FadeInOut } from 'react-responsive-ui'
 
 import './Picture.css'
 
+import Close from '../../assets/images/icons/close.svg'
+
 // When no picture is available for display.
 const TRANSPARENT_PIXEL = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='
 
@@ -33,6 +35,9 @@ export default class Picture extends PureComponent
 		// Can show a spinner while the initial image is loading.
 		showLoadingPlaceholder : PropTypes.bool.isRequired,
 
+		// // `<img/>` fade in duration.
+		// fadeInDuration : PropTypes.number.isRequired,
+
 		// Any "child" content will be displayed if no picture is present.
 		children : PropTypes.node,
 
@@ -59,9 +64,10 @@ export default class Picture extends PureComponent
 
 	static defaultProps =
 	{
-		fit : 'width',
-		border : false,
-		showLoadingPlaceholder : false
+		fit: 'width',
+		border: false,
+		showLoadingPlaceholder: false,
+		// fadeInDuration: 0
 	}
 
 	state = {}
@@ -78,6 +84,18 @@ export default class Picture extends PureComponent
 		// When the DOM node has been mounted
 		// its width in pixels is known
 		// so an appropriate size can now be picked.
+		//
+		// This only works when styles are included "statically" on a page.
+		// (i.e. via `<link rel="stylesheet" href="..."/>`)
+		//
+		// It won't work though when loading styles dynamically
+		// (via javascript): by the time the component mounts
+		// the styles haven't yet been loaded so `this.getWidth()`
+		// returns screen width and not the actual `<div/>` width,
+		// so, for example, for a 4K monitor and a small picture thumbnail
+		// it will still load the full-sized 4K image on page load.
+		// There seems to be no way around this issue.
+		//
 		this.refreshSize()
 
 		if (!window.interactiveResize) {
@@ -108,6 +126,7 @@ export default class Picture extends PureComponent
 			fit,
 			border,
 			showLoadingPlaceholder,
+			// fadeInDuration,
 			className,
 			children,
 			// Rest.
@@ -118,11 +137,15 @@ export default class Picture extends PureComponent
 
 		let { style } = this.props
 
-		const { initialImageLoaded } = this.state
+		const {
+			initialImageLoaded,
+			initialImageLoadError
+		} = this.state
 
-		// For some reason on component mount `this.getWidth()`
-		// returns screen width and not the actual `<div/>` width
-		// which is weird, so not maintaining aspect ratio here.
+		// The aspect ratio is also incorrect when loading styles
+		// dynamically (via javascript): by the time the component mounts
+		// `this.getWidth()` returns screen width and not the actual
+		// `<div/>` width, so aspect ratio is unknown at mount in those cases.
 		// if (fit === 'width') {
 		// 	if (this._isMounted) {
 		// 		style = {
@@ -154,26 +177,49 @@ export default class Picture extends PureComponent
 
 				{/* Excluding `fit: width` here because until the image loads
 				the container height is 0 so it's collapsed vertically
-				and the aspect ratio is also incorrect due to a browser bug. */}
+				and the aspect ratio is also incorrect when loading styles
+				dynamically (via javascript): by the time the component mounts
+				`this.getWidth()` returns screen width and not the actual
+				`<div/>` width, so aspect ratio is unknown at mount in those cases. */}
 				{ !initialImageLoaded && fit !== 'width' && showLoadingPlaceholder &&
 					<div className="picture__loading-container">
 						<FadeInOut show fadeInInitially fadeInDuration={3000} fadeOutDuration={3000}>
-							<ActivityIndicator className="picture__loading"/>
+							{initialImageLoadError	?
+								<Close
+									onClick={this.retryInitialImageLoad}
+									title="Retry"
+									className="picture__loading picture__loading--error"/>
+								:
+								<ActivityIndicator className="picture__loading"/>
+							}
 						</FadeInOut>
 					</div>
 				}
 
+				{/*
+					<FadeInOut show fadeInInitially fadeInDuration={fadeInDuration} fadeOutDuration={0}>
+					</FadeInOut>
+				*/}
+
 				{ initialImageLoaded && fit !== 'repeat-x' &&
-					<img
-						ref={ this.picture }
-						src={ typeof window === 'undefined' ? TRANSPARENT_PIXEL : (this.url() || TRANSPARENT_PIXEL) }
-						style={ getImageStyle(fit) }
-						className="picture__image"/>
+						<img
+							ref={ this.picture }
+							src={ typeof window === 'undefined' ? TRANSPARENT_PIXEL : (this.url() || TRANSPARENT_PIXEL) }
+							style={ getImageStyle(fit) }
+							className="picture__image"/>
 				}
 
 				{ children }
 			</div>
 		)
+	}
+
+	retryInitialImageLoad = (event) => {
+		event.stopPropagation()
+		this.setState({
+			size: undefined,
+			initialImageLoadError: false
+		}, this.refreshSize)
 	}
 
 	refreshSize = (force) =>
@@ -202,6 +248,11 @@ export default class Picture extends PureComponent
 			prefetchImage(newSize.url).then(() => {
 				if (this._isMounted) {
 					this.setState({ initialImageLoaded: true })
+				}
+			}, (error) => {
+				console.error(error)
+				if (this._isMounted) {
+					this.setState({ initialImageLoadError: true })
 				}
 			})
 		}
