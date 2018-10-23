@@ -36,8 +36,9 @@ class Slideshow extends React.Component {
 		previousNextClickRatio: 0.33,
 		closeOnOverlayClick: true,
 		panOffsetThresholdWidthRatio: 0.05,
+		slideInDurationBaseWidth: 1980,
 		slideInDuration: 500,
-		minSlideInDuration: 100
+		minSlideInDuration: 150
 	}
 
 	state = {}
@@ -99,8 +100,8 @@ class Slideshow extends React.Component {
 		let j = 0
 		while (j < pictures.length) {
 			// Also prefetch previous and next images for mobile scrolling.
-			// picturesShown[j] = j === i - 1 || j === i || j === i + 1
-			picturesShown[j] = j === i
+			picturesShown[j] = j === i - 1 || j === i || j === i + 1
+			// picturesShown[j] = j === i
 			j++
 		}
 	}
@@ -225,6 +226,31 @@ class Slideshow extends React.Component {
 		event.preventDefault()
 	}
 
+	onTouchStart = (event) => {
+		// Ignore multitouch.
+		if (event.touches.length > 1) {
+			// Reset.
+			return this.onTouchCancel()
+		}
+		this.onPanStart(event.changedTouches[0].clientX)
+	}
+
+	onTouchEnd = (event) => {
+		this.onTouchCancel()
+	}
+
+	onTouchCancel = () => {
+		if (this.isPanning) {
+			this.onPanEnd()
+		}
+	}
+
+	onTouchMove = (event) => {
+		if (this.isPanning) {
+			this.onPan(event.changedTouches[0].clientX)
+		}
+	}
+
 	onMouseDown = (event) => {
 		this.onPanStart(event.clientX)
 	}
@@ -237,7 +263,7 @@ class Slideshow extends React.Component {
 
 	onMouseMove = (event) => {
 		if (this.isPanning) {
-			this.onPan(event.clientX - this.panOrigin)
+			this.onPan(event.clientX)
 		}
 	}
 
@@ -251,6 +277,8 @@ class Slideshow extends React.Component {
 		this.finishTransition()
 		this.isPanning = true
 		this.panOrigin = startingPosition
+		// `this.panOffset = 0` will do. No need for complicating things.
+		// this.panOffset = getTranslateX(this.slides.current) - this.state.i * this.getSlideshowWidth()
 		this.container.current.classList.add('slideshow--panning')
 	}
 
@@ -258,7 +286,8 @@ class Slideshow extends React.Component {
 		const {
 			panOffsetThresholdWidthRatio,
 			slideInDuration,
-			minSlideInDuration
+			minSlideInDuration,
+			slideInDurationBaseWidth
 		} = this.props
 
 		const pannedWidthRatio = this.panOffset / this.getSlideshowWidth()
@@ -267,7 +296,7 @@ class Slideshow extends React.Component {
 		} else if (pannedWidthRatio > panOffsetThresholdWidthRatio) {
 			this.showPrevious()
 		}
-		this.transitionDuration = minSlideInDuration + Math.abs(pannedWidthRatio) * (slideInDuration - minSlideInDuration)
+		this.transitionDuration = minSlideInDuration + Math.abs(pannedWidthRatio) * (slideInDuration - minSlideInDuration) * (this.getSlideshowWidth() / slideInDurationBaseWidth)
 		this.updateSlideTransitionDuration()
 		this.panOffset = 0
 		this.updateSlidePosition()
@@ -277,12 +306,8 @@ class Slideshow extends React.Component {
 		this.isPanning = false
 	}
 
-	onPanMove(position) {
-		this.onPan(position - this.panOffset)
-	}
-
-	onPan(offset) {
-		this.panOffset = offset
+	onPan(position) {
+		this.panOffset = position - this.panOrigin
 		this.updateSlidePosition()
 	}
 
@@ -332,6 +357,10 @@ class Slideshow extends React.Component {
 				})}
 				onKeyDown={this.onKeyDown}
 				onDragStart={this.onDragStart}
+				onTouchStart={this.onTouchStart}
+				onTouchEnd={this.onTouchEnd}
+				onTouchCancel={this.onTouchCancel}
+				onTouchMove={this.onTouchMove}
 				onMouseDown={this.onMouseDown}
 				onMouseUp={this.onMouseUp}
 				onMouseMove={this.onMouseMove}
@@ -362,12 +391,16 @@ class Slideshow extends React.Component {
 					))}
 				</ul>
 
-				<button
-					type="button"
-					onClick={this.close}
-					className="rrui__button-reset slideshow__close">
-					<Close className="slideshow__close-icon"/>
-				</button>
+				<ul className="slideshow__actions">
+					<li>
+						<button
+							type="button"
+							onClick={this.close}
+							className="rrui__button-reset slideshow__action">
+							<Close className="slideshow__close-icon"/>
+						</button>
+					</li>
+				</ul>
 			</div>
 		);
 	}
@@ -410,4 +443,8 @@ function onFullScreenChange(handler) {
 		document.removeEventListener('mozfullscreenchange', handler)
 		document.removeEventListener('fullscreenchange', handler)
 	}
+}
+
+function getTranslateX(element) {
+	return getComputedStyle(element).transform.match(/\d+/g)[4]
 }

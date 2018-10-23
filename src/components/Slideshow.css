@@ -13,7 +13,7 @@
 	/* Slideshow is focused upon opening. */
 	outline : none;
 
-	/* Enable only single-finger vertical panning gestures. */
+	/* Only allows single-finger vertical panning gestures. */
 	/* (disable all other touch gestures). */
 	/* Don't know what exactly does it do. */
 	/* Just copy-pasted it from Instagram. */
@@ -79,27 +79,40 @@
 	color : var(--white-color);
 }
 
-.slideshow__close
+.slideshow__actions
 {
 	position : absolute;
 	top    : var(--unit);
 	right  : var(--unit);
+
+	margin : 0;
+	padding : 0;
+	list-style : none;
+	line-height : 0;
+
+	display : flex;
+}
+
+.slideshow__action
+{
+	position : relative;
+
 	width  : calc(var(--unit) * 4);
 	height : calc(var(--unit) * 4);
-	color  : var(--white-color);
 
-	border-radius    : 50%;
+	border-radius : 50%;
 	background-color : rgba(0,0,0,0.7);
+	color : var(--white-color);
 
-	&:hover
-	{
-		background-color : var(--base-color);
-	}
+	margin-left : var(--unit);
+}
 
-	&:active
-	{
-		background-color : var(--base-color);
-	}
+.slideshow__action:hover {
+	background-color : var(--base-color);
+}
+
+.slideshow__action:active {
+	background-color : var(--base-color);
 }
 
 .slideshow__close-icon
