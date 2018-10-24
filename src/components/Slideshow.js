@@ -185,23 +185,31 @@ class Slideshow extends React.Component {
 
 	showPrevious() {
 		const { i } = this.state
-
-		if (i > 0) {
-			this.showPicture(i - 1)
-		} else {
+		if (this.isFirst()) {
 			this.close()
+		} else {
+			this.showPicture(i - 1)
 		}
 	}
 
 	showNext() {
+		const { i } = this.state
+		if (this.isLast()) {
+			this.close()
+		} else {
+			this.showPicture(i + 1)
+		}
+	}
+
+	isFirst() {
+		const { i } = this.state
+		return i === 0
+	}
+
+	isLast() {
 		const { children: pictures } = this.props
 		const { i } = this.state
-
-		if (i + 1 < pictures.length) {
-			this.showPicture(i + 1)
-		} else {
-			this.close()
-		}
+		return i === pictures.length - 1
 	}
 
 	onShowPrevious = (event) => {
@@ -339,6 +347,13 @@ class Slideshow extends React.Component {
 
 	onPan(position) {
 		this.panOffset = position - this.panOrigin
+		// Emulate pan resistance when there are
+		// no more pictures to navigate to.
+		if (this.isFirst() && this.panOffset > 0) {
+			this.panOffset /= 2
+		} else if (this.isLast() && this.panOffset < 0) {
+			this.panOffset /= 2
+		}
 		this.updateSlidePosition()
 	}
 
