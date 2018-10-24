@@ -317,6 +317,9 @@ class Slideshow extends React.Component {
 		// `this.panOffset = 0` will do. No need for complicating things.
 		// this.panOffset = getTranslateX(this.slides.current) - this.state.i * this.getSlideshowWidth()
 		this.container.current.classList.add('slideshow--panning')
+		// This is for `this.emulatePanResistance()`
+		// so that it doesn't call DOM on each mousemove/touchmove.
+		this.slideshowWidth = this.getSlideshowWidth()
 	}
 
 	onPanEnd() {
@@ -349,10 +352,9 @@ class Slideshow extends React.Component {
 		this.panOffset = position - this.panOrigin
 		// Emulate pan resistance when there are
 		// no more pictures to navigate to.
-		if (this.isFirst() && this.panOffset > 0) {
-			this.panOffset /= 2
-		} else if (this.isLast() && this.panOffset < 0) {
-			this.panOffset /= 2
+		if ((this.isFirst() && this.panOffset > 0) ||
+			(this.isLast() && this.panOffset < 0)) {
+			this.panOffset = this.emulatePanResistance(this.panOffset)
 		}
 		this.updateSlidePosition()
 	}
@@ -382,6 +384,10 @@ class Slideshow extends React.Component {
 	getTransform() {
 		const { i } = this.state
 		return `translateX(${-1 * (this.getSlideshowWidth() * i - this.panOffset)}px)`
+	}
+
+	emulatePanResistance(panOffset) {
+		return panOffset * Math.exp(-1 - (panOffset / this.slideshowWidth) / 2)
 	}
 
 	render() {
