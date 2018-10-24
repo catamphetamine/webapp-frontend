@@ -1,11 +1,14 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
+import throttle from 'lodash/throttle'
 
 import Picture from './Picture'
 import { pictureShape } from '../PropTypes'
 
 import Close from '../../assets/images/icons/close.svg'
+import LeftArrow from '../../assets/images/icons/left-arrow-minimal.svg'
+import RightArrow from '../../assets/images/icons/right-arrow-minimal.svg'
 
 import './Slideshow.css'
 
@@ -21,6 +24,7 @@ class Slideshow extends React.Component {
 		isOpen: PropTypes.bool,
 		onClose: PropTypes.func.isRequired,
 		i: PropTypes.number.isRequired,
+		inline: PropTypes.bool.isRequired,
 		fullScreen: PropTypes.bool.isRequired,
 		previousNextClickRatio: PropTypes.number.isRequired,
 		closeOnOverlayClick: PropTypes.bool.isRequired,
@@ -32,6 +36,7 @@ class Slideshow extends React.Component {
 
 	static defaultProps = {
 		i: 0,
+		inline: false,
 		fullScreen: true,
 		previousNextClickRatio: 0.33,
 		closeOnOverlayClick: true,
@@ -72,6 +77,7 @@ class Slideshow extends React.Component {
 			requestFullScreen(this.container.current)
 			this.unlistenFullScreen = onFullScreenChange(this.onFullScreenChange)
 		}
+		window.addEventListener('resize', this.onWindowResize)
 		// `this.slides.current` is now available for `this.getSlideshowWidth()`.
 		this.forceUpdate()
 	}
@@ -86,6 +92,13 @@ class Slideshow extends React.Component {
 			this.returnFocusTo.focus()
 		}
 		clearTimeout(this.transitionEndTimer)
+		window.removeEventListener('resize', this.onWindowResize)
+	}
+
+	onWindowResize = throttle((event) => this.onResize(), 100)
+
+	onResize = () => {
+		this.forceUpdate()
 	}
 
 	onFullScreenChange = () => {
@@ -191,6 +204,16 @@ class Slideshow extends React.Component {
 		}
 	}
 
+	onShowPrevious = (event) => {
+		this.container.current.focus()
+		this.showPrevious()
+	}
+
+	onShowNext = (event) => {
+		this.container.current.focus()
+		this.showNext()
+	}
+
 	onKeyDown = (event) => {
 		if (event.ctrlKey || event.altKey || event.shiftKey || event.metaKey) {
 			return
@@ -232,6 +255,9 @@ class Slideshow extends React.Component {
 			// Reset.
 			return this.onTouchCancel()
 		}
+		if (isAButton(event.target)) {
+			return
+		}
 		this.onPanStart(event.changedTouches[0].clientX)
 	}
 
@@ -252,6 +278,9 @@ class Slideshow extends React.Component {
 	}
 
 	onMouseDown = (event) => {
+		if (isAButton(event.target)) {
+			return
+		}
 		this.onPanStart(event.clientX)
 	}
 
@@ -296,12 +325,14 @@ class Slideshow extends React.Component {
 		} else if (pannedWidthRatio > panOffsetThresholdWidthRatio) {
 			this.showPrevious()
 		}
-		this.transitionDuration = minSlideInDuration + Math.abs(pannedWidthRatio) * (slideInDuration - minSlideInDuration) * (this.getSlideshowWidth() / slideInDurationBaseWidth)
-		this.updateSlideTransitionDuration()
-		this.panOffset = 0
-		this.updateSlidePosition()
-		this.transitionOngoing = true
-		this.transitionEndTimer = setTimeout(this.onTransitionEnd, this.transitionDuration)
+		if (this.panOffset !== 0) {
+			this.transitionDuration = minSlideInDuration + Math.abs(pannedWidthRatio) * (slideInDuration - minSlideInDuration) * (this.getSlideshowWidth() / slideInDurationBaseWidth)
+			this.updateSlideTransitionDuration()
+			this.panOffset = 0
+			this.updateSlidePosition()
+			this.transitionOngoing = true
+			this.transitionEndTimer = setTimeout(this.onTransitionEnd, this.transitionDuration)
+		}
 		this.container.current.classList.remove('slideshow--panning')
 		this.isPanning = false
 	}
@@ -339,7 +370,7 @@ class Slideshow extends React.Component {
 	}
 
 	render() {
-		const { isOpen, children: pictures } = this.props
+		const { isOpen, inline, children: pictures } = this.props
 		const { i, picturesShown } = this.state
 
 		if (!isOpen) {
@@ -353,7 +384,8 @@ class Slideshow extends React.Component {
 				ref={this.container}
 				tabIndex={-1}
 				className={classNames('slideshow', {
-					'slideshow--panning': this.isPanning
+					'slideshow--fullscreen': !inline
+					// 'slideshow--panning': this.isPanning
 				})}
 				onKeyDown={this.onKeyDown}
 				onDragStart={this.onDragStart}
@@ -392,15 +424,35 @@ class Slideshow extends React.Component {
 				</ul>
 
 				<ul className="slideshow__actions">
-					<li>
-						<button
-							type="button"
-							onClick={this.close}
-							className="rrui__button-reset slideshow__action">
-							<Close className="slideshow__close-icon"/>
-						</button>
-					</li>
+					{!inline &&
+						<li>
+							<button
+								type="button"
+								onClick={this.close}
+								className="rrui__button-reset slideshow__action">
+								<Close className="slideshow__action-icon"/>
+							</button>
+						</li>
+					}
 				</ul>
+
+				{pictures.length > 1 && i > 0 &&
+					<button
+						type="button"
+						onClick={this.onShowPrevious}
+						className="rrui__button-reset slideshow__action slideshow__previous">
+						<LeftArrow className="slideshow__action-icon"/>
+					</button>
+				}
+
+				{pictures.length > 1 && i < pictures.length - 1 &&
+					<button
+						type="button"
+						onClick={this.onShowNext}
+						className="rrui__button-reset slideshow__action slideshow__next">
+						<RightArrow className="slideshow__action-icon"/>
+					</button>
+				}
 			</div>
 		);
 	}
@@ -447,4 +499,14 @@ function onFullScreenChange(handler) {
 
 function getTranslateX(element) {
 	return getComputedStyle(element).transform.match(/\d+/g)[4]
+}
+
+function isAButton(element) {
+	if (element.tagName === 'BUTTON') {
+		return true
+	}
+	if (element.parentNode) {
+		return isAButton(element.parentNode)
+	}
+	return false
 }

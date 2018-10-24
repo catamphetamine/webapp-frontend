@@ -1,13 +1,17 @@
 @import "../styles/common";
 
+:root
+{
+	--slideshow-button-size-small  : calc(var(--unit) * 2);
+	--slideshow-button-size-medium : calc(var(--unit) * 3);
+	--slideshow-button-size-big    : calc(var(--unit) * 4);
+
+	--slideshow-button-margin-small : calc(var(--unit) / 2);
+	--slideshow-button-margin       : var(--unit);
+}
+
 .slideshow
 {
-	position : fixed;
-	left     : 0;
-	right    : 0;
-	top      : 0;
-	bottom   : 0;
-
 	background-color : rgba(0,0,0,0.875);
 
 	/* Slideshow is focused upon opening. */
@@ -18,6 +22,15 @@
 	/* Don't know what exactly does it do. */
 	/* Just copy-pasted it from Instagram. */
 	touch-action : pan-y;
+}
+
+.slideshow--fullscreen
+{
+	position : fixed;
+	left     : 0;
+	right    : 0;
+	top      : 0;
+	bottom   : 0;
 }
 
 .slideshow__slides
@@ -82,8 +95,8 @@
 .slideshow__actions
 {
 	position : absolute;
-	top    : var(--unit);
-	right  : var(--unit);
+	top    : var(--slideshow-button-margin);
+	right  : var(--slideshow-button-margin);
 
 	margin : 0;
 	padding : 0;
@@ -91,20 +104,41 @@
 	line-height : 0;
 
 	display : flex;
+
+	@mixin xs-small
+	{
+		top    : var(--slideshow-button-margin-small);
+		right  : var(--slideshow-button-margin-small);
+	}
 }
 
 .slideshow__action
 {
 	position : relative;
 
-	width  : calc(var(--unit) * 4);
-	height : calc(var(--unit) * 4);
+	width  : var(--slideshow-button-size-medium);
+	height : var(--slideshow-button-size-medium);
 
 	border-radius : 50%;
 	background-color : rgba(0,0,0,0.7);
 	color : var(--white-color);
 
-	margin-left : var(--unit);
+	@mixin xl
+	{
+		width  : var(--slideshow-button-size-big);
+		height : var(--slideshow-button-size-big);
+	}
+
+	@mixin xs-small
+	{
+		width  : var(--slideshow-button-size-small);
+		height : var(--slideshow-button-size-small);
+	}
+}
+
+.slideshow__actions .slideshow__action
+{
+	margin-left : var(--slideshow-button-margin);
 }
 
 .slideshow__action:hover {
@@ -115,10 +149,36 @@
 	background-color : var(--base-color);
 }
 
-.slideshow__close-icon
+.slideshow__action-icon
 {
 	position : absolute;
 	top      : 25%;
 	left     : 25%;
 	width    : 50%;
+}
+
+.slideshow__previous,
+.slideshow__next
+{
+	position  : absolute;
+	top       : 50%;
+	margin-left  : var(--slideshow-button-margin);
+	margin-right : var(--slideshow-button-margin);
+	transform : translateY(-50%);
+
+	@mixin xs-small
+	{
+		margin-left  : var(--slideshow-button-margin-small);
+		margin-right : var(--slideshow-button-margin-small);
+	}
+}
+
+.slideshow__previous
+{
+	left : 0;
+}
+
+.slideshow__next
+{
+	right : 0;
 }
