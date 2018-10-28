@@ -1,4 +1,4 @@
 export function accountLink(account)
 {
-	return `/${account.nameId || account.id}`
+	return `/${account.idAlias || account.id}`
 }

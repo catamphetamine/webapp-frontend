@@ -11,9 +11,9 @@ import classNames from 'classnames'
 import { accountName } from '../utility/account'
 import { accountLink } from './AccountLink'
 
-import {
-	getLatestActivityTime
-} from '../redux/account'
+// import {
+// 	getLatestActivityTime
+// } from '../redux/account'
 
 import { accountShape } from '../PropTypes'
 import _translate from '../translate'
@@ -40,20 +40,20 @@ export default class AccountSummary extends React.Component
 		this.saveChanges = this.saveChanges.bind(this)
 	}
 
-	componentDidMount()
-	{
-		const { account, getLatestActivityTime } = this.props
-
-		// If this is a user's account then also show "was online" time
-		if (account && account.user && !this.stopLatestActivityTimeRefresh) {
-			// Refresh this user's latest activity time periodically.
-			// Do it in a timeout because `react-time-ago` also
-			// refreshes the time label once a minute,
-			// therefore to eliminate jitter due to the race condition
-			// a delay of half a minute is imposed.
-			// this.stopLatestActivityTimeRefresh = periodical(() => getLatestActivityTime(account.user.id), LATEST_ACTIVITY_TIME_REFRESH_INTERVAL, 30 * 1000)
-		}
-	}
+	// componentDidMount()
+	// {
+	// 	const { account, getLatestActivityTime } = this.props
+	//
+	// 	// If this is a user's account then also show "was online" time
+	// 	if (account && account.user && !this.stopLatestActivityTimeRefresh) {
+	// 		// Refresh this user's latest activity time periodically.
+	// 		// Do it in a timeout because `react-time-ago` also
+	// 		// refreshes the time label once a minute,
+	// 		// therefore to eliminate jitter due to the race condition
+	// 		// a delay of half a minute is imposed.
+	// 		this.stopLatestActivityTimeRefresh = periodical(() => getLatestActivityTime(account.user.id), LATEST_ACTIVITY_TIME_REFRESH_INTERVAL, 30 * 1000)
+	// 	}
+	// }
 
 	componentWillUnmount()
 	{
@@ -135,17 +135,17 @@ export default class AccountSummary extends React.Component
 				}
 
 				{/* Whereabouts. */}
-				{!editing && account.data.whereabouts &&
+				{!editing && account.whereabouts &&
 					<div className="account-summary__whereabouts">
 						<GeoPointIcon className="account-summary__icon"/>
-						{account.data.whereabouts}
+						{account.whereabouts}
 					</div>
 				}
 
 				{/* Links. */}
-				{!editing && account.data.links &&
+				{!editing && account.links &&
 					<ul className="account-summary__links">
-						{account.data.links.map((link, i) => (
+						{account.links.map((link, i) => (
 							<li key={i}>
 								<a
 									target="_blank"

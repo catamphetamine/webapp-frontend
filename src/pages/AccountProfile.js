@@ -29,16 +29,16 @@ import './AccountProfile.css'
 
 @meta(({ account: { account } }) => ({
 	title: account && account.name || '',
-	description: account && account.data.description || '',
+	description: account && account.description || '',
 	type: 'profile',
 	'profile:username': account && account.name || '',
-	image: account && account.data.picture && account.data.picture.sizes[0].url || '',
-	'og:image:width': account && account.data.picture && account.data.picture.sizes[0].width || '',
-	'og:image:height': account && account.data.picture && account.data.picture.sizes[0].height || '',
-	'og:image:type': account && account.data.picture && account.data.picture.sizes[0].type || ''
+	image: account && account.picture && account.picture.sizes[0].url || '',
+	'og:image:width': account && account.picture && account.picture.sizes[0].width || '',
+	'og:image:height': account && account.picture && account.picture.sizes[0].height || '',
+	'og:image:type': account && account.picture && account.picture.sizes[0].type || ''
 }))
 @preload(async ({ dispatch, params }) => {
-	// `id` could be an `id` and it could be a `nameId`.
+	// `id` could be an `id` and it could be an `idAlias`.
 	const account = await dispatch(getAccount(params.id))
 	// Get the list of account's posts.
 	await dispatch(getAccountPosts(account.id))

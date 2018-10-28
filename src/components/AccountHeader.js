@@ -68,7 +68,7 @@ export default class AccountHeader extends React.Component
 			editing
 		} = this.state
 
-		account.data.backgroundPicture = DEFAULT_BACKGROUND_PICTURE
+		account.backgroundPicture = DEFAULT_BACKGROUND_PICTURE
 
 		return React.createElement(
 			// Container: either a <div/> or a <form/>.
@@ -97,7 +97,7 @@ export default class AccountHeader extends React.Component
 		return (
 			<React.Fragment>
 				{/* Background picture. */}
-				{ !editing && account.data.backgroundPicture &&
+				{ !editing && account.backgroundPicture &&
 					this.renderBackgroundPicture()
 				}
 
@@ -121,7 +121,7 @@ export default class AccountHeader extends React.Component
 
 				{/* Background picture shadow. */}
 				{/*
-				{ !editing && account.data.backgroundPicture &&
+				{ !editing && account.backgroundPicture &&
 					<div className="account-header__background-picture-shadow"/>
 				}
 				*/}
@@ -158,7 +158,7 @@ export default class AccountHeader extends React.Component
 		return (
 			<Picture
 				fit="cover"
-				sizes={newBackgroundPicture ? newBackgroundPicture.sizes : account.data.backgroundPicture.sizes}
+				sizes={newBackgroundPicture ? newBackgroundPicture.sizes : account.backgroundPicture.sizes}
 				className="account-header__background-picture"/>
 		);
 	}

@@ -76,12 +76,12 @@ export default class Post extends React.Component
 						</Link>
 						<div className="post__date">
 							<ReactTimeAgo tooltipClassName="post__date-tooltip">
-								{post.date}
+								{post.createdAt}
 							</ReactTimeAgo>
 						</div>
 					</div>
 				</div>
-				{post.content && post.content.map((content, i) => {
+				{post.content && toArray(post.content).map((content, i) => {
 					if (Array.isArray(content)) {
 						return (
 							<p key={i}>
@@ -141,4 +141,8 @@ export default class Post extends React.Component
 			</div>
 		);
 	}
+}
+
+function toArray(object) {
+	return Array.isArray(object) ? object : [object]
 }

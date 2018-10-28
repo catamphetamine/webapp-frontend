@@ -122,7 +122,7 @@ const accountProperties = {
 	name: string,
 	firstName: string,
 	lastName: string,
-	nameId: string,
+	idAlias: string,
 	picture: pictureShape
 }
 
@@ -133,14 +133,12 @@ export const accountShapeProfile = shape({
 	user: userShape,
 	users: arrayOf(userShape),
 	description: string,
-	data: shape({
-		backgroundPicture: pictureShape,
-		whereabouts: string,
-		links: arrayOf(shape({
-			url: string.isRequired,
-			text: string.isRequired
-		}))
-	}).isRequired
+	backgroundPicture: pictureShape,
+	whereabouts: string,
+	links: arrayOf(shape({
+		url: string.isRequired,
+		text: string.isRequired
+	}))
 })
 
 export const postTextShape = string
@@ -245,7 +243,10 @@ export const postAttachmentShape = oneOfType([
 
 export const postShape = shape({
 	id: id.isRequired,
-	content: arrayOf(postPartShape).isRequired,
+	content: oneOfType([
+		string,
+		arrayOf(postPartShape)
+	]).isRequired,
 	account: accountShape.isRequired,
 	attachments: arrayOf(postAttachmentShape)
 })
