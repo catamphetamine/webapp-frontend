@@ -130,20 +130,12 @@ class Slideshow extends React.Component {
 	// For `<img/>` centered horizontally inside an `<li/>`.
 	// getSlideWidth = () => this.slide.current.getWidth()
 
-	// // For `<img/>` with `object-fit: contain`.
-	// getSlideWidth = () => {
-	// 	return Math.min(
-	// 		this.getSlideshowHeight() * this.slide.current.getAspectRatio(),
-	// 		this.getSlideshowWidth()
-	// 	)
-	// }
-
-	// For `<img/>` with `object-fit: scale-down`.
+	// For `<img/>` with `object-fit: contain` (or `object-fit: scale-down`).
 	getSlideWidth = () => {
 		return Math.min(
 			this.getSlideshowHeight() * this.slide.current.getAspectRatio(),
 			this.getSlideshowWidth(),
-			this.slide.current.getPreferredWidth()
+			this.shouldUpscaleSmallImages() ? Number.MAX_VALUE : this.slide.current.getPreferredWidth()
 		)
 	}
 
@@ -412,6 +404,11 @@ class Slideshow extends React.Component {
 		return panOffset * Math.exp(-1 - (panOffset / this.slideshowWidth) / 2)
 	}
 
+	shouldUpscaleSmallImages() {
+		const { inline } = this.props
+		return inline
+	}
+
 	render() {
 		const { isOpen, inline, children: pictures } = this.props
 		const { i, picturesShown } = this.state
@@ -459,7 +456,7 @@ class Slideshow extends React.Component {
 									sizes={picture.sizes}
 									type={picture.type}
 									onClick={this.onSlideClick}
-									fit="scale-down"
+									fit={this.shouldUpscaleSmallImages() ? 'contain' : 'scale-down'}
 									showLoadingPlaceholder
 									className="slideshow__picture"/>
 							}
