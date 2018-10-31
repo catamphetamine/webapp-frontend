@@ -1,3 +1,11 @@
+* Not upscale small images by default.
+
+* Add zoom buttons section in the bottom.
+
+* Add support for video in slideshow.
+
+* Switch database to AWS.
+
 * Show pagination "x/y" (when there are more than 8 pictures) or dots (when there are up to 8 pictures).
 
 * Add "more" button: download original, copy URL for sharing.
@@ -7,6 +15,8 @@
 * Add "load more on scroll" for posts.
 
 * Add width and height for SVG images too because that will be used for `Picture.getAspectRatio()`.
+
+* Delete previous account picture when changing it.
 
 <!--
 * On next/prev show "preloading" spinner and only after the next/previous image loads do next/prev navigation. Lock while "preloading" (click, pan, keyboard).

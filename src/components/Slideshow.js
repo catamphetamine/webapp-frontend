@@ -130,12 +130,25 @@ class Slideshow extends React.Component {
 	// For `<img/>` centered horizontally inside an `<li/>`.
 	// getSlideWidth = () => this.slide.current.getWidth()
 
-	// For `<img/>` with `object-fit: contain`.
+	// // For `<img/>` with `object-fit: contain`.
+	// getSlideWidth = () => {
+	// 	return Math.min(
+	// 		this.getSlideshowHeight() * this.slide.current.getAspectRatio(),
+	// 		this.getSlideshowWidth()
+	// 	)
+	// }
+
+	// For `<img/>` with `object-fit: scale-down`.
 	getSlideWidth = () => {
 		return Math.min(
 			this.getSlideshowHeight() * this.slide.current.getAspectRatio(),
-			this.getSlideshowWidth()
+			this.getSlideshowWidth(),
+			this.slide.current.getPreferredWidth()
 		)
+	}
+
+	getSlideHeight() {
+		return this.getSlideWidth() / this.slide.current.getAspectRatio()
 	}
 
 	onBackgroundClick = (event) => {
@@ -162,16 +175,25 @@ class Slideshow extends React.Component {
 		this.finishTransition()
 
 		const deltaWidth = this.getSlideshowWidth() - this.getSlideWidth()
-		const clickPosition = (event.clientX - deltaWidth / 2) / this.getSlideWidth()
+		const deltaHeight = this.getSlideshowHeight() - this.getSlideHeight()
+
+		const clickPositionX = (event.clientX - deltaWidth / 2) / this.getSlideWidth()
+		const clickPositionY = (event.clientY - deltaHeight / 2) / this.getSlideHeight()
 
 		// If clicked outside the image then fall through.
-		if ((clickPosition < 0 || clickPosition > 1) && closeOnOverlayClick) {
+		if (closeOnOverlayClick &&
+			(
+				(clickPositionX < 0 || clickPositionX > 1)
+				||
+				(clickPositionY < 0 || clickPositionY > 1)
+			)
+		) {
 			return
 		}
 
 		event.preventDefault()
 
-		if (clickPosition < previousNextClickRatio) {
+		if (clickPositionX < previousNextClickRatio) {
 			this.showPrevious()
 		} else {
 			this.showNext()
@@ -435,8 +457,9 @@ class Slideshow extends React.Component {
 								<Picture
 									ref={j === i ? this.slide : undefined}
 									sizes={picture.sizes}
+									type={picture.type}
 									onClick={this.onSlideClick}
-									fit="contain"
+									fit="scale-down"
 									showLoadingPlaceholder
 									className="slideshow__picture"/>
 							}

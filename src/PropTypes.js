@@ -246,7 +246,7 @@ export const postShape = shape({
 	content: oneOfType([
 		string,
 		arrayOf(postPartShape)
-	]).isRequired,
+	]),//.isRequired,
 	account: accountShape.isRequired,
 	attachments: arrayOf(postAttachmentShape)
 })

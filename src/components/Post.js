@@ -43,7 +43,7 @@ export default class Post extends React.Component
 		const { post, openSlideshow } = this.props
 		const attachments = post.attachments || []
 
-		const embeddedAttachments = (post.content || [])
+		const embeddedAttachments = toArray(post.content || [])
 			.filter(_ => _.type === 'attachment')
 			.map(content => attachments.filter(_ => _.id === content.attachmentId)[0])
 			.filter(attachment => attachment.type === 'picture')

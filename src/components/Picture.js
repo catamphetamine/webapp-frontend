@@ -45,9 +45,19 @@ export default class Picture extends PureComponent
 		fit : PropTypes.oneOf([
 			'cover',
 			'contain',
+			'scale-down',
 			'width',
 			'repeat-x'
 		]).isRequired,
+
+		// (optional)
+		// Image type (for example, vector or raster).
+		type: PropTypes.oneOf([
+			'image/svg+xml',
+			'image/jpeg',
+			'image/png',
+			'image/webp'
+		]),
 
 		// Available image sizes.
 		sizes : PropTypes.arrayOf(PropTypes.shape
@@ -276,6 +286,7 @@ export default class Picture extends PureComponent
 	getPreferredWidth()
 	{
 		const { fit } = this.props
+		const { size } = this.state
 
 		switch (fit) {
 			case 'width':
@@ -286,6 +297,11 @@ export default class Picture extends PureComponent
 				return Math.max(this.getWidth(), this.getContainerHeight() * this.getAspectRatio())
 			case 'contain':
 				return Math.min(this.getWidth(), this.getContainerHeight() * this.getAspectRatio())
+			case 'scale-down':
+				if (this.isVector() || !size) {
+					return this.getWidth()
+				}
+				return Math.min(this.getWidth(), size.width)
 			default:
 				throw new Error(`Unknown picture fit: ${fit}.`)
 		}
@@ -293,6 +309,7 @@ export default class Picture extends PureComponent
 
 	getHeight() {
 		const { fit } = this.props
+		const { size } = this.state
 
 		switch (fit) {
 			case 'width':
@@ -303,9 +320,20 @@ export default class Picture extends PureComponent
 				return Math.max(this.getContainerHeight(), this.getWidth() / this.getAspectRatio())
 			case 'contain':
 				return Math.min(this.getContainerHeight(), this.getWidth() / this.getAspectRatio())
+			case 'contain':
+				if (this.isVector() || !size) {
+					return this.getContainerHeight()
+				}
+				return Math.min(this.getContainerHeight(), size.height)
 			default:
 				throw new Error(`Unknown picture fit: ${fit}.`)
 		}
+	}
+
+	isVector() {
+		const { type } = this.props
+		const { size } = this.state
+		return type === 'image/svg+xml' || (size && SVG_FILE_URL.test(size.url))
 	}
 
 	getAspectRatio()
@@ -379,12 +407,22 @@ const IMAGE_STYLE_CONTAIN =
 	borderRadius : 'inherit'
 }
 
+const IMAGE_STYLE_SCALE_DOWN =
+{
+	width  : '100%',
+	height : '100%',
+	objectFit : 'scale-down',
+	borderRadius : 'inherit'
+}
+
 function getImageStyle(fit) {
 	switch (fit) {
 		case 'cover':
 			return IMAGE_STYLE_COVER
 		case 'contain':
 			return IMAGE_STYLE_CONTAIN
+		case 'scale-down':
+			return IMAGE_STYLE_SCALE_DOWN
 		default:
 			return IMAGE_STYLE_FIT_WIDTH
 	}
@@ -437,3 +475,5 @@ function prefetchImage(url)
 		image.src = url
 	})
 }
+
+const SVG_FILE_URL = /\.svg/i
