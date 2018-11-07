@@ -284,7 +284,7 @@ class Slideshow extends React.Component {
 
 		switch (event.keyCode) {
 			// "Left Arrow".
-			// Show previous picture.
+			// Show previous slide.
 			case 37:
 				event.preventDefault()
 				this.finishTransition()
@@ -292,11 +292,25 @@ class Slideshow extends React.Component {
 				return
 
 			// "Right Arrow".
-			// Show next picture.
+			// Show next slide.
 			case 39:
 				event.preventDefault()
 				this.finishTransition()
 				this.showNext()
+				return
+
+			// "Up Arrow".
+			// Scale up.
+			case 38:
+				event.preventDefault()
+				this.scaleUp()
+				return
+
+			// "Down Arrow".
+			// Scale down.
+			case 40:
+				event.preventDefault()
+				this.scaleDown()
 				return
 
 			// "Escape".
