@@ -135,18 +135,25 @@ class Slideshow extends React.Component {
 
 	scaleDown = (event, factor = 1) => {
 		this.setState(({ scale }, { scaleStep }) => ({
-			scale: scale / (1 + scaleStep * factor)
+			scale: Math.max(
+				scale / (1 + scaleStep * factor),
+				1
+			)
 		}))
 	}
 
 	scaleUp = (event, factor = 1) => {
 		this.setState(({ scale }, { scaleStep }) => ({
-			scale: scale * (1 + scaleStep * factor)
+			scale: Math.min(
+				scale * (1 + scaleStep * factor),
+				this.getFullScreenScale()
+			)
 		}))
 	}
 
 	scaleToggle = () => {
 		this.setState(({ scale }) => ({
+			// Compensates math precision (is supposed to).
 			scale: scale > 0.99 && scale < 1.01 ? this.getFullScreenScale() : 1
 		}))
 	}
