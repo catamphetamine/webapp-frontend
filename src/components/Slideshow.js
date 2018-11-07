@@ -522,7 +522,7 @@ class Slideshow extends React.Component {
 				</ul>
 
 				<ul className="slideshow__actions-top-right">
-					{!inline &&
+					{!inline && pictures.length > 1 &&
 						<li>
 							<button
 								type="button"
