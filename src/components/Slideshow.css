@@ -75,12 +75,19 @@
 	display : flex;
 	align-items : center;
 	justify-content : center;
+
+	transition : transform 180ms ease-out;
 }
 
+/*
+`cursor : pointer` doesn't really work here,
+because `object-fit` is set to `contain` or `scale-down` here,
+and so cursor would be shown as a pointer even outside the actual image.
 .slideshow__picture .picture__image
 {
 	cursor : pointer;
 }
+*/
 
 .slideshow--panning .slideshow__picture .picture__image
 {
@@ -92,7 +99,7 @@
 	color : var(--white-color);
 }
 
-.slideshow__actions
+.slideshow__actions-top-right
 {
 	position : absolute;
 	top    : var(--slideshow-button-margin);
@@ -112,8 +119,29 @@
 	}
 }
 
+.slideshow__actions-bottom
+{
+	position : absolute;
+	left   : 0;
+	bottom : var(--slideshow-button-margin);
+
+	width  : 100%;
+
+	display : flex;
+	justify-content : center;
+
+	padding : 0;
+	margin  : 0;
+
+	@mixin xs-small
+	{
+		bottom : var(--slideshow-button-margin-small);
+	}
+}
+
 .slideshow__action
 {
+	display  : block;
 	position : relative;
 
 	width  : var(--slideshow-button-size-medium);
@@ -136,9 +164,27 @@
 	}
 }
 
-.slideshow__actions .slideshow__action
+.slideshow__actions-top-right .slideshow__action
 {
 	margin-left : var(--slideshow-button-margin);
+
+	@mixin xs-small
+	{
+		margin-left : var(--slideshow-button-margin-small);
+	}
+}
+
+.slideshow__actions-bottom .slideshow__action,
+.slideshow__actions-bottom .slideshow__action-group
+{
+	margin-left  : var(--slideshow-button-margin);
+	margin-right : var(--slideshow-button-margin);
+
+	@mixin xs-small
+	{
+		margin-left  : var(--slideshow-button-margin-small);
+		margin-right : var(--slideshow-button-margin-small);
+	}
 }
 
 .slideshow__action:hover {
@@ -155,6 +201,29 @@
 	top      : 25%;
 	left     : 25%;
 	width    : 50%;
+}
+
+.slideshow__action-group
+{
+	display: flex;
+}
+
+.slideshow__action-group .slideshow__action
+{
+	margin : 0;
+	border-radius : 0;
+
+	&:first-child
+	{
+		border-top-left-radius    : 50%;
+		border-bottom-left-radius : 50%;
+	}
+
+	&:last-child
+	{
+		border-top-right-radius    : 50%;
+		border-bottom-right-radius : 50%;
+	}
 }
 
 .slideshow__previous,

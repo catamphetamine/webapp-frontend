@@ -56,6 +56,7 @@ export default class Picture extends PureComponent
 			'image/svg+xml',
 			'image/jpeg',
 			'image/png',
+			'image/gif',
 			'image/webp'
 		]),
 
@@ -215,7 +216,7 @@ export default class Picture extends PureComponent
 						<img
 							ref={ this.picture }
 							src={ typeof window === 'undefined' ? TRANSPARENT_PIXEL : (this.url() || TRANSPARENT_PIXEL) }
-							style={ getImageStyle(fit) }
+							style={ getImageStyle(fit, this.isVector()) }
 							className="picture__image"/>
 				}
 
@@ -299,7 +300,7 @@ export default class Picture extends PureComponent
 				return Math.min(this.getWidth(), this.getContainerHeight() * this.getAspectRatio())
 			case 'scale-down':
 				if (this.isVector() || !size) {
-					return this.getWidth()
+					return Math.min(this.getWidth(), this.getContainerHeight() * this.getAspectRatio())
 				}
 				return Math.min(this.getWidth(), size.width)
 			default:
@@ -320,9 +321,9 @@ export default class Picture extends PureComponent
 				return Math.max(this.getContainerHeight(), this.getWidth() / this.getAspectRatio())
 			case 'contain':
 				return Math.min(this.getContainerHeight(), this.getWidth() / this.getAspectRatio())
-			case 'contain':
+			case 'scale-down':
 				if (this.isVector() || !size) {
-					return this.getContainerHeight()
+					return Math.min(this.getContainerHeight(), this.getWidth() / this.getAspectRatio())
 				}
 				return Math.min(this.getContainerHeight(), size.height)
 			default:
@@ -384,45 +385,48 @@ export function getPreferredSize(sizes, width, maxWidth)
 	return sizes[sizes.length - 1]
 }
 
+const IMAGE_STYLE_BASE =
+{
+	width  : '100%',
+	height : '100%',
+	borderRadius : 'inherit'
+}
+
 const IMAGE_STYLE_FIT_WIDTH =
 {
+	...IMAGE_STYLE_BASE,
+	width : 'auto',
+	height : 'auto',
 	maxWidth  : '100%',
-	maxHeight : '100%',
-	borderRadius : 'inherit'
+	maxHeight : '100%'
 }
 
 const IMAGE_STYLE_COVER =
 {
-	width  : '100%',
-	height : '100%',
-	objectFit : 'cover',
-	borderRadius : 'inherit'
+	...IMAGE_STYLE_BASE,
+	objectFit : 'cover'
 }
 
 const IMAGE_STYLE_CONTAIN =
 {
-	width  : '100%',
-	height : '100%',
-	objectFit : 'contain',
-	borderRadius : 'inherit'
+	...IMAGE_STYLE_BASE,
+	objectFit : 'contain'
 }
 
 const IMAGE_STYLE_SCALE_DOWN =
 {
-	width  : '100%',
-	height : '100%',
-	objectFit : 'scale-down',
-	borderRadius : 'inherit'
+	...IMAGE_STYLE_BASE,
+	objectFit : 'scale-down'
 }
 
-function getImageStyle(fit) {
+function getImageStyle(fit, isVector) {
 	switch (fit) {
 		case 'cover':
 			return IMAGE_STYLE_COVER
 		case 'contain':
 			return IMAGE_STYLE_CONTAIN
 		case 'scale-down':
-			return IMAGE_STYLE_SCALE_DOWN
+			return isVector ? IMAGE_STYLE_CONTAIN : IMAGE_STYLE_SCALE_DOWN
 		default:
 			return IMAGE_STYLE_FIT_WIDTH
 	}

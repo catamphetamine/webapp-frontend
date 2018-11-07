@@ -9,6 +9,9 @@ import { pictureShape } from '../PropTypes'
 import Close from '../../assets/images/icons/close.svg'
 import LeftArrow from '../../assets/images/icons/left-arrow-minimal.svg'
 import RightArrow from '../../assets/images/icons/right-arrow-minimal.svg'
+import Search from '../../assets/images/icons/search.svg'
+import Plus from '../../assets/images/icons/plus.svg'
+import Minus from '../../assets/images/icons/minus.svg'
 
 import './Slideshow.css'
 
@@ -31,22 +34,28 @@ class Slideshow extends React.Component {
 		panOffsetThresholdWidthRatio: PropTypes.number.isRequired,
 		slideInDuration: PropTypes.number.isRequired,
 		minSlideInDuration: PropTypes.number.isRequired,
+		scaleStep: PropTypes.number.isRequired,
+		mouseWheelScaleFactor: PropTypes.number.isRequired,
 		children: PropTypes.arrayOf(pictureShape) // .isRequired
 	}
 
 	static defaultProps = {
 		i: 0,
 		inline: false,
-		fullScreen: true,
+		fullScreen: false,
 		previousNextClickRatio: 0.33,
 		closeOnOverlayClick: true,
 		panOffsetThresholdWidthRatio: 0.05,
 		slideInDurationBaseWidth: 1980,
 		slideInDuration: 500,
-		minSlideInDuration: 150
+		minSlideInDuration: 150,
+		scaleStep: 0.5,
+		mouseWheelScaleFactor: 0.33
 	}
 
-	state = {}
+	state = {
+		scale: 1
+	}
 
 	container = React.createRef()
 	slides = React.createRef()
@@ -121,7 +130,31 @@ class Slideshow extends React.Component {
 
 	showPicture(i) {
 		this.markPicturesShown(i)
-		this.setState({ i })
+		this.setState({ i, scale: 1 })
+	}
+
+	scaleDown = (event, factor = 1) => {
+		this.setState(({ scale }, { scaleStep }) => ({
+			scale: scale / (1 + scaleStep * factor)
+		}))
+	}
+
+	scaleUp = (event, factor = 1) => {
+		this.setState(({ scale }, { scaleStep }) => ({
+			scale: scale * (1 + scaleStep * factor)
+		}))
+	}
+
+	scaleToggle = () => {
+		this.setState(({ scale }) => ({
+			scale: scale > 0.99 && scale < 1.01 ? this.getFullScreenScale() : 1
+		}))
+	}
+
+	getFullScreenScale = () => {
+		const fullScreenWidthScale = this.getSlideshowWidth() / this.getSlideWidth()
+		const fullScreenHeightScale = this.getSlideshowHeight() / this.getSlideHeight()
+		return Math.min(fullScreenWidthScale, fullScreenHeightScale)
 	}
 
 	getSlideshowWidth = () => this.slides.current.clientWidth
@@ -140,7 +173,8 @@ class Slideshow extends React.Component {
 	}
 
 	getSlideHeight() {
-		return this.getSlideWidth() / this.slide.current.getAspectRatio()
+		// return this.getSlideWidth() / this.slide.current.getAspectRatio()
+		return this.slide.current.getHeight()
 	}
 
 	onBackgroundClick = (event) => {
@@ -409,9 +443,23 @@ class Slideshow extends React.Component {
 		return inline
 	}
 
+	onWheel = (event) => {
+		const { inline, mouseWheelScaleFactor } = this.props
+		const { deltaY } = event
+
+		if (!inline) {
+			event.preventDefault()
+			if (deltaY < 0) {
+				this.scaleUp(null, mouseWheelScaleFactor)
+			} else {
+				this.scaleDown(null, mouseWheelScaleFactor)
+			}
+		}
+	}
+
 	render() {
 		const { isOpen, inline, children: pictures } = this.props
-		const { i, picturesShown } = this.state
+		const { i, scale, picturesShown } = this.state
 
 		if (!isOpen) {
 			return null
@@ -436,7 +484,8 @@ class Slideshow extends React.Component {
 				onMouseDown={this.onMouseDown}
 				onMouseUp={this.onMouseUp}
 				onMouseMove={this.onMouseMove}
-				onMouseLeave={this.onMouseLeave}>
+				onMouseLeave={this.onMouseLeave}
+				onWheel={this.onWheel}>
 				<ul
 					ref={this.slides}
 					style={{
@@ -458,13 +507,14 @@ class Slideshow extends React.Component {
 									onClick={this.onSlideClick}
 									fit={this.shouldUpscaleSmallImages() ? 'contain' : 'scale-down'}
 									showLoadingPlaceholder
-									className="slideshow__picture"/>
+									className="slideshow__picture"
+									style={j !== i || scale === 1 ? undefined : { transform: `scale(${scale})` }}/>
 							}
 						</li>
 					))}
 				</ul>
 
-				<ul className="slideshow__actions">
+				<ul className="slideshow__actions-top-right">
 					{!inline &&
 						<li>
 							<button
@@ -494,6 +544,31 @@ class Slideshow extends React.Component {
 						<RightArrow className="slideshow__action-icon"/>
 					</button>
 				}
+
+				<ul className="slideshow__actions-bottom">
+					{!inline &&
+						<li className="slideshow__action-group">
+							<button
+								type="button"
+								onClick={this.scaleDown}
+								className="rrui__button-reset slideshow__action">
+								<Minus className="slideshow__action-icon"/>
+							</button>
+							<button
+								type="button"
+								onClick={this.scaleToggle}
+								className="rrui__button-reset slideshow__action">
+								<Search className="slideshow__action-icon"/>
+							</button>
+							<button
+								type="button"
+								onClick={this.scaleUp}
+								className="rrui__button-reset slideshow__action">
+								<Plus className="slideshow__action-icon"/>
+							</button>
+						</li>
+					}
+				</ul>
 			</div>
 		);
 	}

@@ -1,10 +1,12 @@
-* Not upscale small images by default.
+* Make scale button disabled when image is bigger than full screen and is not scaled.
 
-* Add zoom buttons section in the bottom.
+* Не показывать close, если только одна картинка, и при этом не видео.
 
-* Add support for video in slideshow.
+* Прятать кнопки, если мышь не двигается, и нет тачей.
 
-* Switch database to AWS.
+* На десктопе выводить picture или video attachment слева. А если их несколько?
+
+* Add support for video in slideshow. Enlarge video (and its picture) to full width/height.
 
 * Show pagination "x/y" (when there are more than 8 pictures) or dots (when there are up to 8 pictures).
 
@@ -17,6 +19,8 @@
 * Add width and height for SVG images too because that will be used for `Picture.getAspectRatio()`.
 
 * Delete previous account picture when changing it.
+
+<!-- * Add zoom buttons section in the bottom. -->
 
 <!--
 * On next/prev show "preloading" spinner and only after the next/previous image loads do next/prev navigation. Lock while "preloading" (click, pan, keyboard).

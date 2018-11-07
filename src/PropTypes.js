@@ -11,6 +11,7 @@ export const pictureShape = shape({
 	type: oneOf([
 		'image/svg+xml',
 		'image/jpeg',
+		'image/gif',
 		'image/png',
 		'image/webp'
 	]).isRequired,
