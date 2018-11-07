@@ -158,6 +158,21 @@ class Slideshow extends React.Component {
 		}))
 	}
 
+	onScaleUp = (event) => {
+		event.stopPropagation()
+		this.scaleUp()
+	}
+
+	onScaleDown = (event) => {
+		event.stopPropagation()
+		this.scaleDown()
+	}
+
+	onScaleToggle = (event) => {
+		event.stopPropagation()
+		this.scaleToggle()
+	}
+
 	getFullScreenScale = () => {
 		const fullScreenWidthScale = this.getSlideshowWidth() / this.getSlideWidth()
 		const fullScreenHeightScale = this.getSlideshowHeight() / this.getSlideHeight()
@@ -233,9 +248,14 @@ class Slideshow extends React.Component {
 		}
 	}
 
-	close = () => {
+	close() {
 		const { onClose } = this.props
 		onClose()
+	}
+
+	onClose = (event) => {
+		event.stopPropagation()
+		this.close()
 	}
 
 	showPrevious() {
@@ -268,11 +288,13 @@ class Slideshow extends React.Component {
 	}
 
 	onShowPrevious = (event) => {
+		event.stopPropagation()
 		this.container.current.focus()
 		this.showPrevious()
 	}
 
 	onShowNext = (event) => {
+		event.stopPropagation()
 		this.container.current.focus()
 		this.showNext()
 	}
@@ -506,6 +528,7 @@ class Slideshow extends React.Component {
 				onMouseUp={this.onMouseUp}
 				onMouseMove={this.onMouseMove}
 				onMouseLeave={this.onMouseLeave}
+				onClick={this.onBackgroundClick}
 				onWheel={this.onWheel}>
 				<ul
 					ref={this.slides}
@@ -518,8 +541,7 @@ class Slideshow extends React.Component {
 					{pictures.map((picture, j) => (
 						<li
 							key={j}
-							className="slideshow__slide"
-							onClick={this.onBackgroundClick}>
+							className="slideshow__slide">
 							{picturesShown[j] &&
 								<Picture
 									ref={j === i ? this.slide : undefined}
@@ -540,7 +562,7 @@ class Slideshow extends React.Component {
 						<li>
 							<button
 								type="button"
-								onClick={this.close}
+								onClick={this.onClose}
 								className="rrui__button-reset slideshow__action">
 								<Close className="slideshow__action-icon"/>
 							</button>
@@ -571,19 +593,19 @@ class Slideshow extends React.Component {
 						<li className="slideshow__action-group">
 							<button
 								type="button"
-								onClick={this.scaleDown}
+								onClick={this.onScaleDown}
 								className="rrui__button-reset slideshow__action">
 								<Minus className="slideshow__action-icon"/>
 							</button>
 							<button
 								type="button"
-								onClick={this.scaleToggle}
+								onClick={this.onScaleToggle}
 								className="rrui__button-reset slideshow__action">
 								<Search className="slideshow__action-icon"/>
 							</button>
 							<button
 								type="button"
-								onClick={this.scaleUp}
+								onClick={this.onScaleUp}
 								className="rrui__button-reset slideshow__action">
 								<Plus className="slideshow__action-icon"/>
 							</button>
