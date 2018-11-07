@@ -179,6 +179,22 @@ class Slideshow extends React.Component {
 		return Math.min(fullScreenWidthScale, fullScreenHeightScale)
 	}
 
+	isFullScreenSlide = () => {
+		const { i } = this.state
+		const { children: pictures } = this.props
+
+		// No definite answer (`true` or `false`) could be
+		// given until slideshow dimensions are known.
+		if (!this.slides.current) {
+			return
+		}
+
+		const picture = pictures[i]
+		const maxSize = picture.sizes[picture.sizes.length - 1]
+		return maxSize.width >= this.getSlideshowWidth() ||
+			maxSize.height >= this.getSlideshowHeight()
+	}
+
 	getSlideshowWidth = () => this.slides.current.clientWidth
 	getSlideshowHeight = () => this.slides.current.clientHeight
 
@@ -589,7 +605,7 @@ class Slideshow extends React.Component {
 				}
 
 				<ul className="slideshow__actions-bottom">
-					{!inline &&
+					{!inline && this.isFullScreenSlide() === false &&
 						<li className="slideshow__action-group">
 							<button
 								type="button"
