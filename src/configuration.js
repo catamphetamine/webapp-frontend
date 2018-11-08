@@ -11,5 +11,7 @@ export default {
 	//  No 'Access-Control-Allow-Origin' header is present on the requested resource.
 	//  Origin 'http://localhost:3000' is therefore not allowed access."
 	//
-	api: `${configuration.services.api.secure ? 'https' : 'http'}://${configuration.services.api.host || 'localhost'}:${configuration.services.api.port}`
+	api: `${configuration.services.api.secure ? 'https' : 'http'}://${configuration.services.api.host || 'localhost'}:${configuration.services.api.port}`,
+	// https://console.developers.google.com/apis/credentials
+	youTubeApiKey: configuration.youtube && configuration.youtube.apiKey
 }

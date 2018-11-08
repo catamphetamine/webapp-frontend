@@ -54,9 +54,8 @@ const fileVideoSourceShape = shape({
 export const videoShape = shape({
 	title: string,
 	description: string,
-	width: number,
-	height: number,
 	duration: number,
+	aspectRatio: number,
 	picture: pictureShape.isRequired,
 	source: oneOfType([
 		providerVideoSourceShape,

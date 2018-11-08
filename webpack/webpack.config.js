@@ -97,7 +97,7 @@ module.exports =
 	// Plugins will be added to this array by extending configurations.
 	plugins: [
     new webpack.ProvidePlugin({
-      configuration: ['./configuration', 'default']
+      configuration: [path.resolve(PROJECT_ROOT, 'src/configuration'), 'default']
     })
 	]
 }
