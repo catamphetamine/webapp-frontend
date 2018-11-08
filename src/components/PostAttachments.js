@@ -9,7 +9,7 @@ import PostAudio from './PostAudio'
 
 import { postAttachmentShape } from '../PropTypes'
 
-import PlayVideoIcon from '../../assets/images/video-player-play-icon-overlay.svg'
+import VideoPlayIcon from './VideoPlayIcon'
 
 import './PostAttachments.css'
 
@@ -49,10 +49,10 @@ export default function PostAttachments({ openSlideshow, children: attachments }
 					{videos[0]}
 				</PostVideo>
 			}
-			{(thumbnailPictures.length > 1 || thumbnailVideos.length > 1) &&
+			{(thumbnailPictures.length > 0 || thumbnailVideos.length > 0) &&
 				<div className="post__thumbnail-attachments-container">
 					<ul className="post__thumbnail-attachments row">
-						{thumbnailPictures.length > 1 && thumbnailPictures.map(_ => _.picture).map((picture, i) => (
+						{thumbnailPictures.length > 0 && thumbnailPictures.map(_ => _.picture).map((picture, i) => (
 							<li
 								key={`picture-${i}`}
 								className="post__thumbnail-attachment col-4">
@@ -69,7 +69,7 @@ export default function PostAttachments({ openSlideshow, children: attachments }
 								</Picture>
 							</li>
 						))}
-						{thumbnailVideos.length > 1 && thumbnailVideos.map(_ => _.video).map((video, i) => (
+						{thumbnailVideos.length > 0 && thumbnailVideos.map(_ => _.video).map((video, i) => (
 							<li
 								key={`video-${i}`}
 								className="post__thumbnail-attachment col-4">
@@ -78,8 +78,7 @@ export default function PostAttachments({ openSlideshow, children: attachments }
 										fit="cover"
 										sizes={video.picture.sizes}
 										className="post__attachment-thumbnail aspect-ratio__content--hd"/>
-									<PlayVideoIcon
-										className="play-video-icon post__thumbnail-video-icon"/>
+									<VideoPlayIcon className="post__thumbnail-video-icon"/>
 								</div>
 							</li>
 						))}

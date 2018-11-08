@@ -70,27 +70,9 @@
 
 	&:hover
 	{
-		.post__video-icon
+		.video__play-icon-background
 		{
-			.play-icon-background
-			{
-				fill : rgba(0, 0, 0, 0.8);
-			}
+			fill : rgba(0, 0, 0, 0.8);
 		}
-	}
-}
-
-.play-video-icon
-{
-	pointer-events : none;
-
-	.play-icon-background
-	{
-		fill : rgba(0, 0, 0, 0.7);
-	}
-
-	.play-icon-triangle
-	{
-		fill : var(--white-color);
 	}
 }

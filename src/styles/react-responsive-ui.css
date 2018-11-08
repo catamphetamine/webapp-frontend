@@ -29,3 +29,28 @@
 {
 	opacity : 0;
 }
+
+.rrui__video__play-icon
+{
+	--icon-size : 20%;
+
+	top  : calc((100% - var(--icon-size)) / 2);
+	left : calc((100% - var(--icon-size)) / 2);
+	width  : var(--icon-size);
+	height : var(--icon-size);
+
+	@mixin xs-small
+	{
+		--icon-size : 30%;
+	}
+}
+
+.rrui__video__play-icon-background
+{
+	fill : rgba(0, 0, 0, 0.7);
+}
+
+.rrui__video__play-icon-triangle
+{
+	fill : var(--white-color);
+}

@@ -537,9 +537,9 @@ class Slideshow extends React.Component {
 			<div
 				ref={this.container}
 				tabIndex={-1}
-				className={classNames('slideshow', {
-					'slideshow--fullscreen': !inline
-					// 'slideshow--panning': this.isPanning
+				className={classNames('rrui__slideshow', {
+					'rrui__slideshow--fullscreen': !inline
+					// 'rrui__slideshow--panning': this.isPanning
 				})}
 				onKeyDown={this.onKeyDown}
 				onDragStart={this.onDragStart}
@@ -560,11 +560,11 @@ class Slideshow extends React.Component {
 						transform: this.slides.current ? this.getTransform() : undefined,
 						opacity: this.slides.current ? 1 : 0
 					}}
-					className="slideshow__slides">
+					className="rrui__slideshow__slides">
 					{pictures.map((picture, j) => (
 						<li
 							key={j}
-							className="slideshow__slide">
+							className="rrui__slideshow__slide">
 							{picturesShown[j] &&
 								<Picture
 									ref={j === i ? this.slide : undefined}
@@ -573,21 +573,21 @@ class Slideshow extends React.Component {
 									onClick={this.onSlideClick}
 									fit={this.shouldUpscaleSmallImages() ? 'contain' : 'scale-down'}
 									showLoadingPlaceholder
-									className="slideshow__picture"
+									className="rrui__slideshow__picture"
 									style={j !== i || scale === 1 ? undefined : { transform: `scale(${scale})` }}/>
 							}
 						</li>
 					))}
 				</ul>
 
-				<ul className="slideshow__actions-top-right">
+				<ul className="rrui__slideshow__actions-top-right">
 					{!inline && pictures.length > 1 &&
 						<li>
 							<button
 								type="button"
 								onClick={this.onClose}
-								className="rrui__button-reset slideshow__action">
-								<Close className="slideshow__action-icon"/>
+								className="rrui__button-reset rrui__slideshow__action">
+								<Close className="rrui__slideshow__action-icon"/>
 							</button>
 						</li>
 					}
@@ -597,8 +597,8 @@ class Slideshow extends React.Component {
 					<button
 						type="button"
 						onClick={this.onShowPrevious}
-						className="rrui__button-reset slideshow__action slideshow__previous">
-						<LeftArrow className="slideshow__action-icon"/>
+						className="rrui__button-reset rrui__slideshow__action rrui__slideshow__previous">
+						<LeftArrow className="rrui__slideshow__action-icon"/>
 					</button>
 				}
 
@@ -606,31 +606,31 @@ class Slideshow extends React.Component {
 					<button
 						type="button"
 						onClick={this.onShowNext}
-						className="rrui__button-reset slideshow__action slideshow__next">
-						<RightArrow className="slideshow__action-icon"/>
+						className="rrui__button-reset rrui__slideshow__action rrui__slideshow__next">
+						<RightArrow className="rrui__slideshow__action-icon"/>
 					</button>
 				}
 
-				<ul className="slideshow__actions-bottom">
+				<ul className="rrui__slideshow__actions-bottom">
 					{!inline && this.isFullScreenSlide() === false &&
-						<li className="slideshow__action-group">
+						<li className="rrui__slideshow__action-group">
 							<button
 								type="button"
 								onClick={this.onScaleDown}
-								className="rrui__button-reset slideshow__action">
-								<Minus className="slideshow__action-icon"/>
+								className="rrui__button-reset rrui__slideshow__action">
+								<Minus className="rrui__slideshow__action-icon"/>
 							</button>
 							<button
 								type="button"
 								onClick={this.onScaleToggle}
-								className="rrui__button-reset slideshow__action">
-								<Search className="slideshow__action-icon"/>
+								className="rrui__button-reset rrui__slideshow__action">
+								<Search className="rrui__slideshow__action-icon"/>
 							</button>
 							<button
 								type="button"
 								onClick={this.onScaleUp}
-								className="rrui__button-reset slideshow__action">
-								<Plus className="slideshow__action-icon"/>
+								className="rrui__button-reset rrui__slideshow__action">
+								<Plus className="rrui__slideshow__action-icon"/>
 							</button>
 						</li>
 					}

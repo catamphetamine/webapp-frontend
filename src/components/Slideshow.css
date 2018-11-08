@@ -10,7 +10,7 @@
 	--slideshow-button-margin       : var(--unit);
 }
 
-.slideshow
+.rrui__slideshow
 {
 	background-color : rgba(0,0,0,0.875);
 
@@ -24,7 +24,7 @@
 	touch-action : pan-y;
 }
 
-.slideshow--fullscreen
+.rrui__slideshow--fullscreen
 {
 	position : fixed;
 	left     : 0;
@@ -33,7 +33,7 @@
 	bottom   : 0;
 }
 
-.slideshow__slides
+.rrui__slideshow__slides
 {
 	display : flex;
 	align-items : center;
@@ -50,25 +50,25 @@
 	transition-property : transform;
 }
 
-.slideshow__slide
+.rrui__slideshow__slide
 {
 	flex : 0 0 100%;
 	height : 100%;
 }
 
-.slideshow__slides--dragging
+.rrui__slideshow__slides--dragging
 {
 	transition-duration: 0s;
 	transform: translateX(-600px);
 }
 
-.slideshow__slides--released
+.rrui__slideshow__slides--released
 {
 	transition-duration: 0.01234s;
 	transform: translateX(-789px);
 }
 
-.slideshow__picture
+.rrui__slideshow__picture
 {
 	height : 100%;
 
@@ -83,23 +83,23 @@
 `cursor : pointer` doesn't really work here,
 because `object-fit` is set to `contain` or `scale-down` here,
 and so cursor would be shown as a pointer even outside the actual image.
-.slideshow__picture .picture__image
+.rrui__slideshow__picture .rrui__picture__image
 {
 	cursor : pointer;
 }
 */
 
-.slideshow--panning .slideshow__picture .picture__image
+.rrui__slideshow--panning .rrui__slideshow__picture .rrui__picture__image
 {
 	cursor : grabbing;
 }
 
-.slideshow__picture .picture__loading
+.rrui__slideshow__picture .rrui__picture__loading
 {
 	color : var(--white-color);
 }
 
-.slideshow__actions-top-right
+.rrui__slideshow__actions-top-right
 {
 	position : absolute;
 	top    : var(--slideshow-button-margin);
@@ -119,7 +119,7 @@ and so cursor would be shown as a pointer even outside the actual image.
 	}
 }
 
-.slideshow__actions-bottom
+.rrui__slideshow__actions-bottom
 {
 	position : absolute;
 	left   : 0;
@@ -139,7 +139,7 @@ and so cursor would be shown as a pointer even outside the actual image.
 	}
 }
 
-.slideshow__action
+.rrui__slideshow__action
 {
 	display  : block;
 	position : relative;
@@ -164,7 +164,7 @@ and so cursor would be shown as a pointer even outside the actual image.
 	}
 }
 
-.slideshow__actions-top-right .slideshow__action
+.rrui__slideshow__actions-top-right .rrui__slideshow__action
 {
 	margin-left : var(--slideshow-button-margin);
 
@@ -174,8 +174,8 @@ and so cursor would be shown as a pointer even outside the actual image.
 	}
 }
 
-.slideshow__actions-bottom .slideshow__action,
-.slideshow__actions-bottom .slideshow__action-group
+.rrui__slideshow__actions-bottom .rrui__slideshow__action,
+.rrui__slideshow__actions-bottom .rrui__slideshow__action-group
 {
 	margin-left  : var(--slideshow-button-margin);
 	margin-right : var(--slideshow-button-margin);
@@ -187,15 +187,15 @@ and so cursor would be shown as a pointer even outside the actual image.
 	}
 }
 
-.slideshow__action:hover {
+.rrui__slideshow__action:hover {
 	background-color : var(--base-color);
 }
 
-.slideshow__action:active {
+.rrui__slideshow__action:active {
 	background-color : var(--base-color);
 }
 
-.slideshow__action-icon
+.rrui__slideshow__action-icon
 {
 	position : absolute;
 	top      : 25%;
@@ -203,12 +203,12 @@ and so cursor would be shown as a pointer even outside the actual image.
 	width    : 50%;
 }
 
-.slideshow__action-group
+.rrui__slideshow__action-group
 {
 	display: flex;
 }
 
-.slideshow__action-group .slideshow__action
+.rrui__slideshow__action-group .rrui__slideshow__action
 {
 	margin : 0;
 	border-radius : 0;
@@ -226,8 +226,8 @@ and so cursor would be shown as a pointer even outside the actual image.
 	}
 }
 
-.slideshow__previous,
-.slideshow__next
+.rrui__slideshow__previous,
+.rrui__slideshow__next
 {
 	position  : absolute;
 	top       : 50%;
@@ -242,12 +242,12 @@ and so cursor would be shown as a pointer even outside the actual image.
 	}
 }
 
-.slideshow__previous
+.rrui__slideshow__previous
 {
 	left : 0;
 }
 
-.slideshow__next
+.rrui__slideshow__next
 {
 	right : 0;
 }

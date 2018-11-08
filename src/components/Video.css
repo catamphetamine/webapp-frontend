@@ -3,7 +3,7 @@ http://embedresponsively.com/
 `padding-bottom` is in width percentage
 and that's how the embedded video's aspect ratio is set.
 */
-.video
+.rrui__video
 {
 	position  : relative;
 	height    : 0;
@@ -11,9 +11,9 @@ and that's how the embedded video's aspect ratio is set.
 	max-width : 100%;
 }
 
-.video iframe,
-.video object,
-.video embed
+.rrui__video iframe,
+.rrui__video object,
+.rrui__video embed
 {
 	position : absolute;
 	top      : 0;
@@ -21,3 +21,31 @@ and that's how the embedded video's aspect ratio is set.
 	width    : 100%;
 	height   : 100%;
 }
+
+:root
+{
+	--rrui-video-play-icon-size: 22%;
+}
+
+.rrui__video .rrui__video__play-button
+{
+	position : absolute;
+	top  : calc((100% - var(--rrui-video-play-icon-size)) / 2);
+	left : calc((100% -var(--rrui-video-play-icon-size)) / 2);
+	width  : var(--rrui-video-play-icon-size);
+	height : var(--rrui-video-play-icon-size);
+	pointer-events : none;
+}
+
+.rrui__video .rrui__video__play-icon
+{
+	width  : 100%;
+	height : 100%;
+}
+
+/*
+.rrui__video .rrui__picture__image
+{
+	width : 100%;
+}
+*/

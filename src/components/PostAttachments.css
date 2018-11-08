@@ -40,8 +40,19 @@
 	padding-right : calc(var(--post-content-spacing) / 2);
 }
 
-.post__attachment-thumbnail
+.post__thumbnail-attachment .rrui__video__play-icon
 {
+	position : absolute;
+	left   : calc((100% - var(--size)) / 2);
+	top    : calc((100% - var(--size)) / 2);
+	width  : var(--size);
+	height : var(--size);
+
+	--size: 40%;
+
+	@mixin xs {
+		--size: 50%;
+	}
 }
 
 .post__attachment-thumbnail-more

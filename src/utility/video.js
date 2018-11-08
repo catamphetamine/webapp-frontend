@@ -21,6 +21,6 @@ export async function parseVideoLink(url) {
 // 	return await VIDEO_PROVIDERS[provider].getPicture(id)
 // }
 
-export function getEmbeddedVideoURL(id, provider) {
-	return VIDEO_PROVIDERS[provider].getEmbeddedVideoURL(id)
+export function getEmbeddedVideoURL(id, provider, options) {
+	return VIDEO_PROVIDERS[provider].getEmbeddedVideoURL(id, options)
 }

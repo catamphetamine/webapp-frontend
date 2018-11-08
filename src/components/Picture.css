@@ -1,6 +1,6 @@
 @import "../styles/common";
 
-.picture
+.rrui__picture
 {
 	position      : relative;
 	font-size     : 0;
@@ -9,20 +9,20 @@
 }
 
 /*
-.picture--cover
+.rrui__picture--cover
 {
 	background-size : cover;
 	background-position : center center;
 }
 */
 
-.picture--repeat-x
+.rrui__picture--repeat-x
 {
 	height : 100%;
 	background-repeat : repeat;
 }
 
-.picture--border:after
+.rrui__picture--border:after
 {
 	position      : absolute;
 	left          : 0;
@@ -34,18 +34,18 @@
 	border-radius : inherit;
 }
 
-.picture--hd
+.rrui__picture--hd
 {
 	/* 16:9 aspect ratio */
 	padding-bottom : 56.25%;
 }
 
-.picture--hd .picture__image
+.rrui__picture--hd .rrui__picture__image
 {
 	position : absolute;
 }
 
-.picture__loading-container
+.rrui__picture__loading-container
 {
 	position        : absolute;
 	width           : 100%;
@@ -56,14 +56,14 @@
 	overflow        : hidden;
 }
 
-.picture__loading
+.rrui__picture__loading
 {
 	width  : calc(var(--unit) * 2);
 	height : calc(var(--unit) * 2);
 	color  : var(--white-color);
 }
 
-.picture__loading--error
+.rrui__picture__loading--error
 {
 	transform : scale(0.7);
 	cursor : pointer;

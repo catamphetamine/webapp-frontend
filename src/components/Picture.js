@@ -177,11 +177,11 @@ export default class Picture extends PureComponent
 			<div
 				ref={ this.container }
 				style={ style }
-				className={ classNames('picture', {
-					'picture--repeat-x' : fit === 'repeat-x',
-					// 'picture--cover' : fit === 'cover',
-					// 'picture--contain' : fit === 'contain',
-					'picture--border' : border
+				className={ classNames('rrui__picture', {
+					'rrui__picture--repeat-x' : fit === 'repeat-x',
+					// 'rrui__picture--cover' : fit === 'cover',
+					// 'rrui__picture--contain' : fit === 'contain',
+					'rrui__picture--border' : border
 				},
 				className) }
 				{...rest}>
@@ -193,15 +193,15 @@ export default class Picture extends PureComponent
 				`this.getWidth()` returns screen width and not the actual
 				`<div/>` width, so aspect ratio is unknown at mount in those cases. */}
 				{ !initialImageLoaded && fit !== 'width' && showLoadingPlaceholder &&
-					<div className="picture__loading-container">
+					<div className="rrui__picture__loading-container">
 						<FadeInOut show fadeInInitially fadeInDuration={3000} fadeOutDuration={3000}>
 							{initialImageLoadError	?
 								<Close
 									onClick={this.retryInitialImageLoad}
 									title="Retry"
-									className="picture__loading picture__loading--error"/>
+									className="rrui__picture__loading rrui__picture__loading--error"/>
 								:
-								<ActivityIndicator className="picture__loading"/>
+								<ActivityIndicator className="rrui__picture__loading"/>
 							}
 						</FadeInOut>
 					</div>
@@ -217,7 +217,7 @@ export default class Picture extends PureComponent
 							ref={ this.picture }
 							src={ typeof window === 'undefined' ? TRANSPARENT_PIXEL : (this.url() || TRANSPARENT_PIXEL) }
 							style={ getImageStyle(fit, this.isVector()) }
-							className="picture__image"/>
+							className="rrui__picture__image"/>
 				}
 
 				{ children }
@@ -395,10 +395,11 @@ const IMAGE_STYLE_BASE =
 const IMAGE_STYLE_FIT_WIDTH =
 {
 	...IMAGE_STYLE_BASE,
-	width : 'auto',
+	// width : 'auto',
 	height : 'auto',
-	maxWidth  : '100%',
-	maxHeight : '100%'
+	objectFit : 'contain',
+	// maxWidth  : '100%',
+	// maxHeight : '100%'
 }
 
 const IMAGE_STYLE_COVER =

@@ -39,9 +39,11 @@ const providerVideoSourceShape = shape({
 
 const fileVideoSourceShape = shape({
 	type: oneOf([
-		'video/mp4'
+		'video/mp4',
+		'video/ogg',
+		'video/webm'
 	]).isRequired,
-	sourceType: oneOf(['file']).isRequired,
+	provider: oneOf(['file']).isRequired,
 	sizes: arrayOf(shape({
 		url: string.isRequired,
 		width: number.isRequired,
@@ -70,9 +72,9 @@ const providerAudioSourceShape = shape({
 const fileAudioSourceShape = shape({
 	type: oneOf([
 		'audio/mpeg',
-		'audio/ogg',
+		'audio/ogg'
 	]).isRequired,
-	sourceType: oneOf(['file']).isRequired,
+	provider: oneOf(['file']).isRequired,
 	sizes: arrayOf(shape({
 		url: string.isRequired,
 		bitrate: number.isRequired
