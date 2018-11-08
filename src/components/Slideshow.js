@@ -36,7 +36,12 @@ class Slideshow extends React.Component {
 		minSlideInDuration: PropTypes.number.isRequired,
 		scaleStep: PropTypes.number.isRequired,
 		mouseWheelScaleFactor: PropTypes.number.isRequired,
-		children: PropTypes.arrayOf(pictureShape) // .isRequired
+		children: PropTypes.arrayOf(PropTypes.oneOfType([
+			pictureShape,
+			PropTypes.shape({
+				picture: pictureShape.isRequired
+			})
+		])).isRequired
 	}
 
 	static defaultProps = {
@@ -133,20 +138,22 @@ class Slideshow extends React.Component {
 		this.setState({ i, scale: 1 })
 	}
 
-	scaleDown = (event, factor = 1) => {
-		this.setState(({ scale }, { scaleStep }) => ({
-			scale: Math.max(
-				scale / (1 + scaleStep * factor),
-				1
-			)
-		}))
-	}
-
 	scaleUp = (event, factor = 1) => {
 		this.setState(({ scale }, { scaleStep }) => ({
 			scale: Math.min(
 				scale * (1 + scaleStep * factor),
 				this.getFullScreenScale()
+			)
+		}))
+	}
+
+	scaleDown = (event, factor = 1) => {
+		this.setState(({ scale }, { scaleStep }) => ({
+			scale: Math.max(
+				scale / (1 + scaleStep * factor),
+				// Won't scale down past the original 1:1 size.
+				// (for non-vector images)
+				this.slide.current.isVector() ? 0 : 1
 			)
 		}))
 	}

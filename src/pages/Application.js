@@ -68,12 +68,14 @@ export default class App extends Component
 				<Snackbar/>
 
 				{/* Picture Slideshow */}
-				<Slideshow
-					i={slideshowIndex}
-					isOpen={slideshowIsOpen}
-					onClose={closeSlideshow}>
-					{slideshowPictures}
-				</Slideshow>
+				{slideshowPictures &&
+					<Slideshow
+						i={slideshowIndex}
+						isOpen={slideshowIsOpen}
+						onClose={closeSlideshow}>
+						{slideshowPictures}
+					</Slideshow>
+				}
 
 				<div className="webpage">
 					<Header/>

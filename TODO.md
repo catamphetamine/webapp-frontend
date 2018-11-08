@@ -1,4 +1,10 @@
-* Make scale button disabled when image is bigger than full screen and is not scaled.
+* Если изначально кликнутая картинка - видео, то сразу рендерить iframe с видео.
+
+* Добавить поддержку файлов mp4 и webm напрямую (Video и Slideshow) (+ thumbnail image).
+
+https://2ch.hk/v/src/3492256/15415341630910.mp4 (1280 x 720)
+
+https://2ch.hk/v/src/3492256/15414932676150.webm (1280 x 720)
 
 * Не показывать close, если только одна картинка, и при этом не видео.
 
