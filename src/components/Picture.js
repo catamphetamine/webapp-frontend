@@ -141,6 +141,7 @@ export default class Picture extends PureComponent
 			className,
 			children,
 			// Rest.
+			type,
 			sizes,
 			...rest
 		}
@@ -475,7 +476,7 @@ function prefetchImage(url)
 	return new Promise((resolve, reject) =>
 	{
 		const image = new Image()
-		image.onload = () => resolve()
+		image.onload = () => setTimeout(resolve, 5000)
 		image.onerror = reject
 		image.src = url
 	})
