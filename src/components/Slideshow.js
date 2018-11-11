@@ -31,7 +31,8 @@ class Slideshow extends React.Component {
 		fullScreen: PropTypes.bool.isRequired,
 		previousNextClickRatio: PropTypes.number.isRequired,
 		closeOnOverlayClick: PropTypes.bool.isRequired,
-		panOffsetThresholdWidthRatio: PropTypes.number.isRequired,
+		panOffsetThreshold: PropTypes.number.isRequired,
+		panOffsetPrevNextWidthRatioThreshold: PropTypes.number.isRequired,
 		slideInDuration: PropTypes.number.isRequired,
 		minSlideInDuration: PropTypes.number.isRequired,
 		scaleStep: PropTypes.number.isRequired,
@@ -48,9 +49,11 @@ class Slideshow extends React.Component {
 		i: 0,
 		inline: false,
 		fullScreen: false,
-		previousNextClickRatio: 0.33,
+		// previousNextClickRatio: 0.33,
+		previousNextClickRatio: 0,
 		closeOnOverlayClick: true,
-		panOffsetThresholdWidthRatio: 0.05,
+		panOffsetThreshold: 5,
+		panOffsetPrevNextWidthRatioThreshold: 0.05,
 		slideInDurationBaseWidth: 1980,
 		slideInDuration: 500,
 		minSlideInDuration: 150,
@@ -73,10 +76,10 @@ class Slideshow extends React.Component {
 	{
 		super(props)
 
-		const { i, children: pictures } = this.props
+		const { i, children: slides } = this.props
 
 		this.state.i = i
-		this.state.picturesShown = new Array(pictures.length)
+		this.state.slidesShown = new Array(slides.length)
 
 		this.markPicturesShown(i)
 	}
@@ -94,6 +97,7 @@ class Slideshow extends React.Component {
 		window.addEventListener('resize', this.onWindowResize)
 		// `this.slides.current` is now available for `this.getSlideshowWidth()`.
 		this.forceUpdate()
+		this._isMounted = true
 	}
 
 	componentWillUnmount() {
@@ -107,7 +111,12 @@ class Slideshow extends React.Component {
 		}
 		clearTimeout(this.transitionEndTimer)
 		window.removeEventListener('resize', this.onWindowResize)
+		this._isMounted = false
 	}
+
+	// Only execute `fn` if the component is still mounted.
+	// Can be used for `setTimeout()` and `Promise`s.
+	ifStillMounted = (fn) => (...args) => this._isMounted && fn.apply(this, args)
 
 	onWindowResize = throttle((event) => this.onResize(), 100)
 
@@ -121,14 +130,14 @@ class Slideshow extends React.Component {
 	}
 
 	markPicturesShown(i) {
-		const { children: pictures } = this.props
-		const { picturesShown } = this.state
+		const { children: slides } = this.props
+		const { slidesShown } = this.state
 
 		let j = 0
-		while (j < pictures.length) {
+		while (j < slides.length) {
 			// Also prefetch previous and next images for mobile scrolling.
-			picturesShown[j] = j === i - 1 || j === i || j === i + 1
-			// picturesShown[j] = j === i
+			slidesShown[j] = j === i - 1 || j === i || j === i + 1
+			// slidesShown[j] = j === i
 			j++
 		}
 	}
@@ -188,7 +197,7 @@ class Slideshow extends React.Component {
 
 	isFullScreenSlide = () => {
 		const { i } = this.state
-		const { children: pictures } = this.props
+		const { children: slides } = this.props
 
 		// No definite answer (`true` or `false`) could be
 		// given until slideshow dimensions are known.
@@ -196,7 +205,7 @@ class Slideshow extends React.Component {
 			return
 		}
 
-		const picture = pictures[i]
+		const picture = slides[i]
 		const maxSize = picture.sizes[picture.sizes.length - 1]
 		return maxSize.width >= this.getSlideshowWidth() ||
 			maxSize.height >= this.getSlideshowHeight()
@@ -224,7 +233,7 @@ class Slideshow extends React.Component {
 
 	onBackgroundClick = (event) => {
 		const { closeOnOverlayClick } = this.props
-		if (!event.defaultPrevented && closeOnOverlayClick) {
+		if (closeOnOverlayClick) {
 			this.close()
 		}
 	}
@@ -232,14 +241,15 @@ class Slideshow extends React.Component {
 	onSlideClick = (event) => {
 		const {
 			previousNextClickRatio,
-			closeOnOverlayClick,
-			children: pictures
+			closeOnOverlayClick
 		} = this.props
 
 		const { i } = this.state
 
-		// Make background clicks fall through.
-		if (event.target !== this.slide.current.picture.current) {
+		// A "click" event is emitted on mouse up
+		// when a user finishes panning to next/previous slide.
+		if (this.wasPanning) {
+			event.stopPropagation()
 			return
 		}
 
@@ -248,10 +258,12 @@ class Slideshow extends React.Component {
 		const deltaWidth = this.getSlideshowWidth() - this.getSlideWidth()
 		const deltaHeight = this.getSlideshowHeight() - this.getSlideHeight()
 
+		// Calculate normalized (from 0 to 1) click position relative to the slide.
 		const clickPositionX = (event.clientX - deltaWidth / 2) / this.getSlideWidth()
 		const clickPositionY = (event.clientY - deltaHeight / 2) / this.getSlideHeight()
 
-		// If clicked outside the image then fall through.
+		// If clicked outside the image then
+		// the click event should fall through.
 		if (closeOnOverlayClick &&
 			(
 				(clickPositionX < 0 || clickPositionX > 1)
@@ -262,7 +274,7 @@ class Slideshow extends React.Component {
 			return
 		}
 
-		event.preventDefault()
+		event.stopPropagation()
 
 		if (clickPositionX < previousNextClickRatio) {
 			this.showPrevious()
@@ -305,9 +317,9 @@ class Slideshow extends React.Component {
 	}
 
 	isLast() {
-		const { children: pictures } = this.props
+		const { children: slides } = this.props
 		const { i } = this.state
-		return i === pictures.length - 1
+		return i === slides.length - 1
 	}
 
 	onShowPrevious = (event) => {
@@ -377,7 +389,7 @@ class Slideshow extends React.Component {
 			// Reset.
 			return this.onTouchCancel()
 		}
-		if (isAButton(event.target)) {
+		if (isButton(event.target)) {
 			return
 		}
 		this.onPanStart(event.changedTouches[0].clientX)
@@ -400,7 +412,7 @@ class Slideshow extends React.Component {
 	}
 
 	onMouseDown = (event) => {
-		if (isAButton(event.target)) {
+		if (isButton(event.target)) {
 			return
 		}
 		this.onPanStart(event.clientX)
@@ -438,16 +450,16 @@ class Slideshow extends React.Component {
 
 	onPanEnd() {
 		const {
-			panOffsetThresholdWidthRatio,
+			panOffsetPrevNextWidthRatioThreshold,
 			slideInDuration,
 			minSlideInDuration,
 			slideInDurationBaseWidth
 		} = this.props
 
 		const pannedWidthRatio = this.panOffset / this.getSlideshowWidth()
-		if (pannedWidthRatio < -1 * panOffsetThresholdWidthRatio) {
+		if (pannedWidthRatio < -1 * panOffsetPrevNextWidthRatioThreshold) {
 			this.showNext()
-		} else if (pannedWidthRatio > panOffsetThresholdWidthRatio) {
+		} else if (pannedWidthRatio > panOffsetPrevNextWidthRatioThreshold) {
 			this.showPrevious()
 		}
 		if (this.panOffset !== 0) {
@@ -456,20 +468,38 @@ class Slideshow extends React.Component {
 			this.panOffset = 0
 			this.updateSlidePosition()
 			this.transitionOngoing = true
-			this.transitionEndTimer = setTimeout(this.onTransitionEnd, this.transitionDuration)
+			this.transitionEndTimer = setTimeout(this.ifStillMounted(this.onTransitionEnd), this.transitionDuration)
 		}
 		this.container.current.classList.remove('slideshow--panning')
+		this.wasPanning = this.isActuallyPanning
+		setTimeout(this.ifStillMounted(() => this.wasPanning = false), 0)
+		this.isActuallyPanning = false
 		this.isPanning = false
 	}
 
 	onPan(position) {
+		const { panOffsetThreshold } = this.props
+
+		if (!this.isActuallyPanning) {
+			const panOffset = position - this.panOrigin
+			// Don't treat accidental `touchmove`
+			// (or `mousemove`) events as panning.
+			if (Math.abs(panOffset) <= panOffsetThreshold) {
+				return
+			}
+			this.panOrigin = this.panOrigin + Math.sign(panOffset) * panOffsetThreshold
+			this.isActuallyPanning = true
+		}
+
 		this.panOffset = position - this.panOrigin
+
 		// Emulate pan resistance when there are
-		// no more pictures to navigate to.
+		// no more slides to navigate to.
 		if ((this.isFirst() && this.panOffset > 0) ||
 			(this.isLast() && this.panOffset < 0)) {
 			this.panOffset = this.emulatePanResistance(this.panOffset)
 		}
+
 		this.updateSlidePosition()
 	}
 
@@ -524,8 +554,8 @@ class Slideshow extends React.Component {
 	}
 
 	render() {
-		const { isOpen, inline, children: pictures } = this.props
-		const { i, scale, picturesShown } = this.state
+		const { isOpen, inline, children: slides } = this.props
+		const { i, scale, slidesShown } = this.state
 
 		if (!isOpen) {
 			return null
@@ -561,11 +591,11 @@ class Slideshow extends React.Component {
 						opacity: this.slides.current ? 1 : 0
 					}}
 					className="rrui__slideshow__slides">
-					{pictures.map((picture, j) => (
+					{slides.map((picture, j) => (
 						<li
 							key={j}
 							className="rrui__slideshow__slide">
-							{picturesShown[j] &&
+							{slidesShown[j] &&
 								<Picture
 									ref={j === i ? this.slide : undefined}
 									sizes={picture.sizes}
@@ -581,7 +611,7 @@ class Slideshow extends React.Component {
 				</ul>
 
 				<ul className="rrui__slideshow__actions-top-right">
-					{!inline && pictures.length > 1 &&
+					{!inline && slides.length > 1 &&
 						<li>
 							<button
 								type="button"
@@ -593,7 +623,7 @@ class Slideshow extends React.Component {
 					}
 				</ul>
 
-				{pictures.length > 1 && i > 0 &&
+				{slides.length > 1 && i > 0 &&
 					<button
 						type="button"
 						onClick={this.onShowPrevious}
@@ -602,7 +632,7 @@ class Slideshow extends React.Component {
 					</button>
 				}
 
-				{pictures.length > 1 && i < pictures.length - 1 &&
+				{slides.length > 1 && i < slides.length - 1 &&
 					<button
 						type="button"
 						onClick={this.onShowNext}
@@ -683,12 +713,12 @@ function getTranslateX(element) {
 	return getComputedStyle(element).transform.match(/\d+/g)[4]
 }
 
-function isAButton(element) {
+function isButton(element) {
 	if (element.tagName === 'BUTTON') {
 		return true
 	}
 	if (element.parentNode) {
-		return isAButton(element.parentNode)
+		return isButton(element.parentNode)
 	}
 	return false
 }
