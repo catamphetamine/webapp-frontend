@@ -476,7 +476,8 @@ function prefetchImage(url)
 	return new Promise((resolve, reject) =>
 	{
 		const image = new Image()
-		image.onload = () => setTimeout(resolve, 5000)
+		// image.onload = () => setTimeout(resolve, 1000)
+		image.onload = resolve
 		image.onerror = reject
 		image.src = url
 	})
