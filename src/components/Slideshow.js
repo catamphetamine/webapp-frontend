@@ -135,11 +135,28 @@ class Slideshow extends React.Component {
 
 		let j = 0
 		while (j < slides.length) {
-			// Also prefetch previous and next images for mobile scrolling.
-			slidesShown[j] = j === i - 1 || j === i || j === i + 1
-			// slidesShown[j] = j === i
+			// Also prefetch previous and next images for left/right scrolling.
+			slidesShown[j] =
+				(this.shouldPreloadPrevousSlide() && j === i - 1) ||
+				j === i ||
+				(this.shouldPreloadNextSlide() && j === i + 1)
 			j++
 		}
+	}
+
+	// Only preload previous slide if the user already scrolled through slides.
+	// Which means preload previous slides if the user has already navigated to a previous slide.
+	shouldPreloadPrevousSlide() {
+		return this.didScrollThroughSlides
+	}
+
+	// Only preload next slide if the user already scrolled through slides
+	// (which means preload previous slides if the user has already navigated to a previous slide),
+	// or when viewing slideshow starting from the first slide
+	// (which implies navigating through all slides in perspective).
+	shouldPreloadNextSlide() {
+		const { i } = this.props
+		return this.didScrollThroughSlides || i === 0
 	}
 
 	showPicture(i) {
@@ -298,6 +315,7 @@ class Slideshow extends React.Component {
 		if (this.isFirst()) {
 			this.close()
 		} else {
+			this.didScrollThroughSlides = true
 			this.showPicture(i - 1)
 		}
 	}
@@ -307,6 +325,7 @@ class Slideshow extends React.Component {
 		if (this.isLast()) {
 			this.close()
 		} else {
+			this.didScrollThroughSlides = true
 			this.showPicture(i + 1)
 		}
 	}
