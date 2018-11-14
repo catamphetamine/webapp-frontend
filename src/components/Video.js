@@ -5,26 +5,85 @@ import classNames from 'classnames'
 import { videoShape } from '../PropTypes'
 import { getEmbeddedVideoURL } from '../utility/video'
 
-import Picture from './Picture'
+import Picture, { getMaxSize as getMaxPictureSize } from './Picture'
 import VideoPlayIcon from './VideoPlayIcon'
 
 import './Video.css'
 
 export default class Video extends React.Component {
 	state = {
-		showPreview: this.props.showPreview && this.props.video.picture
+		showPreview: this.props.showPreview, // && this.props.video.picture,
+		autoPlay: this.props.autoPlay
+	}
+
+	componentDidUpdate(prevProps) {
+		// On `showPreview` property change.
+		if (this.props.showPreview !== prevProps.showPreview) {
+			this.setState({
+				showPreview: this.props.showPreview
+			})
+		}
+		// On `autoPlay` property change.
+		if (this.props.autoPlay !== prevProps.autoPlay) {
+			this.setState({
+				autoPlay: this.props.autoPlay
+			})
+		}
+		// On `canPlay` property change.
+		if (this.props.canPlay !== prevProps.canPlay) {
+			if (!this.props.canPlay && this.props.showPreview) {
+				this.setState({
+					showPreview: true,
+					autoPlay: false
+				})
+			}
+		}
 	}
 
 	showVideo = () => this.setState({
 		showPreview: false,
-		autoplay: true
+		autoPlay: true
 	})
+
+	getContainerStyle() {
+		const {
+			video,
+			fit,
+			maxWidth,
+			maxHeight
+		} = this.props
+		switch (fit) {
+			case 'width':
+				return {
+					paddingBottom: 100 / getAspectRatio(video) + '%'
+				}
+			case 'scale-down':
+				let maxSize = getMaxSize(video)
+				if (maxWidth && maxHeight) {
+					maxSize = scaleDownSize(maxSize, maxWidth, maxHeight)
+				}
+				return {
+					maxWidth: maxSize.width,
+					maxHeight: maxSize.height
+				}
+		}
+	}
+
+	onPreviewClick = (event) => {
+		const { playOnClick } = this.props
+		if (playOnClick) {
+			this.showVideo()
+		}
+	}
 
 	render() {
 		const {
 			video,
+			fit,
 			// width,
 			// height,
+			onClick,
+			style,
 			className
 		} = this.props
 
@@ -32,23 +91,22 @@ export default class Video extends React.Component {
 			showPreview
 		} = this.state
 
-		let aspectRatio = 16 / 9
-		if (video.width && video.height) {
-			aspectRatio = video.width / video.height
-		}
-
 		return (
 			<div
-				className={classNames('rrui__video', className)}
-				style={{ paddingBottom: 100 / aspectRatio + '%' }}>
+				onClick={onClick}
+				className={classNames('rrui__video', className, {
+					'rrui__video--aspect-ratio': fit === 'width'
+				})}
+				style={style ? { ...style, ...this.getContainerStyle() } : this.getContainerStyle()}>
 				{showPreview &&
 					<Picture
-						onClick={this.showVideo}
-						sizes={video.picture.sizes}/>
+						onClick={this.onPreviewClick}
+						picture={video.picture}
+						fit="contain"/>
 				}
 				{showPreview &&
 					<button
-						onClick={this.showVideo}
+						onClick={this.onPreviewClick}
 						className="rrui__button-reset rrui__video__play-button">
 						<VideoPlayIcon />
 					</button>
@@ -64,7 +122,7 @@ export default class Video extends React.Component {
 		} = this.props
 
 		const {
-			autoplay
+			autoPlay
 		} = this.state
 
 		if (video.source.provider === 'file') {
@@ -72,7 +130,7 @@ export default class Video extends React.Component {
 			return (
 				<video
 					width="100%"
-					autoPlay={autoplay}
+					autoPlay={autoPlay}
 					controls>
 					<source
 						src={size.url}
@@ -92,7 +150,7 @@ export default class Video extends React.Component {
 			return (
 				<iframe
 					src={getEmbeddedVideoURL(video.source.id, video.source.provider, {
-						autoplay
+						autoPlay
 					})}
 					frameBorder={0}
 					allow="autoplay; fullscreen"
@@ -114,12 +172,61 @@ Video.propTypes = {
 	video: videoShape.isRequired,
 	width: PropTypes.number,
 	height: PropTypes.number,
+	fit: PropTypes.oneOf([
+		'width',
+		'contain',
+		'scale-down'
+	]).isRequired,
+	maxWidth: PropTypes.number,
+	maxHeight: PropTypes.number,
 	showPreview: PropTypes.bool.isRequired,
+	autoPlay: PropTypes.bool.isRequired,
+	canPlay: PropTypes.bool.isRequired,
+	playOnClick: PropTypes.bool.isRequired,
+	onClick: PropTypes.func,
+	style: PropTypes.object,
 	className: PropTypes.string
 }
 
 Video.defaultProps = {
-	showPreview: true
+	fit: 'width',
+	showPreview: true,
+	autoPlay: false,
+	canPlay: true,
+	playOnClick: true
 }
 
 const showsPreview = (props) => props.showPreview && props.video.picture ? true : false
+
+function getAspectRatio(video) {
+	if (video.aspectRatio) {
+		return video.aspectRatio
+	}
+	const maxSize = getMaxSize(video)
+	if (maxSize) {
+		return maxSize.width / maxSize.height
+	}
+}
+
+export function getMaxSize(video) {
+	if (video.width && video.height) {
+		return video
+	}
+	if (video.source.provider === 'file') {
+		return video.source.sizes[video.source.sizes.length - 1]
+	}
+	return getMaxPictureSize(video.picture)
+}
+
+function scaleDownSize(size, maxWidth, maxHeight) {
+	const widthFactor = size.width / maxWidth
+	const heightFactor = size.height / maxHeight
+	const sizeFactor = Math.max(widthFactor, heightFactor)
+	if (sizeFactor > 1) {
+		return {
+			width: size.width / sizeFactor,
+			height: size.height / sizeFactor
+		}
+	}
+	return size
+}

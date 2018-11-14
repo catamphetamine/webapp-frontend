@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+
 import { pictureAttachmentShape } from '../PropTypes'
 
 import Picture from './Picture'
@@ -9,7 +10,7 @@ import './PostPicture.css'
 export default function PostPicture({ onClick, children: { picture } }) {
 	return (
 		<Picture
-			sizes={picture.sizes}
+			picture={picture}
 			onClick={onClick}
 			className="post__picture"/>
 	)

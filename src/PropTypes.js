@@ -55,6 +55,8 @@ export const videoShape = shape({
 	title: string,
 	description: string,
 	duration: number,
+	width: number,
+	height: number,
 	aspectRatio: number,
 	picture: pictureShape.isRequired,
 	source: oneOfType([

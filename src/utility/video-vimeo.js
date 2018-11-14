@@ -1,5 +1,6 @@
 import { parseURL } from './url'
 import { getImageSize } from './image'
+import { getUrlQueryPart } from './video'
 
 // - Supported Vimeo URL formats:
 //   - http://vimeo.com/25451551
@@ -44,10 +45,16 @@ export default
 	},
 
 	getEmbeddedVideoURL(id, options = {}) {
-		let url = `https://player.vimeo.com/video/${id}`
+		const parameters = {}
 		if (options.color) {
-			url += `?color=${options.color}`
+			parameters.color = options.color
 		}
-		return url
+		if (options.autoPlay) {
+			parameters.autoplay = 1
+		}
+		if (options.loop) {
+			parameters.loop = 1
+		}
+		return `https://player.vimeo.com/video/${id}${getUrlQueryPart(parameters)}`
 	}
 }

@@ -54,6 +54,24 @@
 {
 	flex : 0 0 100%;
 	height : 100%;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.rrui__slideshow__video
+{
+	width: 100%;
+	height: 100%;
+	background-color: black;
+}
+
+.rrui__slideshow__video .rrui__picture,
+.rrui__slideshow__picture
+{
+	width: 100%;
+	height : 100%;
 }
 
 .rrui__slideshow__slides--dragging
@@ -68,14 +86,9 @@
 	transform: translateX(-789px);
 }
 
-.rrui__slideshow__picture
+.rrui__slideshow__slide
 {
-	height : 100%;
-
-	display : flex;
-	align-items : center;
-	justify-content : center;
-
+	/* Can be scaled via `style="transform: scale(...)". */
 	transition : transform 120ms ease-out;
 }
 
@@ -83,18 +96,18 @@
 `cursor : pointer` doesn't really work here,
 because `object-fit` is set to `contain` or `scale-down` here,
 and so cursor would be shown as a pointer even outside the actual image.
-.rrui__slideshow__picture .rrui__picture__image
+.rrui__slideshow__slide .rrui__picture__image
 {
 	cursor : pointer;
 }
 */
 
-.rrui__slideshow--panning .rrui__slideshow__picture .rrui__picture__image
+.rrui__slideshow--panning .rrui__slideshow__slide
 {
 	cursor : grabbing;
 }
 
-.rrui__slideshow__picture .rrui__picture__loading
+.rrui__slideshow__slide .rrui__picture__loading
 {
 	color : var(--white-color);
 }
@@ -122,13 +135,12 @@ and so cursor would be shown as a pointer even outside the actual image.
 .rrui__slideshow__actions-bottom
 {
 	position : absolute;
-	left   : 0;
+	left   : 50%;
 	bottom : var(--slideshow-button-margin);
 
-	width  : 100%;
+	transform : translateX(-50%);
 
-	display : flex;
-	justify-content : center;
+	display : inline-block;
 
 	padding : 0;
 	margin  : 0;

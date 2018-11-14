@@ -11,7 +11,7 @@ export default function PostAttachmentLink({ children: { link } }) {
 			className="post__link-attachment">
 			{link.picture &&
 				<Picture
-					sizes={link.picture.sizes}
+					picture={link.picture}
 					className="post__link-picture"/>
 			}
 			<div className="post__link-title-and-description">

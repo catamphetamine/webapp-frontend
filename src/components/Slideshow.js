@@ -3,7 +3,8 @@ import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import throttle from 'lodash/throttle'
 
-import Picture from './Picture'
+import Picture, { getAspectRatio, getMaxSize as getMaxPictureSize, isVector } from './Picture'
+import Video, { getMaxSize as getMaxVideoSize } from './Video'
 import { pictureShape } from '../PropTypes'
 
 import Close from '../../assets/images/icons/close.svg'
@@ -22,6 +23,59 @@ export default function SlideshowWrapper(props) {
 	return null
 }
 
+const VideoPlugin = {
+	canRender(slide) {
+		return isVideo(slide)
+	},
+	render({
+		slide,
+		isShown,
+		wasExpanded,
+		onClick,
+		maxWidth,
+		maxHeight
+	}) {
+		return (
+			<Video
+				video={slide}
+				fit="scale-down"
+				autoPlay={wasExpanded ? true : false}
+				showPreview={wasExpanded ? false : true}
+				canPlay={isShown}
+				onClick={onClick}
+				maxWidth={maxWidth}
+				maxHeight={maxHeight}
+				className="rrui__slideshow__video"/>
+		)
+	},
+	changeSlideOnClick: false
+}
+
+const PicturePlugin = {
+	canRender(slide) {
+		return slide.sizes !== undefined
+	},
+	render({
+		slide,
+		onClickPrecise,
+		shouldUpscaleSmallSlides
+	}) {
+		return (
+			<Picture
+				picture={slide}
+				fit={shouldUpscaleSmallSlides ? 'contain' : 'scale-down'}
+				onClick={onClickPrecise}
+				showLoadingPlaceholder
+				className="rrui__slideshow__picture"/>
+		)
+	}
+}
+
+const PLUGINS = [
+	VideoPlugin,
+	PicturePlugin
+]
+
 class Slideshow extends React.Component {
 	static propTypes = {
 		isOpen: PropTypes.bool,
@@ -29,7 +83,7 @@ class Slideshow extends React.Component {
 		i: PropTypes.number.isRequired,
 		inline: PropTypes.bool.isRequired,
 		fullScreen: PropTypes.bool.isRequired,
-		previousNextClickRatio: PropTypes.number.isRequired,
+		// previousNextClickRatio: PropTypes.number.isRequired,
 		closeOnOverlayClick: PropTypes.bool.isRequired,
 		panOffsetThreshold: PropTypes.number.isRequired,
 		panOffsetPrevNextWidthRatioThreshold: PropTypes.number.isRequired,
@@ -37,20 +91,16 @@ class Slideshow extends React.Component {
 		minSlideInDuration: PropTypes.number.isRequired,
 		scaleStep: PropTypes.number.isRequired,
 		mouseWheelScaleFactor: PropTypes.number.isRequired,
-		children: PropTypes.arrayOf(PropTypes.oneOfType([
-			pictureShape,
-			PropTypes.shape({
-				picture: pictureShape.isRequired
-			})
-		])).isRequired
+		plugins: PropTypes.arrayOf(PropTypes.object).isRequired,
+		children: PropTypes.arrayOf(PropTypes.any).isRequired
 	}
 
 	static defaultProps = {
 		i: 0,
 		inline: false,
 		fullScreen: false,
-		// previousNextClickRatio: 0.33,
-		previousNextClickRatio: 0,
+		// // previousNextClickRatio: 0.33,
+		// previousNextClickRatio: 0,
 		closeOnOverlayClick: true,
 		panOffsetThreshold: 5,
 		panOffsetPrevNextWidthRatioThreshold: 0.05,
@@ -58,16 +108,17 @@ class Slideshow extends React.Component {
 		slideInDuration: 500,
 		minSlideInDuration: 150,
 		scaleStep: 0.5,
-		mouseWheelScaleFactor: 0.33
+		mouseWheelScaleFactor: 0.33,
+		plugins: PLUGINS
 	}
 
 	state = {
-		scale: 1
+		scale: 1,
+		expandedSlideIndex: !this.props.inline && this.props.i
 	}
 
 	container = React.createRef()
 	slides = React.createRef()
-	slide = React.createRef()
 
 	panOffset = 0
 	transitionDuration = 0
@@ -120,13 +171,11 @@ class Slideshow extends React.Component {
 
 	onWindowResize = throttle((event) => this.onResize(), 100)
 
-	onResize = () => {
-		this.forceUpdate()
-	}
+	onResize = () => this.forceUpdate()
 
 	onFullScreenChange = () => {
 		const { i } = this.state
-		this.showPicture(i)
+		this.showSlide(i)
 	}
 
 	markPicturesShown(i) {
@@ -159,9 +208,14 @@ class Slideshow extends React.Component {
 		return this.didScrollThroughSlides || i === 0
 	}
 
-	showPicture(i) {
+	showSlide(i) {
 		this.markPicturesShown(i)
-		this.setState({ i, scale: 1 })
+		this.setState({
+			i,
+			// Reset slide display mode.
+			scale: 1,
+			expandedSlideIndex: undefined
+		})
 	}
 
 	scaleUp = (event, factor = 1) => {
@@ -179,7 +233,7 @@ class Slideshow extends React.Component {
 				scale / (1 + scaleStep * factor),
 				// Won't scale down past the original 1:1 size.
 				// (for non-vector images)
-				this.slide.current.isVector() ? 0 : 1
+				this.allowsScalingDownCurrentSlide() ? 0 : 1
 			)
 		}))
 	}
@@ -213,92 +267,148 @@ class Slideshow extends React.Component {
 	}
 
 	isFullScreenSlide = () => {
-		const { i } = this.state
-		const { children: slides } = this.props
-
 		// No definite answer (`true` or `false`) could be
 		// given until slideshow dimensions are known.
 		if (!this.slides.current) {
 			return
 		}
-
-		const picture = slides[i]
-		const maxSize = picture.sizes[picture.sizes.length - 1]
+		const maxSize = this.getSlideMaxSize()
 		return maxSize.width >= this.getSlideshowWidth() ||
 			maxSize.height >= this.getSlideshowHeight()
 	}
 
-	getSlideshowWidth = () => this.slides.current.clientWidth
-	getSlideshowHeight = () => this.slides.current.clientHeight
+	// Won't scale down past the original 1:1 size.
+	// (for non-vector images)
+	allowsScalingDownCurrentSlide() {
+		const slide = this.getCurrentSlide()
+		return !isVideo(slide) && isVector(slide)
+	}
 
-	// For `<img/>` centered horizontally inside an `<li/>`.
-	// getSlideWidth = () => this.slide.current.getWidth()
+	getCurrentSlide() {
+		const { i } = this.state
+		const { children: slides } = this.props
+		return slides[i]
+	}
+
+	getSlideMaxSize() {
+		const slide = this.getCurrentSlide()
+		if (isVideo(slide)) {
+			return getMaxVideoSize(slide)
+		}
+		return getMaxPictureSize(slide)
+	}
+
+	getSlideshowWidth = () => {
+		const { inline } = this.props
+		if (this.slides.current) {
+			return this.slides.current.clientWidth
+		}
+		if (!inline) {
+			return window.clientWidth
+		}
+	}
+
+	getSlideshowHeight = () => {
+		const { inline } = this.props
+		if (this.slides.current) {
+			return this.slides.current.clientHeight
+		}
+		if (!inline) {
+			return window.clientHeight
+		}
+	}
 
 	// For `<img/>` with `object-fit: contain` (or `object-fit: scale-down`).
 	getSlideWidth = () => {
 		return Math.min(
-			this.getSlideshowHeight() * this.slide.current.getAspectRatio(),
+			this.getSlideshowHeight() * this.getSlideAspectRatio(),
 			this.getSlideshowWidth(),
-			this.shouldUpscaleSmallImages() ? Number.MAX_VALUE : this.slide.current.getPreferredWidth()
+			this.shouldUpscaleSmallSlides() ? Number.MAX_VALUE : this.getSlideMaxSize().width
 		)
 	}
 
 	getSlideHeight() {
-		// return this.getSlideWidth() / this.slide.current.getAspectRatio()
-		return this.slide.current.getHeight()
+		return this.getSlideWidth() / this.getSlideAspectRatio()
+	}
+
+	getSlideAspectRatio() {
+		const slide = this.getCurrentSlide()
+		if (isVideo(slide)) {
+			if (slide.aspectRatio) {
+				return slide.aspectRatio
+			}
+			return getAspectRatio(slide.picture)
+		}
+		return getAspectRatio(slide)
 	}
 
 	onBackgroundClick = (event) => {
 		const { closeOnOverlayClick } = this.props
+		// A "click" event is emitted on mouse up
+		// when a user finishes panning to next/previous slide.
+		if (this.wasPanning) {
+			return
+		}
 		if (closeOnOverlayClick) {
 			this.close()
 		}
 	}
 
-	onSlideClick = (event) => {
-		const {
-			previousNextClickRatio,
-			closeOnOverlayClick
-		} = this.props
+	wasInsideSlide(event) {
+		const { x, y } = this.getClickXYInSlideCoordinates(event)
+		return x >= 0 && x <= 1 && y >= 0 && y <= 1
+	}
 
-		const { i } = this.state
+	getClickXYInSlideCoordinates(event) {
+		const { scale } = this.state
 
-		// A "click" event is emitted on mouse up
-		// when a user finishes panning to next/previous slide.
-		if (this.wasPanning) {
-			event.stopPropagation()
-			return
-		}
-
-		this.finishTransition()
-
-		const deltaWidth = this.getSlideshowWidth() - this.getSlideWidth()
-		const deltaHeight = this.getSlideshowHeight() - this.getSlideHeight()
+		const deltaWidth = this.getSlideshowWidth() - this.getSlideWidth() * scale
+		const deltaHeight = this.getSlideshowHeight() - this.getSlideHeight() * scale
 
 		// Calculate normalized (from 0 to 1) click position relative to the slide.
-		const clickPositionX = (event.clientX - deltaWidth / 2) / this.getSlideWidth()
-		const clickPositionY = (event.clientY - deltaHeight / 2) / this.getSlideHeight()
+		const x = (event.clientX - deltaWidth / 2) / (this.getSlideWidth() * scale)
+		const y = (event.clientY - deltaHeight / 2) / (this.getSlideHeight() * scale)
 
-		// If clicked outside the image then
-		// the click event should fall through.
-		if (closeOnOverlayClick &&
-			(
-				(clickPositionX < 0 || clickPositionX > 1)
-				||
-				(clickPositionY < 0 || clickPositionY > 1)
-			)
-		) {
-			return
-		}
+		return { x, y }
+	}
 
-		event.stopPropagation()
+	createOnSlideClick(precise) {
+		return (event) => {
+			// const {
+			// 	previousNextClickRatio
+			// } = this.props
 
-		if (clickPositionX < previousNextClickRatio) {
-			this.showPrevious()
-		} else {
-			this.showNext()
+			// A "click" event is emitted on mouse up
+			// when a user finishes panning to next/previous slide.
+			if (this.wasPanning) {
+				event.stopPropagation()
+				return
+			}
+
+			this.finishTransition()
+
+			if (precise && !this.wasInsideSlide(event)) {
+				return
+			}
+
+			// Don't close the slideshow as a result of this click.
+			// (because clicked inside the slide bounds, not outside it)
+			event.stopPropagation()
+
+			// Change the current slide to next or previos one.
+			if (this.getPluginForSlide().changeSlideOnClick !== false) {
+				this.showNext()
+				// if (x < previousNextClickRatio) {
+				// 	this.showPrevious()
+				// } else {
+				// 	this.showNext()
+				// }
+			}
 		}
 	}
+
+	onSlideClick = this.createOnSlideClick()
+	onSlideClickPrecise = this.createOnSlideClick(true)
 
 	close() {
 		const { onClose } = this.props
@@ -316,7 +426,7 @@ class Slideshow extends React.Component {
 			this.close()
 		} else {
 			this.didScrollThroughSlides = true
-			this.showPicture(i - 1)
+			this.showSlide(i - 1)
 		}
 	}
 
@@ -326,7 +436,7 @@ class Slideshow extends React.Component {
 			this.close()
 		} else {
 			this.didScrollThroughSlides = true
-			this.showPicture(i + 1)
+			this.showSlide(i + 1)
 		}
 	}
 
@@ -351,6 +461,11 @@ class Slideshow extends React.Component {
 		event.stopPropagation()
 		this.container.current.focus()
 		this.showNext()
+	}
+
+	onActionsClick = (event) => {
+		// Don't close the slideshow when clicked somewhere on actions.
+		event.stopPropagation()
 	}
 
 	onKeyDown = (event) => {
@@ -461,10 +576,15 @@ class Slideshow extends React.Component {
 		this.panOrigin = startingPosition
 		// `this.panOffset = 0` will do. No need for complicating things.
 		// this.panOffset = getTranslateX(this.slides.current) - this.state.i * this.getSlideshowWidth()
-		this.container.current.classList.add('slideshow--panning')
 		// This is for `this.emulatePanResistance()`
 		// so that it doesn't call DOM on each mousemove/touchmove.
 		this.slideshowWidth = this.getSlideshowWidth()
+	}
+
+	onActualPanStart(actualPanOrigin) {
+		this.panOrigin = actualPanOrigin
+		this.isActuallyPanning = true
+		this.container.current.classList.add('rrui__slideshow--panning')
 	}
 
 	onPanEnd() {
@@ -489,7 +609,7 @@ class Slideshow extends React.Component {
 			this.transitionOngoing = true
 			this.transitionEndTimer = setTimeout(this.ifStillMounted(this.onTransitionEnd), this.transitionDuration)
 		}
-		this.container.current.classList.remove('slideshow--panning')
+		this.container.current.classList.remove('rrui__slideshow--panning')
 		this.wasPanning = this.isActuallyPanning
 		setTimeout(this.ifStillMounted(() => this.wasPanning = false), 0)
 		this.isActuallyPanning = false
@@ -506,8 +626,7 @@ class Slideshow extends React.Component {
 			if (Math.abs(panOffset) <= panOffsetThreshold) {
 				return
 			}
-			this.panOrigin = this.panOrigin + Math.sign(panOffset) * panOffsetThreshold
-			this.isActuallyPanning = true
+			this.onActualPanStart(this.panOrigin + Math.sign(panOffset) * panOffsetThreshold)
 		}
 
 		this.panOffset = position - this.panOrigin
@@ -520,6 +639,20 @@ class Slideshow extends React.Component {
 		}
 
 		this.updateSlidePosition()
+	}
+
+	onWheel = (event) => {
+		const { inline, mouseWheelScaleFactor } = this.props
+		const { deltaY } = event
+
+		if (!inline) {
+			event.preventDefault()
+			if (deltaY < 0) {
+				this.scaleUp(null, mouseWheelScaleFactor)
+			} else {
+				this.scaleDown(null, mouseWheelScaleFactor)
+			}
+		}
 	}
 
 	finishTransition() {
@@ -549,32 +682,50 @@ class Slideshow extends React.Component {
 		return `translateX(${-1 * (this.getSlideshowWidth() * i - this.panOffset)}px)`
 	}
 
+	getScaleStyle() {
+		const { scale } = this.state
+		if (scale === 1) {
+			return
+		}
+		return {
+			transform: `scale(${scale})`
+		}
+	}
+
+	getPluginForSlide(slide = this.getCurrentSlide()) {
+		const { plugins } = this.props
+		for (const plugin of plugins) {
+			if (plugin.canRender(slide)) {
+				return plugin
+			}
+		}
+		console.error('No plugin found for slide')
+		console.error(slide)
+	}
+
 	emulatePanResistance(panOffset) {
 		return panOffset * Math.exp(-1 - (panOffset / this.slideshowWidth) / 2)
 	}
 
-	shouldUpscaleSmallImages() {
+	shouldUpscaleSmallSlides() {
 		const { inline } = this.props
 		return inline
 	}
 
-	onWheel = (event) => {
-		const { inline, mouseWheelScaleFactor } = this.props
-		const { deltaY } = event
-
-		if (!inline) {
-			event.preventDefault()
-			if (deltaY < 0) {
-				this.scaleUp(null, mouseWheelScaleFactor)
-			} else {
-				this.scaleDown(null, mouseWheelScaleFactor)
-			}
+	shouldShowCloseButton() {
+		const { inline, children: slides } = this.props
+		if (inline) {
+			return false
 		}
+		if (slides.length === 1 && !isVideo(slides[0])) {
+			return false
+		}
+		return true
 	}
 
 	render() {
 		const { isOpen, inline, children: slides } = this.props
-		const { i, scale, slidesShown } = this.state
+		const { i, slidesShown, expandedSlideIndex } = this.state
 
 		if (!isOpen) {
 			return null
@@ -610,27 +761,20 @@ class Slideshow extends React.Component {
 						opacity: this.slides.current ? 1 : 0
 					}}
 					className="rrui__slideshow__slides">
-					{slides.map((picture, j) => (
+					{slides.map((slide, j) => (
 						<li
 							key={j}
+							style={j === i ? this.getScaleStyle() : undefined}
 							className="rrui__slideshow__slide">
-							{slidesShown[j] &&
-								<Picture
-									ref={j === i ? this.slide : undefined}
-									sizes={picture.sizes}
-									type={picture.type}
-									onClick={this.onSlideClick}
-									fit={this.shouldUpscaleSmallImages() ? 'contain' : 'scale-down'}
-									showLoadingPlaceholder
-									className="rrui__slideshow__picture"
-									style={j !== i || scale === 1 ? undefined : { transform: `scale(${scale})` }}/>
-							}
+							{slidesShown[j] && this.renderSlide(slide, j, expandedSlideIndex === j)}
 						</li>
 					))}
 				</ul>
 
-				<ul className="rrui__slideshow__actions-top-right">
-					{!inline && slides.length > 1 &&
+				<ul
+					className="rrui__slideshow__actions-top-right"
+					onClick={this.onActionsClick}>
+					{this.shouldShowCloseButton() &&
 						<li>
 							<button
 								type="button"
@@ -660,7 +804,9 @@ class Slideshow extends React.Component {
 					</button>
 				}
 
-				<ul className="rrui__slideshow__actions-bottom">
+				<ul
+					className="rrui__slideshow__actions-bottom"
+					onClick={this.onActionsClick}>
 					{!inline && this.isFullScreenSlide() === false &&
 						<li className="rrui__slideshow__action-group">
 							<button
@@ -685,7 +831,23 @@ class Slideshow extends React.Component {
 					}
 				</ul>
 			</div>
-		);
+		)
+	}
+
+	renderSlide(slide, j, wasExpanded) {
+		const { i, scale } = this.state
+		const isShown = j === i
+
+		return this.getPluginForSlide(slide).render({
+			slide,
+			isShown,
+			wasExpanded,
+			onClick: this.onSlideClick,
+			onClickPrecise: this.onSlideClickPrecise,
+			maxWidth: this.getSlideshowWidth(),
+			maxHeight: this.getSlideshowHeight(),
+			shouldUpscaleSmallSlides: this.shouldUpscaleSmallSlides()
+		})
 	}
 }
 
@@ -740,4 +902,8 @@ function isButton(element) {
 		return isButton(element.parentNode)
 	}
 	return false
+}
+
+function isVideo(slide) {
+	return slide.picture !== undefined
 }

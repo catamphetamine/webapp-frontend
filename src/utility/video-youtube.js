@@ -1,5 +1,6 @@
 import { parseURL, parseQueryString } from './url'
 import { getImageSize } from './image'
+import { getUrlQueryPart } from './video'
 
 const PICTURE_SIZE_NAMES = [
 	// 1280 x 720.
@@ -42,13 +43,21 @@ export default
 					aspectRatio: contentDetails.definition === 'hd' ? 16/9 : 4/3,
 					picture: {
 						type: 'image/jpeg',
-						sizes: [
-							snippet.thumbnails.default,
-							snippet.thumbnails.medium,
-							snippet.thumbnails.high,
-							snippet.thumbnails.standard,
-							snippet.thumbnails.maxres
-						].filter(_ => _)
+						sizes: (
+							(snippet.thumbnails.medium || snippet.thumbnails.maxres) ? [
+								// 320 x 180 (HD).
+								snippet.thumbnails.medium,
+								// 1280 x 720 (HD).
+								snippet.thumbnails.maxres
+							] : [
+								// 120 x 90 (4:3, non-HD).
+								snippet.thumbnails.default,
+								// 480 x 360 (4:3, non-HD)
+								snippet.thumbnails.high,
+								// 640 x 480 (4:3, non-HD).
+								snippet.thumbnails.standard
+							]
+						).filter(_ => _)
 					}
 				}
 			}
@@ -84,11 +93,11 @@ export default
 	},
 
 	getEmbeddedVideoURL(id, options = {}) {
-		let url = `https://www.youtube.com/embed/${id}`
-		if (options.autoplay) {
-			url += '?autoplay=1'
+		const parameters = {}
+		if (options.autoPlay) {
+			parameters.autoplay = 1
 		}
-		return url
+		return `https://www.youtube.com/embed/${id}${getUrlQueryPart(parameters)}`
 	}
 }
 

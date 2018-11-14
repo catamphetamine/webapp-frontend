@@ -8,10 +8,12 @@ import './PostVideo.css'
 
 export default class PostVideo extends React.Component {
 	render() {
-		const { children: { video } } = this.props
+		const { onClick, children: { video } } = this.props
 		return (
 			<Video
 				video={video}
+				onClick={onClick}
+				playOnClick={false}
 				className="post__video"/>
 		)
 	}

@@ -43,7 +43,7 @@ export default class AccountPicture extends React.Component
 		return (
 			<Picture
 				{...rest}
-				sizes={ picture ? picture.sizes : (account.picture ? account.picture.sizes : DEFAULT_ACCOUNT_PICTURE.sizes) }
+				picture={ picture || account.picture || DEFAULT_ACCOUNT_PICTURE }
 				className={ classNames('account-picture', className) }/>
 		)
 	}

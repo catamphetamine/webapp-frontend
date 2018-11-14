@@ -48,6 +48,9 @@
 	width  : var(--size);
 	height : var(--size);
 
+	/* Don't override `cursor: pointer`. */
+	pointer-events : none;
+
 	--size: 40%;
 
 	@mixin xs {

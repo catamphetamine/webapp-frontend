@@ -158,7 +158,7 @@ export default class AccountHeader extends React.Component
 		return (
 			<Picture
 				fit="cover"
-				sizes={newBackgroundPicture ? newBackgroundPicture.sizes : account.backgroundPicture.sizes}
+				picture={newBackgroundPicture || account.backgroundPicture}
 				className="account-header__background-picture"/>
 		);
 	}

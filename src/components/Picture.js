@@ -4,6 +4,8 @@ import classNames from 'classnames'
 
 import { ActivityIndicator, FadeInOut } from 'react-responsive-ui'
 
+import { pictureShape } from '../PropTypes'
+
 import './Picture.css'
 
 import Close from '../../assets/images/icons/close.svg'
@@ -12,7 +14,7 @@ import Close from '../../assets/images/icons/close.svg'
 const TRANSPARENT_PIXEL = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='
 
 /**
- * A `<Picture/>` is passed `sizes` and is "responsive"
+ * A `<Picture/>` is passed `picture.sizes` and is "responsive"
  * showing the size that suits most based on
  * its actual display size (which could be set in "rem"s, for example)
  * with device pixel ratio being taken into account.
@@ -60,17 +62,7 @@ export default class Picture extends PureComponent
 			'image/webp'
 		]),
 
-		// Available image sizes.
-		sizes : PropTypes.arrayOf(PropTypes.shape
-		({
-			// Image size width.
-			// `width` can be omitted for vector graphics.
-			width : PropTypes.number,
-
-			// Image size file name.
-			// A full URL will be constructed based on this file name.
-			url : PropTypes.string.isRequired
-		}))
+		picture: pictureShape
 	}
 
 	static defaultProps =
@@ -88,8 +80,6 @@ export default class Picture extends PureComponent
 
 	componentDidMount()
 	{
-		const { sizes } = this.props
-
 		this._isMounted = true
 
 		// When the DOM node has been mounted
@@ -101,7 +91,7 @@ export default class Picture extends PureComponent
 		//
 		// It won't work though when loading styles dynamically
 		// (via javascript): by the time the component mounts
-		// the styles haven't yet been loaded so `this.getWidth()`
+		// the styles haven't yet been loaded so `this.getContainerWidth()`
 		// returns screen width and not the actual `<div/>` width,
 		// so, for example, for a 4K monitor and a small picture thumbnail
 		// it will still load the full-sized 4K image on page load.
@@ -124,8 +114,8 @@ export default class Picture extends PureComponent
 
 	componentDidUpdate(prevProps)
 	{
-		const { sizes } = this.props
-		if (prevProps.sizes !== sizes) {
+		const { picture: { sizes } } = this.props
+		if (prevProps.picture.sizes !== sizes) {
 			this.refreshSize(true)
 		}
 	}
@@ -141,8 +131,7 @@ export default class Picture extends PureComponent
 			className,
 			children,
 			// Rest.
-			type,
-			sizes,
+			picture,
 			...rest
 		}
 		= this.props
@@ -156,7 +145,7 @@ export default class Picture extends PureComponent
 
 		// The aspect ratio is also incorrect when loading styles
 		// dynamically (via javascript): by the time the component mounts
-		// `this.getWidth()` returns screen width and not the actual
+		// `this.getContainerWidth()` returns screen width and not the actual
 		// `<div/>` width, so aspect ratio is unknown at mount in those cases.
 		// if (fit === 'width') {
 		// 	if (this._isMounted) {
@@ -170,7 +159,7 @@ export default class Picture extends PureComponent
 		if (fit === 'repeat-x') {
 			style = {
 				...style,
-				backgroundImage: `url(${ this.url() || TRANSPARENT_PIXEL })`
+				backgroundImage: `url(${ this.getUrl() || TRANSPARENT_PIXEL })`
 			}
 		}
 
@@ -191,7 +180,7 @@ export default class Picture extends PureComponent
 				the container height is 0 so it's collapsed vertically
 				and the aspect ratio is also incorrect when loading styles
 				dynamically (via javascript): by the time the component mounts
-				`this.getWidth()` returns screen width and not the actual
+				`this.getContainerWidth()` returns screen width and not the actual
 				`<div/>` width, so aspect ratio is unknown at mount in those cases. */}
 				{ !initialImageLoaded && fit !== 'width' && showLoadingPlaceholder &&
 					<div className="rrui__picture__loading-container">
@@ -216,8 +205,8 @@ export default class Picture extends PureComponent
 				{ initialImageLoaded && fit !== 'repeat-x' &&
 						<img
 							ref={ this.picture }
-							src={ typeof window === 'undefined' ? TRANSPARENT_PIXEL : (this.url() || TRANSPARENT_PIXEL) }
-							style={ getImageStyle(fit, this.isVector()) }
+							src={ typeof window === 'undefined' ? TRANSPARENT_PIXEL : (this.getUrl() || TRANSPARENT_PIXEL) }
+							style={ getImageStyle(fit) }
 							className="rrui__picture__image"/>
 				}
 
@@ -236,14 +225,14 @@ export default class Picture extends PureComponent
 
 	refreshSize = (force) =>
 	{
-		const { sizes } = this.props
+		const { picture: { sizes }, maxWidth } = this.props
 		const { size } = this.state
 
 		if (!sizes) {
 			return
 		}
 
-		const preferredSize = this.getPreferredSize(sizes)
+		const preferredSize = getPreferredSize(sizes, this.getWidth(), maxWidth)
 
 		if (force ||
 			!size ||
@@ -271,88 +260,35 @@ export default class Picture extends PureComponent
 	}
 
 	getContainerHeight = () => this.container.current.offsetHeight
+	getContainerWidth = () => this.container.current.offsetWidth
 
-	getWidth = () => {
-		return this.picture.current ? this.picture.current.offsetWidth : this.container.current.offsetWidth
-	}
+	// getContainerWidth = () => {
+	// 	return this.picture.current ? this.picture.current.offsetWidth : this.container.current.offsetWidth
+	// }
 
-	getPreferredSize(sizes)
-	{
-		const { maxWidth } = this.props
-
-		if (sizes) {
-			return getPreferredSize(sizes, this.getPreferredWidth(), maxWidth)
-		}
-	}
-
-	getPreferredWidth()
-	{
-		const { fit } = this.props
-		const { size } = this.state
-
-		switch (fit) {
-			case 'width':
-				return this.getWidth()
-			case 'repeat-x':
-				return this.getContainerHeight() * this.getAspectRatio()
-			case 'cover':
-				return Math.max(this.getWidth(), this.getContainerHeight() * this.getAspectRatio())
-			case 'contain':
-				return Math.min(this.getWidth(), this.getContainerHeight() * this.getAspectRatio())
-			case 'scale-down':
-				if (this.isVector() || !size) {
-					return Math.min(this.getWidth(), this.getContainerHeight() * this.getAspectRatio())
-				}
-				return Math.min(this.getWidth(), size.width)
-			default:
-				throw new Error(`Unknown picture fit: ${fit}.`)
-		}
+	getWidth() {
+		const { picture, fit } = this.props
+		return getWidth(
+			picture,
+			fit,
+			this.getContainerWidth(),
+			this.getContainerHeight()
+		)
 	}
 
 	getHeight() {
-		const { fit } = this.props
-		const { size } = this.state
-
-		switch (fit) {
-			case 'width':
-				return this.getWidth() / this.getAspectRatio()
-			case 'repeat-x':
-				return this.getContainerHeight()
-			case 'cover':
-				return Math.max(this.getContainerHeight(), this.getWidth() / this.getAspectRatio())
-			case 'contain':
-				return Math.min(this.getContainerHeight(), this.getWidth() / this.getAspectRatio())
-			case 'scale-down':
-				if (this.isVector() || !size) {
-					return Math.min(this.getContainerHeight(), this.getWidth() / this.getAspectRatio())
-				}
-				return Math.min(this.getContainerHeight(), size.height)
-			default:
-				throw new Error(`Unknown picture fit: ${fit}.`)
-		}
+		const { picture, fit } = this.props
+		return getHeight(
+			picture,
+			fit,
+			this.getContainerWidth(),
+			this.getContainerHeight()
+		)
 	}
 
-	isVector() {
-		const { type } = this.props
+	getUrl() {
 		const { size } = this.state
-		return type === 'image/svg+xml' || (size && SVG_FILE_URL.test(size.url))
-	}
-
-	getAspectRatio()
-	{
-		const { sizes } = this.props
-		if (sizes) {
-			return sizes[sizes.length - 1].width / sizes[sizes.length - 1].height
-		}
-	}
-
-	url()
-	{
-		const { size } = this.state
-
-		if (size) {
-			return size.url
-		}
+		return size && size.url
 	}
 }
 
@@ -372,8 +308,7 @@ export function getPreferredSize(sizes, width, maxWidth)
 	width *= pixelRatio
 
 	let previousSize
-	for (const size of sizes)
-	{
+	for (const size of sizes) {
 		if (size.width > maxWidth) {
 			return previousSize || sizes[0]
 		}
@@ -421,14 +356,14 @@ const IMAGE_STYLE_SCALE_DOWN =
 	objectFit : 'scale-down'
 }
 
-function getImageStyle(fit, isVector) {
+function getImageStyle(fit) {
 	switch (fit) {
 		case 'cover':
 			return IMAGE_STYLE_COVER
 		case 'contain':
 			return IMAGE_STYLE_CONTAIN
 		case 'scale-down':
-			return isVector ? IMAGE_STYLE_CONTAIN : IMAGE_STYLE_SCALE_DOWN
+			return IMAGE_STYLE_SCALE_DOWN
 		default:
 			return IMAGE_STYLE_FIT_WIDTH
 	}
@@ -471,10 +406,8 @@ class InteractiveResize
 }
 
 // Preloads an image before displaying it.
-function prefetchImage(url)
-{
-	return new Promise((resolve, reject) =>
-	{
+function prefetchImage(url) {
+	return new Promise((resolve, reject) => {
 		const image = new Image()
 		// image.onload = () => setTimeout(resolve, 1000)
 		image.onload = resolve
@@ -484,3 +417,57 @@ function prefetchImage(url)
 }
 
 const SVG_FILE_URL = /\.svg/i
+
+export function getAspectRatio(picture) {
+	return getMaxSize(picture).width / getMaxSize(picture).height
+}
+
+export function getMaxSize({ sizes }) {
+	return sizes[sizes.length - 1]
+}
+
+export function isVector({ type }) {
+	return type === 'image/svg+xml' // || (sizes.length === 1 && SVG_FILE_URL.test(sizes[0].url))
+}
+
+function getWidth(picture, fit, containerWidth, containerHeight) {
+	switch (fit) {
+		case 'width':
+			return containerWidth
+		case 'repeat-x':
+			return containerHeight * getAspectRatio(picture)
+		case 'cover':
+			return Math.max(containerWidth, containerHeight * getAspectRatio(picture))
+		case 'contain':
+			return Math.min(containerWidth, containerHeight * getAspectRatio(picture))
+		case 'scale-down':
+			// if (isVector(picture)) {
+			// 	// Fit vector images as "contain".
+			// 	return getWidth(picture, 'contain', containerWidth, containerHeight)
+			// }
+			return Math.min(containerWidth, getMaxSize(picture).width)
+		default:
+			throw new Error(`Unknown picture fit: ${fit}.`)
+	}
+}
+
+function getHeight(picture, fit, containerWidth, containerHeight) {
+	switch (fit) {
+		case 'width':
+			return containerWidth / getAspectRatio(picture)
+		case 'repeat-x':
+			return containerHeight
+		case 'cover':
+			return Math.max(containerHeight, containerWidth / getAspectRatio(picture))
+		case 'contain':
+			return Math.min(containerHeight, containerWidth / getAspectRatio(picture))
+		case 'scale-down':
+			// if (isVector(picture)) {
+			// 	// Fit vector images as "contain".
+			// 	return getHeight(picture, fit, containerWidth, containerHeight)
+			// }
+			return Math.min(containerHeight, getMaxSize(picture).height)
+		default:
+			throw new Error(`Unknown picture fit: ${fit}.`)
+	}
+}

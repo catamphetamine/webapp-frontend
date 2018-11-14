@@ -48,11 +48,11 @@ export default class Post extends React.Component
 			.map(content => attachments.filter(_ => _.id === content.attachmentId)[0])
 			.filter(attachment => attachment.type === 'picture')
 
-		const pictures = attachments
-			.filter(_ => _.type === 'picture' && embeddedAttachments.indexOf(_) < 0)
-			.map(_ => _.picture)
+		const picturesAndVideos = attachments
+			.filter(_ => (_.type === 'picture' || _.type === 'video') && embeddedAttachments.indexOf(_) < 0)
+			.map(_ => _.type === 'picture' ? _.picture : _.video)
 
-		openSlideshow(pictures, i)
+		openSlideshow(picturesAndVideos, i)
 	}
 
 	render() {
@@ -117,13 +117,19 @@ export default class Post extends React.Component
 								// embeddedPictures.push(attachment.picture)
 								return (
 									<PostPicture
-										onClick={() => openSlideshow([attachment.picture])}
-										key={i}>
+										key={i}
+										onClick={() => openSlideshow([attachment.picture])}>
 										{attachment}
 									</PostPicture>
 								)
 							case 'video':
-								return <PostVideo key={i}>{attachment}</PostVideo>
+								return (
+									<PostVideo
+										key={i}
+										onClick={() => openSlideshow([attachment.video])}>
+										{attachment}
+									</PostVideo>
+								)
 							case 'audio':
 								return <PostAudio key={i}>{attachment}</PostAudio>
 							default:
