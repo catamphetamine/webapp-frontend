@@ -1,10 +1,10 @@
 <!-- * (мб) Прятать кнопки, если мышь не двигается, и нет тачей. -->
 
+* Rewrite Slideshow Picture using fit="width".
+
 * For non-inline slideshow: When swiping on first/last image: hide controls and reduce the opacity to 0 (reversible by swiping in opposite direction) (both via CSS .style and in .render()).
 
 <!-- * Add fullscreen button. -->
-
-* Maybe remove scale down/up buttons leaving just a single scale button.
 
 * For YouTube videos set default size to FullHD.
 

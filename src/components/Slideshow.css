@@ -332,6 +332,7 @@ and so cursor would be shown as a pointer even outside the actual image.
 	margin-bottom: calc(var(--unit) / 2);
 	padding: 0;
 	list-style: none;
+	opacity: 0.8;
 }
 
 .rrui__slideshow__progress-dot
@@ -341,8 +342,8 @@ and so cursor would be shown as a pointer even outside the actual image.
 	margin-left: calc(var(--unit) / 4);
 	margin-right: calc(var(--unit) / 4);
 	border-radius: 50%;
-	background-color: rgba(255, 255, 255, 0.35);
-	box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5);
+	background-color: rgba(255, 255, 255, 0.4);
+	box-shadow: 0 0 1px rgba(0, 0, 0, 0.5);
 }
 
 .rrui__slideshow__progress-dot--selected
