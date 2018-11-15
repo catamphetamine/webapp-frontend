@@ -782,6 +782,11 @@ class Slideshow extends React.Component {
 		return inline
 	}
 
+	shouldShowScaleButton() {
+		const { inline } = this.props
+		return !inline && this.isFullScreenSlide(false) === false
+	}
+
 	shouldShowDownloadButton() {
 		if (this.getPluginForSlide().canDownload) {
 			return this.getPluginForSlide().canDownload(this.getCurrentSlide())
@@ -850,6 +855,18 @@ class Slideshow extends React.Component {
 				<ul
 					className="rrui__slideshow__actions-top-right"
 					onClick={this.onActionsClick}>
+
+					{this.shouldShowScaleButton() &&
+						<li className="rrui__slideshow__action-item">
+							<button
+								type="button"
+								onClick={this.onScaleToggle}
+								className="rrui__button-reset rrui__slideshow__action">
+								<Search className="rrui__slideshow__action-icon"/>
+							</button>
+						</li>
+					}
+
 					{this.shouldShowDownloadButton() &&
 						<li className="rrui__slideshow__action-item">
 							<a
@@ -891,10 +908,11 @@ class Slideshow extends React.Component {
 					</button>
 				}
 
+				{/*
 				<ul
 					className="rrui__slideshow__controls-top rrui__slideshow__controls-center"
 					onClick={this.onActionsClick}>
-					{!inline && this.isFullScreenSlide(false) === false &&
+					{this.shouldShowScaleButton() &&
 						<li className="rrui__slideshow__action-item rrui__slideshow__action-group">
 							<button
 								type="button"
@@ -917,6 +935,7 @@ class Slideshow extends React.Component {
 						</li>
 					}
 				</ul>
+				*/}
 
 				{slides.length > 1 &&
 					<div className="rrui__slideshow__progress rrui__slideshow__controls-center rrui__slideshow__controls-bottom">
