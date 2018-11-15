@@ -56,5 +56,9 @@ export default
 			parameters.loop = 1
 		}
 		return `https://player.vimeo.com/video/${id}${getUrlQueryPart(parameters)}`
+	},
+
+	getVideoURL(id) {
+		return `https://vimeo.com/${id}`
 	}
 }

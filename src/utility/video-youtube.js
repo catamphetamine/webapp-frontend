@@ -98,6 +98,10 @@ export default
 			parameters.autoplay = 1
 		}
 		return `https://www.youtube.com/embed/${id}${getUrlQueryPart(parameters)}`
+	},
+
+	getVideoURL(id) {
+		return `https://youtube.com/watch?v=${id}`
 	}
 }
 
