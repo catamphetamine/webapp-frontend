@@ -200,21 +200,17 @@ and so cursor would be shown as a pointer even outside the actual image.
 	}
 }
 
-.rrui__slideshow__action,
-.rrui__slideshow__action-group
+.rrui__slideshow__action-item
 {
-	margin-left  : var(--slideshow-button-margin);
 	margin-right : var(--slideshow-button-margin);
 
 	@mixin xs-small
 	{
-		margin-left  : var(--slideshow-button-margin-small);
 		margin-right : var(--slideshow-button-margin-small);
 	}
 }
 
-.rrui__slideshow__action:last-child,
-.rrui__slideshow__action-group:last-child
+.rrui__slideshow__action-item:last-child
 {
 	margin-right : 0;
 }
@@ -241,6 +237,11 @@ and so cursor would be shown as a pointer even outside the actual image.
 	width    : 50%;
 }
 
+.rrui__slideshow__action-icon--download
+{
+	transform : scale(1.25);
+}
+
 .rrui__slideshow__action-group
 {
 	display: flex;
@@ -248,7 +249,6 @@ and so cursor would be shown as a pointer even outside the actual image.
 
 .rrui__slideshow__action-group .rrui__slideshow__action
 {
-	margin : 0;
 	border-radius : 0;
 
 	&:first-child

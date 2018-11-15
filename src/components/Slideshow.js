@@ -7,6 +7,7 @@ import Picture, { getAspectRatio, getMaxSize as getMaxPictureSize, isVector } fr
 import Video, { getMaxSize as getMaxVideoSize } from './Video'
 import { pictureShape } from '../PropTypes'
 
+import Download from '../../assets/images/icons/download.svg'
 import Close from '../../assets/images/icons/close.svg'
 import LeftArrow from '../../assets/images/icons/left-arrow-minimal.svg'
 import RightArrow from '../../assets/images/icons/right-arrow-minimal.svg'
@@ -36,6 +37,20 @@ const VideoPlugin = {
 	},
 	isScaleDownAllowed(slide) {
 		return false
+	},
+	canDownload(slide) {
+		switch (slide.source.provider) {
+			case 'file':
+				return true
+			default:
+				return false
+		}
+	},
+	getDownloadLink(slide) {
+		switch (slide.source.provider) {
+			case 'file':
+				return slide.source.sizes[slide.source.sizes.length - 1].url
+		}
 	},
 	canRender(slide) {
 		return slide.picture !== undefined
@@ -73,6 +88,12 @@ const PicturePlugin = {
 	},
 	isScaleDownAllowed(slide) {
 		return isVector(slide)
+	},
+	canDownload(slide) {
+		return true
+	},
+	getDownloadLink(slide) {
+		return slide.sizes[slide.sizes.length - 1].url
 	},
 	canRender(slide) {
 		return slide.sizes !== undefined
@@ -118,6 +139,8 @@ class Slideshow extends React.Component {
 			getMaxSize: PropTypes.func.isRequired,
 			getAspectRatio: PropTypes.func.isRequired,
 			isScaleDownAllowed: PropTypes.func.isRequired,
+			canDownload: PropTypes.func,
+			getDownloadLink: PropTypes.func,
 			canRender: PropTypes.func.isRequired,
 			render: PropTypes.func.isRequired,
 			showCloseButtonForSingleSlide: PropTypes.bool
@@ -311,6 +334,15 @@ class Slideshow extends React.Component {
 		const maxSize = this.getSlideMaxSize()
 		return maxSize.width >= this.getSlideshowWidth() * fitFactor ||
 			maxSize.height >= this.getSlideshowHeight() * fitFactor
+	}
+
+	onDownload = (event) => {
+		event.stopPropagation()
+		this.onActionClick()
+		const downloadInfo = this.getPluginForSlide().download(this.getCurrentSlide())
+		if (downloadInfo) {
+			downloadFile(downloadInfo.url, downloadInfo.title)
+		}
 	}
 
 	// Won't scale down past the original 1:1 size.
@@ -750,6 +782,12 @@ class Slideshow extends React.Component {
 		return inline
 	}
 
+	shouldShowDownloadButton() {
+		if (this.getPluginForSlide().canDownload) {
+			return this.getPluginForSlide().canDownload(this.getCurrentSlide())
+		}
+	}
+
 	shouldShowCloseButton() {
 		const { inline, children: slides } = this.props
 		if (inline) {
@@ -812,8 +850,19 @@ class Slideshow extends React.Component {
 				<ul
 					className="rrui__slideshow__actions-top-right"
 					onClick={this.onActionsClick}>
+					{this.shouldShowDownloadButton() &&
+						<li className="rrui__slideshow__action-item">
+							<a
+								target="_blank"
+								href={this.getPluginForSlide().getDownloadLink(this.getCurrentSlide())}
+								className="rrui__slideshow__action rrui__slideshow__action--link">
+								<Download className="rrui__slideshow__action-icon rrui__slideshow__action-icon--download"/>
+							</a>
+						</li>
+					}
+
 					{this.shouldShowCloseButton() &&
-						<li>
+						<li className="rrui__slideshow__action-item">
 							<button
 								type="button"
 								onClick={this.onClose}
@@ -846,7 +895,7 @@ class Slideshow extends React.Component {
 					className="rrui__slideshow__controls-top rrui__slideshow__controls-center"
 					onClick={this.onActionsClick}>
 					{!inline && this.isFullScreenSlide(false) === false &&
-						<li className="rrui__slideshow__action-group">
+						<li className="rrui__slideshow__action-item rrui__slideshow__action-group">
 							<button
 								type="button"
 								onClick={this.onScaleDown}
