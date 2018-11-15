@@ -70,7 +70,7 @@
 .rrui__slideshow__video .rrui__picture,
 .rrui__slideshow__picture
 {
-	width: 100%;
+	width  : 100%;
 	height : 100%;
 }
 
@@ -92,15 +92,10 @@
 	transition : transform 120ms ease-out;
 }
 
-/*
-`cursor : pointer` doesn't really work here,
-because `object-fit` is set to `contain` or `scale-down` here,
-and so cursor would be shown as a pointer even outside the actual image.
-.rrui__slideshow__slide .rrui__picture__image
+.rrui__slideshow__picture .rrui__picture__image
 {
 	cursor : pointer;
 }
-*/
 
 .rrui__slideshow--panning .rrui__slideshow__slide
 {
@@ -250,7 +245,7 @@ and so cursor would be shown as a pointer even outside the actual image.
 .rrui__slideshow__action-group .rrui__slideshow__action
 {
 	margin: 0;
-	border-radius : 0;
+	border-radius: 0;
 
 	&:first-child
 	{

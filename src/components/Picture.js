@@ -26,9 +26,8 @@ export default class Picture extends PureComponent
 {
 	static propTypes =
 	{
-		// Can be set up to load images no wider than `maxWidth`.
-		// E.g. for saving bandwidth, but I guess it won't be used.
 		maxWidth : PropTypes.number,
+		maxHeight: PropTypes.number,
 
 		// By default a border will be added around the picture.
 		// Set to `false` to not add border for picture.
@@ -120,23 +119,55 @@ export default class Picture extends PureComponent
 		}
 	}
 
-	render()
-	{
-		const
-		{
+	getContainerStyle() {
+		const {
+			picture,
+			fit,
+			maxWidth,
+			maxHeight
+		} = this.props
+		switch (fit) {
+			case 'repeat-x':
+				return {
+					backgroundImage: `url(${ this.getUrl() || TRANSPARENT_PIXEL })`
+				}
+			case 'width':
+				return {
+					paddingBottom: 100 / getAspectRatio(picture) + '%'
+				}
+			case 'contain':
+			case 'cover':
+			case 'scale-down':
+				let maxSize = getMaxSize(picture)
+				if (maxWidth && maxHeight) {
+					maxSize = scaleDownSize(maxSize, maxWidth, maxHeight, fit)
+				} else {
+					if (fit !== 'scale-down') {
+						return
+					}
+				}
+				return {
+					maxWidth: maxSize.width,
+					maxHeight: maxSize.height
+				}
+		}
+	}
+
+	render() {
+		const {
 			fit,
 			border,
 			showLoadingPlaceholder,
 			// fadeInDuration,
+			style,
 			className,
 			children,
 			// Rest.
 			picture,
+			maxWidth,
+			maxHeight,
 			...rest
-		}
-		= this.props
-
-		let { style } = this.props
+		} = this.props
 
 		const {
 			initialImageLoaded,
@@ -156,17 +187,10 @@ export default class Picture extends PureComponent
 		// 	}
 		// }
 
-		if (fit === 'repeat-x') {
-			style = {
-				...style,
-				backgroundImage: `url(${ this.getUrl() || TRANSPARENT_PIXEL })`
-			}
-		}
-
 		return (
 			<div
 				ref={ this.container }
-				style={ style }
+				style={style ? { ...style, ...this.getContainerStyle() } : this.getContainerStyle()}
 				className={ classNames('rrui__picture', {
 					'rrui__picture--repeat-x' : fit === 'repeat-x',
 					// 'rrui__picture--cover' : fit === 'cover',
@@ -225,14 +249,14 @@ export default class Picture extends PureComponent
 
 	refreshSize = (force) =>
 	{
-		const { picture: { sizes }, maxWidth } = this.props
+		const { picture: { sizes } } = this.props
 		const { size } = this.state
 
 		if (!sizes) {
 			return
 		}
 
-		const preferredSize = getPreferredSize(sizes, this.getWidth(), maxWidth)
+		const preferredSize = getPreferredSize(sizes, this.getWidth())
 
 		if (force ||
 			!size ||
@@ -293,7 +317,7 @@ export default class Picture extends PureComponent
 }
 
 // `sizes` must be sorted from smallest to largest.
-export function getPreferredSize(sizes, width, maxWidth)
+export function getPreferredSize(sizes, width)
 {
 	if (!width) {
 		return sizes[0]
@@ -309,9 +333,9 @@ export function getPreferredSize(sizes, width, maxWidth)
 
 	let previousSize
 	for (const size of sizes) {
-		if (size.width > maxWidth) {
-			return previousSize || sizes[0]
-		}
+		// if (size.width > maxWidth) {
+		// 	return previousSize || sizes[0]
+		// }
 		if (size.width >= width) {
 			return size
 		}
@@ -331,6 +355,7 @@ const IMAGE_STYLE_BASE =
 const IMAGE_STYLE_FIT_WIDTH =
 {
 	...IMAGE_STYLE_BASE,
+	position: 'absolute',
 	// width : 'auto',
 	height : 'auto',
 	objectFit : 'contain',
@@ -470,4 +495,25 @@ function getHeight(picture, fit, containerWidth, containerHeight) {
 		default:
 			throw new Error(`Unknown picture fit: ${fit}.`)
 	}
+}
+
+export function scaleDownSize(size, maxWidth, maxHeight, fit) {
+	let widthFactor = size.width / maxWidth
+	let heightFactor = size.height / maxHeight
+	if (fit === 'cover' || fit === 'contain') {
+		const maxFactor = Math.max(widthFactor, heightFactor)
+		if (maxFactor < 1) {
+			const factorMultiplier = 1 / maxFactor
+			widthFactor *= factorMultiplier
+			heightFactor *= factorMultiplier
+		}
+	}
+	const sizeFactor = Math.max(widthFactor, heightFactor)
+	if (sizeFactor > 1) {
+		return {
+			width: size.width / sizeFactor,
+			height: size.height / sizeFactor
+		}
+	}
+	return size
 }

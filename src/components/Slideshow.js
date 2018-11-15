@@ -100,15 +100,20 @@ const PicturePlugin = {
 	},
 	render({
 		slide,
-		onClickPrecise,
-		shouldUpscaleSmallSlides
+		onClick,
+		maxWidth,
+		maxHeight
 	}) {
+		// fit={shouldUpscaleSmallSlides ? 'contain' : 'scale-down'}
+		// onClick={onClickPrecise}
 		return (
 			<Picture
 				picture={slide}
-				fit={shouldUpscaleSmallSlides ? 'contain' : 'scale-down'}
-				onClick={onClickPrecise}
+				fit="contain"
+				onClick={onClick}
 				showLoadingPlaceholder
+				maxWidth={maxWidth}
+				maxHeight={maxHeight}
 				className="rrui__slideshow__picture"/>
 		)
 	}
@@ -411,61 +416,56 @@ class Slideshow extends React.Component {
 		}
 	}
 
-	wasInsideSlide(event) {
-		const { x, y } = this.getClickXYInSlideCoordinates(event)
-		return x >= 0 && x <= 1 && y >= 0 && y <= 1
-	}
+	// wasInsideSlide(event) {
+	// 	const { x, y } = this.getClickXYInSlideCoordinates(event)
+	// 	return x >= 0 && x <= 1 && y >= 0 && y <= 1
+	// }
 
-	getClickXYInSlideCoordinates(event) {
-		const { scale } = this.state
+	// getClickXYInSlideCoordinates(event) {
+	// 	const { scale } = this.state
+	//
+	// 	const deltaWidth = this.getSlideshowWidth() - this.getSlideWidth() * scale
+	// 	const deltaHeight = this.getSlideshowHeight() - this.getSlideHeight() * scale
+	//
+	// 	// Calculate normalized (from 0 to 1) click position relative to the slide.
+	// 	const x = (event.clientX - deltaWidth / 2) / (this.getSlideWidth() * scale)
+	// 	const y = (event.clientY - deltaHeight / 2) / (this.getSlideHeight() * scale)
+	//
+	// 	return { x, y }
+	// }
 
-		const deltaWidth = this.getSlideshowWidth() - this.getSlideWidth() * scale
-		const deltaHeight = this.getSlideshowHeight() - this.getSlideHeight() * scale
+	onSlideClick = (event) => {
+		// const {
+		// 	previousNextClickRatio
+		// } = this.props
 
-		// Calculate normalized (from 0 to 1) click position relative to the slide.
-		const x = (event.clientX - deltaWidth / 2) / (this.getSlideWidth() * scale)
-		const y = (event.clientY - deltaHeight / 2) / (this.getSlideHeight() * scale)
-
-		return { x, y }
-	}
-
-	createOnSlideClick(precise) {
-		return (event) => {
-			// const {
-			// 	previousNextClickRatio
-			// } = this.props
-
-			// A "click" event is emitted on mouse up
-			// when a user finishes panning to next/previous slide.
-			if (this.wasPanning) {
-				event.stopPropagation()
-				return
-			}
-
-			this.finishTransition()
-
-			if (precise && !this.wasInsideSlide(event)) {
-				return
-			}
-
-			// Don't close the slideshow as a result of this click.
-			// (because clicked inside the slide bounds, not outside it)
+		// A "click" event is emitted on mouse up
+		// when a user finishes panning to next/previous slide.
+		if (this.wasPanning) {
 			event.stopPropagation()
+			return
+		}
 
-			// Change the current slide to next or previos one.
-			if (this.getPluginForSlide().changeSlideOnClick !== false) {
-				this.showNext()
-				// if (x < previousNextClickRatio) {
-				// 	this.showPrevious()
-				// } else {
-				// 	this.showNext()
-				// }
-			}
+		this.finishTransition()
+
+		// if (precise && !this.wasInsideSlide(event)) {
+		// 	return
+		// }
+
+		// Don't close the slideshow as a result of this click.
+		// (because clicked inside the slide bounds, not outside it)
+		event.stopPropagation()
+
+		// Change the current slide to next or previos one.
+		if (this.getPluginForSlide().changeSlideOnClick !== false) {
+			this.showNext()
+			// if (x < previousNextClickRatio) {
+			// 	this.showPrevious()
+			// } else {
+			// 	this.showNext()
+			// }
 		}
 	}
-
-	onSlideClick = this.createOnSlideClick()
-	onSlideClickPrecise = this.createOnSlideClick(true)
 
 	focus = () => this.container.current.focus()
 
@@ -932,35 +932,6 @@ class Slideshow extends React.Component {
 					</button>
 				}
 
-				{/*
-				<ul
-					className="rrui__slideshow__controls-top rrui__slideshow__controls-center"
-					onClick={this.onActionsClick}>
-					{this.shouldShowScaleButton() &&
-						<li className="rrui__slideshow__action-item rrui__slideshow__action-group">
-							<button
-								type="button"
-								onClick={this.onScaleDown}
-								className="rrui__button-reset rrui__slideshow__action">
-								<Minus className="rrui__slideshow__action-icon"/>
-							</button>
-							<button
-								type="button"
-								onClick={this.onScaleToggle}
-								className="rrui__button-reset rrui__slideshow__action">
-								<Search className="rrui__slideshow__action-icon"/>
-							</button>
-							<button
-								type="button"
-								onClick={this.onScaleUp}
-								className="rrui__button-reset rrui__slideshow__action">
-								<Plus className="rrui__slideshow__action-icon"/>
-							</button>
-						</li>
-					}
-				</ul>
-				*/}
-
 				{slides.length > 1 &&
 					<div className="rrui__slideshow__progress rrui__slideshow__controls-center rrui__slideshow__controls-bottom">
 						<SlideshowProgress i={i} count={slides.length}/>
@@ -979,10 +950,10 @@ class Slideshow extends React.Component {
 			isShown,
 			wasExpanded,
 			onClick: this.onSlideClick,
-			onClickPrecise: this.onSlideClickPrecise,
 			maxWidth: this.getSlideshowWidth(),
 			maxHeight: this.getSlideshowHeight(),
-			shouldUpscaleSmallSlides: this.shouldUpscaleSmallSlides()
+			// onClickPrecise: this.onSlideClickPrecise,
+			// shouldUpscaleSmallSlides: this.shouldUpscaleSmallSlides()
 		})
 	}
 }

@@ -5,7 +5,7 @@ import classNames from 'classnames'
 import { videoShape } from '../PropTypes'
 import { getEmbeddedVideoURL } from '../utility/video'
 
-import Picture, { getMaxSize as getMaxPictureSize } from './Picture'
+import Picture, { getMaxSize as getMaxPictureSize, scaleDownSize } from './Picture'
 import VideoPlayIcon from './VideoPlayIcon'
 
 import './Video.css'
@@ -60,7 +60,7 @@ export default class Video extends React.Component {
 			case 'scale-down':
 				let maxSize = getMaxSize(video)
 				if (maxWidth && maxHeight) {
-					maxSize = scaleDownSize(maxSize, maxWidth, maxHeight)
+					maxSize = scaleDownSize(maxSize, maxWidth, maxHeight, fit)
 				}
 				return {
 					maxWidth: maxSize.width,
@@ -216,17 +216,4 @@ export function getMaxSize(video) {
 		return video.source.sizes[video.source.sizes.length - 1]
 	}
 	return getMaxPictureSize(video.picture)
-}
-
-function scaleDownSize(size, maxWidth, maxHeight) {
-	const widthFactor = size.width / maxWidth
-	const heightFactor = size.height / maxHeight
-	const sizeFactor = Math.max(widthFactor, heightFactor)
-	if (sizeFactor > 1) {
-		return {
-			width: size.width / sizeFactor,
-			height: size.height / sizeFactor
-		}
-	}
-	return size
 }
