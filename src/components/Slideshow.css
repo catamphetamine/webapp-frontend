@@ -249,6 +249,7 @@ and so cursor would be shown as a pointer even outside the actual image.
 
 .rrui__slideshow__action-group .rrui__slideshow__action
 {
+	margin: 0;
 	border-radius : 0;
 
 	&:first-child

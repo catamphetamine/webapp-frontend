@@ -121,7 +121,6 @@ const PLUGINS = [
 
 class Slideshow extends React.Component {
 	static propTypes = {
-		isOpen: PropTypes.bool,
 		onClose: PropTypes.func.isRequired,
 		i: PropTypes.number.isRequired,
 		inline: PropTypes.bool.isRequired,
@@ -132,6 +131,7 @@ class Slideshow extends React.Component {
 		panOffsetPrevNextWidthRatioThreshold: PropTypes.number.isRequired,
 		slideInDuration: PropTypes.number.isRequired,
 		minSlideInDuration: PropTypes.number.isRequired,
+		showScaleButtons: PropTypes.bool.isRequired,
 		scaleStep: PropTypes.number.isRequired,
 		mouseWheelScaleFactor: PropTypes.number.isRequired,
 		fullScreenFitPrecisionFactor: PropTypes.number.isRequired,
@@ -160,6 +160,7 @@ class Slideshow extends React.Component {
 		slideInDurationBaseWidth: 1980,
 		slideInDuration: 500,
 		minSlideInDuration: 150,
+		showScaleButtons: true,
 		scaleStep: 0.5,
 		mouseWheelScaleFactor: 0.33,
 		fullScreenFitPrecisionFactor: 0.85,
@@ -805,15 +806,19 @@ class Slideshow extends React.Component {
 	}
 
 	render() {
-		const { isOpen, inline, children: slides } = this.props
-		const { i, slidesShown, expandedSlideIndex } = this.state
+		const {
+			inline,
+			showScaleButtons,
+			children: slides
+		} = this.props
 
-		if (!isOpen) {
-			return null
-		}
+		const {
+			i,
+			slidesShown,
+			expandedSlideIndex
+		} = this.state
 
 		// `tabIndex={ -1 }` makes the `<div/>` focusable.
-
 		return (
 			<div
 				ref={this.container}
@@ -857,19 +862,38 @@ class Slideshow extends React.Component {
 					onClick={this.onActionsClick}>
 
 					{this.shouldShowScaleButton() &&
-						<li className="rrui__slideshow__action-item">
+						<li className={classNames('rrui__slideshow__action-item', {
+							'rrui__slideshow__action-group': showScaleButtons
+						})}>
+							{showScaleButtons &&
+								<button
+									type="button"
+									onClick={this.onScaleDown}
+									className="rrui__button-reset rrui__slideshow__action">
+									<Minus className="rrui__slideshow__action-icon"/>
+								</button>
+							}
 							<button
 								type="button"
 								onClick={this.onScaleToggle}
 								className="rrui__button-reset rrui__slideshow__action">
 								<Search className="rrui__slideshow__action-icon"/>
 							</button>
+							{showScaleButtons &&
+								<button
+									type="button"
+									onClick={this.onScaleUp}
+									className="rrui__button-reset rrui__slideshow__action">
+									<Plus className="rrui__slideshow__action-icon"/>
+								</button>
+							}
 						</li>
 					}
 
 					{this.shouldShowDownloadButton() &&
 						<li className="rrui__slideshow__action-item">
 							<a
+								download
 								target="_blank"
 								href={this.getPluginForSlide().getDownloadLink(this.getCurrentSlide())}
 								className="rrui__slideshow__action rrui__slideshow__action--link">
