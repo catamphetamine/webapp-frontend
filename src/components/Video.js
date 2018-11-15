@@ -215,5 +215,18 @@ export function getMaxSize(video) {
 	if (video.source.provider === 'file') {
 		return video.source.sizes[video.source.sizes.length - 1]
 	}
+	// For HD-aspect-ratio YouTube videos assume default video size to be FullHD.
+	// YouTube doesn't generate FullHD preview images for FullHD videos (and larger).
+	// Upscaling HD videos to FullHD is fine.
+	if (video.source.provider === 'YouTube') {
+		const maxPictureSize = getMaxPictureSize(video.picture)
+		if (maxPictureSize.width === 1280 && maxPictureSize.height === 720) {
+			return {
+				width: 1920,
+				height: 1080
+			}
+		}
+		return maxPictureSize
+	}
 	return getMaxPictureSize(video.picture)
 }
