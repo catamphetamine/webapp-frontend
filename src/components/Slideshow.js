@@ -24,8 +24,21 @@ export default function SlideshowWrapper(props) {
 }
 
 const VideoPlugin = {
+	showCloseButtonForSingleSlide: true,
+	getMaxSize(slide) {
+		return getMaxVideoSize(slide)
+	},
+	getAspectRatio(slide) {
+		if (slide.aspectRatio) {
+			return slide.aspectRatio
+		}
+		return getAspectRatio(slide.picture)
+	},
+	isScaleDownAllowed(slide) {
+		return false
+	},
 	canRender(slide) {
-		return isVideo(slide)
+		return slide.picture !== undefined
 	},
 	render({
 		slide,
@@ -52,6 +65,15 @@ const VideoPlugin = {
 }
 
 const PicturePlugin = {
+	getMaxSize(slide) {
+		return getMaxPictureSize(slide)
+	},
+	getAspectRatio(slide) {
+		return getAspectRatio(slide)
+	},
+	isScaleDownAllowed(slide) {
+		return isVector(slide)
+	},
 	canRender(slide) {
 		return slide.sizes !== undefined
 	},
@@ -92,7 +114,14 @@ class Slideshow extends React.Component {
 		scaleStep: PropTypes.number.isRequired,
 		mouseWheelScaleFactor: PropTypes.number.isRequired,
 		fullScreenFitPrecisionFactor: PropTypes.number.isRequired,
-		plugins: PropTypes.arrayOf(PropTypes.object).isRequired,
+		plugins: PropTypes.arrayOf(PropTypes.shape({
+			getMaxSize: PropTypes.func.isRequired,
+			getAspectRatio: PropTypes.func.isRequired,
+			isScaleDownAllowed: PropTypes.func.isRequired,
+			canRender: PropTypes.func.isRequired,
+			render: PropTypes.func.isRequired,
+			showCloseButtonForSingleSlide: PropTypes.bool
+		})).isRequired,
 		children: PropTypes.arrayOf(PropTypes.any).isRequired
 	}
 
@@ -142,7 +171,7 @@ class Slideshow extends React.Component {
 		if (document.activeElement) {
 			this.returnFocusTo = document.activeElement
 		}
-		this.container.current.focus()
+		this.focus()
 		if (fullScreen) {
 			requestFullScreen(this.container.current)
 			this.unlistenFullScreen = onFullScreenChange(this.onFullScreenChange)
@@ -235,7 +264,7 @@ class Slideshow extends React.Component {
 				scale / (1 + scaleStep * factor),
 				// Won't scale down past the original 1:1 size.
 				// (for non-vector images)
-				this.allowsScalingDownCurrentSlide() ? 0 : 1
+				this.doesAllowScalingDownCurrentSlide() ? 0 : 1
 			)
 		}))
 	}
@@ -249,16 +278,19 @@ class Slideshow extends React.Component {
 
 	onScaleUp = (event) => {
 		event.stopPropagation()
+		this.onActionClick()
 		this.scaleUp()
 	}
 
 	onScaleDown = (event) => {
 		event.stopPropagation()
+		this.onActionClick()
 		this.scaleDown()
 	}
 
 	onScaleToggle = (event) => {
 		event.stopPropagation()
+		this.onActionClick()
 		this.scaleToggle()
 	}
 
@@ -283,9 +315,8 @@ class Slideshow extends React.Component {
 
 	// Won't scale down past the original 1:1 size.
 	// (for non-vector images)
-	allowsScalingDownCurrentSlide() {
-		const slide = this.getCurrentSlide()
-		return !isVideo(slide) && isVector(slide)
+	doesAllowScalingDownCurrentSlide() {
+		return this.getPluginForSlide().isScaleDownAllowed(this.getCurrentSlide())
 	}
 
 	getCurrentSlide() {
@@ -295,11 +326,7 @@ class Slideshow extends React.Component {
 	}
 
 	getSlideMaxSize() {
-		const slide = this.getCurrentSlide()
-		if (isVideo(slide)) {
-			return getMaxVideoSize(slide)
-		}
-		return getMaxPictureSize(slide)
+		return this.getPluginForSlide().getMaxSize(this.getCurrentSlide())
 	}
 
 	getSlideshowWidth = () => {
@@ -336,14 +363,7 @@ class Slideshow extends React.Component {
 	}
 
 	getSlideAspectRatio() {
-		const slide = this.getCurrentSlide()
-		if (isVideo(slide)) {
-			if (slide.aspectRatio) {
-				return slide.aspectRatio
-			}
-			return getAspectRatio(slide.picture)
-		}
-		return getAspectRatio(slide)
+		return this.getPluginForSlide().getAspectRatio(this.getCurrentSlide())
 	}
 
 	onBackgroundClick = (event) => {
@@ -414,6 +434,8 @@ class Slideshow extends React.Component {
 	onSlideClick = this.createOnSlideClick()
 	onSlideClickPrecise = this.createOnSlideClick(true)
 
+	focus = () => this.container.current.focus()
+
 	close() {
 		const { onClose } = this.props
 		onClose()
@@ -472,6 +494,10 @@ class Slideshow extends React.Component {
 		event.stopPropagation()
 	}
 
+	onActionClick() {
+		this.focus()
+	}
+
 	onKeyDown = (event) => {
 		if (event.ctrlKey || event.altKey || event.shiftKey || event.metaKey) {
 			return
@@ -513,6 +539,14 @@ class Slideshow extends React.Component {
 			case 27:
 				event.preventDefault()
 				this.close()
+				return
+
+			// "Spacebar".
+			// Play video
+			case 32:
+				event.preventDefault()
+				const { i } = this.state
+				this.setState({ expandedSlideIndex: i })
 				return
 		}
 	}
@@ -721,7 +755,7 @@ class Slideshow extends React.Component {
 		if (inline) {
 			return false
 		}
-		if (slides.length === 1 && !isVideo(slides[0])) {
+		if (slides.length === 1 && !this.getPluginForSlide().showCloseButtonForSingleSlide) {
 			return false
 		}
 		return true
@@ -742,8 +776,8 @@ class Slideshow extends React.Component {
 				ref={this.container}
 				tabIndex={-1}
 				className={classNames('rrui__slideshow', {
-					'rrui__slideshow--fullscreen': !inline
-					// 'rrui__slideshow--panning': this.isPanning
+					'rrui__slideshow--fullscreen': !inline,
+					'rrui__slideshow--panning': this.isActuallyPanning
 				})}
 				onKeyDown={this.onKeyDown}
 				onDragStart={this.onDragStart}
@@ -949,10 +983,6 @@ function isButton(element) {
 		return isButton(element.parentNode)
 	}
 	return false
-}
-
-function isVideo(slide) {
-	return slide.picture !== undefined
 }
 
 function createRange(N) {
