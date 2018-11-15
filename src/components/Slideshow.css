@@ -132,11 +132,10 @@ and so cursor would be shown as a pointer even outside the actual image.
 	}
 }
 
-.rrui__slideshow__actions-bottom
+.rrui__slideshow__controls-center
 {
 	position : absolute;
 	left   : 50%;
-	bottom : var(--slideshow-button-margin);
 
 	transform : translateX(-50%);
 
@@ -144,6 +143,21 @@ and so cursor would be shown as a pointer even outside the actual image.
 
 	padding : 0;
 	margin  : 0;
+}
+
+.rrui__slideshow__controls-top
+{
+	top : var(--slideshow-button-margin);
+
+	@mixin xs-small
+	{
+		top : var(--slideshow-button-margin-small);
+	}
+}
+
+.rrui__slideshow__controls-bottom
+{
+	bottom : var(--slideshow-button-margin);
 
 	@mixin xs-small
 	{
@@ -186,8 +200,8 @@ and so cursor would be shown as a pointer even outside the actual image.
 	}
 }
 
-.rrui__slideshow__actions-bottom .rrui__slideshow__action,
-.rrui__slideshow__actions-bottom .rrui__slideshow__action-group
+.rrui__slideshow__action,
+.rrui__slideshow__action-group
 {
 	margin-left  : var(--slideshow-button-margin);
 	margin-right : var(--slideshow-button-margin);
@@ -197,6 +211,18 @@ and so cursor would be shown as a pointer even outside the actual image.
 		margin-left  : var(--slideshow-button-margin-small);
 		margin-right : var(--slideshow-button-margin-small);
 	}
+}
+
+.rrui__slideshow__action:last-child,
+.rrui__slideshow__action-group:last-child
+{
+	margin-right : 0;
+}
+
+.rrui__slideshow__action:first-child,
+.rrui__slideshow__action-group:first-child
+{
+	margin-left : 0;
 }
 
 .rrui__slideshow__action:hover {
@@ -262,4 +288,64 @@ and so cursor would be shown as a pointer even outside the actual image.
 .rrui__slideshow__next
 {
 	right : 0;
+}
+
+.rrui__slideshow__progress
+{
+	pointer-events: none;
+}
+
+.rrui__slideshow__progress-counter
+{
+	display: flex;
+	align-items: center;
+	height: 2em;
+	border-radius: 1em;
+	padding-left: 0.6em;
+	padding-right: 0.6em;
+	background-color: rgba(0, 0, 0, 0.5);
+	color: var(--white-color);
+}
+
+.rrui__slideshow__progress-counter-current
+{
+	opacity: 0.75;
+}
+
+.rrui__slideshow__progress-counter-divider
+{
+	margin-left: 0.35em;
+	margin-right: 0.35em;
+	opacity: 0.25;
+	transform: scale(1.4);
+}
+
+.rrui__slideshow__progress-counter-total
+{
+	opacity: 0.35;
+}
+
+.rrui__slideshow__progress-dots
+{
+	display: flex;
+	margin: 0;
+	margin-bottom: calc(var(--unit) / 2);
+	padding: 0;
+	list-style: none;
+}
+
+.rrui__slideshow__progress-dot
+{
+	width: calc(var(--unit) / 2);
+	height: calc(var(--unit) / 2);
+	margin-left: calc(var(--unit) / 4);
+	margin-right: calc(var(--unit) / 4);
+	border-radius: 50%;
+	background-color: rgba(255, 255, 255, 0.35);
+	box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5);
+}
+
+.rrui__slideshow__progress-dot--selected
+{
+	background-color: var(--base-color);
 }

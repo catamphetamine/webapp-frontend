@@ -91,6 +91,7 @@ class Slideshow extends React.Component {
 		minSlideInDuration: PropTypes.number.isRequired,
 		scaleStep: PropTypes.number.isRequired,
 		mouseWheelScaleFactor: PropTypes.number.isRequired,
+		fullScreenFitPrecisionFactor: PropTypes.number.isRequired,
 		plugins: PropTypes.arrayOf(PropTypes.object).isRequired,
 		children: PropTypes.arrayOf(PropTypes.any).isRequired
 	}
@@ -109,6 +110,7 @@ class Slideshow extends React.Component {
 		minSlideInDuration: 150,
 		scaleStep: 0.5,
 		mouseWheelScaleFactor: 0.33,
+		fullScreenFitPrecisionFactor: 0.85,
 		plugins: PLUGINS
 	}
 
@@ -266,15 +268,17 @@ class Slideshow extends React.Component {
 		return Math.min(fullScreenWidthScale, fullScreenHeightScale)
 	}
 
-	isFullScreenSlide = () => {
+	isFullScreenSlide = (precise) => {
+		const { fullScreenFitPrecisionFactor } = this.props
 		// No definite answer (`true` or `false`) could be
 		// given until slideshow dimensions are known.
 		if (!this.slides.current) {
 			return
 		}
+		const fitFactor = precise ? 1 : fullScreenFitPrecisionFactor
 		const maxSize = this.getSlideMaxSize()
-		return maxSize.width >= this.getSlideshowWidth() ||
-			maxSize.height >= this.getSlideshowHeight()
+		return maxSize.width >= this.getSlideshowWidth() * fitFactor ||
+			maxSize.height >= this.getSlideshowHeight() * fitFactor
 	}
 
 	// Won't scale down past the original 1:1 size.
@@ -805,9 +809,9 @@ class Slideshow extends React.Component {
 				}
 
 				<ul
-					className="rrui__slideshow__actions-bottom"
+					className="rrui__slideshow__controls-top rrui__slideshow__controls-center"
 					onClick={this.onActionsClick}>
-					{!inline && this.isFullScreenSlide() === false &&
+					{!inline && this.isFullScreenSlide(false) === false &&
 						<li className="rrui__slideshow__action-group">
 							<button
 								type="button"
@@ -830,6 +834,12 @@ class Slideshow extends React.Component {
 						</li>
 					}
 				</ul>
+
+				{slides.length > 1 &&
+					<div className="rrui__slideshow__progress rrui__slideshow__controls-center rrui__slideshow__controls-bottom">
+						<SlideshowProgress i={i} count={slides.length}/>
+					</div>
+				}
 			</div>
 		)
 	}
@@ -853,6 +863,43 @@ class Slideshow extends React.Component {
 
 SlideshowWrapper.propTypes = Slideshow.propTypes
 SlideshowWrapper.defaultProps = Slideshow.defaultProps
+
+function SlideshowProgress({ i, count, maxCountForDots }) {
+	if (count > maxCountForDots) {
+		return (
+			<div className="rrui__slideshow__progress-counter">
+				<div className="rrui__slideshow__progress-counter-current">
+					{i + 1}
+				</div>
+				<div className="rrui__slideshow__progress-counter-divider">
+					/
+				</div>
+				<div className="rrui__slideshow__progress-counter-total">
+					{count}
+				</div>
+			</div>
+		)
+	}
+	return (
+		<ul className="rrui__slideshow__progress-dots">
+			{createRange(count).map((_, j) => (
+				<li key={j} className={classNames('rrui__slideshow__progress-dot', {
+					'rrui__slideshow__progress-dot--selected': j === i
+				})}/>
+			))}
+		</ul>
+	)
+}
+
+SlideshowProgress.propTypes = {
+	i: PropTypes.number.isRequired,
+	count: PropTypes.number.isRequired,
+	maxCountForDots: PropTypes.number.isRequired
+}
+
+SlideshowProgress.defaultProps = {
+	maxCountForDots: 10
+}
 
 function requestFullScreen(element) {
 	if (document.fullscreenElement ||
@@ -906,4 +953,12 @@ function isButton(element) {
 
 function isVideo(slide) {
 	return slide.picture !== undefined
+}
+
+function createRange(N) {
+	const range = new Array(N)
+	for (let i = 1; i <= N; i++) {
+		range[i - 1] = i
+	}
+	return range
 }

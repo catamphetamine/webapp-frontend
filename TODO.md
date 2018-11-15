@@ -1,12 +1,10 @@
 <!-- * (мб) Прятать кнопки, если мышь не двигается, и нет тачей. -->
 
-* На десктопе выводить picture или video attachment слева. А если их несколько?
-
-* Add support for video in slideshow. Enlarge video (and its picture) to full width/height.
-
-* Show pagination "x/y" (when there are more than 8 pictures) or dots (when there are up to 8 pictures).
+* For YouTube videos set default size to FullHD.
 
 * Add "more" button: download original, copy URL for sharing.
+
+* На десктопе выводить picture или video attachment слева. А если их несколько?
 
 * Add post buttons: +, -, repost, view comments, "more" (report, copy URL for sharing).
 
