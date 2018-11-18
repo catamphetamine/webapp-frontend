@@ -306,19 +306,16 @@ class Slideshow extends React.Component {
 	}
 
 	onScaleUp = (event) => {
-		event.stopPropagation()
 		this.onActionClick()
 		this.scaleUp()
 	}
 
 	onScaleDown = (event) => {
-		event.stopPropagation()
 		this.onActionClick()
 		this.scaleDown()
 	}
 
 	onScaleToggle = (event) => {
-		event.stopPropagation()
 		this.onActionClick()
 		this.scaleToggle()
 	}
@@ -343,7 +340,6 @@ class Slideshow extends React.Component {
 	}
 
 	onDownload = (event) => {
-		event.stopPropagation()
 		this.onActionClick()
 		const downloadInfo = this.getPluginForSlide().download(this.getCurrentSlide())
 		if (downloadInfo) {
@@ -411,6 +407,10 @@ class Slideshow extends React.Component {
 		if (this.wasPanning) {
 			return
 		}
+		// Only handle clicks on slideshow overlay.
+		if (!event.target.classList.contains('rrui__slideshow__slide')) {
+			return
+		}
 		if (closeOnOverlayClick) {
 			this.close()
 		}
@@ -469,14 +469,9 @@ class Slideshow extends React.Component {
 
 	focus = () => this.container.current.focus()
 
-	close() {
+	close = () => {
 		const { onClose } = this.props
 		onClose()
-	}
-
-	onClose = (event) => {
-		event.stopPropagation()
-		this.close()
 	}
 
 	showPrevious() {
@@ -511,20 +506,13 @@ class Slideshow extends React.Component {
 	}
 
 	onShowPrevious = (event) => {
-		event.stopPropagation()
-		this.container.current.focus()
+		this.onActionClick()
 		this.showPrevious()
 	}
 
 	onShowNext = (event) => {
-		event.stopPropagation()
-		this.container.current.focus()
+		this.onActionClick()
 		this.showNext()
-	}
-
-	onActionsClick = (event) => {
-		// Don't close the slideshow when clicked somewhere on actions.
-		event.stopPropagation()
 	}
 
 	onActionClick() {
@@ -666,19 +654,20 @@ class Slideshow extends React.Component {
 			slideInDurationBaseWidth
 		} = this.props
 
-		const pannedWidthRatio = this.panOffset / this.getSlideshowWidth()
-		if (pannedWidthRatio < -1 * panOffsetPrevNextWidthRatioThreshold) {
-			this.showNext()
-		} else if (pannedWidthRatio > panOffsetPrevNextWidthRatioThreshold) {
-			this.showPrevious()
-		}
 		if (this.panOffset !== 0) {
+			const pannedWidthRatio = this.panOffset / this.getSlideshowWidth()
+			if (pannedWidthRatio < -1 * panOffsetPrevNextWidthRatioThreshold) {
+				this.showNext()
+			} else if (pannedWidthRatio > panOffsetPrevNextWidthRatioThreshold) {
+				this.showPrevious()
+			}
 			this.transitionDuration = minSlideInDuration + Math.abs(pannedWidthRatio) * (slideInDuration - minSlideInDuration) * (this.getSlideshowWidth() / slideInDurationBaseWidth)
 			this.updateSlideTransitionDuration()
 			this.panOffset = 0
 			this.updateSlidePosition()
 			this.transitionOngoing = true
 			this.transitionEndTimer = setTimeout(this.ifStillMounted(this.onTransitionEnd), this.transitionDuration)
+			// this.refreshPanToCloseStyle()
 		}
 		this.container.current.classList.remove('rrui__slideshow--panning')
 		this.wasPanning = this.isActuallyPanning
@@ -688,7 +677,9 @@ class Slideshow extends React.Component {
 	}
 
 	onPan(position) {
-		const { panOffsetThreshold } = this.props
+		const {
+			panOffsetThreshold
+		} = this.props
 
 		if (!this.isActuallyPanning) {
 			const panOffset = position - this.panOrigin
@@ -706,9 +697,10 @@ class Slideshow extends React.Component {
 		// no more slides to navigate to.
 		if ((this.isFirst() && this.panOffset > 0) ||
 			(this.isLast() && this.panOffset < 0)) {
+			// this.refreshPanToCloseStyle()
 			this.panOffset = this.emulatePanResistance(this.panOffset)
 		}
-
+		// this.panToCloseOffsetNormalized = undefined
 		this.updateSlidePosition()
 	}
 
@@ -725,6 +717,19 @@ class Slideshow extends React.Component {
 			}
 		}
 	}
+
+	// refreshPanToCloseStyle() {
+	// 	const {
+	// 		panOffsetPrevNextWidthRatioThreshold
+	// 	} = this.props
+	// 	const coefficient = 3
+	// 	this.panToCloseOffsetNormalized = Math.abs(this.panOffset / this.getSlideshowWidth()) / (panOffsetPrevNextWidthRatioThreshold * coefficient)
+	// 	if (this.panToCloseOffsetNormalized > 1) {
+	// 		this.panToCloseOffsetNormalized = 1
+	// 	}
+	// 	this.container.current.style.backgroundColor = this.getBackgroundColor()
+	// 	// this.container.current.style.opacity = 1 - this.panToCloseOffsetNormalized
+	// }
 
 	finishTransition() {
 		if (this.transitionOngoing) {
@@ -805,6 +810,12 @@ class Slideshow extends React.Component {
 		return true
 	}
 
+	// style={this.panToCloseOffsetNormalized ? { backgroundColor: this.getBackgroundColor() } : undefined}
+	//
+	// getBackgroundColor() {
+	// 	return `rgba(0,0,0,${1 - this.panToCloseOffsetNormalized})`
+	// }
+
 	render() {
 		const {
 			inline,
@@ -857,10 +868,7 @@ class Slideshow extends React.Component {
 					))}
 				</ul>
 
-				<ul
-					className="rrui__slideshow__actions-top-right"
-					onClick={this.onActionsClick}>
-
+				<ul className="rrui__slideshow__actions-top-right">
 					{this.shouldShowScaleButton() &&
 						<li className={classNames('rrui__slideshow__action-item', {
 							'rrui__slideshow__action-group': showScaleButtons
@@ -906,7 +914,7 @@ class Slideshow extends React.Component {
 						<li className="rrui__slideshow__action-item">
 							<button
 								type="button"
-								onClick={this.onClose}
+								onClick={this.close}
 								className="rrui__button-reset rrui__slideshow__action">
 								<Close className="rrui__slideshow__action-icon"/>
 							</button>

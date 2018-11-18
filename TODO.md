@@ -1,7 +1,3 @@
-* For non-inline slideshow: When swiping on first/last image: hide controls and reduce the opacity to 0 (reversible by swiping in opposite direction) (both via CSS .style and in .render()).
-
-* На десктопе выводить picture или video attachment слева. А если их несколько?
-
 * Add post buttons: +, -, repost, view comments, "more" (report, copy URL for sharing).
 
 * Add "load more on scroll" for posts.
@@ -26,4 +22,9 @@
 * Add "-" and "+" buttons for scaling (and the "initial scale" button between them) + mouse wheel + alt or shift.
 
 * Sort post attachments in their order of embedding in the post, e.g. pictures. This is better for slideshow. Remove re-sorting in `Post.js` after that.
+-->
+
+<!--
+https://crossorigin.me/https://google.com
+https://gist.github.com/jimmywarting/ac1be6ea0297c16c477e17f8fbe51347
 -->
