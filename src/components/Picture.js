@@ -61,7 +61,15 @@ export default class Picture extends PureComponent
 			'image/webp'
 		]),
 
-		picture: pictureShape
+		picture: pictureShape,
+
+		// // In "bandwidth saving" mode it won't load
+		// // sharper images for "retina" displays
+		// // and it also won't load larger images
+		// // until their respective size is surpassed.
+		// In "bandwidth saving" mode it won't load larger images
+		// until their respective size is surpassed.
+		saveBandwidth: PropTypes.bool.isRequired
 	}
 
 	static defaultProps =
@@ -69,6 +77,7 @@ export default class Picture extends PureComponent
 		fit: 'width',
 		border: false,
 		showLoadingPlaceholder: false,
+		saveBandwidth: false,
 		// fadeInDuration: 0
 	}
 
@@ -166,6 +175,7 @@ export default class Picture extends PureComponent
 			picture,
 			maxWidth,
 			maxHeight,
+			saveBandwidth,
 			...rest
 		} = this.props
 
@@ -227,11 +237,11 @@ export default class Picture extends PureComponent
 				*/}
 
 				{ initialImageLoaded && fit !== 'repeat-x' &&
-						<img
-							ref={ this.picture }
-							src={ typeof window === 'undefined' ? TRANSPARENT_PIXEL : (this.getUrl() || TRANSPARENT_PIXEL) }
-							style={ getImageStyle(fit) }
-							className="rrui__picture__image"/>
+					<img
+						ref={ this.picture }
+						src={ typeof window === 'undefined' ? TRANSPARENT_PIXEL : (this.getUrl() || TRANSPARENT_PIXEL) }
+						style={ getImageStyle(fit) }
+						className="rrui__picture__image"/>
 				}
 
 				{ children }
@@ -249,14 +259,14 @@ export default class Picture extends PureComponent
 
 	refreshSize = (force) =>
 	{
-		const { picture: { sizes } } = this.props
+		const { picture: { sizes }, saveBandwidth } = this.props
 		const { size } = this.state
 
 		if (!sizes) {
 			return
 		}
 
-		const preferredSize = getPreferredSize(sizes, this.getWidth())
+		const preferredSize = getPreferredSize(sizes, this.getWidth(), saveBandwidth)
 
 		if (force ||
 			!size ||
@@ -317,7 +327,7 @@ export default class Picture extends PureComponent
 }
 
 // `sizes` must be sorted from smallest to largest.
-export function getPreferredSize(sizes, width)
+export function getPreferredSize(sizes, width, saveBandwidth = false)
 {
 	if (!width) {
 		return sizes[0]
@@ -325,7 +335,7 @@ export function getPreferredSize(sizes, width)
 
 	let pixelRatio = 1
 
-	if (typeof window !== 'undefined' && window.devicePixelRatio) {
+	if (typeof window !== 'undefined' && window.devicePixelRatio) { // && !saveBandwidth) {
 		pixelRatio = window.devicePixelRatio
 	}
 
@@ -336,13 +346,25 @@ export function getPreferredSize(sizes, width)
 		// if (size.width > maxWidth) {
 		// 	return previousSize || sizes[0]
 		// }
-		if (size.width >= width) {
+		if (size.width === width) {
+			return size
+		}
+		if (size.width > width) {
+			if (saveBandwidth && previousSize) {
+				const deltaWidthSmaller = width - previousSize.width
+				const deltaWidthLarger = size.width - width
+				// Prefer larger size if it's not too much oversized.
+				if (deltaWidthLarger / width < 0.2) {
+					return size
+				}
+				return previousSize
+			}
 			return size
 		}
 		previousSize = size
 	}
 
-	return sizes[sizes.length - 1]
+	return previousSize
 }
 
 const IMAGE_STYLE_BASE =

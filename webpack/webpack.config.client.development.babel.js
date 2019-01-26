@@ -4,25 +4,37 @@ import { clientConfiguration } from 'universal-webpack'
 import settings from './universal-webpack-settings'
 import baseConfiguration from './webpack.config'
 
-import { devServerConfig, setDevFileServer } from './devserver'
+import { createDevServerConfig, setDevFileServer } from './devserver'
 
-let configuration = clientConfiguration(baseConfiguration, settings)
+import applicationConfiguration from '../configuration'
 
-// `webpack-serve` can't set the correct `mode` by itself
-// so setting `mode` to `"development"` explicitly.
-// https://github.com/webpack-contrib/webpack-serve/issues/94
-configuration.mode = 'development'
+export function createConfig(baseConfiguration, settings, applicationConfiguration) {
+	let configuration = clientConfiguration(baseConfiguration, settings)
 
-// Fetch all files from webpack development server.
-configuration = setDevFileServer(configuration)
+	// `webpack-serve` can't set the correct `mode` by itself
+	// so setting `mode` to `"development"` explicitly.
+	// https://github.com/webpack-contrib/webpack-serve/issues/94
+	configuration.mode = 'development'
 
-// Run `webpack-dev-server`.
-configuration.devServer = devServerConfig
+	// Fetch all files from webpack development server.
+	configuration = setDevFileServer(
+		configuration,
+		applicationConfiguration.webpack.devserver
+	)
 
-configuration.plugins.push
-(
-	// Prints more readable module names in the browser console on HMR updates.
-	new webpack.NamedModulesPlugin()
-)
+	// Run `webpack-dev-server`.
+	configuration.devServer = createDevServerConfig({
+		devServer: applicationConfiguration.webpack.devserver,
+		apiService: applicationConfiguration.services.api,
+		renderingService: applicationConfiguration.services.rendering
+	})
 
-export default configuration
+	configuration.plugins.push(
+		// Prints more readable module names in the browser console on HMR updates.
+		new webpack.NamedModulesPlugin()
+	)
+
+	return configuration
+}
+
+export default createConfig(baseConfiguration, settings, applicationConfiguration)

@@ -1,18 +1,19 @@
 import React from 'react'
-import { postLinkShape } from '../PropTypes'
+import PropTypes from 'prop-types'
 
 import './PostLink.css'
 
-export default function PostLink({ children: { link } }) {
+export default function PostLink({ url, children }) {
 	return (
 		<a
 			target="_blank"
-			href={link.url}>
-			{link.text}
+			href={url}>
+			{children}
 		</a>
 	)
 }
 
 PostLink.propTypes = {
-	children: postLinkShape.isRequired
+	url: PropTypes.string.isRequired,
+	children: PropTypes.node.isRequired
 }

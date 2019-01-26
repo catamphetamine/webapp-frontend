@@ -15,8 +15,12 @@ import './PostAttachments.css'
 
 const MAX_THUMBNAIL_PICTURES_OR_VIDEOS = 6
 
-export default function PostAttachments({ openSlideshow, children: attachments })
-{
+export default function PostAttachments({
+	expandFirstPictureOrVideo,
+	saveBandwidth,
+	openSlideshow,
+	children: attachments
+}) {
 	if (attachments.length === 0) {
 		return null
 	}
@@ -26,7 +30,7 @@ export default function PostAttachments({ openSlideshow, children: attachments }
 	let picturesAndVideos = attachments.filter(_ => _.type === 'picture' || _.type === 'video')
 
 	let titlePictureOrVideo
-	if (picturesAndVideos.length > 0) {
+	if (expandFirstPictureOrVideo && picturesAndVideos.length > 0) {
 		titlePictureOrVideo = picturesAndVideos[0]
 		picturesAndVideos = picturesAndVideos.slice(1)
 	}
@@ -50,15 +54,24 @@ export default function PostAttachments({ openSlideshow, children: attachments }
 		picturesAndVideos = picturesAndVideos.slice(0, MAX_THUMBNAIL_PICTURES_OR_VIDEOS)
 	}
 
+	function createOnOpenSlideshow(i) {
+		return (event) => {
+			event.preventDefault()
+			openSlideshow(i)
+		}
+	}
+
 	return (
 		<div className="post__attachments">
 			{titlePictureOrVideo && titlePictureOrVideo.type === 'picture' &&
-				<PostPicture onClick={() => openSlideshow(0)}>
+				<PostPicture
+					onClick={createOnOpenSlideshow(0)}>
 					{titlePictureOrVideo}
 				</PostPicture>
 			}
 			{titlePictureOrVideo && titlePictureOrVideo.type === 'video' &&
-				<PostVideo onClick={() => openSlideshow(0)}>
+				<PostVideo
+					onClick={createOnOpenSlideshow(0)}>
 					{titlePictureOrVideo}
 				</PostVideo>
 			}
@@ -73,7 +86,8 @@ export default function PostAttachments({ openSlideshow, children: attachments }
 									<Picture
 										fit="cover"
 										picture={pictureOrVideo.type === 'video' ? pictureOrVideo.video.picture : pictureOrVideo.picture}
-										onClick={() => openSlideshow(i + 1)}
+										onClick={createOnOpenSlideshow(i + (titlePictureOrVideo ? 1 : 0))}
+										saveBandwidth={saveBandwidth}
 										className="post__attachment-thumbnail aspect-ratio__content--hd"/>
 									{pictureOrVideo.type === 'video' &&
 										<VideoPlayIcon className="post__thumbnail-video-icon"/>
@@ -116,6 +130,129 @@ export default function PostAttachments({ openSlideshow, children: attachments }
 }
 
 PostAttachments.propTypes = {
-	openSlideshow: PropTypes.func,
+	openSlideshow: PropTypes.func.isRequired,
+	expandFirstPictureOrVideo: PropTypes.bool.isRequired,
+	saveBandwidth: PropTypes.bool.isRequired,
 	children: PropTypes.arrayOf(postAttachmentShape)
 }
+
+PostAttachments.defaultProps = {
+	expandFirstPictureOrVideo: true,
+	saveBandwidth: false
+}
+
+function groupThumbnails(thumbnails, targetRowRatioTolerance) {
+	let targetRowRatio = 4.5
+	const targetRowRatioToleranceStep = 0.1
+	const rows = []
+	let row = []
+	for (const thumbnail of thumbnails) {
+		row.push(thumbnail)
+		const rowRatio = getRowRatio(row)
+		if (rowRatio >= targetRowRatio + targetRowRatioTolerance * targetRowRatioToleranceStep) {
+			rows.push(row)
+			row = []
+		}
+	}
+	if (row.length > 0) {
+		rows.push([])
+	}
+	return rows
+}
+
+function groupThumbnailsRecursive(thumbnails, targetRowRatioTolerance = 0) {
+	const forLowerRowRatio = groupThumbnails(thumbnails, targetRowRatioTolerance * -1 / 2)
+	const forHigherRowRatio = groupThumbnails(thumbnails, targetRowRatioTolerance)
+	if (!hasIncompleteRows(forHigherRowRatio)) {
+		return forHigherRowRatio
+	} else if (!hasIncompleteRows(forLowerRowRatio)) {
+		return forLowerRowRatio
+	} else {
+		// If the last row is not complete
+		// then maybe re-group with a looser target row ratio.
+
+		// If there's not enough thumbnails for the higher row ratio
+		// then just group them in a single row.
+		if (forHigherRowRatio.length === 1) {
+			console.log(getRowRatio(thumbnails))
+			return thumbnails
+		}
+
+		// If there is already at least a single complete row
+		// then maybe add the ungrouped images left to it.
+		return groupThumbnailsRecursive(thumbnails, targetRowRatioTolerance + 1)
+	}
+}
+
+function hasIncompleteRows(result) {
+	return result[result.length - 1].length === 0
+}
+
+function getRowRatio(row) {
+	return row.reduce((totalWidth, _) => totalWidth + _.width / _.height, 0)
+}
+
+// console.log(groupThumbnailsRecursive([{
+// 	width: 1000,
+// 	height: 700
+// }, {
+// 	width: 1920,
+// 	height: 1080
+// }, {
+// 	width: 1080,
+// 	height: 1920
+// }, {
+// 	width: 400,
+// 	height: 400
+// }, {
+// 	width: 480,
+// 	height: 640
+// }]))
+
+console.log(groupThumbnailsRecursive([{
+	width: 1920,
+	height: 1080
+}, {
+	width: 1920,
+	height: 1080
+}, {
+	width: 1920,
+	height: 1080
+}]))
+
+console.log(groupThumbnailsRecursive([{
+	width: 1920,
+	height: 1080
+}, {
+	width: 1920,
+	height: 1080
+}, {
+	width: 1920,
+	height: 1080
+}, {
+	width: 1920,
+	height: 1080
+}]))
+
+console.log(groupThumbnailsRecursive([{
+	width: 1920,
+	height: 1080
+}, {
+	width: 1920,
+	height: 1080
+}, {
+	width: 1920,
+	height: 1080
+}, {
+	width: 1920,
+	height: 1080
+}, {
+	width: 1920,
+	height: 1080
+}, {
+	width: 1920,
+	height: 1080
+}, {
+	width: 1920,
+	height: 1080
+}]))

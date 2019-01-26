@@ -32,6 +32,9 @@ and that's how the embedded video's aspect ratio is set.
 
 .rrui__video .rrui__picture
 {
+	position: absolute;
+	width: 100%;
+	height: 100%;
 	cursor: pointer;
 }
 

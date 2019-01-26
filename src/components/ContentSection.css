@@ -3,13 +3,15 @@
 :root
 {
 	--content-section-margin : calc(var(--unit) * 1);
-	--content-section-padding : calc(var(--unit) * 2);
+	--content-section-horizontal-padding : calc(var(--unit) * 2);
+	--content-section-vertical-padding : calc(var(--unit) * 1.5);
 	/*--background-section-vertical-margin : var(--unit);*/
 
 	@mixin xs
 	{
 		--content-section-margin : calc(var(--unit) * 1);
-		--content-section-padding : var(--unit);
+		--content-section-horizontal-padding : calc(var(--unit) * 1);
+		--content-section-vertical-padding : calc(var(--unit) * 1);
 		/*--background-section-vertical-margin : calc(var(--unit) * 2);*/
 	}
 }
@@ -18,10 +20,14 @@
 {
 	margin-top : var(--content-section-margin);
 	margin-bottom : var(--content-section-margin);
-	padding : var(--content-section-padding);
+	padding-left : var(--content-section-horizontal-padding);
+	padding-right : var(--content-section-horizontal-padding);
+	padding-top : var(--content-section-vertical-padding);
+	padding-bottom : var(--content-section-vertical-padding);
 	background-color : var(--white-color);
 	border-radius : var(--border-radius);
-	box-shadow : var(--content-section-shadow);
+	/*box-shadow : var(--content-section-shadow);*/
+  box-shadow: 0 0.0005rem 0.1rem 0 hsla(210,7%,61%,.15), 0 0.1rem 0.75rem 0 hsla(210,7%,61%,.15);
 
 	@mixin xs-small {
 		margin-left  : calc(var(--column-gap) * -1);
@@ -43,10 +49,12 @@
 
 .content-section__header
 {
-	margin        : calc(-1 * var(--content-section-padding));
-	margin-bottom : var(--content-section-padding);
-	padding-left  : var(--content-section-padding);
-	padding-right : var(--content-section-padding);
+	margin-top    : calc(-1 * var(--content-section-vertical-padding));
+	margin-bottom : var(--content-section-vertical-padding);
+	margin-left   : calc(-1 * var(--content-section-horizontal-padding));
+	margin-right  : calc(-1 * var(--content-section-horizontal-padding));
+	padding-left  : var(--content-section-horizontal-padding);
+	padding-right : var(--content-section-horizontal-padding);
 	padding-top      : 0.5em;
 	padding-bottom   : 0.45em;
 	border-bottom    : 1px solid var(--content-section-divider-color);
@@ -64,23 +72,17 @@
 	background-color : var(--gray-color);
 }*/
 
-/*.content-section__divider
+/*.content-section__errors
 {
-	left  : var(--content-section-padding);
-	right : var(--content-section-padding);
+	margin-bottom : var(--content-section-vertical-padding);
 }*/
 
-.content-section__errors
+/*.content-section__errors--top
 {
-	margin-bottom : var(--content-section-padding);
-}
-
-.content-section__errors--top
-{
-	margin        : calc(-1 * var(--content-section-padding));
+	margin        : calc(-1 * var(--content-section-vertical-padding));
 	margin-bottom : var(--content-section-padding);
 	padding       : var(--content-section-padding);
-}
+}*/
 
 /*.content-section--no-padding
 {

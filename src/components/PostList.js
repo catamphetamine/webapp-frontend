@@ -1,9 +1,9 @@
 import React from 'react'
-import { postListShape } from '../PropTypes'
+import { postList } from '../PropTypes'
 
 import './PostList.css'
 
-export default function PostList({ children: { list } }) {
+export default function PostList({ children: list }) {
 	return (
 		<ul className="post__list">
 			{list.items.map((item, i) => (
@@ -16,5 +16,5 @@ export default function PostList({ children: { list } }) {
 }
 
 PostList.propTypes = {
-	children: postListShape.isRequired
+	children: postList.isRequired
 }

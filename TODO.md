@@ -1,3 +1,16 @@
+* Show video length (maybe)
+
+* Show post comments count
+
+* Show post "more" button
+
+Post design example:
+https://board.cx/topic/3431
+
+* Load pictures only when they're visible.
+
+* Check post attachments (both inline and thumbnails) are buttons in case of pictures and videos.
+
 * Add post buttons: +, -, repost, view comments, "more" (report, copy URL for sharing).
 
 * Add "load more on scroll" for posts.

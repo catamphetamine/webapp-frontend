@@ -1,0 +1,25 @@
+/*
+.post__inline-spoiler-contents {
+  transition: 120ms;
+}
+
+.post__inline-spoiler-contents--hidden {
+	color: transparent;
+  text-shadow: 0 0 0.5em rgba(0,0,0,0.4);
+  transition: 60ms;
+}
+*/
+
+.post__inline-spoiler,
+.post__inline-spoiler-contents {
+  transition-duration: 60ms;
+}
+
+.post__inline-spoiler--hidden {
+	background-color: var(--gray-color-lightest);
+	border-radius: 0.2em;
+}
+
+.post__inline-spoiler-contents--hidden {
+	opacity: 0;
+}

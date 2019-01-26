@@ -1,9 +1,9 @@
 import React from 'react'
-import { postHeadingShape } from '../PropTypes'
+import { postHeading } from '../PropTypes'
 
 import './PostHeading.css'
 
-export default function PostHeading({ children: { heading } }) {
+export default function PostHeading({ children: heading }) {
 	return (
 		<h2 className="post__heading">
 			{heading.text}
@@ -12,5 +12,5 @@ export default function PostHeading({ children: { heading } }) {
 }
 
 PostHeading.propTypes = {
-	children: postHeadingShape.isRequired
+	children: postHeading.isRequired
 }

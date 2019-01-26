@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { meta, Loading } from 'react-website'
-import { DragAndDrop } from 'react-responsive-ui'
 
 // Not importing `Tooltip.css` because
 // it's already loaded as part of `react-responsive-ui`.
@@ -13,9 +12,7 @@ import 'react-website/components/Loading.css'
 // import 'react-website/components/LoadingIndicator.css'
 
 // `react-time-ago` English language.
-import TimeAgo from 'javascript-time-ago'
-import en from 'javascript-time-ago/locale/en'
-TimeAgo.locale(en)
+import '../components/TimeAgo.en'
 
 import Snackbar from '../components/Snackbar'
 import Header from '../components/Header'
@@ -26,7 +23,7 @@ import { closeSlideshow } from '../redux/slideshow'
 
 import './Application.css'
 
-@meta(state => ({
+@meta(() => ({
 	site_name   : 'WebApp',
 	title       : 'WebApp',
 	description : 'A generic web application boilerplate',
@@ -34,7 +31,6 @@ import './Application.css'
 	locale      : 'ru_RU',
 	locales     : ['ru_RU', 'en_US']
 }))
-@DragAndDrop()
 @connect(({ slideshow }) => ({
 	slideshowIndex: slideshow.index,
 	slideshowIsOpen: slideshow.isOpen,
@@ -60,7 +56,7 @@ export default class App extends Component
 		} = this.props
 
 		return (
-			<div>
+			<React.Fragment>
 				{/* Page loading indicator */}
 				<Loading/>
 
@@ -86,7 +82,7 @@ export default class App extends Component
 
 					<Footer/>
 				</div>
-			</div>
+			</React.Fragment>
 		)
 	}
 }

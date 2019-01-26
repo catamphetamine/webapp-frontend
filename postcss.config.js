@@ -1,7 +1,6 @@
-{
+module.exports = {
 	"parser": "postcss-comment",
-	"plugins":
-	{
+	"plugins": {
 		"autoprefixer": {},
 		"postcss-import": {},
 		"postcss-mixins": {},

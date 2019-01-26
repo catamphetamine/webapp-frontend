@@ -28,14 +28,18 @@ import {
 import './AccountProfile.css'
 
 @meta(({ account: { account } }) => ({
-	title: account && account.name || '',
-	description: account && account.description || '',
+	title: account && account.name,
+	description: account && account.description,
 	type: 'profile',
-	'profile:username': account && account.name || '',
-	image: account && account.picture && account.picture.sizes[0].url || '',
-	'og:image:width': account && account.picture && account.picture.sizes[0].width || '',
-	'og:image:height': account && account.picture && account.picture.sizes[0].height || '',
-	'og:image:type': account && account.picture && account.picture.sizes[0].type || ''
+	'profile:first_name': account && account.firstName,
+	'profile:last_name': account && account.lastName,
+	'profile:username': account && account.idAlias,
+	image: account && account.picture && account.picture.sizes.map((size) => ({
+		_: size.url,
+		width: size.width,
+		height: size.height,
+		type: account.picture.type
+	}))
 }))
 @preload(async ({ dispatch, params }) => {
 	// `id` could be an `id` and it could be an `idAlias`.

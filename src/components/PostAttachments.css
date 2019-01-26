@@ -5,6 +5,11 @@
 	margin-top : 1em;
 }
 
+.post--anonymous .post__attachments
+{
+  margin-top: 0.6em;
+}
+
 .post__thumbnail-video-icon
 {
 	--icon-size : 35%;
@@ -26,18 +31,18 @@
 .post__thumbnail-attachments
 {
 	padding         : 0;
-	margin-top      : calc(var(--post-content-spacing) * -1);
+	margin-top      : calc(var(--post-attachments-spacing) * -1);
 	margin-bottom   : 0;
-	margin-left     : calc(-1 * var(--post-content-spacing) / 2);
-	margin-right    : calc(-1 * var(--post-content-spacing) / 2);
+	margin-left     : calc(-1 * var(--post-attachments-spacing) / 2);
+	margin-right    : calc(-1 * var(--post-attachments-spacing) / 2);
 	list-style-type : none;
 }
 
 .post__thumbnail-attachment
 {
-	margin-top    : var(--post-content-spacing);
-	padding-left  : calc(var(--post-content-spacing) / 2);
-	padding-right : calc(var(--post-content-spacing) / 2);
+	margin-top    : var(--post-attachments-spacing);
+	padding-left  : calc(var(--post-attachments-spacing) / 2);
+	padding-right : calc(var(--post-attachments-spacing) / 2);
 }
 
 .post__thumbnail-attachment .rrui__video__play-icon
@@ -75,6 +80,7 @@
 	opacity          : 0.8;
 
 	overflow : hidden;
+	pointer-events : none;
 
 	font-size : 5rem;
 

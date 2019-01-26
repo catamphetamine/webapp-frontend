@@ -605,6 +605,17 @@ class Slideshow extends React.Component {
 	}
 
 	onMouseDown = (event) => {
+		switch (event.button) {
+			// Left
+			case 0:
+				break
+			// Middle
+			case 1:
+			// Right
+			case 2:
+			default:
+				return this.onMouseUp()
+		}
 		if (isButton(event.target)) {
 			return
 		}

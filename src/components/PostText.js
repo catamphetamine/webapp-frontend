@@ -1,16 +1,42 @@
 import React from 'react'
-import { postTextShape } from '../PropTypes'
+import PropTypes from 'prop-types'
+import { postText } from '../PropTypes'
 
 import './PostText.css'
 
-export default function PostText({ children: text }) {
-	return (
-		<span>
-			{text}
-		</span>
-	)
+export default function PostText({ style, children }) {
+	const tag = getTagForStyle(style)
+	if (tag) {
+		return React.createElement(tag, null, children)
+	}
+	return children
 }
 
 PostText.propTypes = {
-	children: postTextShape.isRequired
+	style: PropTypes.oneOf([
+		'bold',
+		'italic',
+		'strikethrough',
+		'subscript',
+		'superscript'
+	]),
+	children: PropTypes.oneOfType([
+		postText,
+		PropTypes.node
+	]).isRequired
+}
+
+function getTagForStyle(style) {
+	switch (style) {
+		case 'bold':
+			return 'strong'
+		case 'italic':
+			return 'em'
+		case 'strikethrough':
+			return 'del'
+		case 'superscript':
+			return 'sup'
+		case 'subscript':
+			return 'sub'
+	}
 }

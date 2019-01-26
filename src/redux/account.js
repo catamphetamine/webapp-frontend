@@ -4,19 +4,19 @@ const redux = new ReduxModule()
 
 export const getAccount = redux.action
 (
-	(id) => async http => http.get(`/api/accounts/${id}`),
+	(id) => async http => http.get(`api://accounts/${id}`),
 	'account'
 )
 
 export const getAccountPosts = redux.action
 (
-	(id) => async http => http.get(`/api/accounts/${id}/posts`),
+	(id) => async http => http.get(`api://accounts/${id}/posts`),
 	'posts'
 )
 
 export const uploadPicture = redux.action
 (
-	(file) => (http) => http.post(`/images/upload`, { file })
+	(file) => (http) => http.post(`api://images/upload`, { file })
 )
 
 // export const setNewBackgroundPicture = redux.simpleAction
@@ -44,7 +44,6 @@ export const getLatestActivityTime = redux.action
 	(id) => async http =>
 	{
 		return new Date()
-		// return await http.get('/api/example/users')
 	},
 	'latestActivityTime'
 )

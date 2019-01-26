@@ -1,4 +1,3 @@
-export { default as users } from './users';
 export { default as notifications } from './notifications';
 export { default as slideshow } from './slideshow';
 export { default as account } from './account';

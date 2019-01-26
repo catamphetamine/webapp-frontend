@@ -2,14 +2,14 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 
-export function ContentSection({ className, padding, background, children })
+export function ContentSection({ className, padding, background, children, ...rest })
 {
 	// Margin collapse won't work for cases
 	// where content section siblings are flex columns
 	// therefore disabling margin collapse for all cases
 	// to rule out the confusion.
 	return (
-		<div className={classNames(className, 'content-section', {
+		<div {...rest} className={classNames(className, 'content-section', {
 			// 'content-section--no-padding': !padding,
 			'content-section--background': background
 		})}>

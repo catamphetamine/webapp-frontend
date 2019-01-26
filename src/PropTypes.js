@@ -93,10 +93,10 @@ export const audioShape = shape({
 	]).isRequired
 })
 
-const linkShape = shape({
+const linkShape = {
 	url: string.isRequired,
-	text: string.isRequired
-})
+	content: string.isRequired
+}
 
 export const personShape = shape({
 	id: id.isRequired,
@@ -139,42 +139,84 @@ export const accountShapeProfile = shape({
 	description: string,
 	backgroundPicture: pictureShape,
 	whereabouts: string,
-	links: arrayOf(shape({
-		url: string.isRequired,
-		text: string.isRequired
-	}))
+	links: arrayOf(shape(linkShape))
 })
 
-export const postTextShape = string
+export const postText = string
 
-export const postLinkShape = shape({
+export const postStyledText = shape({
+	type: oneOf(['text']).isRequired,
+	style: string.isRequired,
+	content: oneOfType([
+		string,
+		// postStyledText
+		object
+	]).isRequired
+})
+
+const postNewLine = oneOf(['\n'])
+
+const postInlineElementContent = oneOfType([
+	string,
+	arrayOf([
+		string,
+		postNewLine,
+		postStyledText
+	])
+])
+
+export const postInlineLink = shape({
 	type: oneOf(['link']).isRequired,
-	link: linkShape.isRequired
+	...linkShape
 })
 
-export const postHeadingShape = shape({
+export const postHeading = shape({
 	type: oneOf(['heading']).isRequired,
-	heading: shape({
-		text: string.isRequired
-	}).isRequired
+	content: string.isRequired
 })
 
-export const postParagraphShape = string
-
-export const postListShape = shape({
-	type: oneOf(['list']).isRequired,
-	list: shape({
-		items: arrayOf(string).isRequired
-	}).isRequired
+export const postSpoiler = shape({
+	type: oneOf(['spoiler']).isRequired,
+	content: postInlineElementContent.isRequired
 })
 
-export const postQuoteShape = shape({
+export const postPostLinkShape = shape({
+	type: oneOf(['post-link']).isRequired,
+	postId: string.isRequired,
+	threadId: string.isRequired,
+	...linkShape
+})
+
+export const postQuote = shape({
 	type: oneOf(['quote']).isRequired,
-	quote: shape({
-		text: string.isRequired,
-		source: string,
-		url: string
-	}).isRequired
+	content: postInlineElementContent.isRequired,
+	source: string,
+	url: string
+})
+
+const postInlineQuote = shape({
+	content: postInlineElementContent.isRequired
+})
+
+const postInlineElement = oneOfType([
+	postText,
+	postStyledText,
+	postInlineLink,
+	postInlineQuote,
+	// Custom chan.
+	postNewLine,
+	postSpoiler,
+	postPostLinkShape
+])
+
+export const postParagraph = oneOfType([
+	string,
+	arrayOf(postInlineElement)
+])
+
+export const postList = shape({
+	type: oneOf(['list']).isRequired,
+	items: arrayOf(postInlineElementContent).isRequired
 })
 
 // export const postPictureShape = shape({
@@ -197,16 +239,12 @@ export const postEmbeddedAttachmentShape = shape({
 	attachmentId: number.isRequired
 })
 
-export const postPartShape = oneOfType([
-	postHeadingShape,
-	postParagraphShape,
-	postListShape,
-	postQuoteShape,
-	postEmbeddedAttachmentShape,
-	arrayOf(oneOfType([
-		postTextShape,
-		postLinkShape
-	]))
+export const postBlock = oneOfType([
+	postHeading,
+	postParagraph,
+	postList,
+	postQuote,
+	postEmbeddedAttachmentShape
 ])
 
 export const pictureAttachmentShape = shape({
@@ -249,9 +287,9 @@ export const postShape = shape({
 	id: id.isRequired,
 	content: oneOfType([
 		string,
-		arrayOf(postPartShape)
-	]),//.isRequired,
-	account: accountShape.isRequired,
+		arrayOf(postBlock)
+	]),
+	account: accountShape, //.isRequired,
 	attachments: arrayOf(postAttachmentShape)
 })
 

@@ -66,6 +66,12 @@ a
 	text-decoration: none;
 }
 
+.link--block
+{
+	display: block;
+	color: initial;
+}
+
 /*a:active
 {
 	color: var(--base-color-dark);

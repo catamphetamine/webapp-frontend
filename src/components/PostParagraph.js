@@ -1,16 +1,20 @@
 import React from 'react'
-import { postParagraphShape } from '../PropTypes'
+import PropTypes from 'prop-types'
+import { postParagraph } from '../PropTypes'
 
 import './PostParagraph.css'
 
-export default function PostParagraph({ children: text }) {
+export default function PostParagraph({ children }) {
 	return (
 		<p>
-			{text}
+			{children}
 		</p>
 	)
 }
 
 PostParagraph.propTypes = {
-	children: postParagraphShape.isRequired
+	children: PropTypes.oneOfType([
+		postParagraph,
+		PropTypes.node
+	]).isRequired
 }

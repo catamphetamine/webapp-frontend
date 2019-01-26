@@ -49,7 +49,10 @@
 
 .react-website__loading--initial .react-website__loading-spinner
 {
-	color : rgba(0, 0, 0, 0.25);
+	/* The current implementation for the spinner is 4 stacked arcs,
+	   so not using transparency here. */
+	/*color : rgba(0, 0, 0, 0.25);*/
+	color : #cfcfcf;
 }
 
 .rrui__slideshow

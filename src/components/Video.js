@@ -102,7 +102,7 @@ export default class Video extends React.Component {
 					<Picture
 						onClick={this.onPreviewClick}
 						picture={video.picture}
-						fit="contain"/>
+						fit="cover"/>
 				}
 				{showPreview &&
 					<button

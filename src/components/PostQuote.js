@@ -1,9 +1,9 @@
 import React from 'react'
-import { postQuoteShape } from '../PropTypes'
+import { postQuote } from '../PropTypes'
 
 import './PostQuote.css'
 
-export default function PostQuote({ children: { quote } }) {
+export default function PostQuote({ children: quote }) {
 	return (
 		<div className="post__quote">
 			<blockquote
@@ -26,5 +26,5 @@ export default function PostQuote({ children: { quote } }) {
 }
 
 PostQuote.propTypes = {
-	children: postQuoteShape.isRequired
+	children: postQuote.isRequired
 }
