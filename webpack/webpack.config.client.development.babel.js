@@ -11,9 +11,9 @@ import applicationConfiguration from '../configuration'
 export function createConfig(baseConfiguration, settings, applicationConfiguration) {
 	let configuration = clientConfiguration(baseConfiguration, settings)
 
-	// `webpack-serve` can't set the correct `mode` by itself
+	// `webpack-dev-server` can't set the correct `mode` by itself
 	// so setting `mode` to `"development"` explicitly.
-	// https://github.com/webpack-contrib/webpack-serve/issues/94
+	// https://github.com/webpack/webpack-dev-server/issues/1327
 	configuration.mode = 'development'
 
 	// Fetch all files from webpack development server.
