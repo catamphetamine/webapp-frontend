@@ -1,7 +1,9 @@
 import Container from './Container'
 
-export function createConfig({ reducers, routes, container, transformURL }) {
+export function createConfig({ reducers, routes, container, transformURL, ...rest }) {
 	return {
+		...rest,
+
 		reducers,
 		routes,
 		container: container || Container,
@@ -24,7 +26,7 @@ export function createConfig({ reducers, routes, container, transformURL }) {
 		http: {
 			transformURL: (url, server) => {
 				// Pass all `api://` requests to the API server.
-				if (url.indexOf('api://') === 0) {
+				if (configuration.api && url.indexOf('api://') === 0) {
 					//
 					// Chrome won't allow querying `localhost` from `localhost`
 					// so had to just proxy the `/api` path using `webpack-dev-server`.
