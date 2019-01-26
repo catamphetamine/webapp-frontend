@@ -24,7 +24,7 @@ body
 }
 
 /* `html` is required for `rem`s to work. */
-html, body, input, textarea, select
+html, body
 {
 	font-family : sans-serif;
 
@@ -52,6 +52,12 @@ html, body, input, textarea, select
 	{
 		font-size : var(--font-size-xl);
 	}
+}
+
+input, textarea, select, table
+{
+	font-family: inherit;
+	font-size: inherit;
 }
 
 body
