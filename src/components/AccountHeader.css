@@ -117,7 +117,7 @@
 .account-header__picture-container
 {
 	position : absolute;
-	left     : calc(var(--column-gap));
+	left     : calc(var(--column-padding));
 	bottom   : calc(-1 * var(--unit) * 2);
 	/* Must be above the account name layer for clickability. */
 	z-index  : 2;
@@ -143,8 +143,8 @@
 	bottom   : 0;
 	z-index  : 1;
 	width    : 100%;
-	padding-left : calc(var(--column-gap) + var(--account-header-picture-size));
-	padding-right : var(--column-gap);
+	padding-left : calc(var(--column-padding) + var(--account-header-picture-size));
+	padding-right : var(--column-padding);
 }
 
 .account-header__picture,
@@ -164,7 +164,7 @@
 		.uploadable-picture__change-overlay
 		{
 			justify-content : flex-end;
-			padding-right : var(--column-gap);
+			padding-right : var(--column-padding);
 		}
 	}
 }
@@ -185,8 +185,8 @@
 .account-header__actions
 {
 	position : absolute;
-	right    : var(--column-gap);
-	top      : var(--column-gap);
+	right    : var(--column-padding);
+	top      : var(--column-padding);
 	/* Must be above the account picture layer for clickability. */
 	z-index  : 3;
 }
