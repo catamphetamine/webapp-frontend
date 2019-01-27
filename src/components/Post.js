@@ -280,7 +280,7 @@ export function PostInlineContentElement({ children: content }) {
 		)
 	} else if (content.type === 'post-link') {
 		return (
-			<PostLink url={content.url}>
+			<PostLink className="post__link--post" url={content.url}>
 				{_content}
 			</PostLink>
 		)
