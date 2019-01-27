@@ -29,6 +29,9 @@ export default class Picture extends PureComponent
 		maxWidth : PropTypes.number,
 		maxHeight: PropTypes.number,
 
+		// For `fit="height"`.
+		height : PropTypes.number,
+
 		// By default a border will be added around the picture.
 		// Set to `false` to not add border for picture.
 		border : PropTypes.bool.isRequired,
@@ -48,6 +51,7 @@ export default class Picture extends PureComponent
 			'contain',
 			'scale-down',
 			'width',
+			'height',
 			'repeat-x'
 		]).isRequired,
 
@@ -132,6 +136,7 @@ export default class Picture extends PureComponent
 		const {
 			picture,
 			fit,
+			height,
 			maxWidth,
 			maxHeight
 		} = this.props
@@ -143,6 +148,11 @@ export default class Picture extends PureComponent
 			case 'width':
 				return {
 					paddingBottom: 100 / getAspectRatio(picture) + '%'
+				}
+			case 'height':
+				return {
+					width: getAspectRatio(picture) * height + 'px',
+					height: height + 'px'
 				}
 			case 'contain':
 			case 'cover':
@@ -481,6 +491,8 @@ function getWidth(picture, fit, containerWidth, containerHeight) {
 	switch (fit) {
 		case 'width':
 			return containerWidth
+		case 'height':
+			return getAspectRatio(picture) * containerHeight
 		case 'repeat-x':
 			return containerHeight * getAspectRatio(picture)
 		case 'cover':
@@ -502,6 +514,8 @@ function getHeight(picture, fit, containerWidth, containerHeight) {
 	switch (fit) {
 		case 'width':
 			return containerWidth / getAspectRatio(picture)
+		case 'height':
+			return containerHeight
 		case 'repeat-x':
 			return containerHeight
 		case 'cover':

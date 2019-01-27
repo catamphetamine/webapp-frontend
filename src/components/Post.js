@@ -44,6 +44,7 @@ export default class Post extends React.Component
 		commentsCount: PropTypes.number,
 		expandFirstPictureOrVideo: PropTypes.bool,
 		saveBandwidth: PropTypes.bool,
+		attachmentThumbnailHeight: PropTypes.number,
 		openSlideshow: PropTypes.func.isRequired,
 		url: PropTypes.string
 	}
@@ -70,6 +71,7 @@ export default class Post extends React.Component
 			url,
 			commentsCount,
 			expandFirstPictureOrVideo,
+			attachmentThumbnailHeight,
 			saveBandwidth,
 			openSlideshow
 		} = this.props
@@ -80,7 +82,8 @@ export default class Post extends React.Component
 
 		return (
 			<article className={classNames('post', {
-				'post--anonymous': !post.account
+				'post--anonymous': !post.account,
+				'post--empty': !post.content
 			})}>
 				<header className="post__summary">
 					{post.account &&
@@ -121,6 +124,7 @@ export default class Post extends React.Component
 				<PostAttachments
 					expandFirstPictureOrVideo={expandFirstPictureOrVideo}
 					saveBandwidth={saveBandwidth}
+					attachmentThumbnailHeight={attachmentThumbnailHeight}
 					openSlideshow={this.openSlideshowForAttachments}>
 					{attachments.filter(_ => !embeddedAttachmentIds.includes(_.id))}
 				</PostAttachments>

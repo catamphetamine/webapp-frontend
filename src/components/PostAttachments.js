@@ -17,6 +17,7 @@ const MAX_THUMBNAIL_PICTURES_OR_VIDEOS = 6
 
 export default function PostAttachments({
 	expandFirstPictureOrVideo,
+	attachmentThumbnailHeight,
 	saveBandwidth,
 	openSlideshow,
 	children: attachments
@@ -81,10 +82,11 @@ export default function PostAttachments({
 						{picturesAndVideos.map((pictureOrVideo, i) => (
 							<li
 								key={`picture-or-video-${i}`}
-								className="post__thumbnail-attachment col-4">
-								<div className="position-relative aspect-ratio--hd">
+								className="post__thumbnail-attachment">
+								<div className="position-relative">
 									<Picture
-										fit="cover"
+										fit="height"
+										height={attachmentThumbnailHeight}
 										picture={pictureOrVideo.type === 'video' ? pictureOrVideo.video.picture : pictureOrVideo.picture}
 										onClick={createOnOpenSlideshow(i + (titlePictureOrVideo ? 1 : 0))}
 										saveBandwidth={saveBandwidth}
@@ -133,12 +135,14 @@ PostAttachments.propTypes = {
 	openSlideshow: PropTypes.func.isRequired,
 	expandFirstPictureOrVideo: PropTypes.bool.isRequired,
 	saveBandwidth: PropTypes.bool.isRequired,
+	attachmentThumbnailHeight: PropTypes.number.isRequired,
 	children: PropTypes.arrayOf(postAttachmentShape)
 }
 
 PostAttachments.defaultProps = {
 	expandFirstPictureOrVideo: true,
-	saveBandwidth: false
+	saveBandwidth: false,
+	attachmentThumbnailHeight: 160
 }
 
 function groupThumbnails(thumbnails, targetRowRatioTolerance) {
