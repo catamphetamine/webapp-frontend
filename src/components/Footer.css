@@ -12,7 +12,7 @@
 	border-top : 1px solid rgba(0,0,0,.0975);
 }
 
-.webpage__content
+.webpage__footer
 {
 	margin-bottom : var(--footer-menu-height);
 }
@@ -21,7 +21,7 @@
 	.webpage__footer .application-menu {
 		display : none;
 	}
-	.webpage__content {
+	.webpage__footer {
 		margin-bottom : 0;
 	}
 }
@@ -30,7 +30,7 @@
 	.webpage__footer .application-menu {
 		display : none;
 	}
-	.webpage__content {
+	.webpage__footer {
 		margin-bottom : 0;
 	}
 }
