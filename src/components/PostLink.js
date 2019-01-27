@@ -7,7 +7,8 @@ export default function PostLink({ url, children }) {
 	return (
 		<a
 			target="_blank"
-			href={url}>
+			href={url}
+			className="post__post-link">
 			{children}
 		</a>
 	)
