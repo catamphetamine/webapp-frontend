@@ -178,7 +178,7 @@ function groupThumbnailsRecursive(thumbnails, targetRowRatioTolerance = 0) {
 		// If there's not enough thumbnails for the higher row ratio
 		// then just group them in a single row.
 		if (forHigherRowRatio.length === 1) {
-			console.log(getRowRatio(thumbnails))
+			// console.log(getRowRatio(thumbnails))
 			return thumbnails
 		}
 
@@ -213,50 +213,50 @@ function getRowRatio(row) {
 // 	height: 640
 // }]))
 
-console.log(groupThumbnailsRecursive([{
-	width: 1920,
-	height: 1080
-}, {
-	width: 1920,
-	height: 1080
-}, {
-	width: 1920,
-	height: 1080
-}]))
+// console.log(groupThumbnailsRecursive([{
+// 	width: 1920,
+// 	height: 1080
+// }, {
+// 	width: 1920,
+// 	height: 1080
+// }, {
+// 	width: 1920,
+// 	height: 1080
+// }]))
 
-console.log(groupThumbnailsRecursive([{
-	width: 1920,
-	height: 1080
-}, {
-	width: 1920,
-	height: 1080
-}, {
-	width: 1920,
-	height: 1080
-}, {
-	width: 1920,
-	height: 1080
-}]))
+// console.log(groupThumbnailsRecursive([{
+// 	width: 1920,
+// 	height: 1080
+// }, {
+// 	width: 1920,
+// 	height: 1080
+// }, {
+// 	width: 1920,
+// 	height: 1080
+// }, {
+// 	width: 1920,
+// 	height: 1080
+// }]))
 
-console.log(groupThumbnailsRecursive([{
-	width: 1920,
-	height: 1080
-}, {
-	width: 1920,
-	height: 1080
-}, {
-	width: 1920,
-	height: 1080
-}, {
-	width: 1920,
-	height: 1080
-}, {
-	width: 1920,
-	height: 1080
-}, {
-	width: 1920,
-	height: 1080
-}, {
-	width: 1920,
-	height: 1080
-}]))
+// console.log(groupThumbnailsRecursive([{
+// 	width: 1920,
+// 	height: 1080
+// }, {
+// 	width: 1920,
+// 	height: 1080
+// }, {
+// 	width: 1920,
+// 	height: 1080
+// }, {
+// 	width: 1920,
+// 	height: 1080
+// }, {
+// 	width: 1920,
+// 	height: 1080
+// }, {
+// 	width: 1920,
+// 	height: 1080
+// }, {
+// 	width: 1920,
+// 	height: 1080
+// }]))
