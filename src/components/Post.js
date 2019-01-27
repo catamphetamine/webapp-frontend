@@ -20,6 +20,7 @@ import PostPicture from './PostPicture'
 import PostVideo from './PostVideo'
 import PostAudio from './PostAudio'
 import PostAttachments from './PostAttachments'
+import PostFooter from './PostFooter'
 
 import PostText from './PostText'
 import PostLink from './PostLink'
@@ -40,6 +41,7 @@ export default class Post extends React.Component
 {
 	static propTypes = {
 		post: postShape.isRequired,
+		commentsCount: PropTypes.number,
 		expandFirstPictureOrVideo: PropTypes.bool,
 		saveBandwidth: PropTypes.bool,
 		openSlideshow: PropTypes.func.isRequired,
@@ -66,6 +68,7 @@ export default class Post extends React.Component
 		const {
 			post,
 			url,
+			commentsCount,
 			expandFirstPictureOrVideo,
 			saveBandwidth,
 			openSlideshow
@@ -76,10 +79,10 @@ export default class Post extends React.Component
 		// const embeddedPictures = []
 
 		return (
-			<div className={classNames('post', {
-					'post--anonymous': !post.account
-				})}>
-				<div className="post__summary">
+			<article className={classNames('post', {
+				'post--anonymous': !post.account
+			})}>
+				<header className="post__summary">
 					{post.account &&
 						<React.Fragment>
 							<Link to={accountLink(post.account)}>
@@ -90,6 +93,7 @@ export default class Post extends React.Component
 							<div className="post__name-and-date">
 								<Link
 									to={accountLink(post.account)}
+									rel="author"
 									className="post__name">
 									{post.account.name}
 								</Link>
@@ -104,7 +108,7 @@ export default class Post extends React.Component
 							{post.createdAt}
 						</PostDate>
 					}
-				</div>
+				</header>
 				{post.content && toArray(post.content).map((content, i) => (
 					<PostBlock
 						key={i}
@@ -120,7 +124,8 @@ export default class Post extends React.Component
 					openSlideshow={this.openSlideshowForAttachments}>
 					{attachments.filter(_ => !embeddedAttachmentIds.includes(_.id))}
 				</PostAttachments>
-			</div>
+				<PostFooter post={post}/>
+			</article>
 		);
 	}
 }

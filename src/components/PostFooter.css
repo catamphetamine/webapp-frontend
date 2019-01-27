@@ -1,0 +1,17 @@
+.post__footer {
+	display: flex;
+	margin-top: 0.9em;
+}
+
+.post__footer__comments-count-icon {
+	width: 1em;
+	height: 1em;
+	margin-right: 0.4em;
+	margin-top: -0.1em;
+}
+
+.post__footer__comments-count {
+	display: flex;
+	align-items: center;
+	color: var(--gray-color);
+}
