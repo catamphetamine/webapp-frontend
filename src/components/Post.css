@@ -3,6 +3,8 @@
 .post
 {
 	--post-attachments-spacing : calc(var(--unit) / 2);
+
+	overflow: hidden;
 }
 
 .post__summary
