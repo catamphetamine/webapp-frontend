@@ -87,5 +87,7 @@ export function onError(error, { path, url, redirect, dispatch, getState, server
 			// Redirect to a generic error page
 			return redirect(`/error?url=${encodeURIComponent(url)}`)
 		}
+	} else {
+		console.log(`Will redirect to error page in production`)
 	}
 }
