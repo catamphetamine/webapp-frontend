@@ -3,9 +3,11 @@
 .rrui__picture
 {
 	position      : relative;
-	font-size     : 0;
 	border-radius : inherit;
 	user-select   : none;
+	/* Don't know why `font-size: 0` rule was added. */
+	/* Perhaps there was some whitespace. */
+	font-size : 0;
 }
 
 /*
@@ -60,7 +62,9 @@
 {
 	width  : calc(var(--unit) * 2);
 	height : calc(var(--unit) * 2);
-	color  : var(--white-color);
+	color  : rgba(255, 255, 255, 0.2);
+	/* <ActivityIndicator/> uses `em`s by default. */
+	font-size : 6px;
 }
 
 .rrui__picture__loading--error
