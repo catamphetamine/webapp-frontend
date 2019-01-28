@@ -10,7 +10,7 @@
 
 	background-color : var(--white-color);
 	color : var(--black-color);
-	border-bottom : 1px solid rgba(0,0,0,.0975);
+	border-bottom : 1px solid rgba(0,0,0,.15);
 }
 
 .webpage__header__row
