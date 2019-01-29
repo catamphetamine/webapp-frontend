@@ -28,26 +28,6 @@
 	color : var(--base-color-dark);
 }
 
-.post__date
-{
-	margin-top : 0.1em;
-	color : var(--gray-color-darkest);
-}
-
-.post--anonymous .post__date
-{
-	color : var(--gray-color);
-}
-
-.post__date-tooltip
-{
-	height        : calc(var(--unit) * 3);
-	margin-top    : -0.5em;
-	padding-left  : 0.85em;
-	padding-right : 0.85em;
-	font-size     : 0.85rem;
-}
-
 .post__account-picture
 {
 	width  : calc(var(--unit) * 4);

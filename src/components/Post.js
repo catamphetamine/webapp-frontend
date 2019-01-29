@@ -1,6 +1,5 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import ReactTimeAgo from 'react-time-ago/tooltip'
 import { connect } from 'react-redux'
 import { Link } from 'react-website'
 import classNames from 'classnames'
@@ -12,6 +11,7 @@ import Picture from './Picture'
 import Slideshow from './Slideshow'
 
 import PostHeading from './PostHeading'
+import PostDate from './PostDate'
 import PostParagraph from './PostParagraph'
 import PostList from './PostList'
 import PostQuote from './PostQuote'
@@ -100,16 +100,16 @@ export default class Post extends React.Component
 									className="post__name">
 									{post.account.name}
 								</Link>
-								<PostDate>
-									{post.createdAt}
-								</PostDate>
+								<PostDate
+									date={post.createdAt}
+									link={url}/>
 							</div>
 						</React.Fragment>
 					}
 					{!post.account &&
-						<PostDate>
-							{post.createdAt}
-						</PostDate>
+						<PostDate
+							date={post.createdAt}
+							link={url}/>
 					}
 				</header>
 				{post.content && toArray(post.content).map((content, i) => (
@@ -137,51 +137,6 @@ export default class Post extends React.Component
 function toArray(object) {
 	return Array.isArray(object) ? object : [object]
 }
-
-function PostDate({ children: date }) {
-	return (
-		<ReactTimeAgo
-			date={date}
-			tooltipClassName="post__date-tooltip"
-			className="post__date"/>
-	)
-}
-
-PostDate.propTypes = {
-	children: PropTypes.instanceOf(Date).isRequired
-}
-
-// function PostDate({ children: date, url }) {
-// 	date = (
-// 		<ReactTimeAgo tooltipClassName="post__date-tooltip">
-// 			{date}
-// 		</ReactTimeAgo>
-// 	)
-// 	if (url) {
-// 		if (url[0] === '/') {
-// 			return (
-// 				<Link to={url} className="post__date">
-// 					{date}
-// 				</Link>
-// 			)
-// 		}
-// 		return (
-// 			<a href={url} target="_blank" className="post__date">
-// 				{date}
-// 			</a>
-// 		)
-// 	}
-// 	return (
-// 		<div className="post__date">
-// 			{date}
-// 		</div>
-// 	)
-// }
-
-// PostDate.propTypes = {
-// 	children: PropTypes.instanceOf(Date).isRequired,
-// 	url: PropTypes.string
-// }
 
 function PostBlock({ attachments, embeddedAttachmentIds, openSlideshow, children: content }) {
 	if (Array.isArray(content)) {
