@@ -1,6 +1,6 @@
 import expectToEqual from './expectToEqual'
 
-const END_OF_SENTENCE_PUNCTUATION = ['.', '?', '!']
+const END_OF_SENTENCE_PUNCTUATION = ['.', '?', '!', '\n']
 
 /**
  * Trims a string if it exceeds the maximum length.
@@ -19,7 +19,7 @@ export default function trimText(string, maxLength) {
 	let lastSentenceEndsAtLongest
 	let lastSentenceEndsAtLongestPunctuation
 	for (const puctuation of END_OF_SENTENCE_PUNCTUATION) {
-		const lastSentenceEndsAt = string.lastIndexOf(puctuation + ' ')
+		const lastSentenceEndsAt = string.lastIndexOf(puctuation + (puctuation === '\n' ? '' : ' '))
 		if (lastSentenceEndsAt >= 0) {
 			if (!lastSentenceEndsAtLongest || lastSentenceEndsAt > lastSentenceEndsAtLongest) {
 				lastSentenceEndsAtLongest = lastSentenceEndsAt
@@ -28,7 +28,9 @@ export default function trimText(string, maxLength) {
 		}
 	}
 	if (lastSentenceEndsAtLongest) {
-		return string.slice(0, lastSentenceEndsAtLongest + lastSentenceEndsAtLongestPunctuation.length)
+		return string.slice(0, lastSentenceEndsAtLongest +
+			(lastSentenceEndsAtLongestPunctuation === '\n' ? '' : lastSentenceEndsAtLongestPunctuation.length)
+		)
 	}
 	// Trim by end of word (if available).
 	const lastWordEndsAt = string.lastIndexOf(' ')
@@ -62,3 +64,5 @@ test('Abc! Def.', 7, 'Abc!')
 
 test('Abc. Def? Ghi', 12, 'Abc. Def?')
 test('Abc. Def! Ghi', 12, 'Abc. Def!')
+
+test('A b c\nD e f\nG h i', 16, 'A b c\nD e f')
