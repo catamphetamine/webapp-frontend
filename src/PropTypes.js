@@ -195,6 +195,7 @@ export const postQuote = shape({
 })
 
 const postInlineQuote = shape({
+	type: oneOf(['inline-quote']).isRequired,
 	content: postInlineElementContent.isRequired
 })
 

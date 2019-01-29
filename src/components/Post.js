@@ -221,7 +221,7 @@ export function PostInlineContentElement({ children: content }) {
 				{_content}
 			</PostText>
 		)
-	} else if (content.type === 'quote') {
+	} else if (content.type === 'inline-quote') {
 		return (
 			<q className="post__inline-quote">
 				{_content}
