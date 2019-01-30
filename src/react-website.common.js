@@ -80,7 +80,7 @@ export function onError(error, { path, url, redirect, dispatch, getState, server
 	}
 
 	// Redirect to a generic error page in production
-	if (process.env.NODE_ENV !== 'production') {
+	if (process.env.NODE_ENV === 'production') {
 		// Prevents infinite redirect to the error page
 		// in case of overall page rendering bugs, etc.
 		if (path !== '/error') {
