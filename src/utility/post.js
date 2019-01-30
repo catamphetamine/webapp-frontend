@@ -29,7 +29,7 @@ function getContentText(content, options) {
 		return content
 	}
 	const part = content
-	content = part.content
+	content = getContentText(part.content, options)
 	switch (part.type) {
 		case 'quote':
 			if (options.excludeQuotes) {
@@ -188,6 +188,59 @@ getPostTextTest(
 		]
 	],
 	'«Quote»\nAbc'
+)
+
+getPostTextTest(
+	[
+		[
+			{
+				type: 'text',
+				style: 'bold',
+				content: [
+					{
+						type: 'link',
+						url: 'https://google.com',
+						content: 'Google'
+					},
+					' ',
+					{
+						type: 'text',
+						style: 'italic',
+						content: 'link'
+					}
+				]
+			},
+			'\n',
+			'Abc'
+		]
+	],
+	'Google link\nAbc'
+)
+
+getPostTextTest(
+	[
+		[
+			{
+				type: 'quote',
+				content: [
+					{
+						type: 'link',
+						url: 'https://google.com',
+						content: 'Google'
+					},
+					' ',
+					{
+						type: 'text',
+						style: 'italic',
+						content: 'link'
+					}
+				]
+			},
+			'\n',
+			'Abc'
+		]
+	],
+	'«Google link»\nAbc'
 )
 
 function removePostLinksTest(content, text) {
