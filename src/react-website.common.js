@@ -80,14 +80,16 @@ export function onError(error, { path, url, redirect, dispatch, getState, server
 	}
 
 	// Redirect to a generic error page in production
-	if (process.env.NODE_ENV === 'production') {
+	if (process.env.NODE_ENV !== 'production') {
 		// Prevents infinite redirect to the error page
 		// in case of overall page rendering bugs, etc.
 		if (path !== '/error') {
-			// Redirect to a generic error page
+			// Redirect to a generic error page.
+			// Won't redirect in case of client-side-only rendering
+			// when the error is thrown during the initial rendering.
 			return redirect(`/error?url=${encodeURIComponent(url)}`)
 		}
 	} else {
-		console.log(`Will redirect to error page in production`)
+		console.log(`= Will redirect to error page in production =`)
 	}
 }
