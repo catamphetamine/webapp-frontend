@@ -164,7 +164,12 @@ export default class OnClick extends React.Component {
 		const {
 			onClickClassName,
 			className,
-			children
+			children,
+			// rest
+			panOffsetThreshold,
+			onClick,
+			filter,
+			...rest
 		} = this.props
 
 		const {
@@ -173,6 +178,7 @@ export default class OnClick extends React.Component {
 
 		return (
 			<div
+				{...rest}
 				onDragStart={this.onDragStart}
 				onTouchStart={this.onTouchStart}
 				onTouchEnd={this.onTouchEnd}
