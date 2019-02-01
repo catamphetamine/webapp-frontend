@@ -28,7 +28,7 @@ import PostLink from './PostLink'
 // import PostAttachmentPicture from './PostAttachmentPicture'
 // import PostAttachmentVideo from './PostAttachmentVideo'
 // import PostAttachmentAudio from './PostAttachmentAudio'
-import PostAttachmentLink from './PostAttachmentLink'
+// import PostAttachmentLink from './PostAttachmentLink'
 
 import { openSlideshow } from '../redux/slideshow'
 
@@ -126,7 +126,7 @@ export default class Post extends React.Component
 					saveBandwidth={saveBandwidth}
 					attachmentThumbnailHeight={attachmentThumbnailHeight}
 					openSlideshow={this.openSlideshowForAttachments}>
-					{attachments.filter(_ => !embeddedAttachmentIds.includes(_.id))}
+					{attachments.filter(_ => !_.id || !embeddedAttachmentIds.includes(_.id))}
 				</PostAttachments>
 				<PostFooter post={post}/>
 			</article>

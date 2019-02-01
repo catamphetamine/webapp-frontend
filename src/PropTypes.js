@@ -249,25 +249,25 @@ export const postBlock = oneOfType([
 ])
 
 export const pictureAttachmentShape = shape({
-	id: id.isRequired,
+	id,
 	type: oneOf(['picture']).isRequired,
 	picture: pictureShape.isRequired
 })
 
 export const videoAttachmentShape = shape({
-	id: id.isRequired,
+	id,
 	type: oneOf(['video']).isRequired,
 	video: videoShape.isRequired
 })
 
 export const audioAttachmentShape = shape({
-	id: id.isRequired,
+	id,
 	type: oneOf(['audio']).isRequired,
 	audio: audioShape.isRequired
 })
 
 export const linkAttachmentShape = shape({
-	id: id.isRequired,
+	id,
 	type: oneOf(['link']).isRequired,
 	link: shape({
 		title: string.isRequired,
