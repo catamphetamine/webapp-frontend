@@ -1,4 +1,4 @@
-@import "react-responsive-ui/style";
+@import "react-responsive-ui/style.css";
 @import "./grid.mixins";
 
 @import "react-responsive-ui/small-screen/Modal.css" (max-width: $screen-xs-max);
