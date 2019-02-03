@@ -25,29 +25,8 @@ export function createConfig({ reducers, routes, container, transformURL, ...res
 		// Pass all API requests to the API server.
 		http: {
 			transformURL: (url, server) => {
-				// Pass all `api://` requests to the API server.
-				if (configuration.api && url.indexOf('api://') === 0) {
-					//
-					// Chrome won't allow querying `localhost` from `localhost`
-					// so had to just proxy the `/api` path using `webpack-dev-server`.
-					//
-					// The Chrome error was:
-					//
-					// "Failed to load http://localhost:3003/example/users:
-					//  Response to preflight request doesn't pass access control check:
-					//  No 'Access-Control-Allow-Origin' header is present on the requested resource.
-					//  Origin 'http://localhost:3000' is therefore not allowed access."
-					//
-					// https://stackoverflow.com/a/10892392/970769
-					//
-					if (!server && window.location.hostname === 'localhost') {
-						return '/api/' + url.slice('api://'.length)
-					}
-					// Transform to an absolute URL.
-					return configuration.api + '/' + url.slice('api://'.length)
-				}
 				if (transformURL) {
-					const _url = transformURL(url)
+					const _url = transformURL(url, server)
 					if (_url !== undefined) {
 						return _url
 					}
