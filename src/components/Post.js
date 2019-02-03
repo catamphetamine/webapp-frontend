@@ -46,7 +46,8 @@ export default class Post extends React.Component
 		saveBandwidth: PropTypes.bool,
 		attachmentThumbnailHeight: PropTypes.number,
 		openSlideshow: PropTypes.func.isRequired,
-		url: PropTypes.string
+		url: PropTypes.string,
+		locale: PropTypes.string
 	}
 
 	openSlideshowForAttachments = (i) => {
@@ -69,6 +70,7 @@ export default class Post extends React.Component
 		const {
 			post,
 			url,
+			locale,
 			commentsCount,
 			expandFirstPictureOrVideo,
 			attachmentThumbnailHeight,
@@ -102,14 +104,16 @@ export default class Post extends React.Component
 								</Link>
 								<PostDate
 									date={post.createdAt}
-									link={url}/>
+									link={url}
+									locale={locale}/>
 							</div>
 						</React.Fragment>
 					}
 					{!post.account &&
 						<PostDate
 							date={post.createdAt}
-							link={url}/>
+							link={url}
+							locale={locale}/>
 					}
 				</header>
 				{post.content && toArray(post.content).map((content, i) => (

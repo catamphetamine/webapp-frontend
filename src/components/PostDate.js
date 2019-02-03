@@ -5,10 +5,11 @@ import { Link } from 'react-website'
 
 import './PostDate.css'
 
-export default function PostDate({ date, link }) {
+export default function PostDate({ date, link, locale }) {
 	const dateElement = (
 		<ReactTimeAgo
 			date={date}
+			locale={locale}
 			tooltipClassName="post__date-tooltip"
 			className="post__date"/>
 	)
