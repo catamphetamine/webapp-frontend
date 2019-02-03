@@ -2,12 +2,15 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 
+import openLinkInNewTab from '../utility/openLinkInNewTab'
+
 import './OnClick.css'
 
 export default class OnClick extends React.Component {
 	static propTypes = {
 		panOffsetThreshold: PropTypes.number.isRequired,
 		onClick: PropTypes.func.isRequired,
+		link: PropTypes.string,
 		filter: PropTypes.func.isRequired,
 		onClickClassName: PropTypes.string,
 		className: PropTypes.string
@@ -19,6 +22,8 @@ export default class OnClick extends React.Component {
 	}
 
 	state = {}
+
+	shouldOpenLink = false
 
 	onDragStart = (event) => {
 		event.preventDefault()
@@ -61,13 +66,21 @@ export default class OnClick extends React.Component {
 	}
 
 	onMouseDown = (event) => {
-		const { filter } = this.props
+		const { filter, link } = this.props
 		switch (event.button) {
 			// Left
 			case 0:
+				if (link && event.ctrlKey || event.cmdKey) {
+					this.shouldOpenLink = true
+				}
 				break
 			// Middle
 			case 1:
+				if (link) {
+					this.shouldOpenLink = true
+					break
+				}
+				return this.onPanCancel()
 			// Right
 			case 2:
 			default:
@@ -125,6 +138,7 @@ export default class OnClick extends React.Component {
 		if (this.isPanning) {
 			this.isPanning = false
 		}
+		this.shouldOpenLink = false
 		this.onClickStop()
 	}
 
@@ -137,12 +151,17 @@ export default class OnClick extends React.Component {
 	}
 
 	onPanEnd(x, y) {
-		const { onClick } = this.props
+		const { onClick, link } = this.props
 		this.isPanning = false
 		if (this.isClickInProgress) {
 			this.onClickStop()
-			return onClick()
+			if (link && (this.shouldOpenLink || !onClick)) {
+				openLinkInNewTab(link)
+			} else {
+				onClick()
+			}
 		}
+		this.shouldOpenLink = false
 	}
 
 	isOverTheThreshold(x, y) {
@@ -168,6 +187,7 @@ export default class OnClick extends React.Component {
 			// rest
 			panOffsetThreshold,
 			onClick,
+			link,
 			filter,
 			...rest
 		} = this.props
