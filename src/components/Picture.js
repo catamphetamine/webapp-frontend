@@ -421,6 +421,8 @@ function getImageStyle(fit) {
 			return IMAGE_STYLE_CONTAIN
 		case 'scale-down':
 			return IMAGE_STYLE_SCALE_DOWN
+		case 'height':
+			return IMAGE_STYLE_BASE
 		default:
 			return IMAGE_STYLE_FIT_WIDTH
 	}
