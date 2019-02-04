@@ -8,9 +8,9 @@ const VIDEO_PROVIDERS = {
 
 // parseVideoLink('https://vimeo.com/289902998').then(_ => console.log(_))
 // parseVideoLink('https://www.youtube.com/watch?v=P3DGwyl0mJQ').then(_ => console.log(_))
-export async function parseVideoLink(url) {
+export async function parseVideoLink(url, options) {
 	for (const provider of Object.keys(VIDEO_PROVIDERS)) {
-		const result = await VIDEO_PROVIDERS[provider].parse(url)
+		const result = await VIDEO_PROVIDERS[provider].parse(url, options)
 		if (result) {
 			return result
 		}

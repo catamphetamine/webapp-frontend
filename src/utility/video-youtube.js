@@ -18,7 +18,7 @@ const PICTURE_SIZE_NAMES = [
 //   - http://youtu.be/My2FRPA3Gf8
 export default
 {
-	parse: async function(url) {
+	parse: async function(url, options) {
 		// Get video ID.
 		let id
 		const location = parseURL(url)
@@ -33,8 +33,8 @@ export default
 
 		if (id) {
 			let video
-			if (configuration.youTubeApiKey) {
-				const response = await fetch(`https://content.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id=${id}&key=${configuration.youTubeApiKey}`)
+			if (options.youTubeApiKey) {
+				const response = await fetch(`https://content.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id=${id}&key=${options.youTubeApiKey}`)
 				const { snippet, contentDetails } = response.items[0]
 				video = {
 					title: snippet.title,
