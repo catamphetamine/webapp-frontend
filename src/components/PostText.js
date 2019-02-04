@@ -9,6 +9,12 @@ export default function PostText({ style, children }) {
 	if (tag) {
 		return React.createElement(tag, null, children)
 	}
+	const classNameModifier = getClassNameModifierForStyle(style)
+	if (classNameModifier) {
+		return React.createElement('span', {
+			className: `post__text--${classNameModifier}`
+		}, children)
+	}
 	return children
 }
 
@@ -16,6 +22,7 @@ PostText.propTypes = {
 	style: PropTypes.oneOf([
 		'bold',
 		'italic',
+		'underline',
 		'strikethrough',
 		'subscript',
 		'superscript'
@@ -38,5 +45,12 @@ function getTagForStyle(style) {
 			return 'sup'
 		case 'subscript':
 			return 'sub'
+	}
+}
+
+function getClassNameModifierForStyle(style) {
+	switch (style) {
+		case 'underline':
+			return 'underline'
 	}
 }
