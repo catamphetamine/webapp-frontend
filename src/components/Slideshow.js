@@ -133,7 +133,9 @@ class Slideshow extends React.Component {
 		// previousNextClickRatio: PropTypes.number.isRequired,
 		closeOnOverlayClick: PropTypes.bool.isRequired,
 		panOffsetThreshold: PropTypes.number.isRequired,
+		panOffsetPrevNextThreshold: PropTypes.number.isRequired,
 		panOffsetPrevNextWidthRatioThreshold: PropTypes.number.isRequired,
+		emulatePanResistanceOnClose: PropTypes.bool.isRequired,
 		slideInDuration: PropTypes.number.isRequired,
 		minSlideInDuration: PropTypes.number.isRequired,
 		showScaleButtons: PropTypes.bool.isRequired,
@@ -161,7 +163,9 @@ class Slideshow extends React.Component {
 		// previousNextClickRatio: 0,
 		closeOnOverlayClick: true,
 		panOffsetThreshold: 5,
+		panOffsetPrevNextThreshold: 20,
 		panOffsetPrevNextWidthRatioThreshold: 0.05,
+		emulatePanResistanceOnClose: false,
 		slideInDurationBaseWidth: 1980,
 		slideInDuration: 500,
 		minSlideInDuration: 150,
@@ -659,6 +663,7 @@ class Slideshow extends React.Component {
 
 	onPanEnd() {
 		const {
+			panOffsetPrevNextThreshold,
 			panOffsetPrevNextWidthRatioThreshold,
 			slideInDuration,
 			minSlideInDuration,
@@ -667,9 +672,11 @@ class Slideshow extends React.Component {
 
 		if (this.panOffset !== 0) {
 			const pannedWidthRatio = this.panOffset / this.getSlideshowWidth()
-			if (pannedWidthRatio < -1 * panOffsetPrevNextWidthRatioThreshold) {
+			if (pannedWidthRatio < -1 * panOffsetPrevNextThreshold ||
+				this.panOffset < -1 * panOffsetPrevNextWidthRatioThreshold) {
 				this.showNext()
-			} else if (pannedWidthRatio > panOffsetPrevNextWidthRatioThreshold) {
+			} else if (pannedWidthRatio > panOffsetPrevNextWidthRatioThreshold ||
+				this.panOffset > panOffsetPrevNextThreshold) {
 				this.showPrevious()
 			}
 			this.transitionDuration = minSlideInDuration + Math.abs(pannedWidthRatio) * (slideInDuration - minSlideInDuration) * (this.getSlideshowWidth() / slideInDurationBaseWidth)
@@ -689,6 +696,7 @@ class Slideshow extends React.Component {
 
 	onPan(position) {
 		const {
+			emulatePanResistanceOnClose,
 			panOffsetThreshold
 		} = this.props
 
@@ -706,10 +714,12 @@ class Slideshow extends React.Component {
 
 		// Emulate pan resistance when there are
 		// no more slides to navigate to.
-		if ((this.isFirst() && this.panOffset > 0) ||
-			(this.isLast() && this.panOffset < 0)) {
-			// this.refreshPanToCloseStyle()
-			this.panOffset = this.emulatePanResistance(this.panOffset)
+		if (emulatePanResistanceOnClose) {
+			if ((this.isFirst() && this.panOffset > 0) ||
+				(this.isLast() && this.panOffset < 0)) {
+				// this.refreshPanToCloseStyle()
+				this.panOffset = this.emulatePanResistance(this.panOffset)
+			}
 		}
 		// this.panToCloseOffsetNormalized = undefined
 		this.updateSlidePosition()
