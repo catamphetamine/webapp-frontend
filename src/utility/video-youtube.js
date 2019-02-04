@@ -150,10 +150,43 @@ export default
 
 const getPictureSizeURL = (id, sizeName) => `https://img.youtube.com/vi/${id}/${sizeName}.jpg`
 
-function parseISO8601Duration(string) {
-	const matches = string.match(/PT(\d+)M(\d+)S/)
-	if (!matches) {
-		throw new Error(`Invalid ISO8601 duration: ${string}`)
+// Copied from:
+// https://stackoverflow.com/questions/22148885/converting-youtube-data-api-v3-video-duration-format-to-seconds-in-javascript-no
+function parseISO8601Duration(duration) {
+	const match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/)
+	// An invalid case won't crash the app.
+	if (!match) {
+		console.error(`Invalid YouTube video duration: ${duration}`)
+		return 0
 	}
-	return matches[1] * 60 + matches[2]
+	const [
+		hours,
+		minutes,
+		seconds
+	] = match.slice(1).map(_ => _ ? parseInt(_.replace(/\D/, '')) : 0)
+  return (hours * 60 + minutes) * 60 + seconds
+}
+
+if (parseISO8601Duration('PT1H') !== 3600) {
+	throw new Error()
+}
+
+if (parseISO8601Duration('PT23M') !== 1380) {
+	throw new Error()
+}
+
+if (parseISO8601Duration('PT45S') !== 45) {
+	throw new Error()
+}
+
+if (parseISO8601Duration('PT1H23M') !== 4980) {
+	throw new Error()
+}
+
+if (parseISO8601Duration('PT1H45S') !== 3645) {
+	throw new Error()
+}
+
+if (parseISO8601Duration('PT1H23M45S') !== 5025) {
+	throw new Error()
 }
