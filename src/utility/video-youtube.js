@@ -2,7 +2,7 @@ import { parseURL, parseQueryString } from './url'
 import { getImageSize } from './image'
 import { getUrlQueryPart } from './video'
 
-const PICTURE_SIZE_NAMES = [
+const PREVIEW_PICTURE_SIZES = [
 	// 1280 x 720.
 	// HD aspect ratio.
 	{
@@ -34,7 +34,7 @@ const PICTURE_SIZE_NAMES = [
 ]
 
 // A YouTube preview stub image when a preview size is not present.
-const MISSING_PREVIEW_SIZE_IMAGE_SIZE = {
+const PREVIEW_NOT_FOUND_PICTURE_SIZE = {
 	width: 120,
 	height: 90
 }
@@ -60,32 +60,36 @@ export default
 		if (id) {
 			let video
 			if (options.youTubeApiKey) {
-				const response = await fetch(`https://content.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id=${id}&key=${options.youTubeApiKey}`)
-				const json = await response.json()
-				const { snippet, contentDetails } = json.items[0]
-				video = {
-					title: snippet.title,
-					description: snippet.description,
-					duration: parseISO8601Duration(contentDetails.duration),
-					aspectRatio: contentDetails.definition === 'hd' ? 16/9 : 4/3,
-					picture: {
-						type: 'image/jpeg',
-						sizes: (
-							(snippet.thumbnails.medium || snippet.thumbnails.maxres) ? [
-								// 320 x 180 (HD).
-								snippet.thumbnails.medium,
-								// 1280 x 720 (HD).
-								snippet.thumbnails.maxres
-							] : [
-								// 120 x 90 (4:3, non-HD).
-								snippet.thumbnails.default,
-								// 480 x 360 (4:3, non-HD)
-								snippet.thumbnails.high,
-								// 640 x 480 (4:3, non-HD).
-								snippet.thumbnails.standard
-							]
-						).filter(_ => _)
+				try {
+					const response = await fetch(`https://content.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id=${id}&key=${options.youTubeApiKey}`)
+					const json = await response.json()
+					const { snippet, contentDetails } = json.items[0]
+					video = {
+						title: snippet.title,
+						description: snippet.description,
+						duration: parseISO8601Duration(contentDetails.duration),
+						aspectRatio: contentDetails.definition === 'hd' ? 16/9 : 4/3,
+						picture: {
+							type: 'image/jpeg',
+							sizes: (
+								(snippet.thumbnails.medium || snippet.thumbnails.maxres) ? [
+									// 320 x 180 (HD).
+									snippet.thumbnails.medium,
+									// 1280 x 720 (HD).
+									snippet.thumbnails.maxres
+								] : [
+									// 120 x 90 (4:3, non-HD).
+									snippet.thumbnails.default,
+									// 480 x 360 (4:3, non-HD)
+									snippet.thumbnails.high,
+									// 640 x 480 (4:3, non-HD).
+									snippet.thumbnails.standard
+								]
+							).filter(_ => _)
+						}
 					}
+				} catch (error) {
+					console.error(error)
 				}
 			}
 			else {
@@ -102,11 +106,11 @@ export default
 	},
 
 	getPicture: async (id) => {
-		for (const size of PICTURE_SIZE_NAMES) {
+		for (const size of PREVIEW_PICTURE_SIZES) {
 			try {
 				const url = getPictureSizeURL(id, size.name)
 				const imageSize = await getImageSize(url)
-				if (imageSize.width === MISSING_PREVIEW_SIZE_IMAGE_SIZE.width) {
+				if (imageSize.width === PREVIEW_NOT_FOUND_PICTURE_SIZE.width) {
 					throw new Error(`YouTube preview size "${size.name}" not found for video "${id}"`)
 				}
 				return {
@@ -120,7 +124,15 @@ export default
 				console.error(error)
 			}
 		}
-		throw new Error(`No picture found for YouTube video ${id}`)
+		console.error(`No picture found for YouTube video "${id}"`)
+		return {
+			type: 'image/jpeg',
+			sizes: [{
+				...PREVIEW_NOT_FOUND_PICTURE_SIZE,
+				url: getPictureSizeURL(id, PREVIEW_PICTURE_SIZES[0].name)
+			}]
+		}
+		// throw new Error(`No picture found for YouTube video ${id}`)
 	},
 
 	getEmbeddedVideoURL(id, options = {}) {
