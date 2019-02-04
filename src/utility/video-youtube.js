@@ -63,33 +63,39 @@ export default
 				try {
 					const response = await fetch(`https://content.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id=${id}&key=${options.youTubeApiKey}`)
 					const json = await response.json()
-					const { snippet, contentDetails } = json.items[0]
-					video = {
-						title: snippet.title,
-						description: snippet.description,
-						duration: parseISO8601Duration(contentDetails.duration),
-						aspectRatio: contentDetails.definition === 'hd' ? 16/9 : 4/3,
-						picture: {
-							type: 'image/jpeg',
-							sizes: (
-								(snippet.thumbnails.medium || snippet.thumbnails.maxres) ? [
-									// 320 x 180 (HD).
-									snippet.thumbnails.medium,
-									// 1280 x 720 (HD).
-									snippet.thumbnails.maxres
-								] : [
-									// 120 x 90 (4:3, non-HD).
-									snippet.thumbnails.default,
-									// 480 x 360 (4:3, non-HD)
-									snippet.thumbnails.high,
-									// 640 x 480 (4:3, non-HD).
-									snippet.thumbnails.standard
-								]
-							).filter(_ => _)
+					if (json.items.length === 0) {
+						console.error(`YouTube video "${id}" not found`)
+						video = {}
+					} else {
+						const { snippet, contentDetails } = json.items[0]
+						video = {
+							title: snippet.title,
+							description: snippet.description,
+							duration: parseISO8601Duration(contentDetails.duration),
+							aspectRatio: contentDetails.definition === 'hd' ? 16/9 : 4/3,
+							picture: {
+								type: 'image/jpeg',
+								sizes: (
+									(snippet.thumbnails.medium || snippet.thumbnails.maxres) ? [
+										// 320 x 180 (HD).
+										snippet.thumbnails.medium,
+										// 1280 x 720 (HD).
+										snippet.thumbnails.maxres
+									] : [
+										// 120 x 90 (4:3, non-HD).
+										snippet.thumbnails.default,
+										// 480 x 360 (4:3, non-HD)
+										snippet.thumbnails.high,
+										// 640 x 480 (4:3, non-HD).
+										snippet.thumbnails.standard
+									]
+								).filter(_ => _)
+							}
 						}
 					}
 				} catch (error) {
 					console.error(error)
+					video = {}
 				}
 			}
 			else {
@@ -153,18 +159,21 @@ const getPictureSizeURL = (id, sizeName) => `https://img.youtube.com/vi/${id}/${
 // Copied from:
 // https://stackoverflow.com/questions/22148885/converting-youtube-data-api-v3-video-duration-format-to-seconds-in-javascript-no
 function parseISO8601Duration(duration) {
-	const match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/)
+	const match = duration.match(/P(\d+Y)?(\d+W)?(\d+D)?T(\d+H)?(\d+M)?(\d+S)?/)
 	// An invalid case won't crash the app.
 	if (!match) {
 		console.error(`Invalid YouTube video duration: ${duration}`)
 		return 0
 	}
 	const [
+		years,
+		weeks,
+		days,
 		hours,
 		minutes,
 		seconds
 	] = match.slice(1).map(_ => _ ? parseInt(_.replace(/\D/, '')) : 0)
-  return (hours * 60 + minutes) * 60 + seconds
+  return (((years * 365 + weeks * 7 + days) * 24 + hours) * 60 + minutes) * 60 + seconds
 }
 
 if (parseISO8601Duration('PT1H') !== 3600) {
@@ -188,5 +197,13 @@ if (parseISO8601Duration('PT1H45S') !== 3645) {
 }
 
 if (parseISO8601Duration('PT1H23M45S') !== 5025) {
+	throw new Error()
+}
+
+if (parseISO8601Duration('P43W5DT5M54S') !== 26438754) {
+	throw new Error()
+}
+
+if (parseISO8601Duration('P1Y43W5DT5M54S') !== 57974754) {
 	throw new Error()
 }
