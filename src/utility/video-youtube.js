@@ -5,13 +5,39 @@ import { getUrlQueryPart } from './video'
 const PICTURE_SIZE_NAMES = [
 	// 1280 x 720.
 	// HD aspect ratio.
-	'maxresdefault',
-	// 629 x 472.
+	{
+		name: 'maxresdefault',
+		width: 1280,
+		height: 720
+	},
+	// 640 x 480.
 	// non-HD aspect ratio.
-	'sddefault',
-	// For really old videos not having `maxresdefault`/`sddefault`.
-	'hqdefault'
+	{
+		name: 'sddefault',
+		width: 640,
+		height: 480
+	},
+	// Many videos don't have `maxresdefault`/`sddefault`.
+	// 480 x 360.
+	{
+		name: 'hqdefault',
+		width: 629,
+		height: 472
+	},
+	// The smallest one.
+	// 320 x 180.
+	{
+		name: 'mqdefault',
+		width: 320,
+		height: 180
+	}
 ]
+
+// A YouTube preview stub image when a preview size is not present.
+const MISSING_PREVIEW_SIZE_IMAGE_SIZE = {
+	width: 120,
+	height: 90
+}
 
 // - Supported YouTube URL formats:
 //   - http://www.youtube.com/watch?v=My2FRPA3Gf8
@@ -35,7 +61,8 @@ export default
 			let video
 			if (options.youTubeApiKey) {
 				const response = await fetch(`https://content.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id=${id}&key=${options.youTubeApiKey}`)
-				const { snippet, contentDetails } = response.items[0]
+				const json = await response.json()
+				const { snippet, contentDetails } = json.items[0]
 				video = {
 					title: snippet.title,
 					description: snippet.description,
@@ -75,14 +102,18 @@ export default
 	},
 
 	getPicture: async (id) => {
-		for (const sizeName of PICTURE_SIZE_NAMES) {
+		for (const size of PICTURE_SIZE_NAMES) {
 			try {
-				const url = getPictureSizeURL(id, sizeName)
+				const url = getPictureSizeURL(id, size.name)
+				const imageSize = await getImageSize(url)
+				if (imageSize.width === MISSING_PREVIEW_SIZE_IMAGE_SIZE.width) {
+					throw new Error(`YouTube preview size "${size.name}" not found for video "${id}"`)
+				}
 				return {
 					type: 'image/jpeg',
 					sizes: [{
 						url,
-						...(await getImageSize(url))
+						...imageSize
 					}]
 				}
 			} catch (error) {
