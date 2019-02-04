@@ -155,10 +155,17 @@ export default class OnClick extends React.Component {
 		this.isPanning = false
 		if (this.isClickInProgress) {
 			this.onClickStop()
-			if (link && (this.shouldOpenLink || !onClick)) {
+			if (onClick && !this.shouldOpenLink) {
+				let defaultPrevented = false
+				onClick({
+					preventDefault: () => defaultPrevented = true
+				})
+				if (defaultPrevented) {
+					return
+				}
+			}
+			if (link) {
 				openLinkInNewTab(link)
-			} else {
-				onClick()
 			}
 		}
 		this.shouldOpenLink = false
