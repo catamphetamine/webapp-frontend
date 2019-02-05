@@ -22,19 +22,9 @@ export async function parseVideoLink(url, options) {
 // }
 
 export function getEmbeddedVideoURL(id, provider, options) {
-	console.log('@@@@@@@@2', provider)
-	console.log('@@@@@@@@2', VIDEO_PROVIDERS)
 	return VIDEO_PROVIDERS[provider].getEmbeddedVideoURL(id, options)
 }
 
 export function getVideoURL(id, provider, options) {
 	return VIDEO_PROVIDERS[provider].getVideoURL(id, options)
-}
-
-export function getUrlQueryPart(parameters) {
-	const keys = Object.keys(parameters)
-	if (keys.length === 0) {
-		return ''
-	}
-	return '?' + keys.map(key => encodeURIComponent(key) + '=' + encodeURIComponent(parameters[key])).join('&')
 }

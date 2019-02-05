@@ -12,7 +12,6 @@ export default class PostLink extends React.Component {
 		const { attachment, openSlideshow } = this.props
 		if (attachment && attachment.type === 'video') {
 			event.preventDefault()
-			console.log('####', attachment.video)
 			openSlideshow([attachment.video])
 		}
 	}
