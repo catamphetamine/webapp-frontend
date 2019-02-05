@@ -44,7 +44,7 @@
 }
 
 .post__picture,
-.post__video,
+.post__video .rrui__video,
 .post__attachment-thumbnail
 {
 	background-color : var(--background-color);
@@ -53,7 +53,7 @@
 }
 
 /* For play video icon. */
-.post__video,
+.post__video .rrui__video,
 .post__thumbnail-attachment
 {
 	position : relative;
