@@ -1,0 +1,15 @@
+.post__link--icon {
+	display: inline-flex;
+	align-items: center;
+}
+
+.post__link-icon {
+	width: 1em;
+	height: 1em;
+	margin-right: 0.3em;
+	margin-bottom: 0.05em;
+}
+
+.post__link-icon--youtube {
+	color: #E02F2F;
+}

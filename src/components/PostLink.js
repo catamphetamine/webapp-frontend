@@ -5,28 +5,59 @@ import classNames from 'classnames'
 
 import './PostLink.css'
 
-export default function PostLink({ url, className, children }) {
-	if (url[0] === '/') {
+import YouTubeVideoIcon from '../../assets/images/icons/youtube-video.svg'
+
+export default class PostLink extends React.Component {
+	onClick = (event) => {
+		const { attachment, openSlideshow } = this.props
+		if (attachment && attachment.type === 'video') {
+			event.preventDefault()
+			console.log('####', attachment.video)
+			openSlideshow([attachment.video])
+		}
+	}
+
+	render() {
+		const {
+			url,
+			attachment,
+			className,
+			children
+		} = this.props
+
+		if (url[0] === '/') {
+			return (
+				<Link
+					to={url}
+					className={classNames('post__link', className)}>
+					{children}
+				</Link>
+			)
+		}
+
 		return (
-			<Link
-				to={url}
-				className={classNames('post__link', className)}>
+			<a
+				target={url[0] === '#' ? undefined : '_blank'}
+				href={url}
+				onClick={this.onClick}
+				className={classNames(className, 'post__link', {
+					'post__link--icon': attachment && attachment.type === 'video'
+				})}>
+				{attachment && attachment.type === 'video' &&
+					<YouTubeVideoIcon className="post__link-icon post__link-icon--youtube"/>
+				}
 				{children}
-			</Link>
+			</a>
 		)
 	}
-	return (
-		<a
-			target={url[0] === '#' ? undefined : '_blank'}
-			href={url}
-			className={classNames('post__link', className)}>
-			{children}
-		</a>
-	)
 }
 
 PostLink.propTypes = {
 	url: PropTypes.string.isRequired,
+	attachment: PropTypes.shape({
+		type: PropTypes.oneOf(['video']).isRequired
+	}),
+	openSlideshow: PropTypes.func.isRequired,
 	className: PropTypes.string,
 	children: PropTypes.node.isRequired
 }

@@ -146,7 +146,9 @@ function PostBlock({ attachments, embeddedAttachmentIds, openSlideshow, children
 	if (Array.isArray(content)) {
 		return (
 			<PostParagraph>
-				<PostInlineContent>{content}</PostInlineContent>
+				<PostInlineContent openSlideshow={openSlideshow}>
+					{content}
+				</PostInlineContent>
 			</PostParagraph>
 		)
 	} else if (typeof content === 'string') {
@@ -198,15 +200,17 @@ function PostBlock({ attachments, embeddedAttachmentIds, openSlideshow, children
 	}
 }
 
-function PostInlineContent({ children }) {
+function PostInlineContent({ openSlideshow, children }) {
 	return children.map((content, i) => (
-		<PostInlineContentElement key={i}>
+		<PostInlineContentElement
+			key={i}
+			openSlideshow={openSlideshow}>
 			{content}
 		</PostInlineContentElement>
 	))
 }
 
-export function PostInlineContentElement({ children: content }) {
+export function PostInlineContentElement({ openSlideshow, children: content }) {
 	if (Array.isArray(content)) {
 		return <PostInlineContent>{content}</PostInlineContent>
 	} else if (content === '\n') {
@@ -248,7 +252,10 @@ export function PostInlineContentElement({ children: content }) {
 		)
 	} else if (content.type === 'link') {
 		return (
-			<PostLink url={content.url}>
+			<PostLink
+				url={content.url}
+				attachment={content.attachment}
+				openSlideshow={openSlideshow}>
 				{_content}
 			</PostLink>
 		)
