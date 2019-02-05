@@ -43,6 +43,8 @@ function getContentText(content, options) {
 			return `«${content}»`
 		case 'spoiler':
 			return `(${content})`
+		case 'attachment':
+			return ''
 		default:
 			return content
 	}
