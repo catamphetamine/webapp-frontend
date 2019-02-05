@@ -57,6 +57,11 @@ export default class Video extends React.Component {
 				return {
 					paddingBottom: 100 / getAspectRatio(video) + '%'
 				}
+			case 'height':
+				return {
+					width: getAspectRatio(video) * maxHeight + 'px',
+					height: maxHeight + 'px'
+				}
 			case 'scale-down':
 				let maxSize = getMaxSize(video)
 				if (maxWidth && maxHeight) {
@@ -174,6 +179,7 @@ Video.propTypes = {
 	height: PropTypes.number,
 	fit: PropTypes.oneOf([
 		'width',
+		'height',
 		'contain',
 		'scale-down'
 	]).isRequired,

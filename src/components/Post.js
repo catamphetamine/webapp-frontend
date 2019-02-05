@@ -50,17 +50,30 @@ export default class Post extends React.Component
 		locale: PropTypes.string
 	}
 
-	openSlideshowForAttachments = (i) => {
-		const { post, openSlideshow } = this.props
+	getNonEmbeddedAttachments() {
+		const { post } = this.props
+
+		const postContent = post.content && toArray(post.content)
 		const attachments = post.attachments || []
 
-		const embeddedAttachments = toArray(post.content || [])
-			.filter(_ => _.type === 'attachment')
-			.map(content => attachments.filter(_ => _.id === content.attachmentId)[0])
-			.filter(attachment => attachment.type === 'picture')
+		return attachments.filter((attachment) => {
+			if (!attachment.id) {
+				return true
+			}
+			return !postContent.find((paragraph) => {
+				return typeof paragraph === 'object' &&
+					paragraph.type === 'attachment' &&
+					paragraph.attachmentId === attachment.id
+			})
+		})
+	}
+
+	openSlideshowForAttachments = (i) => {
+		const { post, openSlideshow } = this.props
+		const attachments = this.getNonEmbeddedAttachments()
 
 		const picturesAndVideos = attachments
-			.filter(_ => (_.type === 'picture' || _.type === 'video') && embeddedAttachments.indexOf(_) < 0)
+			.filter(_ => _.type === 'picture' || _.type === 'video')
 			.map(_ => _.type === 'picture' ? _.picture : _.video)
 
 		openSlideshow(picturesAndVideos, i)
@@ -79,8 +92,7 @@ export default class Post extends React.Component
 		} = this.props
 
 		const attachments = post.attachments || []
-		const embeddedAttachmentIds = []
-		// const embeddedPictures = []
+		const postContent = post.content && toArray(post.content)
 
 		return (
 			<article className={classNames('post', {
@@ -116,11 +128,11 @@ export default class Post extends React.Component
 							locale={locale}/>
 					}
 				</header>
-				{post.content && toArray(post.content).map((content, i) => (
+				{post.content && postContent.map((content, i) => (
 					<PostBlock
 						key={i}
 						attachments={attachments}
-						embeddedAttachmentIds={embeddedAttachmentIds}
+						attachmentThumbnailHeight={attachmentThumbnailHeight}
 						openSlideshow={openSlideshow}>
 						{content}
 					</PostBlock>
@@ -130,7 +142,7 @@ export default class Post extends React.Component
 					saveBandwidth={saveBandwidth}
 					attachmentThumbnailHeight={attachmentThumbnailHeight}
 					openSlideshow={this.openSlideshowForAttachments}>
-					{attachments.filter(_ => !_.id || !embeddedAttachmentIds.includes(_.id))}
+					{this.getNonEmbeddedAttachments()}
 				</PostAttachments>
 				<PostFooter post={post}/>
 			</article>
@@ -142,7 +154,7 @@ function toArray(object) {
 	return Array.isArray(object) ? object : [object]
 }
 
-function PostBlock({ attachments, embeddedAttachmentIds, openSlideshow, children: content }) {
+function PostBlock({ attachments, attachmentThumbnailHeight, openSlideshow, children: content }) {
 	if (Array.isArray(content)) {
 		return (
 			<PostParagraph>
@@ -165,10 +177,8 @@ function PostBlock({ attachments, embeddedAttachmentIds, openSlideshow, children
 			console.error(`Attachment not found: ${content.attachmentId}`)
 			return null
 		}
-		embeddedAttachmentIds.push(content.attachmentId)
 		switch (attachment.type) {
 			case 'picture':
-				// embeddedPictures.push(attachment.picture)
 				return (
 					<PostPicture
 						onClick={(event) => {
@@ -181,6 +191,7 @@ function PostBlock({ attachments, embeddedAttachmentIds, openSlideshow, children
 			case 'video':
 				return (
 					<PostVideo
+						height={content.fit === 'height' ? attachmentThumbnailHeight : undefined}
 						onClick={(event) => {
 							event.preventDefault()
 							openSlideshow([attachment.video])

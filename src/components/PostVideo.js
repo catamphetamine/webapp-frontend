@@ -8,9 +8,17 @@ import './PostVideo.css'
 
 export default class PostVideo extends React.Component {
 	render() {
-		const { onClick, children: { video } } = this.props
+		const {
+			height,
+			onClick,
+			children: {
+				video
+			}
+		} = this.props
 		return (
 			<Video
+				fit={height ? 'height' : undefined}
+				maxHeight={height}
 				video={video}
 				onClick={onClick}
 				playOnClick={false}
