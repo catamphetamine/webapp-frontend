@@ -1,6 +1,6 @@
 import { parseURL } from './url'
 import { getImageSize } from './image'
-import { getUrlQueryPart } from './video'
+import { getUrlQueryPart } from './video-common'
 
 // - Supported Vimeo URL formats:
 //   - http://vimeo.com/25451551

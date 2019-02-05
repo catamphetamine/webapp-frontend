@@ -1,6 +1,6 @@
 import { parseURL, parseQueryString } from './url'
 import { getImageSize } from './image'
-import { getUrlQueryPart } from './video'
+import { getUrlQueryPart } from './video-common'
 
 const PREVIEW_PICTURE_SIZES = [
 	// 1280 x 720.
@@ -42,8 +42,7 @@ const PREVIEW_NOT_FOUND_PICTURE_SIZE = {
 // - Supported YouTube URL formats:
 //   - http://www.youtube.com/watch?v=My2FRPA3Gf8
 //   - http://youtu.be/My2FRPA3Gf8
-export default
-{
+export default {
 	parse: async function(url, options) {
 		// Get video ID.
 		let id

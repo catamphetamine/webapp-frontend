@@ -22,6 +22,8 @@ export async function parseVideoLink(url, options) {
 // }
 
 export function getEmbeddedVideoURL(id, provider, options) {
+	console.log('@@@@@@@@2', provider)
+	console.log('@@@@@@@@2', VIDEO_PROVIDERS)
 	return VIDEO_PROVIDERS[provider].getEmbeddedVideoURL(id, options)
 }
 
