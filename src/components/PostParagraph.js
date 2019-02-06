@@ -6,7 +6,7 @@ import './PostParagraph.css'
 
 export default function PostParagraph({ children }) {
 	return (
-		<p>
+		<p className="post__paragraph">
 			{children}
 		</p>
 	)

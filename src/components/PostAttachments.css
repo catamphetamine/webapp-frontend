@@ -5,7 +5,7 @@
 	margin-top : 1em;
 }
 
-.post--anonymous .post__attachments
+.post--anonymous.post--empty .post__attachments
 {
   margin-top: 0.6em;
 }
