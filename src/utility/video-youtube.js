@@ -93,8 +93,8 @@ export default {
 						}
 						// YouTube doesn't return video width or height.
 						if (video.aspectRatio > 1.77 && video.aspectRatio < 1.78) {
-							video.width = 1280
-							video.height = 720
+							video.width = 1920
+							video.height = 1080
 						}
 					}
 				} catch (error) {
