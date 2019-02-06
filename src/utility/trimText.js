@@ -1,5 +1,3 @@
-import test from './trimText.test'
-
 const END_OF_SENTENCE_PUNCTUATION = ['.', '?', '!', '\n']
 
 /**
@@ -40,5 +38,3 @@ export default function trimText(string, maxLength) {
 	// Simple trim.
 	return string + '…'
 }
-
-test(trimText)

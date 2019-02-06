@@ -1,8 +1,7 @@
-import test, { removePostLinksTest, removeQuotesTest } from './getPostText.test'
-
 /**
  * Converts post content to text.
  * @param  {object} post
+ * @param  {object} options — `{ messages, excludeQuotes }`
  * @return {string}
  */
 export default function getPostText(post, options = {}) {
@@ -14,7 +13,12 @@ export default function getPostText(post, options = {}) {
 		return post.content
 	}
 	// Concatenate post paragraphs' text.
-	return post.content.map(_ => getContentText(_, options)).filter(_ => _).join('\n\n')
+	return post.content.map((paragraph) => {
+		return getContentText(paragraph, {
+			...options,
+			attachments: post.attachments
+		})
+	}).filter(_ => _).join('\n\n')
 }
 
 function getContentText(content, options) {
@@ -29,28 +33,35 @@ function getContentText(content, options) {
 		return content
 	}
 	const part = content
-	content = getContentText(part.content, options)
+	const getContent = () => getContentText(part.content, options)
 	switch (part.type) {
 		case 'quote':
 			if (options.excludeQuotes) {
 				return ''
 			}
 			if (part.source) {
-				return `«${content}» — ${part.source}`
+				return `«${getContent()}» — ${part.source}`
 			}
-			return `«${content}»`
+			return `«${getContent()}»`
 		case 'inline-quote':
-			return `«${content}»`
+			return `«${getContent()}»`
 		case 'spoiler':
-			return `(${content})`
+			return `(${getContent()})`
 		case 'attachment':
-			return ''
+			const attachment = options.attachments.find(_ => _.id === part.attachmentId)
+			if (!attachment) {
+				return ''
+			}
+			if (!options.messages) {
+				return ''
+			}
+			return getAttachmentMessage(attachment, options.messages) || ''
 		default:
-			return content
+			return getContent()
 	}
 }
 
-function removeQuotes(content) {
+export function removeQuotes(content) {
 	const newContent = removeQuote(content)
 	if (newContent === content) {
 		return content
@@ -58,7 +69,7 @@ function removeQuotes(content) {
 	return removeQuote(newContent)
 }
 
-function removePostLinks(content) {
+export function removePostLinks(content) {
 	const newContent = removePostLink(content)
 	if (newContent === content) {
 		return content
@@ -107,6 +118,11 @@ function removePostLink(content) {
 	))
 }
 
-removePostLinksTest(removePostLinks)
-removeQuotesTest(removeQuotes)
-test(getPostText)
+function getAttachmentMessage(attachment, messages) {
+	switch (attachment.type) {
+		case 'picture':
+			return messages.attachmentPicture;
+		case 'video':
+			return messages.attachmentVideo;
+	}
+}
