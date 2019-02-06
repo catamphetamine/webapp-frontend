@@ -55,7 +55,7 @@ function getContentText(content, options) {
 			if (!options.messages) {
 				return ''
 			}
-			return getAttachmentMessage(attachment, options.messages) || ''
+			return getAttachmentText(attachment, options.messages) || ''
 		default:
 			return getContent()
 	}
@@ -118,11 +118,27 @@ function removePostLink(content) {
 	))
 }
 
+function getAttachmentText(attachment, messages) {
+	switch (attachment.type) {
+		case 'picture':
+			if (attachment.picture.title) {
+				return attachment.picture.title
+			}
+			break
+		case 'video':
+			if (attachment.video.title) {
+				return attachment.video.title
+			}
+			break
+	}
+	return getAttachmentMessage(attachment, messages)
+}
+
 function getAttachmentMessage(attachment, messages) {
 	switch (attachment.type) {
 		case 'picture':
-			return messages.attachmentPicture;
+			return messages.attachmentPicture
 		case 'video':
-			return messages.attachmentVideo;
+			return messages.attachmentVideo
 	}
 }

@@ -176,10 +176,12 @@ describe('getPostText', () => {
 			{
 				attachments: [{
 					id: 1,
-					type: 'video'
+					type: 'video',
+					video: {}
 				}, {
 					id: 2,
-					type: 'picture'
+					type: 'picture',
+					picture: {}
 				}]
 			},
 			'Abc\n\nDef\n\nGhi'
@@ -210,10 +212,12 @@ describe('getPostText', () => {
 			{
 				attachments: [{
 					id: 1,
-					type: 'video'
+					type: 'video',
+					video: {}
 				}, {
 					id: 2,
-					type: 'picture'
+					type: 'picture',
+					picture: {}
 				}],
 				messages: {
 					attachmentPicture: 'Picture',
@@ -221,6 +225,50 @@ describe('getPostText', () => {
 				}
 			},
 			'Abc\n\nVideo\n\nDef\n\nPicture\n\nGhi'
+		)
+	})
+
+	it('should get post text when attachments are embedded (messages passed) (attachments have titles)', () => {
+		getPostTextTest(
+			[
+				[
+					'Abc'
+				],
+				{
+					type: 'attachment',
+					attachmentId: 1
+				},
+				[
+					'Def'
+				],
+				{
+					type: 'attachment',
+					attachmentId: 2
+				},
+				[
+					'Ghi'
+				]
+			],
+			{
+				attachments: [{
+					id: 1,
+					type: 'video',
+					video: {
+						title: 'Video Title'
+					}
+				}, {
+					id: 2,
+					type: 'picture',
+					picture: {
+						title: 'Picture Title'
+					}
+				}],
+				messages: {
+					attachmentPicture: 'Picture',
+					attachmentVideo: 'Video'
+				}
+			},
+			'Abc\n\nVideo Title\n\nDef\n\nPicture Title\n\nGhi'
 		)
 	})
 
@@ -248,10 +296,12 @@ describe('getPostText', () => {
 			{
 				attachments: [{
 					id: 1,
-					type: 'video'
+					type: 'video',
+					video: {}
 				}, {
 					id: 2,
-					type: 'picture'
+					type: 'picture',
+					picture: {}
 				}],
 				messages: {
 					attachmentPicture: 'Picture',
