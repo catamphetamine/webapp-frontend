@@ -75,8 +75,7 @@ const VideoPlugin = {
 				maxHeight={maxHeight}
 				className="rrui__slideshow__video"/>
 		)
-	},
-	changeSlideOnClick: false
+	}
 }
 
 const PicturePlugin = {
@@ -460,7 +459,7 @@ class Slideshow extends React.Component {
 		// (because clicked inside the slide bounds, not outside it)
 		event.stopPropagation()
 
-		// Change the current slide to next or previos one.
+		// Change the current slide to next or previous one.
 		if (this.getPluginForSlide().changeSlideOnClick !== false) {
 			this.showNext()
 			// if (x < previousNextClickRatio) {
