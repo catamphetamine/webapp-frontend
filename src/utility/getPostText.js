@@ -13,12 +13,31 @@ export default function getPostText(post, options = {}) {
 		return post.content
 	}
 	// Concatenate post paragraphs' text.
-	return post.content.map((paragraph) => {
+	const text = post.content.map((paragraph) => {
 		return getContentText(paragraph, {
 			...options,
 			attachments: post.attachments
 		})
 	}).filter(_ => _).join('\n\n')
+	if (text) {
+		return text
+	}
+	// If there're any attachments then fall back to attachment text.
+	if (post.attachments.length > 0 && !options.ignoreAttachments) {
+		for (const attachment of post.attachments) {
+			if (getAttachmentTitle(attachment)) {
+				return getAttachmentTitle(attachment)
+			}
+		}
+		if (options.messages) {
+			for (const attachment of post.attachments) {
+				if (getAttachmentMessage(attachment, options.messages)) {
+					return getAttachmentMessage(attachment, options.messages)
+				}
+			}
+		}
+	}
+	return ''
 }
 
 function getContentText(content, options) {
@@ -48,14 +67,24 @@ function getContentText(content, options) {
 		case 'spoiler':
 			return `(${getContent()})`
 		case 'attachment':
+			if (options.ignoreAttachments || options.skipAttachments) {
+				return ''
+			}
 			const attachment = options.attachments.find(_ => _.id === part.attachmentId)
 			if (!attachment) {
+				return ''
+			}
+			const title = getAttachmentTitle(attachment)
+			if (title) {
+				return title
+			}
+			if (options.skipUntitledAttachments) {
 				return ''
 			}
 			if (!options.messages) {
 				return ''
 			}
-			return getAttachmentText(attachment, options.messages) || ''
+			return getAttachmentMessage(attachment, options.messages) || ''
 		default:
 			return getContent()
 	}
@@ -118,7 +147,7 @@ function removePostLink(content) {
 	))
 }
 
-function getAttachmentText(attachment, messages) {
+function getAttachmentTitle(attachment) {
 	switch (attachment.type) {
 		case 'picture':
 			if (attachment.picture.title) {
@@ -131,7 +160,6 @@ function getAttachmentText(attachment, messages) {
 			}
 			break
 	}
-	return getAttachmentMessage(attachment, messages)
 }
 
 function getAttachmentMessage(attachment, messages) {

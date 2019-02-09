@@ -3,61 +3,74 @@ import getPostText, { removePostLinks, removeQuotes } from './getPostText'
 import { describe, it } from './mocha'
 import expectToEqual from './expectToEqual'
 
-function getPostTextTest(content, options, text) {
+function getPostTextTest(post, options, text) {
 	if (text === undefined) {
 		text = options
 		options = {}
 	}
-	const attachments = options.attachments
-	delete options.attachments
-	expectToEqual(getPostText({ content, attachments }, options), text)
+	expectToEqual(getPostText(post, options), text)
 }
 
 describe('getPostText', () => {
 	it('should get post text', () => {
 		getPostTextTest(
-			'Abc',
+			{
+				content: 'Abc'
+			},
 			'Abc'
 		)
 
 		getPostTextTest(
-			['Abc'],
+			{
+				content: ['Abc']
+			},
 			'Abc'
 		)
 
 		getPostTextTest(
-			[['Abc']],
+			{
+				content: [['Abc']]
+			},
 			'Abc'
 		)
 
 		getPostTextTest(
-			['Abc', 'Def'],
+			{
+				content: ['Abc', 'Def']
+			},
 			'Abc\n\nDef'
 		)
 
 		getPostTextTest(
-			[['Abc', 'Def']],
+			{
+				content: [['Abc', 'Def']]
+			},
 			'AbcDef'
 		)
 
 		getPostTextTest(
-			[['Abc', '\n', 'Def']],
+			{
+				content: [['Abc', '\n', 'Def']]
+			},
 			'Abc\nDef'
 		)
 	})
 
 	it('should exclude quotes when "excludeQuotes" is "true"', () => {
 		getPostTextTest(
-			[
+			{
+				content:
 				[
-					{
-						type: 'inline-quote',
-						content: 'Quote'
-					},
-					'\n',
-					'Abc'
+					[
+						{
+							type: 'inline-quote',
+							content: 'Quote'
+						},
+						'\n',
+						'Abc'
+					]
 				]
-			],
+			},
 			{
 				excludeQuotes: true
 			},
@@ -65,15 +78,18 @@ describe('getPostText', () => {
 		)
 
 		getPostTextTest(
-			[
-				{
-					type: 'quote',
-					content: 'Quote'
-				},
+			{
+				content:
 				[
-					'Abc'
+					{
+						type: 'quote',
+						content: 'Quote'
+					},
+					[
+						'Abc'
+					]
 				]
-			],
+			},
 			{
 				excludeQuotes: true
 			},
@@ -83,97 +99,107 @@ describe('getPostText', () => {
 
 	it('shouldn\'t exclude quotes when "excludeQuotes" is not passed', () => {
 		getPostTextTest(
-			[
+			{
+				content:
 				[
-					{
-						type: 'inline-quote',
-						content: 'Quote'
-					},
-					'\n',
-					'Abc'
+					[
+						{
+							type: 'inline-quote',
+							content: 'Quote'
+						},
+						'\n',
+						'Abc'
+					]
 				]
-			],
+			},
 			'«Quote»\nAbc'
 		)
 	})
 
 	it('should get post text from nested blocks', () => {
 		getPostTextTest(
-			[
+			{
+				content:
 				[
-					{
-						type: 'text',
-						style: 'bold',
-						content: [
-							{
-								type: 'link',
-								url: 'https://google.com',
-								content: 'Google'
-							},
-							' ',
-							{
-								type: 'text',
-								style: 'italic',
-								content: 'link'
-							}
-						]
-					},
-					'\n',
-					'Abc'
+					[
+						{
+							type: 'text',
+							style: 'bold',
+							content: [
+								{
+									type: 'link',
+									url: 'https://google.com',
+									content: 'Google'
+								},
+								' ',
+								{
+									type: 'text',
+									style: 'italic',
+									content: 'link'
+								}
+							]
+						},
+						'\n',
+						'Abc'
+					]
 				]
-			],
+			},
 			'Google link\nAbc'
 		)
 
 		getPostTextTest(
-			[
+			{
+				content:
 				[
-					{
-						type: 'quote',
-						content: [
-							{
-								type: 'link',
-								url: 'https://google.com',
-								content: 'Google'
-							},
-							' ',
-							{
-								type: 'text',
-								style: 'italic',
-								content: 'link'
-							}
-						]
-					},
-					'\n',
-					'Abc'
+					[
+						{
+							type: 'quote',
+							content: [
+								{
+									type: 'link',
+									url: 'https://google.com',
+									content: 'Google'
+								},
+								' ',
+								{
+									type: 'text',
+									style: 'italic',
+									content: 'link'
+								}
+							]
+						},
+						'\n',
+						'Abc'
+					]
 				]
-			],
+			},
 			'«Google link»\nAbc'
 		)
 	})
 
 	it('should get post text when attachments are embedded (no messages passed)', () => {
 		getPostTextTest(
-			[
-				[
-					'Abc'
-				],
-				{
-					type: 'attachment',
-					attachmentId: 1
-				},
-				[
-					'Def'
-				],
-				{
-					type: 'attachment',
-					attachmentId: 2
-				},
-				[
-					'Ghi'
-				]
-			],
 			{
+				content:
+				[
+					[
+						'Abc'
+					],
+					{
+						type: 'attachment',
+						attachmentId: 1
+					},
+					[
+						'Def'
+					],
+					{
+						type: 'attachment',
+						attachmentId: 2
+					},
+					[
+						'Ghi'
+					]
+				],
 				attachments: [{
 					id: 1,
 					type: 'video',
@@ -190,26 +216,26 @@ describe('getPostText', () => {
 
 	it('should get post text when attachments are embedded (messages passed)', () => {
 		getPostTextTest(
-			[
-				[
-					'Abc'
-				],
-				{
-					type: 'attachment',
-					attachmentId: 1
-				},
-				[
-					'Def'
-				],
-				{
-					type: 'attachment',
-					attachmentId: 2
-				},
-				[
-					'Ghi'
-				]
-			],
 			{
+				content: [
+					[
+						'Abc'
+					],
+					{
+						type: 'attachment',
+						attachmentId: 1
+					},
+					[
+						'Def'
+					],
+					{
+						type: 'attachment',
+						attachmentId: 2
+					},
+					[
+						'Ghi'
+					]
+				],
 				attachments: [{
 					id: 1,
 					type: 'video',
@@ -218,7 +244,9 @@ describe('getPostText', () => {
 					id: 2,
 					type: 'picture',
 					picture: {}
-				}],
+				}]
+			},
+			{
 				messages: {
 					attachmentPicture: 'Picture',
 					attachmentVideo: 'Video'
@@ -230,26 +258,27 @@ describe('getPostText', () => {
 
 	it('should get post text when attachments are embedded (messages passed) (attachments have titles)', () => {
 		getPostTextTest(
-			[
-				[
-					'Abc'
-				],
-				{
-					type: 'attachment',
-					attachmentId: 1
-				},
-				[
-					'Def'
-				],
-				{
-					type: 'attachment',
-					attachmentId: 2
-				},
-				[
-					'Ghi'
-				]
-			],
 			{
+				content:
+				[
+					[
+						'Abc'
+					],
+					{
+						type: 'attachment',
+						attachmentId: 1
+					},
+					[
+						'Def'
+					],
+					{
+						type: 'attachment',
+						attachmentId: 2
+					},
+					[
+						'Ghi'
+					]
+				],
 				attachments: [{
 					id: 1,
 					type: 'video',
@@ -262,7 +291,9 @@ describe('getPostText', () => {
 					picture: {
 						title: 'Picture Title'
 					}
-				}],
+				}]
+			},
+			{
 				messages: {
 					attachmentPicture: 'Picture',
 					attachmentVideo: 'Video'
@@ -274,26 +305,26 @@ describe('getPostText', () => {
 
 	it('should get post text when attachments are embedded (messages passed) (attachments not found)', () => {
 		getPostTextTest(
-			[
-				[
-					'Abc'
-				],
-				{
-					type: 'attachment',
-					attachmentId: 3
-				},
-				[
-					'Def'
-				],
-				{
-					type: 'attachment',
-					attachmentId: 4
-				},
-				[
-					'Ghi'
-				]
-			],
 			{
+				content: [
+					[
+						'Abc'
+					],
+					{
+						type: 'attachment',
+						attachmentId: 3
+					},
+					[
+						'Def'
+					],
+					{
+						type: 'attachment',
+						attachmentId: 4
+					},
+					[
+						'Ghi'
+					]
+				],
 				attachments: [{
 					id: 1,
 					type: 'video',
@@ -302,13 +333,213 @@ describe('getPostText', () => {
 					id: 2,
 					type: 'picture',
 					picture: {}
-				}],
+				}]
+			},
+			{
 				messages: {
 					attachmentPicture: 'Picture',
 					attachmentVideo: 'Video'
 				}
 			},
 			'Abc\n\nDef\n\nGhi'
+		)
+	})
+
+	it('should skip embedded attachments when "skipAttachments" is "true"', () => {
+		getPostTextTest(
+			{
+				content: [
+					[
+						'Abc'
+					],
+					{
+						type: 'attachment',
+						attachmentId: 1
+					},
+					[
+						'Def'
+					],
+					{
+						type: 'attachment',
+						attachmentId: 2
+					},
+					[
+						'Ghi'
+					]
+				],
+				attachments: [{
+					id: 1,
+					type: 'video',
+					video: {
+						title: 'Video Title'
+					}
+				}, {
+					id: 2,
+					type: 'picture',
+					picture: {
+						title: 'Picture Title'
+					}
+				}]
+			},
+			{
+				messages: {
+					attachmentPicture: 'Picture',
+					attachmentVideo: 'Video'
+				},
+				skipAttachments: true
+			},
+			'Abc\n\nDef\n\nGhi'
+		)
+	})
+
+	it('should skip untitled attachments when "skipUntitledAttachments" is "true"', () => {
+		getPostTextTest(
+			{
+				content: [
+					[
+						'Abc'
+					],
+					{
+						type: 'attachment',
+						attachmentId: 1
+					},
+					[
+						'Def'
+					],
+					{
+						type: 'attachment',
+						attachmentId: 2
+					},
+					[
+						'Ghi'
+					]
+				],
+				attachments: [{
+					id: 1,
+					type: 'video',
+					video: {}
+				}, {
+					id: 2,
+					type: 'picture',
+					picture: {
+						title: 'Picture Title'
+					}
+				}]
+			},
+			{
+				messages: {
+					attachmentPicture: 'Picture',
+					attachmentVideo: 'Video'
+				},
+				skipUntitledAttachments: true
+			},
+			'Abc\n\nDef\n\nPicture Title\n\nGhi'
+		)
+	})
+
+	it('should return attachment title when there\'s no post text and "skipAttachments" is "true"', () => {
+		getPostTextTest(
+			{
+				content: [
+					{
+						type: 'attachment',
+						attachmentId: 1
+					},
+					{
+						type: 'attachment',
+						attachmentId: 2
+					}
+				],
+				attachments: [{
+					id: 1,
+					type: 'video',
+					video: {
+						title: 'Video Title'
+					}
+				}, {
+					id: 2,
+					type: 'picture',
+					picture: {
+						title: 'Picture Title'
+					}
+				}]
+			},
+			{
+				messages: {
+					attachmentPicture: 'Picture',
+					attachmentVideo: 'Video'
+				},
+				skipAttachments: true
+			},
+			'Video Title'
+		)
+	})
+
+	it('should return attachment placeholder when there\'s no post text and the attachment is untitled and "skipAttachments" is "true"', () => {
+		getPostTextTest(
+			{
+				content: [
+					{
+						type: 'attachment',
+						attachmentId: 1
+					},
+					{
+						type: 'attachment',
+						attachmentId: 2
+					}
+				],
+				attachments: [{
+					id: 1,
+					type: 'video',
+					video: {}
+				}, {
+					id: 2,
+					type: 'picture',
+					picture: {}
+				}]
+			},
+			{
+				messages: {
+					attachmentPicture: 'Picture',
+					attachmentVideo: 'Video'
+				},
+				skipAttachments: true
+			},
+			'Video'
+		)
+	})
+
+	it('shouldn\'t return attachment placeholder when there\'s no post text and "ignoreAttachments" is "true"', () => {
+		getPostTextTest(
+			{
+				content: [
+					{
+						type: 'attachment',
+						attachmentId: 1
+					},
+					{
+						type: 'attachment',
+						attachmentId: 2
+					}
+				],
+				attachments: [{
+					id: 1,
+					type: 'video',
+					video: {}
+				}, {
+					id: 2,
+					type: 'picture',
+					picture: {}
+				}]
+			},
+			{
+				messages: {
+					attachmentPicture: 'Picture',
+					attachmentVideo: 'Video'
+				},
+				ignoreAttachments: true
+			},
+			''
 		)
 	})
 })
