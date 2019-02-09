@@ -37,38 +37,32 @@ export function createConfig({ reducers, routes, container, transformURL, ...res
 	}
 }
 
-export function onError(error, { path, url, redirect, dispatch, getState, server })
-{
+export function onError(error, { path, url, redirect, dispatch, getState, server }) {
 	console.error(`Error while preloading "${url}"`)
 	console.error(error)
-
-	// Not authenticated
-	if (error.status === 401) {
-		// Prevent double redirection to `/unauthenticated`.
+	const redirectToErrorPage = (errorPagePath) => {
+		// Prevents infinite redirection loop or double redirection.
+		// For example, a double redirection in case of `/unauthenticated`.
 		// (e.g. when two parallel `Promise`s load inside `@preload()`
-		//  and both get Status 401 HTTP Response)
-		if (typeof window !== 'undefined' && window.location.pathname === '/unauthenticated') {
-			return
+		//  and both get Status 401 HTTP Response).
+		// Or, for example, an infinite redirection loop in case of `/error`
+		// when there're overall page rendering bugs, etc.
+		if (path !== errorPagePath) {
+			redirect(`${errorPagePath}?url=${encodeURIComponent(url)}`)
 		}
-		return redirect('/unauthenticated')
 	}
-
-	// Not authorized
+	// Not authenticated.
+	if (error.status === 401) {
+		return redirectToErrorPage('/unauthenticated')
+	}
+	// Not authorized.
 	if (error.status === 403) {
-		return redirect('/unauthorized')
+		return redirectToErrorPage('/unauthorized')
 	}
-
-	// Redirect to a generic error page in production
-	if (process.env.NODE_ENV === 'production') {
-		// Prevents infinite redirect to the error page
-		// in case of overall page rendering bugs, etc.
-		if (path !== '/error') {
-			// Redirect to a generic error page.
-			// Won't redirect in case of client-side-only rendering
-			// when the error is thrown during the initial rendering.
-			return redirect(`/error?url=${encodeURIComponent(url)}`)
-		}
-	} else {
-		console.log(`= Will redirect to error page in production =`)
+	// Not authorized.
+	if (error.status === 404) {
+		return redirectToErrorPage('/not-found')
 	}
+	// Redirect to a generic error page.
+	return redirectToErrorPage('/error')
 }
