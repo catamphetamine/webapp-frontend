@@ -103,7 +103,7 @@ export function removePostLinks(content) {
 	if (newContent === content) {
 		return content
 	}
-	return removePostLink(newContent)
+	return removePostLinks(newContent)
 }
 
 function removeQuote(content) {
