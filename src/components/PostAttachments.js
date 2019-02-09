@@ -85,6 +85,7 @@ export default function PostAttachments({
 								className="post__thumbnail-attachment">
 								<div className="position-relative">
 									<Picture
+										preview
 										fit="height"
 										height={attachmentThumbnailHeight}
 										picture={pictureOrVideo.type === 'video' ? pictureOrVideo.video.picture : pictureOrVideo.picture}

@@ -26,6 +26,10 @@ export default class Picture extends PureComponent
 {
 	static propTypes =
 	{
+		// When a GIF picture is rendered and `preview` is `true`
+		// then it will output a non-gif preview (if available).
+		preview : PropTypes.bool,
+
 		maxWidth : PropTypes.number,
 		maxHeight: PropTypes.number,
 
@@ -182,6 +186,7 @@ export default class Picture extends PureComponent
 			className,
 			children,
 			// Rest.
+			preview,
 			picture,
 			maxWidth,
 			maxHeight,
@@ -267,16 +272,53 @@ export default class Picture extends PureComponent
 		}, this.refreshSize)
 	}
 
+	getPreferredSize = () => {
+		const {
+			preview,
+			saveBandwidth,
+			picture: {
+				type,
+				sizes
+			}
+		} = this.props
+
+		if (!sizes) {
+			return
+		}
+
+		if (preview && type === 'image/gif') {
+			// Try non-gif sizes only first.
+			const preferredPreviewSize = getPreferredSize(
+				sizes.filter(_ => !/\.gif$/i.test(_.url)),
+				this.getWidth(),
+				{ saveBandwidth }
+			)
+			if (preferredPreviewSize) {
+				return preferredPreviewSize
+			}
+		}
+		return getPreferredSize(
+			sizes,
+			this.getWidth(),
+			{ saveBandwidth }
+		)
+	}
+
 	refreshSize = (force) =>
 	{
-		const { picture: { sizes }, saveBandwidth } = this.props
+		const {
+			picture: {
+				sizes
+			}
+		} = this.props
+
 		const { size } = this.state
 
 		if (!sizes) {
 			return
 		}
 
-		const preferredSize = getPreferredSize(sizes, this.getWidth(), saveBandwidth)
+		const preferredSize = this.getPreferredSize()
 
 		if (force ||
 			!size ||
@@ -337,8 +379,10 @@ export default class Picture extends PureComponent
 }
 
 // `sizes` must be sorted from smallest to largest.
-export function getPreferredSize(sizes, width, saveBandwidth = false)
+export function getPreferredSize(sizes, width, options = {})
 {
+	const { saveBandwidth } = options
+
 	if (!width) {
 		return sizes[0]
 	}
