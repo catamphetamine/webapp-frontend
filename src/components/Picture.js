@@ -234,7 +234,7 @@ export default class Picture extends PureComponent
 				{ !initialImageLoaded && fit !== 'width' && showLoadingPlaceholder &&
 					<div className="rrui__picture__loading-container">
 						<FadeInOut show fadeInInitially fadeInDuration={3000} fadeOutDuration={3000}>
-							{initialImageLoadError	?
+							{initialImageLoadError ?
 								<Close
 									onClick={this.retryInitialImageLoad}
 									title="Retry"
