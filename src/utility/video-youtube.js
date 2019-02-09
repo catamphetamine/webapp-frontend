@@ -69,50 +69,15 @@ export default {
 			let video
 			if (options.youTubeApiKey) {
 				try {
-					const response = await fetch(`https://content.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id=${id}&key=${options.youTubeApiKey}`)
-					const json = await response.json()
-					if (json.items.length === 0) {
-						console.error(`YouTube video "${id}" not found`)
-						// `null` means "Video doesn't exist".
-						return null
-					} else {
-						const { snippet, contentDetails } = json.items[0]
-						video = {
-							title: snippet.title,
-							description: snippet.description,
-							duration: parseISO8601Duration(contentDetails.duration),
-							aspectRatio: contentDetails.definition === 'hd' ? 16/9 : 4/3,
-							picture: {
-								type: 'image/jpeg',
-								sizes: (
-									(snippet.thumbnails.medium || snippet.thumbnails.maxres) ? [
-										// 320 x 180 (HD).
-										snippet.thumbnails.medium,
-										// 1280 x 720 (HD).
-										snippet.thumbnails.maxres
-									] : [
-										// 120 x 90 (4:3, non-HD).
-										snippet.thumbnails.default,
-										// 480 x 360 (4:3, non-HD)
-										snippet.thumbnails.high,
-										// 640 x 480 (4:3, non-HD).
-										snippet.thumbnails.standard
-									]
-								).filter(_ => _)
-							}
-						}
-						// YouTube doesn't return video width or height.
-						if (video.aspectRatio > 1.77 && video.aspectRatio < 1.78) {
-							video.width = 1920
-							video.height = 1080
-						}
-					}
+					video = await getVideoData(id, options.youTubeApiKey)
 				} catch (error) {
 					console.error(error)
-					video = {}
 				}
 			}
-			else {
+			if (video === null) {
+				return null
+			}
+			if (!video) {
 				video = {
 					picture: await this.getPicture(id)
 				}
@@ -166,6 +131,53 @@ export default {
 	getVideoURL(id) {
 		return `https://youtube.com/watch?v=${id}`
 	}
+}
+
+/**
+ * Gets YouTube video info.
+ * @param  {string} id
+ * @param  {string} youTubeApiKey
+ * @return {object} [video] Returns `null` if the video doesn't exist. Returns `undefined` if some error happened.
+ */
+async function getVideoData(id, youTubeApiKey) {
+	const response = await fetch(`https://content.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id=${id}&key=${youTubeApiKey}`)
+	const json = await response.json()
+	if (json.items.length === 0) {
+		console.error(`YouTube video "${id}" not found`)
+		// `null` means "Video doesn't exist".
+		return null
+	}
+	const { snippet, contentDetails } = json.items[0]
+	const video = {
+		title: snippet.title,
+		description: snippet.description,
+		duration: parseISO8601Duration(contentDetails.duration),
+		aspectRatio: contentDetails.definition === 'hd' ? 16/9 : 4/3,
+		picture: {
+			type: 'image/jpeg',
+			sizes: (
+				(snippet.thumbnails.medium || snippet.thumbnails.maxres) ? [
+					// 320 x 180 (HD).
+					snippet.thumbnails.medium,
+					// 1280 x 720 (HD).
+					snippet.thumbnails.maxres
+				] : [
+					// 120 x 90 (4:3, non-HD).
+					snippet.thumbnails.default,
+					// 480 x 360 (4:3, non-HD)
+					snippet.thumbnails.high,
+					// 640 x 480 (4:3, non-HD).
+					snippet.thumbnails.standard
+				]
+			).filter(_ => _)
+		}
+	}
+	// YouTube doesn't return video width or height.
+	if (video.aspectRatio > 1.77 && video.aspectRatio < 1.78) {
+		video.width = 1920
+		video.height = 1080
+	}
+	return video
 }
 
 const getPictureSizeURL = (id, sizeName) => `https://img.youtube.com/vi/${id}/${sizeName}.jpg`
