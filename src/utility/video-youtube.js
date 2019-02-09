@@ -39,10 +39,19 @@ const PREVIEW_NOT_FOUND_PICTURE_SIZE = {
 	height: 90
 }
 
-// - Supported YouTube URL formats:
-//   - http://www.youtube.com/watch?v=My2FRPA3Gf8
-//   - http://youtu.be/My2FRPA3Gf8
+/**
+ *
+ * Supported YouTube URL formats:
+ * http://www.youtube.com/watch?v=My2FRPA3Gf8
+ * http://youtu.be/My2FRPA3Gf8
+ */
 export default {
+	/**
+	 * Parses YouTube video URL (if it's a video URL).
+	 * @param  {string} url
+	 * @param  {object} options
+	 * @return {object} [video] Returns `null` if the video doesn't exist. Returns `undefined` if it's not a YouTube video.
+	 */
 	parse: async function(url, options) {
 		// Get video ID.
 		let id
@@ -64,7 +73,8 @@ export default {
 					const json = await response.json()
 					if (json.items.length === 0) {
 						console.error(`YouTube video "${id}" not found`)
-						video = {}
+						// `null` means "Video doesn't exist".
+						return null
 					} else {
 						const { snippet, contentDetails } = json.items[0]
 						video = {
