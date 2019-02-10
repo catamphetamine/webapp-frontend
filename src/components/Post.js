@@ -41,6 +41,7 @@ export default class Post extends React.Component
 {
 	static propTypes = {
 		post: postShape.isRequired,
+		compact: PropTypes.bool,
 		commentsCount: PropTypes.number,
 		expandFirstPictureOrVideo: PropTypes.bool,
 		saveBandwidth: PropTypes.bool,
@@ -82,6 +83,7 @@ export default class Post extends React.Component
 	render() {
 		const {
 			post,
+			compact,
 			url,
 			locale,
 			commentsCount,
@@ -97,7 +99,8 @@ export default class Post extends React.Component
 		return (
 			<article className={classNames('post', {
 				'post--anonymous': !post.account,
-				'post--empty': !post.content
+				'post--empty': !post.content,
+				'post--compact': compact
 			})}>
 				<header className="post__summary">
 					{post.account &&
