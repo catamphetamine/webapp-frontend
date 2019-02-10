@@ -1,16 +1,17 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import ReactTimeAgo from 'react-time-ago/tooltip'
+import ReactTimeAgo from 'react-time-ago'
+// import ReactTimeAgo from 'react-time-ago/tooltip'
 import { Link } from 'react-website'
 
 import './PostDate.css'
 
 export default function PostDate({ date, link, locale }) {
+	// tooltipClassName="post__date-tooltip"
 	const dateElement = (
 		<ReactTimeAgo
 			date={date}
 			locale={locale}
-			tooltipClassName="post__date-tooltip"
 			className="post__date"/>
 	)
 	if (link) {
