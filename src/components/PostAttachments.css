@@ -2,7 +2,7 @@
 
 .post__attachments
 {
-	margin-top : calc(1em - var(--post-attachments-spacing));
+	margin-top : calc(0.8em - var(--post-attachments-spacing));
 }
 
 .post--anonymous.post--empty .post__attachments
