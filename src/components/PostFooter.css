@@ -18,6 +18,7 @@
 	height: 1em;
 	margin-right: 0.4em;
 	margin-top: -0.1em;
+	color: var(--gray-color-darker);
 }
 
 .post__footer__comments-count {
