@@ -67,12 +67,14 @@
 	border-bottom    : 1px solid var(--content-section-divider-color);
 	color            : var(--black-color);
 	font-weight      : normal;
+	font-size        : 1.4rem;
 	text-align       : left;
 	/*background-color : var(--gray-color-lightest);*/
 }
 
 .content-section__header--lite {
 	border-bottom: none;
+	font-size: 1.3rem;
 }
 
 /*.content-section__divider
