@@ -3,8 +3,15 @@
 :root
 {
 	--content-section-margin : calc(var(--unit) * 1);
+
+	/*
 	--content-section-horizontal-padding : calc(var(--unit) * 2);
 	--content-section-vertical-padding : calc(var(--unit) * 1.5);
+	*/
+
+	--content-section-horizontal-padding : calc(var(--unit) * 1.5);
+	--content-section-vertical-padding : calc(var(--unit) * 1);
+
 	/*--background-section-vertical-margin : var(--unit);*/
 
 	@mixin xs
@@ -62,6 +69,10 @@
 	font-weight      : normal;
 	text-align       : left;
 	/*background-color : var(--gray-color-lightest);*/
+}
+
+.content-section__header--lite {
+	border-bottom: none;
 }
 
 /*.content-section__divider

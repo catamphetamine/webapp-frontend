@@ -30,15 +30,18 @@ ContentSection.defaultProps = {
 	background: false
 }
 
-export function ContentSectionHeader({ children }) {
+export function ContentSectionHeader({ lite, children }) {
 	return (
-		<h2 className="content-section__header">
+		<h2 className={classNames('content-section__header', {
+			'content-section__header--lite': lite
+		})}>
 			{children}
 		</h2>
 	)
 }
 
 ContentSectionHeader.propTypes = {
+	lite: PropTypes.bool,
 	className: PropTypes.string,
 	children: PropTypes.node.isRequired
 }
