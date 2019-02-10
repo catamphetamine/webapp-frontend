@@ -26,7 +26,7 @@ body
 /* `html` is required for `rem`s to work. */
 html, body
 {
-	font-family : sans-serif;
+	font-family : var(--font-family);
 
 	@mixin xs
 	{

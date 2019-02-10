@@ -2,8 +2,9 @@
 
 .post__date
 {
-	margin-top : 0.1em;
-	color : var(--gray-color-darkest);
+	margin-top: 0.1em;
+	color: var(--gray-color-darkest);
+	font-weight: lighter;
 }
 
 .post--anonymous .post__date

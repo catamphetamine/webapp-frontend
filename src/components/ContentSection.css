@@ -73,6 +73,7 @@
 }
 
 .content-section__header--lite {
+	margin-bottom: 0;
 	border-bottom: none;
 	font-size: 1.3rem;
 }

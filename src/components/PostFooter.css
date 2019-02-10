@@ -1,6 +1,7 @@
 .post__footer {
 	display: flex;
 	margin-top: 1em;
+	font-weight: lighter;
 }
 
 .post--compact {
@@ -18,7 +19,6 @@
 	height: 1em;
 	margin-right: 0.4em;
 	margin-top: -0.1em;
-	color: var(--gray-color-darker);
 }
 
 .post__footer__comments-count {

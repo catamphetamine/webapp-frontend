@@ -7,7 +7,7 @@ import CommentsIcon from '../../assets/images/icons/menu/message-outline.svg'
 import './PostFooter.css'
 
 export default function PostFooter({ post }) {
-	if (post.commentsCount === 0) {
+	if (!post.commentsCount) {
 		return (
 			<footer className="post__footer post__footer--empty"/>
 		)

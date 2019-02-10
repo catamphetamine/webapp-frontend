@@ -38,6 +38,10 @@
 
 	--header-height : calc(var(--unit) * 3);
 
+	--font-family : sans-serif;
+	--font-family-text : sans-serif;
+	/*--font-family-designer : Roboto, sans-serif;*/
+
 	/*
 	Mobile font size must be at least 16px
 	to prevent automatic zoom on input focus.
