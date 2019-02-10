@@ -56,6 +56,23 @@ describe('getPostText', () => {
 		)
 	})
 
+	it('should trim whitespace', () => {
+		getPostTextTest(
+			{
+				content: [
+					[
+						"Embrace the 2d edition",
+						"\n",
+						"\n",
+						"HIS GENERAL ISN'T JUST ABOUT SLAVE TRAINERS OTHER GENRES OF GAMES FIT HERE ALSO (Please read the next part for further clarification).",
+						"\n"
+					]
+				]
+			},
+			"Embrace the 2d edition\n\nHIS GENERAL ISN'T JUST ABOUT SLAVE TRAINERS OTHER GENRES OF GAMES FIT HERE ALSO (Please read the next part for further clarification)."
+		)
+	})
+
 	it('should exclude quotes when "excludeQuotes" is "true"', () => {
 		getPostTextTest(
 			{

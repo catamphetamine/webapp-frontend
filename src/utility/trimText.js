@@ -29,11 +29,14 @@ export default function trimText(string, maxLength) {
 		return string.slice(0, lastSentenceEndsAtLongest +
 			(lastSentenceEndsAtLongestPunctuation === '\n' ? '' : lastSentenceEndsAtLongestPunctuation.length)
 		)
+		// There may be sentences like "Abc.\n\nDef."
+		// and without `.trim()` it would return `"Abc.\n"`.
+		.trim()
 	}
 	// Trim by end of word (if available).
 	const lastWordEndsAt = string.lastIndexOf(' ')
 	if (lastWordEndsAt >= 0) {
-		return string.slice(0, lastWordEndsAt) + ' ' + '…'
+		return string.slice(0, lastWordEndsAt).trim() + ' ' + '…'
 	}
 	// Simple trim.
 	return string + '…'

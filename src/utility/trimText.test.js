@@ -30,5 +30,7 @@ describe('trimText', () => {
 		test('Abc. Def! Ghi', 12, 'Abc. Def!')
 
 		test('A b c\nD e f\nG h i', 16, 'A b c\nD e f')
+
+		test("Embrace the 2d edition\n\nHIS GENERAL ISN'T JUST ABOUT SLAVE TRAINERS OTHER GENRES OF GAMES FIT HERE ALSO (Please read the next part for further clarification).", 150, 'Embrace the 2d edition')
 	})
 })
