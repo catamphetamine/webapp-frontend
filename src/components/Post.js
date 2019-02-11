@@ -264,7 +264,7 @@ export function PostInlineContentElement({ openSlideshow, children: content }) {
 		)
 	} else if (content.type === 'post-link') {
 		return (
-			<PostLink className="post__link--post" url={content.url}>
+			<PostLink className="post__link--post" url={content.url} >
 				{_content}
 			</PostLink>
 		)
@@ -273,6 +273,7 @@ export function PostInlineContentElement({ openSlideshow, children: content }) {
 			<PostLink
 				url={content.url}
 				attachment={content.attachment}
+				service={content.service}
 				openSlideshow={openSlideshow}>
 				{_content}
 			</PostLink>

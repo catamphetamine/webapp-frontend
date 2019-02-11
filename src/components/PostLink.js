@@ -5,7 +5,14 @@ import classNames from 'classnames'
 
 import './PostLink.css'
 
-import YouTubeVideoIcon from '../../assets/images/icons/youtube-video.svg'
+import YouTubeIcon from '../../assets/images/icons/services/youtube.svg'
+import VimeoIcon from '../../assets/images/icons/services/discord.svg'
+import FacebookIcon from '../../assets/images/icons/services/facebook.svg'
+import InstagramIcon from '../../assets/images/icons/services/instagram.svg'
+import VKIcon from '../../assets/images/icons/services/vk.svg'
+import DiscordIcon from '../../assets/images/icons/services/discord.svg'
+import TelegramIcon from '../../assets/images/icons/services/discord.svg'
+import TwitterIcon from '../../assets/images/icons/services/discord.svg'
 
 export default class PostLink extends React.Component {
 	onClick = (event) => {
@@ -19,6 +26,7 @@ export default class PostLink extends React.Component {
 	render() {
 		const {
 			url,
+			service,
 			attachment,
 			className,
 			children
@@ -42,8 +50,11 @@ export default class PostLink extends React.Component {
 				className={classNames(className, 'post__link', {
 					'post__link--icon': attachment && attachment.type === 'video'
 				})}>
-				{attachment && attachment.type === 'video' &&
-					<YouTubeVideoIcon className="post__link-icon post__link-icon--youtube"/>
+				{/* attachment && attachment.type === 'video' &&  attachment.video.source.provider === 'YouTube' && */}
+				{SERVICE_ICONS[service] &&
+					React.createElement(SERVICE_ICONS[service], {
+						className: `post__link-icon post__link-icon--${service}`
+					})
 				}
 				{children}
 			</a>
@@ -53,10 +64,22 @@ export default class PostLink extends React.Component {
 
 PostLink.propTypes = {
 	url: PropTypes.string.isRequired,
+	service: PropTypes.string,
 	attachment: PropTypes.shape({
 		type: PropTypes.oneOf(['video']).isRequired
 	}),
 	openSlideshow: PropTypes.func.isRequired,
 	className: PropTypes.string,
 	children: PropTypes.node.isRequired
+}
+
+const SERVICE_ICONS = {
+	'youtube': YouTubeIcon,
+	'vimeo': VimeoIcon,
+	'facebook': FacebookIcon,
+	'instagram': InstagramIcon,
+	'vk': VKIcon,
+	'discord': DiscordIcon,
+	'twitter': TwitterIcon,
+	'telegram': TelegramIcon
 }
