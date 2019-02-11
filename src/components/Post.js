@@ -131,15 +131,19 @@ export default class Post extends React.Component
 							locale={locale}/>
 					}
 				</header>
-				{post.content && postContent.map((content, i) => (
-					<PostBlock
-						key={i}
-						attachments={attachments}
-						attachmentThumbnailHeight={attachmentThumbnailHeight}
-						openSlideshow={openSlideshow}>
-						{content}
-					</PostBlock>
-				))}
+				{post.content &&
+					<div className="post__content">
+						{postContent.map((content, i) => (
+							<PostBlock
+								key={i}
+								attachments={attachments}
+								attachmentThumbnailHeight={attachmentThumbnailHeight}
+								openSlideshow={openSlideshow}>
+								{content}
+							</PostBlock>
+						))}
+					</div>
+				}
 				<PostAttachments
 					expandFirstPictureOrVideo={expandFirstPictureOrVideo}
 					saveBandwidth={saveBandwidth}

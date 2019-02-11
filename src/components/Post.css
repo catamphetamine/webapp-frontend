@@ -5,6 +5,10 @@
 	--post-attachments-spacing : calc(var(--unit) / 2);
 }
 
+.post__content {
+	font-family: var(--font-family-text);
+}
+
 .post__summary
 {
 	display : flex;
