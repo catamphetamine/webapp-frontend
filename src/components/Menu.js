@@ -1,32 +1,42 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
 import { Link } from 'react-website'
 import classNames from 'classnames'
 
 import './Menu.css'
 
-export default class Menu extends React.Component
-{
-	render()
-	{
+@connect(({ found }) => ({
+  location: found.resolvedMatch.location
+}))
+export default class Menu extends React.Component {
+	render() {
 		const {
+			location,
 			className,
 			children
 		} = this.props
 
 		return (
 			<ul className={classNames('menu', className)}>
-				{children.map(({ link, selected, outlineIcon, fillIcon }) => (
-					<MenuLink to={link} key={link}>
-						{React.createElement(selected ? fillIcon : outlineIcon, { className: 'menu-item__icon' })}
-					</MenuLink>
-				))}
+				{children.map(({ link, outlineIcon, fillIcon }) => {
+					const isSelected = location.pathname === link
+					return (
+						<MenuLink to={link} key={link}>
+							{React.createElement(
+								isSelected ? fillIcon : outlineIcon,
+								{ className: 'menu-item__icon' }
+							)}
+						</MenuLink>
+					)
+				})}
 			</ul>
 		)
 	}
 }
 
 Menu.propTypes = {
+	location: PropTypes.object.isRequired,
 	children: PropTypes.arrayOf(PropTypes.shape({
 		link: PropTypes.string.isRequired,
 		selected: PropTypes.bool,
