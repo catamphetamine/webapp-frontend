@@ -2,8 +2,6 @@
 
 :root
 {
-	--content-column-width       : calc(var(--unit) * 135);
-
 	--account-profile-short-info-name-border-size  : 0.05em;
 	--account-profile-short-info-name-border-color : var(--black-color);
 
