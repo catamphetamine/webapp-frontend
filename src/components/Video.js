@@ -75,9 +75,9 @@ export default class Video extends React.Component {
 	}
 
 	onPreviewClick = (event) => {
-		event.stopPropagation()
 		const { playOnClick } = this.props
 		if (playOnClick) {
+			event.stopPropagation()
 			this.showVideo()
 		}
 	}
