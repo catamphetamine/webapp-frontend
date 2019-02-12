@@ -22,7 +22,7 @@ and that's how the embedded video's aspect ratio is set.
 
 :root
 {
-	--rrui-video-play-icon-size: 22%;
+	--rrui-video-play-icon-size: 30%;
 }
 
 .rrui__video--aspect-ratio
