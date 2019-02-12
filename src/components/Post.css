@@ -5,6 +5,12 @@
 	--post-attachments-spacing : calc(var(--unit) / 2);
 }
 
+.post__heading {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+	font-weight: 400;
+}
+
 .post__content {
 	font-family: var(--font-family-text);
 }
@@ -16,7 +22,7 @@
 }
 
 .post--compact.post--anonymous:not(.post--empty) {
-	.post__summary {
+	.post__header:not(.post__header--with-heading) {
 		margin-bottom: -0.4em;
 	}
 }

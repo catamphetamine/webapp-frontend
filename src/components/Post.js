@@ -10,7 +10,7 @@ import AccountPicture from './AccountPicture'
 import Picture from './Picture'
 import Slideshow from './Slideshow'
 
-import PostHeading from './PostHeading'
+import PostSubheading from './PostSubheading'
 import PostDate from './PostDate'
 import PostParagraph from './PostParagraph'
 import PostList from './PostList'
@@ -102,33 +102,42 @@ export default class Post extends React.Component
 				'post--empty': !post.content,
 				'post--compact': compact
 			})}>
-				<header className="post__summary">
-					{post.account &&
-						<React.Fragment>
-							<Link to={accountLink(post.account)}>
-								<AccountPicture
-									account={post.account}
-									className="post__account-picture"/>
-							</Link>
-							<div className="post__name-and-date">
-								<Link
-									to={accountLink(post.account)}
-									rel="author"
-									className="post__name">
-									{post.account.name}
+				<header className={classNames('post__header', {
+					'post__header--with-heading': post.heading
+				})}>
+					<div className="post__summary">
+						{post.account &&
+							<React.Fragment>
+								<Link to={accountLink(post.account)}>
+									<AccountPicture
+										account={post.account}
+										className="post__account-picture"/>
 								</Link>
-								<PostDate
-									date={post.createdAt}
-									link={url}
-									locale={locale}/>
-							</div>
-						</React.Fragment>
-					}
-					{!post.account &&
-						<PostDate
-							date={post.createdAt}
-							link={url}
-							locale={locale}/>
+								<div className="post__name-and-date">
+									<Link
+										to={accountLink(post.account)}
+										rel="author"
+										className="post__name">
+										{post.account.name}
+									</Link>
+									<PostDate
+										date={post.createdAt}
+										link={url}
+										locale={locale}/>
+								</div>
+							</React.Fragment>
+						}
+						{!post.account &&
+							<PostDate
+								date={post.createdAt}
+								link={url}
+								locale={locale}/>
+						}
+					</div>
+					{post.heading &&
+						<h1 className="post__heading">
+							{post.heading}
+						</h1>
 					}
 				</header>
 				{post.content &&
@@ -173,7 +182,7 @@ function PostBlock({ attachments, attachmentThumbnailHeight, openSlideshow, chil
 	} else if (typeof content === 'string') {
 		return <PostParagraph>{content}</PostParagraph>
 	} else if (content.type === 'heading') {
-		return <PostHeading>{content}</PostHeading>
+		return <PostSubheading>{content}</PostSubheading>
 	} else if (content.type === 'list') {
 		return <PostList>{content}</PostList>
 	} else if (content.type === 'quote') {
