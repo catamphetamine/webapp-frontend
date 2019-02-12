@@ -105,3 +105,15 @@
 		font-size : 5rem;
 	}
 }
+
+.post__files {
+	margin: 0;
+	padding: 0;
+	list-style: none
+}
+
+.post__file-size {
+	margin-left: 0.4em;
+	color: var(--gray-color);
+	font-weight: 300;
+}

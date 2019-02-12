@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import filesize from 'filesize'
 
 import Picture from './Picture'
 
@@ -7,7 +8,10 @@ import PostPicture from './PostPicture'
 import PostVideo from './PostVideo'
 import PostAudio from './PostAudio'
 
-import { postAttachmentShape } from '../PropTypes'
+import {
+	postAttachmentShape,
+	fileAttachmentShape
+} from '../PropTypes'
 
 import VideoPlayIcon from './VideoPlayIcon'
 
@@ -38,6 +42,7 @@ export default function PostAttachments({
 
 	const audios = attachments.filter(_ => _.type === 'audio')
 	const links = attachments.filter(_ => _.type === 'link')
+	const files = attachments.filter(_ => !_.type)
 
 	// const shouldExpandFirstPicture = pictures.length === 1 || (pictures.length > 1 && videos.length !== 1)
 	// const shouldExpandFirstVideo = videos.length === 1 || (videos.length > 1 && pictures.length !== 1)
@@ -124,6 +129,20 @@ export default function PostAttachments({
 							<PostAttachmentLink>
 								{link}
 							</PostAttachmentLink>
+						</li>
+					))}
+				</ul>
+			}
+			{files.length > 0 &&
+				<ul className="post__files">
+					{files.map((file, i) => (
+						<li key={i}>
+							<PostAttachmentFile file={file}/>
+							{file.size &&
+								<span className="post__file-size">
+									{filesize(file.size)}
+								</span>
+							}
 						</li>
 					))}
 				</ul>
@@ -261,3 +280,17 @@ function getRowRatio(row) {
 // 	width: 1920,
 // 	height: 1080
 // }]))
+
+const PostAttachmentFile = ({ file }) => {
+	return (
+		<a
+			target="_blank"
+			href={file.url}>
+			{`${file.name}${file.ext}`}
+		</a>
+	)
+}
+
+PostAttachmentFile.propTypes = {
+	file: fileAttachmentShape.isRequired
+}

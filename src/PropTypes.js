@@ -277,11 +277,20 @@ export const linkAttachmentShape = shape({
 	})
 })
 
+export const fileAttachmentShape = shape({
+	id,
+	name: string.isRequired,
+	contentType: string,
+	size: number,
+	url: string.isRequired
+})
+
 export const postAttachmentShape = oneOfType([
 	pictureAttachmentShape,
 	videoAttachmentShape,
 	audioAttachmentShape,
-	linkAttachmentShape
+	linkAttachmentShape,
+	fileAttachmentShape
 ])
 
 export const postShape = shape({
