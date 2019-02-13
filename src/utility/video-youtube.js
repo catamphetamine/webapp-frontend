@@ -69,7 +69,7 @@ export default {
 			let video
 			if (options.youTubeApiKey) {
 				try {
-					video = await getVideoData(id, options.youTubeApiKey)
+					video = await getVideoData(id, options.youTubeApiKey, options)
 				} catch (error) {
 					console.error(error)
 				}
@@ -137,10 +137,11 @@ export default {
  * Gets YouTube video info.
  * @param  {string} id
  * @param  {string} youTubeApiKey
+ * @param  {object} options
  * @return {object} [video] Returns `null` if the video doesn't exist. Returns `undefined` if some error happened.
  */
-async function getVideoData(id, youTubeApiKey) {
-	const response = await fetch(`https://content.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id=${id}&key=${youTubeApiKey}`)
+async function getVideoData(id, youTubeApiKey, options) {
+	const response = await fetch(`https://content.googleapis.com/youtube/v3/videos?part=snippet,contentDetails${options.locale ? ',localizations' : ''}&id=${id}&key=${youTubeApiKey}${options.locale ? '&hl=' + options.locale : ''}`)
 	const json = await response.json()
 	if (json.items.length === 0) {
 		console.error(`YouTube video "${id}" not found`)
@@ -149,8 +150,8 @@ async function getVideoData(id, youTubeApiKey) {
 	}
 	const { snippet, contentDetails } = json.items[0]
 	const video = {
-		title: snippet.title,
-		description: snippet.description,
+		title: options.locale ? snippet.localized.title : snippet.title,
+		description: options.locale ? snippet.localized.description : snippet.description,
 		duration: parseISO8601Duration(contentDetails.duration),
 		aspectRatio: contentDetails.definition === 'hd' ? 16/9 : 4/3,
 		picture: {
