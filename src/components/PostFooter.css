@@ -6,7 +6,7 @@
 
 .post--compact {
 	.post__footer {
-		margin-top: 0.7em;
+		margin-top: 0.8em;
 	}
 	/* Provides some bottom padding for the post. */
 	.post__footer--empty {
@@ -14,15 +14,30 @@
 	}
 }
 
-.post__footer__comments-count-icon {
+.post__footer__icon {
 	width: 1em;
 	height: 1em;
-	margin-right: 0.4em;
-	margin-top: -0.1em;
 }
 
-.post__footer__comments-count {
+.post__footer__icon--comments-count {
+	margin-top: -0.1em;
+	margin-right: 0.35em;
+}
+
+.post__footer__icon--attachments-count {
+	width: 0.95em;
+	height: 0.95em;
+	margin-top: -0.05em;
+	margin-right: 0.35em;
+}
+
+.post__footer__comments-count,
+.post__footer__attachments-count {
 	display: flex;
 	align-items: center;
 	color: var(--gray-color);
+}
+
+.post__footer__comments-count {
+	margin-right: calc(var(--unit) * 1.5);
 }
