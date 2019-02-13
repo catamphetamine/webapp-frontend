@@ -52,10 +52,7 @@
 	margin-top : var(--post-attachments-spacing);
 }
 
-.post__paragraph {
-	margin-top : 1em;
-}
-
+.post__paragraph,
 .post__picture,
 .post__video {
 	margin-top : 1em;
@@ -65,8 +62,8 @@
 	.post__paragraph {
 		margin-top : 0.6em;
 	}
-	.post__picture,
-	.post__video {
+	.post__picture:not(:first-child),
+	.post__video:not(:first-child) {
 		margin-top : 0.3em;
 	}
 }

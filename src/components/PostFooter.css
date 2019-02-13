@@ -35,7 +35,7 @@
 .post__footer__attachments-count {
 	display: flex;
 	align-items: center;
-	color: var(--gray-color);
+	color: var(--gray-color-dark);
 }
 
 .post__footer__comments-count {
