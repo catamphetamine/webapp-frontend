@@ -25,8 +25,6 @@
 
 .content-section
 {
-	margin-top : var(--content-section-margin);
-	margin-bottom : var(--content-section-margin);
 	padding-left : var(--content-section-horizontal-padding);
 	padding-right : var(--content-section-horizontal-padding);
 	padding-top : var(--content-section-vertical-padding);
@@ -43,6 +41,12 @@
 		*/
 		border-radius : 0;
 	}
+}
+
+.content-section--vertical-margin
+{
+	margin-top : var(--content-section-margin);
+	margin-bottom : var(--content-section-margin);
 }
 
 .content-section--background
