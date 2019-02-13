@@ -10,7 +10,7 @@
 	}
 	/* Provides some bottom padding for the post. */
 	.post__footer--empty {
-		margin-top: 0.15em;
+		margin-top: 0;
 	}
 }
 
