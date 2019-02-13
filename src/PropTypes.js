@@ -295,7 +295,7 @@ export const postAttachmentShape = oneOfType([
 
 export const postShape = shape({
 	id: id.isRequired,
-	heading: string,
+	title: string,
 	content: oneOfType([
 		string,
 		arrayOf(postBlock)

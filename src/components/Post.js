@@ -105,7 +105,7 @@ export default class Post extends React.Component
 				'post--compact': compact
 			})}>
 				<header className={classNames('post__header', {
-					'post__header--with-heading': post.heading
+					'post__header--with-heading': post.title
 				})}>
 					<div className="post__summary">
 						{post.account &&
@@ -136,9 +136,9 @@ export default class Post extends React.Component
 								locale={locale}/>
 						}
 					</div>
-					{post.heading &&
+					{post.title &&
 						<h1 className="post__heading">
-							{post.heading}
+							{post.title}
 						</h1>
 					}
 				</header>
