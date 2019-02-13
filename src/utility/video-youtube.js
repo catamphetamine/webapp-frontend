@@ -56,7 +56,7 @@ export default {
 		// Get video ID.
 		let id
 		const location = parseURL(url)
-		if (location.hostname === 'www.youtube.com') {
+		if (location.hostname === 'www.youtube.com' || location.hostname === 'm.youtube.com') {
 			if (location.search) {
 				const query = parseQueryString(location.search.slice('/'.length))
 				id = query.v
