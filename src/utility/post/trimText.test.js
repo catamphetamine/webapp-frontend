@@ -1,7 +1,7 @@
 import trimText from './trimText'
 
-import { describe, it } from './mocha'
-import expectToEqual from './expectToEqual'
+import { describe, it } from '../mocha'
+import expectToEqual from '../expectToEqual'
 
 function test(input, maxLength, output) {
 	expectToEqual(trimText(input, maxLength), output)

@@ -1,7 +1,7 @@
 import getPostText, { removePostLinks, removeQuotes } from './getPostText'
 
-import { describe, it } from './mocha'
-import expectToEqual from './expectToEqual'
+import { describe, it } from '../mocha'
+import expectToEqual from '../expectToEqual'
 
 function getPostTextTest(post, options, text) {
 	if (text === undefined) {
