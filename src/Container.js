@@ -3,8 +3,7 @@ import PropTypes from 'prop-types'
 import { Provider } from 'react-redux'
 import { hot } from 'react-hot-loader'
 
-function Container({ store, children })
-{
+function Container({ store, children }) {
 	return (
 		<Provider store={store}>
 			{children}
