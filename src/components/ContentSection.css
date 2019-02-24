@@ -127,3 +127,16 @@
 		margin-top : calc(var(--content-section-margin) / 2);
 	}
 }*/
+
+.content-sections {
+	.content-section {
+		margin-top: var(--unit);
+		margin-bottom: var(--unit);
+	}
+	.content-section:first-child {
+		margin-top: 0;
+	}
+	.content-section:last-child {
+		margin-bottom: 0;
+	}
+}

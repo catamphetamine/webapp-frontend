@@ -45,3 +45,16 @@ ContentSectionHeader.propTypes = {
 	className: PropTypes.string,
 	children: PropTypes.node.isRequired
 }
+
+export function ContentSections({ className, children }) {
+	return (
+		<div className={classNames('content-sections', className)}>
+			{children}
+		</div>
+	)
+}
+
+ContentSections.propTypes = {
+	className: PropTypes.string,
+	children: PropTypes.node.isRequired
+}
