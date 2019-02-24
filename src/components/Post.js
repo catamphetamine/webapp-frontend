@@ -26,10 +26,8 @@ import PostFooter from './PostFooter'
 import PostText from './PostText'
 import PostLink from './PostLink'
 
-// import PostAttachmentPicture from './PostAttachmentPicture'
-// import PostAttachmentVideo from './PostAttachmentVideo'
-// import PostAttachmentAudio from './PostAttachmentAudio'
-// import PostAttachmentLink from './PostAttachmentLink'
+import loadYouTubeLinks from '../utility/post/loadYouTubeLinks'
+import expandStandaloneAttachmentLinks from '../utility/post/expandStandaloneAttachmentLinks'
 
 import { openSlideshow } from '../redux/slideshow'
 
@@ -38,8 +36,7 @@ import './Post.css'
 @connect(() => ({}), {
 	openSlideshow
 })
-export default class Post extends React.Component
-{
+export default class Post extends React.Component {
 	static propTypes = {
 		post: postShape.isRequired,
 		compact: PropTypes.bool,
@@ -48,6 +45,7 @@ export default class Post extends React.Component
 		expandFirstPictureOrVideo: PropTypes.bool,
 		saveBandwidth: PropTypes.bool,
 		serviceIcons: PropTypes.objectOf(PropTypes.func),
+		youTubeApiKey: PropTypes.string,
 		attachmentThumbnailHeight: PropTypes.number,
 		openSlideshow: PropTypes.func.isRequired,
 		url: PropTypes.string,
@@ -82,6 +80,26 @@ export default class Post extends React.Component
 			.map(_ => _.type === 'picture' ? _.picture : _.video)
 
 		openSlideshow(picturesAndVideos, i)
+	}
+
+	componentDidMount() {
+		const {
+			post,
+			youTubeApiKey
+		} = this.props
+		if (youTubeApiKey) {
+			loadYouTubeLinks(post, { youTubeApiKey }).then((found) => {
+				if (found && this._isMounted) {
+					expandStandaloneAttachmentLinks(post)
+					this.forceUpdate()
+				}
+			})
+		}
+		this._isMounted = true
+	}
+
+	componentWillUnmount() {
+		this._isMounted = false
 	}
 
 	render() {

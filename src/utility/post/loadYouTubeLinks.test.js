@@ -1,12 +1,15 @@
 import { describe, it } from '../mocha'
 import expectToEqual from '../expectToEqual'
 
-import parseYouTubeLinks from './parseYouTubeLinks'
+import loadYouTubeLinks from './loadYouTubeLinks'
 
-describe('parseYouTubeLinks', () => {
-	it('should not parse YouTube links when there\'re no links', async () => {
+describe('loadYouTubeLinks', () => {
+	it('should not load YouTube links when there\'re no links', async () => {
 		let post = {}
-		parseYouTubeLinks(post)
+		expectToEqual(
+			await loadYouTubeLinks(post),
+			false
+		)
 		expectToEqual(
 			post,
 			{}
@@ -19,7 +22,10 @@ describe('parseYouTubeLinks', () => {
 				]
 			]
 		}
-		await parseYouTubeLinks(post)
+		expectToEqual(
+			await loadYouTubeLinks(post),
+			false
+		)
 		expectToEqual(
 			post,
 			{
@@ -32,7 +38,7 @@ describe('parseYouTubeLinks', () => {
 		)
 	})
 
-	it('should parse YouTube links without API key', async () => {
+	it('should load YouTube links without API key', async () => {
 		// Parse YouTube link without YouTube API key.
 		const post = {
 			content: [
@@ -48,7 +54,10 @@ describe('parseYouTubeLinks', () => {
 				]
 			]
 		}
-		await parseYouTubeLinks(post)
+		expectToEqual(
+			await loadYouTubeLinks(post),
+			true
+		)
 		expectToEqual(
 			post,
 			{
@@ -88,15 +97,16 @@ describe('parseYouTubeLinks', () => {
 	})
 })
 
-export function parseYouTubeLinksTestWithApiKey(youTubeApiKey) {
-	describe('parseYouTubeLinks', () => {
-		it('should parse YouTube links with API key', async () => {
+export function loadYouTubeLinksTestWithApiKey(youTubeApiKey) {
+	describe('loadYouTubeLinks', () => {
+		it('should load YouTube links with API key', async () => {
 			const post = {
 				content: [
 					[
 						'Abc ',
 						{
 							type: 'link',
+							service: 'youtube',
 							url: 'https://www.youtube.com/watch?v=6CPXGQ0zoJE',
 							content: 'youtube.com/watch?v=6CPXGQ0zoJE'
 						},
@@ -104,7 +114,10 @@ export function parseYouTubeLinksTestWithApiKey(youTubeApiKey) {
 					]
 				]
 			}
-			await parseYouTubeLinks(post, { youTubeApiKey })
+			expectToEqual(
+				await loadYouTubeLinks(post, { youTubeApiKey }),
+				true
+			)
 			expectToEqual(
 				post,
 				{
