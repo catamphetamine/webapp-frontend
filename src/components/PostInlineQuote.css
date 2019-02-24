@@ -78,4 +78,10 @@
 			display: none;
 		}
 	}
+
+	/* When there are two or more consequtive inline quotes
+	   then their adjacent borders add up. This CSS rule fixes that. */
+	.post__inline-quote + br + .post__inline-quote {
+		border-top: 0;
+	}
 }
