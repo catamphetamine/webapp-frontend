@@ -1,7 +1,8 @@
 @import "../styles/common";
 
 .post__video-title {
-	font-weight: normal;
 	margin-top: 0.4em;
 	margin-bottom: 0.4em;
+	font-weight: normal;
+	line-height: 1.35em;
 }
