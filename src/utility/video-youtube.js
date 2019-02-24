@@ -135,6 +135,16 @@ export default {
 
 /**
  * Gets YouTube video info.
+ * API method: https://developers.google.com/youtube/v3/docs/videos/list
+ * Uses "contentDetails" (quota cost 2) and "snippet" (quota cost 2) parts.
+ * "contentDetails" is for the video duration and aspect ratio.
+ * "snippet" is for the video title and description.
+ * "localization" (quota cost 2) part could theoretically be used
+ * but it only returns the title/description for the requested locale, not for all of them.
+ * YouTube has a quota limit of 1 million per day which translates to 250 000 videos per day.
+ * They can track the "HTTP Referrer" so they will know if someone's using several keys
+ * to bypass the quota. But perhaps they don't care much.
+ * https://www.freakyjolly.com/youtube-data-api-v3-1m-units-limits-explained/
  * @param  {string} id
  * @param  {string} youTubeApiKey
  * @param  {object} options
