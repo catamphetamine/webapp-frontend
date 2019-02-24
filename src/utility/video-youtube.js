@@ -163,6 +163,8 @@ async function getVideoData(id, youTubeApiKey, options) {
 		title: options.locale ? snippet.localized.title : snippet.title,
 		description: options.locale ? snippet.localized.description : snippet.description,
 		duration: parseISO8601Duration(contentDetails.duration),
+		// HD aspect ratio is 16:9 which is 1.777777777...
+		// SD aspect ratio is 4:3 which is 1.3333333333...
 		aspectRatio: contentDetails.definition === 'hd' ? 16/9 : 4/3,
 		picture: {
 			type: 'image/jpeg',
@@ -184,9 +186,17 @@ async function getVideoData(id, youTubeApiKey, options) {
 		}
 	}
 	// YouTube doesn't return video width or height.
-	if (video.aspectRatio > 1.77 && video.aspectRatio < 1.78) {
-		video.width = 1920
-		video.height = 1080
+	switch (contentDetails.definition) {
+		case 'hd':
+			// HD aspect ratio is 16:9.
+			video.width = 1920
+			video.height = 1080
+			break
+		case 'sd':
+			// SD aspect ratio is 4:3.
+			video.width = 1440
+			video.height = 1080
+			break
 	}
 	return video
 }
