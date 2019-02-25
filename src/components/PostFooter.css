@@ -41,6 +41,9 @@
 }
 
 .post__footer__icon--replies-count {
+	/* The arrow icon's left side by default doesn't align
+	   perfectly with the text's left border. */
+	margin-left: 0.05em;
 	margin-right: 0.35em;
 }
 
