@@ -31,6 +31,11 @@
 	}
 }
 
+/* Prepend an invisible "> " to inline quotes for copied text formatting. */
+.post__inline-quote-prefix {
+	font-size: 0;
+}
+
 .post__inline-quote {
 	display: inline-block;
 	position: relative;

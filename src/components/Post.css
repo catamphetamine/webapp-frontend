@@ -2,6 +2,16 @@
 
 .post {
 	--post-attachments-spacing : calc(var(--unit) / 2);
+
+	/* When selecting text <br/>s also get selected
+	   which results in a bit of a visual clutter.
+	   (for example, in the end of `<PostInlineQuote/>`
+	   when a `<Post/>` has `.content-section` CSS class).
+	   `font-size: 0` doesn't affect the height of `<br/>`
+	   but it removes the visual selection from it. */
+	br {
+		font-size: 0;
+	}
 }
 
 .post__heading {
@@ -78,14 +88,10 @@
 
 /* For play video icon. */
 .post__video .rrui__video,
-.post__thumbnail-attachment
-{
-	position : relative;
-
-	&:hover
-	{
-		.video__play-icon-background
-		{
+.post__thumbnail-attachment-button {
+	position: relative;
+	&:hover {
+		.rrui__video__play-icon-background {
 			fill : rgba(0, 0, 0, 0.8);
 		}
 	}

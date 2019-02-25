@@ -73,6 +73,17 @@
 	}
 }
 
+.post__thumbnail-attachment-button {
+	/*position: relative;*/
+	display: block;
+	/* Material Design Card elevation shadow. */
+	/* https://codepen.io/sdthornton/pen/wBZdXq */
+	transition: box-shadow 160ms cubic-bezier(.25,.8,.25,1);
+	&:hover {
+		box-shadow: 0 0 0.3em rgba(0,0,0,0.2), 0 0 0.15em rgba(0,0,0,0.18);
+	}
+}
+
 .post__attachment-thumbnail-more
 {
 	position : absolute;

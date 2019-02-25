@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import filesize from 'filesize'
 
-import Picture from './Picture'
+import Picture, { TRANSPARENT_PIXEL } from './Picture'
 
 import PostPicture from './PostPicture'
 import PostVideo from './PostVideo'
@@ -88,10 +88,19 @@ export default function PostAttachments({
 							<li
 								key={`picture-or-video-${i}`}
 								className="post__thumbnail-attachment">
+								{/* When copy-pasting content an `<img/>` inside a `<button/>`
+								    is ignored, that's why placing a "dummy" transparent pixel
+								    having the correct `alt` before the `<button/>`. */}
+								<img
+									src={TRANSPARENT_PIXEL}
+									width={0}
+									height={0}
+									alt={pictureOrVideo.title}
+									style={POSITION_ABSOLUTE}/>
 								<button
 									aria-label={pictureOrVideo.title}
 									onClick={createOnOpenSlideshow(i + (titlePictureOrVideo ? 1 : 0))}
-									className="rrui__button-reset position-relative">
+									className="rrui__button-reset post__thumbnail-attachment-button">
 									<Picture
 										preview
 										aria-hidden
@@ -150,6 +159,10 @@ export default function PostAttachments({
 					))}
 				</ul>
 			}
+			{/* Insert a "new line" after attachments when copy-pasting selected content */}
+			<div style={POSITION_ABSOLUTE}>
+				<br/>
+			</div>
 		</div>
 	)
 }
@@ -166,6 +179,10 @@ PostAttachments.defaultProps = {
 	expandFirstPictureOrVideo: true,
 	saveBandwidth: false,
 	attachmentThumbnailHeight: 160
+}
+
+const POSITION_ABSOLUTE = {
+	position: 'absolute'
 }
 
 // function groupThumbnails(thumbnails, targetRowRatioTolerance) {
