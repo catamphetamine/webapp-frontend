@@ -1066,9 +1066,14 @@ function getTranslateX(element) {
 }
 
 function isButton(element) {
-	if (element.tagName === 'BUTTON') {
+	if (element.classList && element.classList.contains('rrui__slideshow__action')) {
 		return true
 	}
+	// `<button/>` tag name didn't work on "Download" link
+	// and also did reset dragging on Video slides (which are buttons).
+	// if (element.tagName === 'BUTTON') {
+	// 	return true
+	// }
 	if (element.parentNode) {
 		return isButton(element.parentNode)
 	}
