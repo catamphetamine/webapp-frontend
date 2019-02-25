@@ -9,11 +9,6 @@ import ReplyIcon from '../../assets/images/icons/reply.svg'
 import './PostFooter.css'
 
 export default function PostFooter({ post }) {
-	if (!(post.commentsCount > 0 || post.attachmentsCount > 0 || (post.replies && post.replies.length > 0))) {
-		return (
-			<footer className="post__footer post__footer--empty"/>
-		)
-	}
 	return (
 		<footer className="post__footer">
 			{post.commentsCount > 0 &&
@@ -40,4 +35,10 @@ export default function PostFooter({ post }) {
 
 PostFooter.propTypes = {
 	post: postShape.isRequired
+}
+
+export function hasFooter(post) {
+	return post.commentsCount > 0 ||
+		post.attachmentsCount > 0 ||
+		(post.replies && post.replies.length > 0)
 }

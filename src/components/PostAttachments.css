@@ -1,13 +1,7 @@
 @import "../styles/common";
 
 .post__attachments {
-	margin-top : calc(1em - var(--post-attachments-spacing));
-}
-
-.post--compact {
-	.post__attachments {
-		margin-top : calc(0.8em - var(--post-attachments-spacing));
-	}
+	margin-top : calc(var(--post-content-vertical-spacing) - var(--post-attachments-spacing));
 }
 
 .post--anonymous.post--empty .post__attachments
@@ -39,12 +33,8 @@
 	margin-top      : calc(var(--post-attachments-spacing) * -1);
 	margin-left     : calc(-1 * var(--post-attachments-spacing) / 2 + 1px); /* 1px is for box-shadow */
 	margin-right    : calc(-1 * var(--post-attachments-spacing) / 2 + 1px); /* 1px is for box-shadow */
+	margin-bottom   : 0;
 	list-style-type : none;
-}
-
-.content-section .post__thumbnail-attachments
-{
-	margin-bottom : calc(1em - var(--content-section-vertical-padding));
 }
 
 .post__thumbnail-attachment

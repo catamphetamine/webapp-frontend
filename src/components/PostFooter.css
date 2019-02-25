@@ -9,9 +9,23 @@
 	.post__footer {
 		margin-top: 0.8em;
 	}
-	/* Provides some bottom padding for the post. */
-	.post__footer--empty {
-		margin-top: 0;
+}
+
+.post--ultracompact {
+	.post__footer {
+		margin-top: 0.5em;
+	}
+}
+
+.post--compact.content-section {
+	.post__footer {
+		margin-bottom: calc(-1 * 0.2em);
+	}
+}
+
+.post--ultracompact.content-section {
+	.post__footer {
+		margin-bottom: calc(-1 * 0.4em);
 	}
 }
 

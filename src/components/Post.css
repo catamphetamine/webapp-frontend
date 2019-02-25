@@ -2,6 +2,12 @@
 
 .post {
 	--post-attachments-spacing : calc(var(--unit) / 2);
+	--post-content-vertical-spacing: 1em;
+
+	/* Textual content has some inherent bottom spacing due to line height.
+	   Other content (attachment thumbnails, embedded pictures and videos)
+	   doesn't have such extra visual spacing. Therefore reduce it for text. */
+	--post-text-vertical-space-adjustment: 0.25em;
 
 	/* When selecting text <br/>s also get selected
 	   which results in a bit of a visual clutter.
@@ -14,6 +20,14 @@
 	}
 }
 
+.post.content-section {
+	--content-section-vertical-padding: 1em;
+}
+
+.post--ultracompact.content-section {
+	--content-section-vertical-padding: 0.9em;
+}
+
 .post__heading {
 	margin-top: 0.5em;
 	margin-bottom: 0.5em;
@@ -21,18 +35,24 @@
 }
 
 .post__content {
+	/*margin-bottom: calc(-1 * var(--post-content-vertical-spacing));*/
 	font-family: var(--font-family-text);
 }
 
-.post__summary
-{
-	display : flex;
-	align-items : center;
+.post__summary {
+	display: flex;
+	align-items: center;
+}
+
+.post--ultracompact.post--anonymous {
+	.post__header {
+		margin-top: calc(-1 * var(--post-text-vertical-space-adjustment));
+	}
 }
 
 .post--compact.post--anonymous:not(.post--empty) {
 	.post__header:not(.post__header--with-heading) {
-		margin-bottom: -0.4em;
+		margin-bottom: calc(-1 * var(--post-text-vertical-space-adjustment));
 	}
 }
 
@@ -61,20 +81,15 @@
 	margin-top : var(--post-attachments-spacing);
 }
 
-.post__paragraph,
-.post__picture,
-.post__video {
-	margin-top : 1em;
-}
-
 .post--compact {
-	.post__paragraph {
-		margin-top : 0.6em;
-	}
+	--post-content-vertical-spacing: 0.6em;
+
+	/*
 	.post__picture:not(:first-child),
 	.post__video:not(:first-child) {
 		margin-top : 0.3em;
 	}
+	*/
 }
 
 .post__picture,

@@ -21,7 +21,7 @@ import PostPicture from './PostPicture'
 import PostVideo from './PostVideo'
 import PostAudio from './PostAudio'
 import PostAttachments from './PostAttachments'
-import PostFooter from './PostFooter'
+import PostFooter, { hasFooter } from './PostFooter'
 
 import PostText from './PostText'
 import PostLink from './PostLink'
@@ -40,6 +40,7 @@ export default class Post extends React.Component {
 	static propTypes = {
 		post: postShape.isRequired,
 		compact: PropTypes.bool,
+		ultracompact: PropTypes.bool,
 		commentsCount: PropTypes.number,
 		attachmentsCount: PropTypes.number,
 		expandFirstPictureOrVideo: PropTypes.bool,
@@ -106,6 +107,7 @@ export default class Post extends React.Component {
 		const {
 			post,
 			compact,
+			ultracompact,
 			url,
 			locale,
 			commentsCount,
@@ -125,7 +127,8 @@ export default class Post extends React.Component {
 			<article className={classNames( className, 'post', {
 				'post--anonymous': !post.account,
 				'post--empty': !post.content,
-				'post--compact': compact
+				'post--compact': compact,
+				'post--ultracompact': ultracompact
 			})}>
 				<header className={classNames('post__header', {
 					'post__header--with-heading': post.title
@@ -186,7 +189,9 @@ export default class Post extends React.Component {
 					openSlideshow={this.openSlideshowForAttachments}>
 					{this.getNonEmbeddedAttachments()}
 				</PostAttachments>
-				<PostFooter post={post}/>
+				{hasFooter(post) &&
+					<PostFooter post={post}/>
+				}
 			</article>
 		);
 	}

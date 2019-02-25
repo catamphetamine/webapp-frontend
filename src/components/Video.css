@@ -5,6 +5,7 @@ and that's how the embedded video's aspect ratio is set.
 */
 .rrui__video
 {
+	display  : block;
 	position : relative;
 	overflow : hidden;
 }

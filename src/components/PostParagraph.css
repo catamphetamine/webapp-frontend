@@ -1,2 +1,11 @@
 .post__paragraph {
+	/* Textual content has some inherent bottom spacing due to line height.
+	   Other content (attachment thumbnails, embedded pictures and videos)
+	   doesn't have such extra visual spacing. Therefore reduce it for text. */
+	margin-top: calc(var(--post-content-vertical-spacing) - var(--post-text-vertical-space-adjustment));
+	margin-bottom: calc(-1 * var(--post-text-vertical-space-adjustment));
+}
+
+.post__paragraph + .post__paragraph {
+	margin-top: var(--post-content-vertical-spacing);
 }

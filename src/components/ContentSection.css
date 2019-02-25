@@ -10,7 +10,7 @@
 	*/
 
 	--content-section-horizontal-padding : calc(var(--unit) * 1.5);
-	--content-section-vertical-padding : calc(var(--unit) * 1);
+	--content-section-vertical-padding : calc(var(--unit) * 1.5);
 
 	/*--background-section-vertical-margin : var(--unit);*/
 

@@ -1,4 +1,3 @@
-.post__picture
-{
-
+.post__picture {
+	margin-top: var(--post-content-vertical-spacing);
 }

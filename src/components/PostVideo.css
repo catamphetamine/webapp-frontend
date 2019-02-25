@@ -1,8 +1,18 @@
 @import "../styles/common";
 
+.post__video {
+	margin-top: var(--post-content-vertical-spacing);
+}
+
 .post__video-title {
 	margin-top: 0.4em;
-	margin-bottom: 0.4em;
+	margin-bottom: 0;
 	font-weight: normal;
 	line-height: 1.35em;
+}
+
+.post__video:last-child {
+	.post__video-title {
+		margin-bottom: calc(-1 * var(--post-text-vertical-space-adjustment));
+	}
 }
