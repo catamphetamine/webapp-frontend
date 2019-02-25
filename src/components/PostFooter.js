@@ -4,11 +4,12 @@ import { postShape } from '../PropTypes'
 
 import CommentsIcon from '../../assets/images/icons/menu/message-outline.svg'
 import AttachmentsIcon from '../../assets/images/icons/picture.svg'
+import ReplyIcon from '../../assets/images/icons/reply.svg'
 
 import './PostFooter.css'
 
 export default function PostFooter({ post }) {
-	if (!post.commentsCount) {
+	if (!post.commentsCount && !post.attachmentsCount && !post.replies) {
 		return (
 			<footer className="post__footer post__footer--empty"/>
 		)
@@ -16,15 +17,21 @@ export default function PostFooter({ post }) {
 	return (
 		<footer className="post__footer">
 			{post.commentsCount > 0 &&
-				<div className="post__footer__comments-count">
+				<div className="post__footer__count">
 					<CommentsIcon className="post__footer__icon post__footer__icon--comments-count"/>
 					{post.commentsCount}
 				</div>
 			}
 			{post.attachmentsCount > 0 &&
-				<div className="post__footer__attachments-count">
+				<div className="post__footer__count">
 					<AttachmentsIcon className="post__footer__icon post__footer__icon--attachments-count"/>
 					{post.attachmentsCount}
+				</div>
+			}
+			{post.replies > 0 &&
+				<div className="post__footer__count">
+					<ReplyIcon className="post__footer__icon post__footer__icon--replies-count"/>
+					{post.replies.length}
 				</div>
 			}
 		</footer>

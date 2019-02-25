@@ -315,6 +315,10 @@ export const postShape = shape({
 	account: accountShape, //.isRequired,
 	commentsCount: number,
 	attachmentsCount: number,
+	replies: arrayOf(oneOfType([
+		string,
+		number
+	])),
 	attachments: arrayOf(postAttachmentShape)
 })
 

@@ -2,6 +2,7 @@
 	display: flex;
 	margin-top: 1em;
 	font-weight: lighter;
+	color: var(--gray-color-dark);
 }
 
 .post--compact {
@@ -31,13 +32,19 @@
 	margin-right: 0.35em;
 }
 
-.post__footer__comments-count,
-.post__footer__attachments-count {
-	display: flex;
-	align-items: center;
-	color: var(--gray-color-dark);
+.post__footer__icon--replies-count {
+	width: 1.15em;
+	height: 1.15em;
+	margin-right: 0.35em;
 }
 
-.post__footer__comments-count {
+.post__footer__count {
+	display: flex;
+	align-items: center;
+	cursor: default;
+	user-select: none;
+}
+
+.post__footer__count:not(:last-child) {
 	margin-right: calc(var(--unit) * 1.5);
 }
