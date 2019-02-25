@@ -2,7 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import filesize from 'filesize'
 
-import Picture, { TRANSPARENT_PIXEL } from './Picture'
+import Picture, { TRANSPARENT_PIXEL, getAspectRatio as getPictureAspectRatio } from './Picture'
+import { getAspectRatio as getVideoAspectRatio } from './Video'
 
 import PostPicture from './PostPicture'
 import PostVideo from './PostVideo'
@@ -21,7 +22,7 @@ const MAX_THUMBNAIL_PICTURES_OR_VIDEOS = 6
 
 export default function PostAttachments({
 	expandFirstPictureOrVideo,
-	attachmentThumbnailHeight,
+	attachmentThumbnailSize,
 	saveBandwidth,
 	openSlideshow,
 	children: attachments
@@ -83,7 +84,7 @@ export default function PostAttachments({
 			}
 			{picturesAndVideos.length > 0 &&
 				<ul className="post__thumbnail-attachments">
-					{picturesAndVideos.map((pictureOrVideo, i) => (
+					{sortByAspectRatioAscending(picturesAndVideos).map((pictureOrVideo, i) => (
 						<li
 							key={`picture-or-video-${i}`}
 							className="post__thumbnail-attachment">
@@ -104,7 +105,7 @@ export default function PostAttachments({
 									preview
 									aria-hidden
 									fit="height"
-									height={attachmentThumbnailHeight}
+									height={inscribeThumbnailHeightIntoSize(pictureOrVideo, attachmentThumbnailSize)}
 									picture={pictureOrVideo.type === 'video' ? pictureOrVideo.video.picture : pictureOrVideo.picture}
 									saveBandwidth={saveBandwidth}
 									className="post__attachment-thumbnail aspect-ratio__content--hd"/>
@@ -169,14 +170,14 @@ PostAttachments.propTypes = {
 	openSlideshow: PropTypes.func.isRequired,
 	expandFirstPictureOrVideo: PropTypes.bool.isRequired,
 	saveBandwidth: PropTypes.bool.isRequired,
-	attachmentThumbnailHeight: PropTypes.number.isRequired,
+	attachmentThumbnailSize: PropTypes.number.isRequired,
 	children: PropTypes.arrayOf(postAttachmentShape)
 }
 
 PostAttachments.defaultProps = {
 	expandFirstPictureOrVideo: true,
 	saveBandwidth: false,
-	attachmentThumbnailHeight: 160
+	attachmentThumbnailSize: 160
 }
 
 const POSITION_ABSOLUTE = {
@@ -311,4 +312,41 @@ const PostAttachmentFile = ({ file }) => {
 
 PostAttachmentFile.propTypes = {
 	file: fileAttachmentShape.isRequired
+}
+
+function getAttachmentAspectRatio(attachment) {
+	switch (attachment.type) {
+		case 'picture':
+			return getPictureAspectRatio(attachment.picture)
+		case 'video':
+			return getVideoAspectRatio(attachment.video)
+		default:
+			console.error(`Unknown attachment type: ${attachment.type}`)
+			console.log(attachment)
+			return 1
+	}
+}
+
+function inscribeThumbnailHeightIntoSize(attachment, size) {
+	const aspectRatio = getAttachmentAspectRatio(attachment)
+	if (aspectRatio <= 1) {
+		return size
+	}
+	return size / aspectRatio
+}
+
+/**
+ * Sorts attachments by their aspect ratio ascending (the tallest ones first).
+ * Mutates the original array (could add `.slice()` but not required).
+ * @param  {object[]} attachments
+ * @return {object[]}
+ */
+export function sortByAspectRatioAscending(attachments) {
+	// A minor optimization.
+	if (attachments.length === 1) {
+		return attachments
+	}
+	return attachments.sort((a, b) => {
+		return getAttachmentAspectRatio(a) - getAttachmentAspectRatio(b)
+	})
 }

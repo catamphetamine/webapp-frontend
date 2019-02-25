@@ -215,7 +215,7 @@ Video.defaultProps = {
 
 const showsPreview = (props) => props.showPreview && props.video.picture ? true : false
 
-function getAspectRatio(video) {
+export function getAspectRatio(video) {
 	if (video.aspectRatio) {
 		return video.aspectRatio
 	}

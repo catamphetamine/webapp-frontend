@@ -17,7 +17,7 @@ import PostInlineSpoiler from './PostInlineSpoiler'
 import PostPicture from './PostPicture'
 import PostVideo from './PostVideo'
 import PostAudio from './PostAudio'
-import PostAttachments from './PostAttachments'
+import PostAttachments, { sortByAspectRatioAscending } from './PostAttachments'
 import PostFooter, { hasFooter } from './PostFooter'
 
 import PostText from './PostText'
@@ -43,7 +43,7 @@ export default class Post extends React.Component {
 		saveBandwidth: PropTypes.bool,
 		serviceIcons: PropTypes.objectOf(PropTypes.func),
 		youTubeApiKey: PropTypes.string,
-		attachmentThumbnailHeight: PropTypes.number,
+		attachmentThumbnailSize: PropTypes.number,
 		openSlideshow: PropTypes.func.isRequired,
 		url: PropTypes.string,
 		locale: PropTypes.string,
@@ -72,9 +72,9 @@ export default class Post extends React.Component {
 		const { post, openSlideshow } = this.props
 		const attachments = this.getNonEmbeddedAttachments()
 
-		const picturesAndVideos = attachments
-			.filter(_ => _.type === 'picture' || _.type === 'video')
-			.map(_ => _.type === 'picture' ? _.picture : _.video)
+		let picturesAndVideos = attachments.filter(_ => _.type === 'picture' || _.type === 'video')
+		sortByAspectRatioAscending(picturesAndVideos)
+		picturesAndVideos = picturesAndVideos.map(_ => _.type === 'picture' ? _.picture : _.video)
 
 		openSlideshow(picturesAndVideos, i)
 	}
@@ -108,7 +108,7 @@ export default class Post extends React.Component {
 			commentsCount,
 			attachmentsCount,
 			expandFirstPictureOrVideo,
-			attachmentThumbnailHeight,
+			attachmentThumbnailSize,
 			saveBandwidth,
 			serviceIcons,
 			openSlideshow,
@@ -136,7 +136,7 @@ export default class Post extends React.Component {
 							<PostBlock
 								key={i}
 								attachments={attachments}
-								attachmentThumbnailHeight={attachmentThumbnailHeight}
+								attachmentThumbnailSize={attachmentThumbnailSize}
 								openSlideshow={openSlideshow}
 								serviceIcons={serviceIcons}>
 								{content}
@@ -147,7 +147,7 @@ export default class Post extends React.Component {
 				<PostAttachments
 					expandFirstPictureOrVideo={expandFirstPictureOrVideo}
 					saveBandwidth={saveBandwidth}
-					attachmentThumbnailHeight={attachmentThumbnailHeight}
+					attachmentThumbnailSize={attachmentThumbnailSize}
 					openSlideshow={this.openSlideshowForAttachments}>
 					{this.getNonEmbeddedAttachments()}
 				</PostAttachments>
@@ -163,7 +163,7 @@ function toArray(object) {
 	return Array.isArray(object) ? object : [object]
 }
 
-export function PostBlock({ attachments, attachmentThumbnailHeight, openSlideshow, serviceIcons, children: content }) {
+export function PostBlock({ attachments, attachmentThumbnailSize, openSlideshow, serviceIcons, children: content }) {
 	if (Array.isArray(content)) {
 		return (
 			<PostParagraph>
@@ -200,7 +200,7 @@ export function PostBlock({ attachments, attachmentThumbnailHeight, openSlidesho
 			case 'video':
 				return (
 					<PostVideo
-						height={content.fit === 'height' ? attachmentThumbnailHeight : undefined}
+						height={content.fit === 'height' ? attachmentThumbnailSize : undefined}
 						onClick={(event) => {
 							event.preventDefault()
 							openSlideshow([attachment.video])
