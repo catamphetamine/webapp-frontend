@@ -120,6 +120,8 @@ export default class Post extends React.Component {
 
 		return (
 			<article className={classNames( className, 'post', {
+				'post--titled': post.title,
+				'post--starts-with-text': post.content && (typeof post.content === 'string' || typeof post.content[0] === 'string' || Array.isArray(post.content[0])),
 				'post--anonymous': !post.account,
 				'post--empty': !post.content,
 				'post--compact': compact

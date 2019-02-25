@@ -12,9 +12,7 @@ import './PostHeader.css'
 
 export default function PostHeader({ url, locale, post }) {
 	return (
-		<header className={classNames('post__header', {
-			'post__header--with-heading': post.title
-		})}>
+		<header className="post__header">
 			<div className="post__summary">
 				{post.account &&
 					<React.Fragment>

@@ -33,10 +33,6 @@
 	font-family: var(--font-family-text);
 }
 
-.post__thumbnail-attachments-container {
-	margin-top : var(--post-attachments-spacing);
-}
-
 .post__picture,
 .post__video .rrui__video,
 .post__attachment-thumbnail

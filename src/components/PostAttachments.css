@@ -1,14 +1,14 @@
 @import "../styles/common";
 
 .post__attachments {
-	margin-top : calc(var(--post-content-vertical-spacing) - var(--post-attachments-spacing));
+	/*margin-top : calc(var(--post-content-vertical-spacing) - var(--post-attachments-spacing));*/
 }
 
 /* Textual content has some inherent top spacing due to line height.
    Other content (attachment thumbnails, embedded pictures and videos)
    doesn't have such extra visual spacing. Therefore add a bit of top spacing here. */
 .post--anonymous.post--empty .post__attachments {
-  margin-top: 0.6em;
+  /*margin-top: 0.6em;*/
 }
 
 .post__thumbnail-video-icon
@@ -31,20 +31,20 @@
 
 .post__thumbnail-attachments
 {
-	padding         : 0;
-	margin-top      : calc(var(--post-attachments-spacing) * -1);
-	margin-left     : calc(-1 * var(--post-attachments-spacing) / 2 + 1px); /* 1px is for box-shadow */
-	margin-right    : calc(-1 * var(--post-attachments-spacing) / 2 + 1px); /* 1px is for box-shadow */
-	margin-bottom   : 0;
-	list-style-type : none;
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	margin-top: 0;
+	margin-bottom: 0;
+	padding: 0;
+	list-style: none;
 }
 
 .post__thumbnail-attachment
 {
-	margin-top    : var(--post-attachments-spacing);
-	margin-bottom : 1px; /* 1px is for box-shadow */
-	padding-left  : calc(var(--post-attachments-spacing) / 2);
-	padding-right : calc(var(--post-attachments-spacing) / 2);
+	margin-top: var(--post-content-vertical-spacing);
+	margin-right: var(--post-content-vertical-spacing);
+	padding: 1px; /* 1px is for box-shadow */
 }
 
 .post__thumbnail-attachment .rrui__video__play-icon

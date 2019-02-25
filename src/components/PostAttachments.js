@@ -82,46 +82,44 @@ export default function PostAttachments({
 				</PostVideo>
 			}
 			{picturesAndVideos.length > 0 &&
-				<div className="post__thumbnail-attachments-container">
-					<ul className="post__thumbnail-attachments row">
-						{picturesAndVideos.map((pictureOrVideo, i) => (
-							<li
-								key={`picture-or-video-${i}`}
-								className="post__thumbnail-attachment">
-								{/* When copy-pasting content an `<img/>` inside a `<button/>`
-								    is ignored, that's why placing a "dummy" transparent pixel
-								    having the correct `alt` before the `<button/>`. */}
-								<img
-									src={TRANSPARENT_PIXEL}
-									width={0}
-									height={0}
-									alt={pictureOrVideo.title}
-									style={POSITION_ABSOLUTE}/>
-								<button
-									aria-label={pictureOrVideo.title}
-									onClick={createOnOpenSlideshow(i + (titlePictureOrVideo ? 1 : 0))}
-									className="rrui__button-reset post__thumbnail-attachment-button">
-									<Picture
-										preview
-										aria-hidden
-										fit="height"
-										height={attachmentThumbnailHeight}
-										picture={pictureOrVideo.type === 'video' ? pictureOrVideo.video.picture : pictureOrVideo.picture}
-										saveBandwidth={saveBandwidth}
-										className="post__attachment-thumbnail aspect-ratio__content--hd"/>
-									{pictureOrVideo.type === 'video' &&
-										<VideoPlayIcon className="post__thumbnail-video-icon"/>
-									}
-									{(i === picturesAndVideos.length - 1 && picturesAndVideosMoreCount > 0) &&
-										<div className="post__attachment-thumbnail-more">
-											+{picturesAndVideosMoreCount + 1}
-										</div>
-									}
-								</button>
-							</li>
-						))}
-					</ul>
-				</div>
+				<ul className="post__thumbnail-attachments">
+					{picturesAndVideos.map((pictureOrVideo, i) => (
+						<li
+							key={`picture-or-video-${i}`}
+							className="post__thumbnail-attachment">
+							{/* When copy-pasting content an `<img/>` inside a `<button/>`
+							    is ignored, that's why placing a "dummy" transparent pixel
+							    having the correct `alt` before the `<button/>`. */}
+							<img
+								src={TRANSPARENT_PIXEL}
+								width={0}
+								height={0}
+								alt={pictureOrVideo.title}
+								style={POSITION_ABSOLUTE}/>
+							<button
+								aria-label={pictureOrVideo.title}
+								onClick={createOnOpenSlideshow(i + (titlePictureOrVideo ? 1 : 0))}
+								className="rrui__button-reset post__thumbnail-attachment-button">
+								<Picture
+									preview
+									aria-hidden
+									fit="height"
+									height={attachmentThumbnailHeight}
+									picture={pictureOrVideo.type === 'video' ? pictureOrVideo.video.picture : pictureOrVideo.picture}
+									saveBandwidth={saveBandwidth}
+									className="post__attachment-thumbnail aspect-ratio__content--hd"/>
+								{pictureOrVideo.type === 'video' &&
+									<VideoPlayIcon className="post__thumbnail-video-icon"/>
+								}
+								{(i === picturesAndVideos.length - 1 && picturesAndVideosMoreCount > 0) &&
+									<div className="post__attachment-thumbnail-more">
+										+{picturesAndVideosMoreCount + 1}
+									</div>
+								}
+							</button>
+						</li>
+					))}
+				</ul>
 			}
 			{audios.length > 0 &&
 				<ul className="post__audios">
