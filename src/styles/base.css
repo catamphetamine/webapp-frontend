@@ -105,3 +105,8 @@ li
 {
 	position : relative;
 }
+
+::selection {
+	color: var(--white-color);
+	background-color: var(--base-color-darker);
+}
