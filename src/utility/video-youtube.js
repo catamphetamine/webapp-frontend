@@ -145,6 +145,16 @@ export default {
  * They can track the "HTTP Referrer" so they will know if someone's using several keys
  * to bypass the quota. But perhaps they don't care much.
  * https://www.freakyjolly.com/youtube-data-api-v3-1m-units-limits-explained/
+ * "fileDetails" (quota cost 1) part could be used for getting video resolution
+ * (`fileDetails.videoStreams[].widthPixels`) but it's available only to video owner.
+ * Could alternatively use YouTube's unofficial "oembed" endpoint, like:
+ * https://www.youtube.com/oembed?url=http://www.youtube.com/watch?v=INVdbXTuPVI
+ * It returns video "title" and also `aspectRatio` = "width"/"height" (approximated).
+ * But the `thumbnail_url` is incorrect. For example, for video ID "INVdbXTuPVI"
+ * it says "thumbnail_url": "https://i.ytimg.com/vi/INVdbXTuPVI/hqdefault.jpg",
+ * but the correct one is "https://i.ytimg.com/vi/INVdbXTuPVI/maxresdefault.jpg".
+ * And also this "oembed" endpoint doesn't support neither CORS nor JSONP
+ * so it's uncallable from a web browser (could be proxied though).
  * @param  {string} id
  * @param  {string} youTubeApiKey
  * @param  {object} options
