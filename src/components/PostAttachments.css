@@ -4,8 +4,10 @@
 	margin-top : calc(var(--post-content-vertical-spacing) - var(--post-attachments-spacing));
 }
 
-.post--anonymous.post--empty .post__attachments
-{
+/* Textual content has some inherent top spacing due to line height.
+   Other content (attachment thumbnails, embedded pictures and videos)
+   doesn't have such extra visual spacing. Therefore add a bit of top spacing here. */
+.post--anonymous.post--empty .post__attachments {
   margin-top: 0.6em;
 }
 

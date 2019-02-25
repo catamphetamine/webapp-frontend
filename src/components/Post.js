@@ -1,17 +1,14 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { Link } from 'react-website'
 import classNames from 'classnames'
 
 import { postShape } from '../PropTypes'
-import { accountLink } from './AccountLink'
-import AccountPicture from './AccountPicture'
 import Picture from './Picture'
 import Slideshow from './Slideshow'
 
+import PostHeader from './PostHeader'
 import PostSubheading from './PostSubheading'
-import PostDate from './PostDate'
 import PostParagraph from './PostParagraph'
 import PostList from './PostList'
 import PostQuote from './PostQuote'
@@ -130,44 +127,10 @@ export default class Post extends React.Component {
 				'post--compact': compact,
 				'post--ultracompact': ultracompact
 			})}>
-				<header className={classNames('post__header', {
-					'post__header--with-heading': post.title
-				})}>
-					<div className="post__summary">
-						{post.account &&
-							<React.Fragment>
-								<Link to={accountLink(post.account)}>
-									<AccountPicture
-										account={post.account}
-										className="post__account-picture"/>
-								</Link>
-								<div className="post__name-and-date">
-									<Link
-										to={accountLink(post.account)}
-										rel="author"
-										className="post__name">
-										{post.account.name}
-									</Link>
-									<PostDate
-										date={post.createdAt}
-										link={url}
-										locale={locale}/>
-								</div>
-							</React.Fragment>
-						}
-						{!post.account &&
-							<PostDate
-								date={post.createdAt}
-								link={url}
-								locale={locale}/>
-						}
-					</div>
-					{post.title &&
-						<h1 className="post__heading">
-							{post.title}
-						</h1>
-					}
-				</header>
+				<PostHeader
+					post={post}
+					url={url}
+					locale={locale}/>
 				{post.content &&
 					<div className="post__content">
 						{postContent.map((content, i) => (

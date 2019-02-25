@@ -20,6 +20,10 @@
 	}
 }
 
+.post--compact {
+	--post-content-vertical-spacing: 0.6em;
+}
+
 .post.content-section {
 	--content-section-vertical-padding: 1em;
 }
@@ -28,68 +32,13 @@
 	--content-section-vertical-padding: 0.9em;
 }
 
-.post__heading {
-	margin-top: 0.5em;
-	margin-bottom: 0.5em;
-	font-weight: 400;
-}
-
 .post__content {
 	/*margin-bottom: calc(-1 * var(--post-content-vertical-spacing));*/
 	font-family: var(--font-family-text);
 }
 
-.post__summary {
-	display: flex;
-	align-items: center;
-}
-
-.post--ultracompact.post--anonymous {
-	.post__header {
-		margin-top: calc(-1 * var(--post-text-vertical-space-adjustment));
-	}
-}
-
-.post--compact.post--anonymous:not(.post--empty) {
-	.post__header:not(.post__header--with-heading) {
-		margin-bottom: calc(-1 * var(--post-text-vertical-space-adjustment));
-	}
-}
-
-.post__name-and-date
-{
-	display : flex;
-	flex-direction : column;
-	margin-left : var(--unit);
-}
-
-.post__name
-{
-	color : var(--base-color-dark);
-}
-
-.post__account-picture
-{
-	width  : calc(var(--unit) * 4);
-	height : calc(var(--unit) * 4);
-	border-radius : var(--border-radius);
-	box-shadow : 0 0 0 1px var(--content-section-divider-color);
-}
-
-.post__thumbnail-attachments-container
-{
+.post__thumbnail-attachments-container {
 	margin-top : var(--post-attachments-spacing);
-}
-
-.post--compact {
-	--post-content-vertical-spacing: 0.6em;
-
-	/*
-	.post__picture:not(:first-child),
-	.post__video:not(:first-child) {
-		margin-top : 0.3em;
-	}
-	*/
 }
 
 .post__picture,
