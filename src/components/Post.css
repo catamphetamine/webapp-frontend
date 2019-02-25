@@ -2,7 +2,7 @@
 
 .post {
 	--post-attachments-spacing : calc(var(--unit) / 2);
-	--post-content-vertical-spacing: 1em;
+	--post-content-vertical-spacing: 0.6em;
 
 	/* Textual content has some inherent bottom spacing due to line height.
 	   Other content (attachment thumbnails, embedded pictures and videos)
@@ -20,15 +20,11 @@
 	}
 }
 
-.post--compact {
-	--post-content-vertical-spacing: 0.6em;
-}
-
 .post.content-section {
 	--content-section-vertical-padding: 1em;
 }
 
-.post--ultracompact.content-section {
+.post--compact.content-section {
 	--content-section-vertical-padding: 0.9em;
 }
 

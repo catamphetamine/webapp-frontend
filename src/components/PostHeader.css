@@ -3,7 +3,7 @@
 	align-items: center;
 }
 
-.post--ultracompact.post--anonymous {
+.post--compact.post--anonymous {
 	.post__header {
 		margin-top: calc(-1 * var(--post-text-vertical-space-adjustment));
 	}
@@ -12,7 +12,7 @@
 /* Textual content has some inherent bottom spacing due to line height.
    Other content (attachment thumbnails, embedded pictures and videos)
    doesn't have such extra visual spacing. Therefore reduce it for text. */
-.post--ultracompact.post--anonymous:not(.post--empty) {
+.post--compact.post--anonymous:not(.post--empty) {
 	.post__header:not(.post__header--with-heading) {
 		margin-bottom: calc(-1 * var(--post-text-vertical-space-adjustment));
 	}

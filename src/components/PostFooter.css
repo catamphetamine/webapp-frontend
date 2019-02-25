@@ -1,29 +1,23 @@
 .post__footer {
 	display: flex;
-	margin-top: 1em;
+	margin-top: 0.8em;
 	font-weight: lighter;
 	color: var(--gray-color-dark);
 }
 
 .post--compact {
 	.post__footer {
-		margin-top: 0.8em;
-	}
-}
-
-.post--ultracompact {
-	.post__footer {
 		margin-top: 0.5em;
 	}
 }
 
-.post--compact.content-section {
+.post.content-section {
 	.post__footer {
 		margin-bottom: calc(-1 * 0.2em);
 	}
 }
 
-.post--ultracompact.content-section {
+.post--compact.content-section {
 	.post__footer {
 		margin-bottom: calc(-1 * 0.4em);
 	}
