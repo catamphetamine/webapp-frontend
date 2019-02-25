@@ -88,13 +88,16 @@ export default function PostAttachments({
 							<li
 								key={`picture-or-video-${i}`}
 								className="post__thumbnail-attachment">
-								<div className="position-relative">
+								<button
+									aria-label={pictureOrVideo.title}
+									onClick={createOnOpenSlideshow(i + (titlePictureOrVideo ? 1 : 0))}
+									className="rrui__button-reset position-relative">
 									<Picture
 										preview
+										aria-hidden
 										fit="height"
 										height={attachmentThumbnailHeight}
 										picture={pictureOrVideo.type === 'video' ? pictureOrVideo.video.picture : pictureOrVideo.picture}
-										onClick={createOnOpenSlideshow(i + (titlePictureOrVideo ? 1 : 0))}
 										saveBandwidth={saveBandwidth}
 										className="post__attachment-thumbnail aspect-ratio__content--hd"/>
 									{pictureOrVideo.type === 'video' &&
@@ -105,7 +108,7 @@ export default function PostAttachments({
 											+{picturesAndVideosMoreCount + 1}
 										</div>
 									}
-								</div>
+								</button>
 							</li>
 						))}
 					</ul>
@@ -165,56 +168,56 @@ PostAttachments.defaultProps = {
 	attachmentThumbnailHeight: 160
 }
 
-function groupThumbnails(thumbnails, targetRowRatioTolerance) {
-	let targetRowRatio = 4.5
-	const targetRowRatioToleranceStep = 0.1
-	const rows = []
-	let row = []
-	for (const thumbnail of thumbnails) {
-		row.push(thumbnail)
-		const rowRatio = getRowRatio(row)
-		if (rowRatio >= targetRowRatio + targetRowRatioTolerance * targetRowRatioToleranceStep) {
-			rows.push(row)
-			row = []
-		}
-	}
-	if (row.length > 0) {
-		rows.push([])
-	}
-	return rows
-}
+// function groupThumbnails(thumbnails, targetRowRatioTolerance) {
+// 	let targetRowRatio = 4.5
+// 	const targetRowRatioToleranceStep = 0.1
+// 	const rows = []
+// 	let row = []
+// 	for (const thumbnail of thumbnails) {
+// 		row.push(thumbnail)
+// 		const rowRatio = getRowRatio(row)
+// 		if (rowRatio >= targetRowRatio + targetRowRatioTolerance * targetRowRatioToleranceStep) {
+// 			rows.push(row)
+// 			row = []
+// 		}
+// 	}
+// 	if (row.length > 0) {
+// 		rows.push([])
+// 	}
+// 	return rows
+// }
 
-function groupThumbnailsRecursive(thumbnails, targetRowRatioTolerance = 0) {
-	const forLowerRowRatio = groupThumbnails(thumbnails, targetRowRatioTolerance * -1 / 2)
-	const forHigherRowRatio = groupThumbnails(thumbnails, targetRowRatioTolerance)
-	if (!hasIncompleteRows(forHigherRowRatio)) {
-		return forHigherRowRatio
-	} else if (!hasIncompleteRows(forLowerRowRatio)) {
-		return forLowerRowRatio
-	} else {
-		// If the last row is not complete
-		// then maybe re-group with a looser target row ratio.
+// function groupThumbnailsRecursive(thumbnails, targetRowRatioTolerance = 0) {
+// 	const forLowerRowRatio = groupThumbnails(thumbnails, targetRowRatioTolerance * -1 / 2)
+// 	const forHigherRowRatio = groupThumbnails(thumbnails, targetRowRatioTolerance)
+// 	if (!hasIncompleteRows(forHigherRowRatio)) {
+// 		return forHigherRowRatio
+// 	} else if (!hasIncompleteRows(forLowerRowRatio)) {
+// 		return forLowerRowRatio
+// 	} else {
+// 		// If the last row is not complete
+// 		// then maybe re-group with a looser target row ratio.
+//
+// 		// If there's not enough thumbnails for the higher row ratio
+// 		// then just group them in a single row.
+// 		if (forHigherRowRatio.length === 1) {
+// 			// console.log(getRowRatio(thumbnails))
+// 			return thumbnails
+// 		}
+//
+// 		// If there is already at least a single complete row
+// 		// then maybe add the ungrouped images left to it.
+// 		return groupThumbnailsRecursive(thumbnails, targetRowRatioTolerance + 1)
+// 	}
+// }
 
-		// If there's not enough thumbnails for the higher row ratio
-		// then just group them in a single row.
-		if (forHigherRowRatio.length === 1) {
-			// console.log(getRowRatio(thumbnails))
-			return thumbnails
-		}
+// function hasIncompleteRows(result) {
+// 	return result[result.length - 1].length === 0
+// }
 
-		// If there is already at least a single complete row
-		// then maybe add the ungrouped images left to it.
-		return groupThumbnailsRecursive(thumbnails, targetRowRatioTolerance + 1)
-	}
-}
-
-function hasIncompleteRows(result) {
-	return result[result.length - 1].length === 0
-}
-
-function getRowRatio(row) {
-	return row.reduce((totalWidth, _) => totalWidth + _.width / _.height, 0)
-}
+// function getRowRatio(row) {
+// 	return row.reduce((totalWidth, _) => totalWidth + _.width / _.height, 0)
+// }
 
 // console.log(groupThumbnailsRecursive([{
 // 	width: 1000,

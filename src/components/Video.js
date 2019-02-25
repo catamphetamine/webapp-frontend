@@ -74,14 +74,6 @@ export default class Video extends React.Component {
 		}
 	}
 
-	onPreviewClick = (event) => {
-		const { playOnClick } = this.props
-		if (playOnClick) {
-			event.stopPropagation()
-			this.showVideo()
-		}
-	}
-
 	render() {
 		const {
 			video,
@@ -97,29 +89,49 @@ export default class Video extends React.Component {
 			showPreview
 		} = this.state
 
+		const _onClick = onClick || showPreview && this.showVideo
+		const _style = style ? { ...style, ...this.getContainerStyle() } : this.getContainerStyle()
+		const _className = classNames(className, 'rrui__video', {
+			'rrui__video--aspect-ratio': fit === 'width'
+		})
+
+		if (_onClick) {
+			return (
+				<button
+					aria-label={this.props['aria-label']}
+					onClick={_onClick}
+					style={_style}
+					className={classNames('rrui__button-reset', _className)}>
+					{showPreview && this.renderPreview()}
+					{!showPreview && this.renderVideo()}
+				</button>
+			)
+		}
+
 		return (
 			<div
-				onClick={onClick}
-				className={classNames('rrui__video', className, {
-					'rrui__video--aspect-ratio': fit === 'width'
-				})}
-				style={style ? { ...style, ...this.getContainerStyle() } : this.getContainerStyle()}>
-				{showPreview &&
-					<Picture
-						onClick={this.onPreviewClick}
-						picture={video.picture}
-						fit="cover"/>
-				}
-				{showPreview &&
-					<button
-						onClick={this.onPreviewClick}
-						className="rrui__button-reset rrui__video__play-button">
-						<VideoPlayIcon />
-					</button>
-				}
+				style={_style}
+				className={_className}>
+				{showPreview && this.renderPreview()}
 				{!showPreview && this.renderVideo()}
 			</div>
 		)
+	}
+
+	renderPreview() {
+		const {
+			video
+		} = this.props
+
+		return (
+			<React.Fragment>
+				<Picture
+					picture={video.picture}
+					fit="cover"
+					aria-hidden/>
+				<VideoPlayIcon/>
+			</React.Fragment>
+		);
 	}
 
 	renderVideo() {
@@ -189,7 +201,6 @@ Video.propTypes = {
 	showPreview: PropTypes.bool.isRequired,
 	autoPlay: PropTypes.bool.isRequired,
 	canPlay: PropTypes.bool.isRequired,
-	playOnClick: PropTypes.bool.isRequired,
 	onClick: PropTypes.func,
 	style: PropTypes.object,
 	className: PropTypes.string
@@ -199,8 +210,7 @@ Video.defaultProps = {
 	fit: 'width',
 	showPreview: true,
 	autoPlay: false,
-	canPlay: true,
-	playOnClick: true
+	canPlay: true
 }
 
 const showsPreview = (props) => props.showPreview && props.video.picture ? true : false
@@ -222,18 +232,18 @@ export function getMaxSize(video) {
 	if (video.source.provider === 'file') {
 		return video.source.sizes[video.source.sizes.length - 1]
 	}
-	// For HD-aspect-ratio YouTube videos assume default video size to be FullHD.
-	// YouTube doesn't generate FullHD preview images for FullHD videos (and larger).
-	// Upscaling HD videos to FullHD is fine.
-	if (video.source.provider === 'YouTube') {
-		const maxPictureSize = getMaxPictureSize(video.picture)
-		if (maxPictureSize.width === 1280 && maxPictureSize.height === 720) {
-			return {
-				width: 1920,
-				height: 1080
-			}
-		}
-		return maxPictureSize
-	}
+	// // For HD-aspect-ratio YouTube videos assume default video size to be FullHD.
+	// // YouTube doesn't generate FullHD preview images for FullHD videos (and larger).
+	// // Upscaling HD videos to FullHD is fine.
+	// if (video.source.provider === 'YouTube') {
+	// 	const maxPictureSize = getMaxPictureSize(video.picture)
+	// 	if (maxPictureSize.width === 1280 && maxPictureSize.height === 720) {
+	// 		return {
+	// 			width: 1920,
+	// 			height: 1080
+	// 		}
+	// 	}
+	// 	return maxPictureSize
+	// }
 	return getMaxPictureSize(video.picture)
 }

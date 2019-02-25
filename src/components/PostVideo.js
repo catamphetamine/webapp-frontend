@@ -30,7 +30,7 @@ export default class PostVideo extends React.Component {
 					maxHeight={height}
 					video={video}
 					onClick={onClick}
-					playOnClick={false}/>
+					aria-label={this.props['aria-label'] || video.title}/>
 				{video.title &&
 					<h1 className="post__video-title">
 						{url &&

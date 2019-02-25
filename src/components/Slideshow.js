@@ -70,7 +70,6 @@ const VideoPlugin = {
 				autoPlay={wasExpanded ? true : false}
 				showPreview={wasExpanded ? false : true}
 				canPlay={isShown}
-				onClick={onClick}
 				maxWidth={maxWidth}
 				maxHeight={maxHeight}
 				className="rrui__slideshow__video"/>

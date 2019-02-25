@@ -189,11 +189,13 @@ async function getVideoData(id, youTubeApiKey, options) {
 	switch (contentDetails.definition) {
 		case 'hd':
 			// HD aspect ratio is 16:9.
+			// https://en.wikipedia.org/wiki/High-definition_television
 			video.width = 1920
 			video.height = 1080
 			break
 		case 'sd':
 			// SD aspect ratio is 4:3.
+			// https://en.wikipedia.org/wiki/Standard-definition_television
 			video.width = 1440
 			video.height = 1080
 			break
