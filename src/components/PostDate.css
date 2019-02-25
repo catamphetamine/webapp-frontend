@@ -1,14 +1,15 @@
 @import "../styles/common";
 
-.post__date
-{
+.post__date {
 	margin-top: 0.1em;
 	color: var(--gray-color-dark);
 	font-weight: 300;
+	time {
+		user-select: none;
+	}
 }
 
-.post__date-tooltip
-{
+.post__date-tooltip {
 	height        : calc(var(--unit) * 3);
 	margin-top    : -0.5em;
 	padding-left  : 0.85em;

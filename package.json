@@ -31,7 +31,7 @@
     "react-dom": "^16.6.3",
     "react-redux": "^5.1.1",
     "react-responsive-ui": "^0.14.127",
-    "react-time-ago": "^5.0.0",
+    "react-time-ago": "^5.0.1",
     "react-website": "^3.1.13",
     "redux": "^4.0.1"
   },
