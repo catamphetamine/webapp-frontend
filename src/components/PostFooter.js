@@ -9,7 +9,7 @@ import ReplyIcon from '../../assets/images/icons/reply.svg'
 import './PostFooter.css'
 
 export default function PostFooter({ post }) {
-	if (!post.commentsCount && !post.attachmentsCount && !post.replies) {
+	if (!(post.commentsCount > 0 || post.attachmentsCount > 0 || (post.replies && post.replies.length > 0))) {
 		return (
 			<footer className="post__footer post__footer--empty"/>
 		)
@@ -28,7 +28,7 @@ export default function PostFooter({ post }) {
 					{post.attachmentsCount}
 				</div>
 			}
-			{post.replies > 0 &&
+			{post.replies && post.replies.length > 0 &&
 				<div className="post__footer__count">
 					<ReplyIcon className="post__footer__icon post__footer__icon--replies-count"/>
 					{post.replies.length}
