@@ -145,6 +145,11 @@ export default {
  * They can track the "HTTP Referrer" so they will know if someone's using several keys
  * to bypass the quota. But perhaps they don't care much.
  * https://www.freakyjolly.com/youtube-data-api-v3-1m-units-limits-explained/
+ * In their user agreement they stated that only "one project per client" may be used to
+ * send API requests which would mean that creating multiple "projects"
+ * (which means getting multiple keys) is considered a violation fo the user agreement.
+ * https://stackoverflow.com/questions/43782892/extending-youtube-api-quota-with-limited-funds
+ * Still, perhaps they don't care much.
  * "fileDetails" (quota cost 1) part could be used for getting video resolution
  * (`fileDetails.videoStreams[].widthPixels`) but it's available only to video owner.
  * Could alternatively use YouTube's unofficial "oembed" endpoint, like:
