@@ -30,21 +30,6 @@
 	opacity : 0;
 }
 
-.rrui__video__play-icon
-{
-	--icon-size : 30%;
-
-	top  : calc((100% - var(--icon-size)) / 2);
-	left : calc((100% - var(--icon-size)) / 2);
-	width  : var(--icon-size);
-	height : var(--icon-size);
-
-	@mixin xs-small
-	{
-		--icon-size : 40%;
-	}
-}
-
 .rrui__video__play-icon-background
 {
 	fill : rgba(0, 0, 0, 0.7);

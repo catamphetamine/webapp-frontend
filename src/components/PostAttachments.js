@@ -110,7 +110,7 @@ export default function PostAttachments({
 									saveBandwidth={saveBandwidth}
 									className="post__attachment-thumbnail aspect-ratio__content--hd"/>
 								{pictureOrVideo.type === 'video' &&
-									<VideoPlayIcon className="post__thumbnail-video-icon"/>
+									<VideoPlayIcon className="post__thumbnail-video-icon rrui__video__play-icon--centered"/>
 								}
 								{(i === picturesAndVideos.length - 1 && picturesAndVideosMoreCount > 0) &&
 									<div className="post__attachment-thumbnail-more">

@@ -129,7 +129,7 @@ export default class Video extends React.Component {
 					picture={video.picture}
 					fit="cover"
 					aria-hidden/>
-				<VideoPlayIcon/>
+				<VideoPlayIcon className="rrui__video__play-icon--centered"/>
 			</React.Fragment>
 		);
 	}

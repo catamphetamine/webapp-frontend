@@ -21,11 +21,6 @@ and that's how the embedded video's aspect ratio is set.
 	height   : 100%;
 }
 
-:root
-{
-	--rrui-video-play-icon-size: 30%;
-}
-
 .rrui__video--aspect-ratio
 {
 	height : 0;
@@ -40,12 +35,14 @@ and that's how the embedded video's aspect ratio is set.
 	cursor: pointer;
 }
 
-.rrui__video .rrui__video__play-icon
+.rrui__video__play-icon--centered
 {
+	--rrui-video-play-icon-size: 30%;
+
 	position : absolute;
-	top  : calc((100% - var(--rrui-video-play-icon-size)) / 2);
-	left : calc((100% -var(--rrui-video-play-icon-size)) / 2);
-	/* transform : translateX(-50%) translateY(-50%); */
+	top  : 50%;
+	left : 50%;
+	transform : translateX(-50%) translateY(-50%);
 	width  : var(--rrui-video-play-icon-size);
 	height : var(--rrui-video-play-icon-size);
 	pointer-events : none;

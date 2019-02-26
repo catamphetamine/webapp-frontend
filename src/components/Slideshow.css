@@ -346,3 +346,7 @@
 {
 	background-color: var(--base-color);
 }
+
+.rrui__slideshow__video .rrui__video__play-icon {
+	--rrui-video-play-icon-size: 20%;
+}
