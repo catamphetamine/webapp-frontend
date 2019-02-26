@@ -52,11 +52,9 @@ export default class Post extends React.Component {
 
 	getNonEmbeddedAttachments() {
 		const { post } = this.props
-
 		const postContent = post.content && toArray(post.content)
 		const attachments = post.attachments || []
-
-		return attachments.filter((attachment) => {
+		const nonEmbeddedAttachments = attachments.filter((attachment) => {
 			if (!attachment.id) {
 				return true
 			}
@@ -66,6 +64,10 @@ export default class Post extends React.Component {
 					paragraph.attachmentId === attachment.id
 			})
 		})
+		if (nonEmbeddedAttachments.length === attachments.length) {
+			return attachments
+		}
+		return nonEmbeddedAttachments
 	}
 
 	openSlideshowForAttachments = (i) => {
