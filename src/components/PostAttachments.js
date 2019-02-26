@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import filesize from 'filesize'
 
 import Picture, { TRANSPARENT_PIXEL, getAspectRatio as getPictureAspectRatio } from './Picture'
-import { getAspectRatio as getVideoAspectRatio } from './Video'
+import { VideoDuration, getAspectRatio as getVideoAspectRatio } from './Video'
 
 import PostPicture from './PostPicture'
 import PostVideo from './PostVideo'
@@ -13,8 +13,6 @@ import {
 	postAttachmentShape,
 	fileAttachmentShape
 } from '../PropTypes'
-
-import VideoPlayIcon from './VideoPlayIcon'
 
 import './PostAttachments.css'
 
@@ -83,11 +81,11 @@ export default function PostAttachments({
 				</PostVideo>
 			}
 			{picturesAndVideos.length > 0 &&
-				<ul className="post__thumbnail-attachments">
+				<ul className="post__attachment-thumbnails">
 					{sortByAspectRatioAscending(picturesAndVideos).map((pictureOrVideo, i) => (
 						<li
 							key={`picture-or-video-${i}`}
-							className="post__thumbnail-attachment">
+							className="post__attachment-thumbnail">
 							{/* When copy-pasting content an `<img/>` inside a `<button/>`
 							    is ignored, that's why placing a "dummy" transparent pixel
 							    having the correct `alt` before the `<button/>`. */}
@@ -100,7 +98,7 @@ export default function PostAttachments({
 							<button
 								aria-label={pictureOrVideo.title}
 								onClick={createOnOpenSlideshow(i + (titlePictureOrVideo ? 1 : 0))}
-								className="rrui__button-reset post__thumbnail-attachment-button">
+								className="rrui__button-reset post__attachment-thumbnail__button">
 								<Picture
 									preview
 									aria-hidden
@@ -108,12 +106,12 @@ export default function PostAttachments({
 									height={inscribeThumbnailHeightIntoSize(pictureOrVideo, attachmentThumbnailSize)}
 									picture={pictureOrVideo.type === 'video' ? pictureOrVideo.video.picture : pictureOrVideo.picture}
 									saveBandwidth={saveBandwidth}
-									className="post__attachment-thumbnail aspect-ratio__content--hd"/>
+									className="post__attachment-thumbnail__picture"/>
 								{pictureOrVideo.type === 'video' &&
-									<VideoPlayIcon className="post__thumbnail-video-icon rrui__video__play-icon--centered"/>
+									<VideoDuration video={pictureOrVideo.video}/>
 								}
 								{(i === picturesAndVideos.length - 1 && picturesAndVideosMoreCount > 0) &&
-									<div className="post__attachment-thumbnail-more">
+									<div className="post__attachment-thumbnail__more-count">
 										+{picturesAndVideosMoreCount + 1}
 									</div>
 								}

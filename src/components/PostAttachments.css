@@ -11,7 +11,7 @@
   /*margin-top: 0.6em;*/
 }
 
-.post__thumbnail-attachments
+.post__attachment-thumbnails
 {
 	display: flex;
 	align-items: center;
@@ -22,25 +22,14 @@
 	list-style: none;
 }
 
-.post__thumbnail-attachment
+.post__attachment-thumbnail
 {
 	margin-top: var(--post-content-vertical-spacing);
 	margin-right: var(--post-content-vertical-spacing);
 	padding: 1px; /* 1px is for box-shadow */
 }
 
-/*
-.post__thumbnail-attachment .rrui__video__play-icon--centered
-{
-	--rrui-video-play-icon-size: 30%;
-
-	@mixin xs {
-		--rrui-video-play-icon-size: 40%;
-	}
-}
-*/
-
-.post__thumbnail-attachment-button {
+.post__attachment-thumbnail__button {
 	/*position: relative;*/
 	display: block;
 	/* Material Design Card elevation shadow. */
@@ -51,8 +40,7 @@
 	}
 }
 
-.post__attachment-thumbnail-more
-{
+.post__attachment-thumbnail__more-count {
 	position : absolute;
 	top      : 0;
 	left     : 0;

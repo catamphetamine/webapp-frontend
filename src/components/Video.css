@@ -35,15 +35,16 @@ and that's how the embedded video's aspect ratio is set.
 	cursor: pointer;
 }
 
-.rrui__video__play-icon--centered
-{
-	--rrui-video-play-icon-size: 30%;
-
-	position : absolute;
-	top  : 50%;
-	left : 50%;
-	transform : translateX(-50%) translateY(-50%);
-	width  : var(--rrui-video-play-icon-size);
-	height : var(--rrui-video-play-icon-size);
-	pointer-events : none;
+.rrui__video__duration {
+	position: absolute;
+	right: 0.3em;
+	bottom: 0.3em;
+	height: 1.5em;
+	line-height: 1.5em;
+	padding-left: 0.3em;
+	padding-right: 0.3em;
+	border-radius: 0.2em;
+	font-size: 80%;
+	background-color: rgba(0, 0, 0, 0.7);
+	color: var(--white-color);
 }

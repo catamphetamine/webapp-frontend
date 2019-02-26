@@ -120,7 +120,8 @@ export default class Video extends React.Component {
 
 	renderPreview() {
 		const {
-			video
+			video,
+			showPlayIcon
 		} = this.props
 
 		return (
@@ -129,7 +130,12 @@ export default class Video extends React.Component {
 					picture={video.picture}
 					fit="cover"
 					aria-hidden/>
-				<VideoPlayIcon className="rrui__video__play-icon--centered"/>
+				{showPlayIcon &&
+					<VideoPlayIcon className="rrui__video__play-icon--center"/>
+				}
+				{!showPlayIcon &&
+					<VideoDuration video={video}/>
+				}
 			</React.Fragment>
 		);
 	}
@@ -201,6 +207,7 @@ Video.propTypes = {
 	showPreview: PropTypes.bool.isRequired,
 	autoPlay: PropTypes.bool.isRequired,
 	canPlay: PropTypes.bool.isRequired,
+	showPlayIcon: PropTypes.bool,
 	onClick: PropTypes.func,
 	style: PropTypes.object,
 	className: PropTypes.string
@@ -246,4 +253,34 @@ export function getMaxSize(video) {
 	// 	return maxPictureSize
 	// }
 	return getMaxPictureSize(video.picture)
+}
+
+export function VideoDuration({ video }) {
+	return (
+		<div className="rrui__video__duration">
+			{formatVideoDuration(video.duration) || '▶'}
+		</div>
+	)
+}
+
+VideoDuration.propTypes = {
+	video: videoShape.isRequired
+}
+
+function formatVideoDuration(seconds) {
+	let minutes = Math.floor(seconds / 60)
+	seconds = seconds % 60
+	const hours = Math.floor(minutes / 60)
+	minutes = minutes % 60
+	if (hours === 0) {
+		return minutes + ':' + formatTwoPositions(seconds)
+	}
+	return hours + ':' + formatTwoPositions(minutes) + ':' + formatTwoPositions(seconds)
+}
+
+function formatTwoPositions(number) {
+	if (number < 10) {
+		return '0' + number
+	}
+	return number
 }

@@ -35,7 +35,7 @@
 
 .post__picture,
 .post__video .rrui__video,
-.post__attachment-thumbnail
+.post__attachment-thumbnail__picture
 {
 	background-color : var(--background-color);
 	box-shadow : 0 0 0 1px var(--black-color);
@@ -44,7 +44,7 @@
 
 /* For play video icon. */
 .post__video .rrui__video,
-.post__thumbnail-attachment-button {
+.post__attachment-thumbnail__button {
 	position: relative;
 	&:hover {
 		.rrui__video__play-icon-background {
