@@ -7,8 +7,7 @@
 
 	--account-profile-tabs-height : calc(var(--unit) * 7);
 
-	@mixin xs
-	{
+	@mixin upto-xs {
 		--account-profile-tabs-height : calc(var(--unit) * 5);
 	}
 }
@@ -26,31 +25,21 @@
 
 .account-profile .account-summary
 {
-	margin-top : calc(var(--unit) * 4);
-	margin-bottom : calc(var(--unit) * 2);
+	margin-top: calc(var(--unit) * 2);
 
-	@mixin xs
-	{
-		margin-top : calc(var(--unit) * 2);
+	@mixin s {
+		margin-top: calc(var(--unit) * 3);
 	}
 
-	@mixin ms
-	{
-		margin-top : calc(var(--unit) * 3);
+	@mixin m-plus {
+		margin-top: calc(var(--unit) * 4);
 	}
 
-	@mixin sm
-	{
-		margin-bottom : 0;
+	@mixin l-plus {
+		margin-bottom: calc(var(--unit) * 2);
 	}
 }
 
-.account-profile .account-actions
-{
-	margin-bottom : calc(var(--unit) * 1);
-
-	@mixin xs
-	{
-		margin-bottom : calc(var(--unit) * 1);
-	}
+.account-profile .account-actions {
+	margin-bottom: calc(var(--unit) * 1);
 }

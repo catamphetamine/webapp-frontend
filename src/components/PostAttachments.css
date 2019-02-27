@@ -60,19 +60,15 @@
 
 	font-size : 5rem;
 
-	@mixin xs {
+	@mixin xxs {
 		font-size : 3rem;
 	}
 
-	@mixin xs-plus {
+	@mixin xs-s {
 		font-size : 4rem;
 	}
 
 	@mixin m {
-		font-size : 4rem;
-	}
-
-	@mixin ml {
 		font-size : 5rem;
 	}
 }

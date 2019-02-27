@@ -2,22 +2,18 @@
 
 /* Actions ("Send message", etc) */
 
-.account-actions
-{
-	@mixin m
-	{
+.account-actions {
+	@mixin s-m {
 		display : flex;
 		justify-content : space-between;
 	}
 }
 
-.account-action
-{
+.account-action {
 	margin-top : var(--unit);
 	width : 100%;
 
-	@mixin m
-	{
+	@mixin s-m {
 		width : calc((100% - var(--unit)) / 2);
 	}
 }

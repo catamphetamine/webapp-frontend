@@ -1,11 +1,8 @@
 @import "../styles/common";
 
-.post__list
-{
+.post__list {
 	padding-left : calc(var(--unit) * 2);
-
-	@mixin xs
-	{
+	@mixin upto-xs {
 		padding-left : var(--unit);
 	}
 }

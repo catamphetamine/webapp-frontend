@@ -14,8 +14,7 @@
 
 	/*--background-section-vertical-margin : var(--unit);*/
 
-	@mixin xs
-	{
+	@mixin upto-xs {
 		--content-section-margin : calc(var(--unit) * 1);
 		--content-section-horizontal-padding : calc(var(--unit) * 1);
 		--content-section-vertical-padding : calc(var(--unit) * 1);
@@ -34,7 +33,7 @@
 	/*box-shadow : var(--content-section-shadow);*/
   box-shadow: 0 0.0005rem 0.1rem 0 hsla(210,7%,61%,.15), 0 0.1rem 0.75rem 0 hsla(210,7%,61%,.15);
 
-	@mixin xs-small {
+	@mixin xxs {
 		/*
 		margin-left  : calc(var(--column-padding) * -1);
 		margin-right : calc(var(--column-padding) * -1);

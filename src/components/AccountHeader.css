@@ -1,29 +1,19 @@
 @import "../styles/common";
 
-:root
-{
-	@mixin xs
-	{
+:root {
+	@mixin upto-xs {
 		--account-header-picture-size : calc(var(--unit) * 8);
 	}
-
-	@mixin xs-plus
-	{
+	@mixin xs {
 		--account-header-picture-size : calc(var(--unit) * 9);
 	}
-
-	@mixin ms
-	{
+	@mixin s {
 		--account-header-picture-size : calc(var(--unit) * 10);
 	}
-
-	@mixin ml
-	{
+	@mixin m {
 		--account-header-picture-size : calc(var(--unit) * 12);
 	}
-
-	@mixin xl
-	{
+	@mixin l-plus {
 		--account-header-picture-size : calc(var(--unit) * 14);
 	}
 }

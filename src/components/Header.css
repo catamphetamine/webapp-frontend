@@ -45,23 +45,19 @@
 
 .webpage__header
 {
-	@mixin xs
-	{
+	@mixin upto-xs {
 		display : none;
 	}
 
-	@mixin ms
-	{
+	@mixin s {
 		display : none;
 	}
 
-	.menu
-	{
+	.menu {
 		margin-right : calc(var(--unit) * -1);
 	}
 
-	.menu-item
-	{
+	.menu-item {
 		padding-left : var(--unit);
 		padding-right : var(--unit);
 	}

@@ -38,12 +38,9 @@
 }
 
 .account-summary__whereabouts,
-.account-summary__links
-{
+.account-summary__links {
 	margin-top : calc(var(--unit) * 2);
-
-	@mixin sm
-	{
+	@mixin upto-m {
 		margin-top : calc(var(--unit) * 1);
 	}
 }

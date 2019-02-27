@@ -18,8 +18,7 @@
 	/*background-color : var(--white-color);*/
 	/*border-bottom : 1px solid var(--gray-color-lightest);*/
 
-	@mixin xs
-	{
+	@mixin upto-xs {
 		height : calc(var(--unit) * 2.5);
 		margin-top : calc(var(--unit) * 0.5);
 	}
@@ -33,18 +32,15 @@
 
 	margin-right : calc(var(--unit) * 2);
 
-	@mixin xl
-	{
+	@mixin l-plus {
 		margin-right : calc(var(--unit) * 3);
 	}
 
-  @media all and (max-width: 390px)
-  {
+  @media all and (max-width: 390px) {
 		margin-right : calc(var(--unit) * 1);
   }
 
-	&:last-child
-	{
+	&:last-child {
 		margin-right : 0;
 	}
 }
@@ -69,8 +65,7 @@
 		text-decoration : none;
 	}
 
-	@mixin xs
-	{
+	@mixin upto-xs {
 		height : calc(var(--unit) * 2.5);
 	}
 }

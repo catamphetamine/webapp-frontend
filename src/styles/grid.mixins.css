@@ -1,81 +1,94 @@
-$screen-xs-small-max : 587px; /* 14 * 42 - 1 */
-$screen-xs-plus-min : 588px; /* 14 * 42 */
+$screen-xxs-max : 587px; /* 14 * 42 - 1 */
+$screen-xs-min : 588px; /* 14 * 42 */
 $screen-xs-max : 700px; /* 14 * 50 */
-$screen-ms-min : 701px;
-$screen-ms-max : 882px; /* 14 * 63 */
-$screen-ml-min : 883px;
-$screen-ml-max : 1302px; /* 14 * 93 */
-$screen-xl-min : 1303px;
-$screen-xxl-min : 1764px; /* $screen-ms-max * 2 */
+$screen-s-min : 701px;
+$screen-s-max : 882px; /* 14 * 63 */
+$screen-m-min : 883px;
+$screen-m-max : 1302px; /* 14 * 93 */
+$screen-l-min : 1303px;
+$screen-l-max : 1764px; /* $screen-s-max * 2 */
+$screen-xl-min : 1765px;
 
-@define-mixin xs
-{
-  @media all and (max-width: $screen-xs-max)
-  {
+@define-mixin xxs {
+  @media all and (max-width: $screen-xxs-max) {
     @mixin-content;
   }
 }
 
-@define-mixin xs-small
-{
-  @media all and (max-width: $screen-xs-small-max)
-  {
+@define-mixin xs {
+  @media all and (min-width: $screen-xs-min) and (max-width: $screen-xs-max) {
     @mixin-content;
   }
 }
 
-@define-mixin xs-plus
-{
-  @media all and (min-width: $screen-xs-plus-min) and (max-width: $screen-xs-max)
-  {
+@define-mixin s {
+  @media all and (min-width: $screen-s-min) and (max-width: $screen-s-max) {
     @mixin-content;
   }
 }
 
-@define-mixin m
-{
-  @media all and (min-width: $screen-ms-min) and (max-width: $screen-ml-max)
-  {
+@define-mixin m {
+  @media all and (min-width: $screen-m-min) and (max-width: $screen-m-max) {
     @mixin-content;
   }
 }
 
-@define-mixin ms
-{
-  @media all and (min-width: $screen-ms-min) and (max-width: $screen-ms-max)
-  {
+@define-mixin l {
+  @media all and (min-width: $screen-l-min) and (max-width: $screen-l-max) {
     @mixin-content;
   }
 }
 
-@define-mixin ml
-{
-  @media all and (min-width: $screen-ml-min) and (max-width: $screen-ml-max)
-  {
+@define-mixin xl {
+  @media all and (min-width: $screen-xl-min) {
     @mixin-content;
   }
 }
 
-@define-mixin sm
-{
-  @media all and (max-width: $screen-ml-max)
-  {
+@define-mixin upto-xs {
+  @media all and (max-width: $screen-xs-max) {
     @mixin-content;
   }
 }
 
-@define-mixin xl
-{
-  @media all and (min-width: $screen-xl-min)
-  {
+@define-mixin upto-s {
+  @media all and (max-width: $screen-s-max) {
     @mixin-content;
   }
 }
 
-@define-mixin xxl
-{
-  @media all and (min-width: $screen-xxl-min)
-  {
+@define-mixin upto-m {
+  @media all and (max-width: $screen-m-max) {
+    @mixin-content;
+  }
+}
+
+@define-mixin xs-s {
+  @media all and (min-width: $screen-xs-min) and (max-width: $screen-s-max) {
+    @mixin-content;
+  }
+}
+
+@define-mixin s-m {
+  @media all and (min-width: $screen-s-min) and (max-width: $screen-m-max) {
+    @mixin-content;
+  }
+}
+
+@define-mixin s-plus {
+  @media all and (min-width: $screen-s-min) {
+    @mixin-content;
+  }
+}
+
+@define-mixin m-plus {
+  @media all and (min-width: $screen-m-min) {
+    @mixin-content;
+  }
+}
+
+@define-mixin l-plus {
+  @media all and (min-width: $screen-l-min) {
     @mixin-content;
   }
 }

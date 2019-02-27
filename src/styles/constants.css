@@ -36,7 +36,7 @@
 	/* Some magic number seen on the Internet. */
 	--line-height : 1.52947;
 
-	--header-height : calc(var(--unit) * 3);
+	--header-height : 0;
 
 	--font-family : sans-serif;
 	--font-family-text : sans-serif;
@@ -46,10 +46,10 @@
 	Mobile font size must be at least 16px
 	to prevent automatic zoom on input focus.
 	*/
-	--font-size-xs : 16px;
-	--font-size-xs-plus : 18px;
-	--font-size-m  : 19px;
-	--font-size-xl : 20px;
+	--font-size-xxs : 16px;
+	--font-size-xs : 18px;
+	--font-size-s  : 19px;
+	--font-size-m : 20px;
 
 	--preloading-screen-z-index : 10;
 	--slideshow-z-index : 1;
@@ -63,13 +63,7 @@
 
 	--footer-menu-height : calc(var(--unit) * 3);
 
-	@mixin xs
-	{
-		--header-height : 0;
-	}
-
-	@mixin ms
-	{
-		--header-height : 0;
+	@mixin m-plus {
+		--header-height: calc(var(--unit) * 3);
 	}
 }

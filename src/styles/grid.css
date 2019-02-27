@@ -157,51 +157,43 @@ https://github.com/kristoferjoseph/flexboxgrid/blob/master/src/css/flexboxgrid.c
 
 /* Responsive grid */
 
-@mixin xs
-{
+@mixin xxs {
+	@mixin define_columns -xxs;
+}
+
+@mixin xs {
 	@mixin define_columns -xs;
 }
 
-@mixin xs-plus
-{
-	@mixin define_columns -xs-plus;
+@mixin s {
+	@mixin define_columns -s;
+
+	.container {
+		max-width: calc($screen-s-min - 4 * var(--unit));
+	}
 }
 
-@mixin m
-{
+@mixin m {
 	@mixin define_columns -m;
 
-	.container
-	{
-		max-width: calc($screen-ms-max - 4 * var(--unit));
+	.container {
+		max-width: $screen-m-min;
 	}
 }
 
-@mixin ml
-{
-	.container
-	{
-		max-width: $screen-ms-max;
+@mixin l {
+	@mixin define_columns -l;
+
+	.container {
+		max-width: $screen-l-min;
 	}
 }
 
-@mixin xl
-{
+@mixin xl {
 	@mixin define_columns -xl;
 
-	.container
-	{
+	.container {
 		max-width: $screen-xl-min;
-	}
-}
-
-@mixin xxl
-{
-	@mixin define_columns -xxl;
-
-	.container
-	{
-		max-width: $screen-xxl-min;
 	}
 }
 

@@ -17,7 +17,7 @@
 	margin-bottom : var(--footer-menu-height);
 }
 
-@mixin ml {
+@mixin m {
 	.webpage__footer .application-menu {
 		display : none;
 	}
@@ -26,7 +26,7 @@
 	}
 }
 
-@mixin xl {
+@mixin l-plus {
 	.webpage__footer .application-menu {
 		display : none;
 	}
