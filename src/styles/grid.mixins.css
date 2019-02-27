@@ -4,8 +4,8 @@ $screen-xs-max : 700px; /* 14 * 50 */
 $screen-s-min : 701px;
 $screen-s-max : 882px; /* 14 * 63 */
 $screen-m-min : 883px;
-$screen-m-max : 1302px; /* 14 * 93 */
-$screen-l-min : 1303px;
+$screen-m-max : 1274px; /* 14 * 91 */
+$screen-l-min : 1275px;
 $screen-l-max : 1764px; /* $screen-s-max * 2 */
 $screen-xl-min : 1765px;
 
