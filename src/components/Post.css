@@ -38,7 +38,7 @@
 .post__attachment-thumbnail__picture
 {
 	background-color : var(--background-color);
-	box-shadow : 0 0 0 1px var(--black-color);
+	box-shadow : 0 0 0 1px rgba(0, 0, 0, 0.5);
 	cursor : pointer;
 }
 
