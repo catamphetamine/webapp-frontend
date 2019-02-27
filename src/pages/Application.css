@@ -12,16 +12,6 @@
 	min-height     : 100vh;
 }
 
-.webpage--loading
-{
-	/*
-	`react-waypoint` wouldn't work correctly with `display: none` -> `display: block`.
-	https://github.com/brigade/react-waypoint/issues/164#issuecomment-299640438
-	display: none;
-	*/
-	visibility: hidden;
-}
-
 /* Content takes all free space */
 .webpage__content
 {
