@@ -69,6 +69,7 @@ const VideoPlugin = {
 				fit="scale-down"
 				autoPlay={wasExpanded ? true : false}
 				showPreview={wasExpanded ? false : true}
+				showPlayIcon={wasExpanded ? false : true}
 				canPlay={isShown}
 				maxWidth={maxWidth}
 				maxHeight={maxHeight}
