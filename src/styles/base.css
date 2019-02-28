@@ -23,7 +23,8 @@ body
 	touch-action: manipulation;
 }
 
-/* `html` is required for `rem`s to work. */
+/* `html` is required in order for `rem`s to work. */
+/* Also doesn't work without `body` for some weird reason. */
 html, body
 {
 	font-family : var(--font-family);
