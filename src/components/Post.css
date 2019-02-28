@@ -37,8 +37,8 @@
 .post__video .rrui__video,
 .post__attachment-thumbnail__picture
 {
-	background-color : var(--background-color);
-	box-shadow : 0 0 0 1px rgba(0, 0, 0, 0.5);
+	background-color : var(--picture-background-color);
+	box-shadow : 0 0 0 var(--picture-border-width) var(--picture-border-color);
 	cursor : pointer;
 }
 

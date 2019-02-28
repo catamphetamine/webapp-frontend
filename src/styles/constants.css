@@ -63,6 +63,10 @@
 
 	--footer-menu-height : calc(var(--unit) * 3);
 
+	--picture-background-color: var(--background-color);
+	--picture-border-color: rgba(0, 0, 0, 0.5);
+	--picture-border-width: 1px;
+
 	@mixin m-plus {
 		--header-height: calc(var(--unit) * 3);
 	}
