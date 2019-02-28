@@ -29,13 +29,3 @@
 {
 	opacity : 0;
 }
-
-.rrui__video__play-icon-background
-{
-	fill : rgba(0, 0, 0, 0.7);
-}
-
-.rrui__video__play-icon-triangle
-{
-	fill : var(--white-color);
-}
