@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import classNames from 'classnames'
 import filesize from 'filesize'
 
 import Picture, { TRANSPARENT_PIXEL, getAspectRatio as getPictureAspectRatio } from './Picture'
@@ -89,7 +90,12 @@ export default function PostAttachments({
 					{picturesAndVideos.map((pictureOrVideo, i) => (
 						<li
 							key={`picture-or-video-${i}`}
-							className="post__attachment-thumbnail">
+							className={classNames(
+								'post__attachment-thumbnail',
+								pictureOrVideo.type === 'picture' &&
+									pictureOrVideo.picture.kind &&
+									`post__attachment-thumbnail--${pictureOrVideo.picture.kind}`
+							)}>
 							{/* When copy-pasting content an `<img/>` inside a `<button/>`
 							    is ignored, that's why placing a "dummy" transparent pixel
 							    having the correct `alt` before the `<button/>`. */}
