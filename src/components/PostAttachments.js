@@ -16,13 +16,12 @@ import {
 
 import './PostAttachments.css'
 
-const MAX_THUMBNAIL_PICTURES_OR_VIDEOS = 6
-
 export default function PostAttachments({
 	expandFirstPictureOrVideo,
 	attachmentThumbnailSize,
 	saveBandwidth,
 	openSlideshow,
+	maxAttachmentThumbnails,
 	children: attachments
 }) {
 	if (attachments.length === 0) {
@@ -39,6 +38,8 @@ export default function PostAttachments({
 		picturesAndVideos = picturesAndVideos.slice(1)
 	}
 
+	sortByAspectRatioAscending(picturesAndVideos)
+
 	const audios = attachments.filter(_ => _.type === 'audio')
 	const links = attachments.filter(_ => _.type === 'link')
 	const files = attachments.filter(_ => !_.type)
@@ -54,9 +55,12 @@ export default function PostAttachments({
 	// 	thumbnailPictures = thumbnailPictures.slice(0, MAX_THUMBNAIL_PICTURES)
 	// }
 
-	const picturesAndVideosMoreCount = picturesAndVideos.length - MAX_THUMBNAIL_PICTURES_OR_VIDEOS
-	if (picturesAndVideosMoreCount > 0) {
-		picturesAndVideos = picturesAndVideos.slice(0, MAX_THUMBNAIL_PICTURES_OR_VIDEOS)
+	let picturesAndVideosMoreCount = 0
+	if (maxAttachmentThumbnails > 0) {
+		picturesAndVideosMoreCount = picturesAndVideos.length - maxAttachmentThumbnails
+		if (picturesAndVideosMoreCount > 0) {
+			picturesAndVideos = picturesAndVideos.slice(0, maxAttachmentThumbnails)
+		}
 	}
 
 	function createOnOpenSlideshow(i) {
@@ -82,7 +86,7 @@ export default function PostAttachments({
 			}
 			{picturesAndVideos.length > 0 &&
 				<ul className="post__attachment-thumbnails">
-					{sortByAspectRatioAscending(picturesAndVideos).map((pictureOrVideo, i) => (
+					{picturesAndVideos.map((pictureOrVideo, i) => (
 						<li
 							key={`picture-or-video-${i}`}
 							className="post__attachment-thumbnail">
@@ -90,6 +94,7 @@ export default function PostAttachments({
 							    is ignored, that's why placing a "dummy" transparent pixel
 							    having the correct `alt` before the `<button/>`. */}
 							<img
+								aria-hidden
 								src={TRANSPARENT_PIXEL}
 								width={0}
 								height={0}
@@ -101,7 +106,6 @@ export default function PostAttachments({
 								className="rrui__button-reset post__attachment-thumbnail__button">
 								<Picture
 									preview
-									aria-hidden
 									fit="height"
 									height={inscribeThumbnailHeightIntoSize(pictureOrVideo, attachmentThumbnailSize)}
 									picture={pictureOrVideo.type === 'video' ? pictureOrVideo.video.picture : pictureOrVideo.picture}
@@ -169,13 +173,18 @@ PostAttachments.propTypes = {
 	expandFirstPictureOrVideo: PropTypes.bool.isRequired,
 	saveBandwidth: PropTypes.bool.isRequired,
 	attachmentThumbnailSize: PropTypes.number.isRequired,
+	maxAttachmentThumbnails: PropTypes.oneOfType([
+		PropTypes.oneOf([false]),
+		PropTypes.number
+	]).isRequired,
 	children: PropTypes.arrayOf(postAttachmentShape)
 }
 
 PostAttachments.defaultProps = {
 	expandFirstPictureOrVideo: true,
 	saveBandwidth: false,
-	attachmentThumbnailSize: 160
+	attachmentThumbnailSize: 160,
+	maxAttachmentThumbnails: 6
 }
 
 const POSITION_ABSOLUTE = {

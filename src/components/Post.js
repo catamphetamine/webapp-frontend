@@ -43,6 +43,10 @@ export default class Post extends React.Component {
 		saveBandwidth: PropTypes.bool,
 		serviceIcons: PropTypes.objectOf(PropTypes.func),
 		youTubeApiKey: PropTypes.string,
+		maxAttachmentThumbnails: PropTypes.oneOfType([
+			PropTypes.oneOf([false]),
+			PropTypes.number
+		]),
 		attachmentThumbnailSize: PropTypes.number,
 		openSlideshow: PropTypes.func.isRequired,
 		url: PropTypes.string,
@@ -110,6 +114,7 @@ export default class Post extends React.Component {
 			commentsCount,
 			attachmentsCount,
 			expandFirstPictureOrVideo,
+			maxAttachmentThumbnails,
 			attachmentThumbnailSize,
 			saveBandwidth,
 			serviceIcons,
@@ -149,6 +154,7 @@ export default class Post extends React.Component {
 				<PostAttachments
 					expandFirstPictureOrVideo={expandFirstPictureOrVideo}
 					saveBandwidth={saveBandwidth}
+					maxAttachmentThumbnails={maxAttachmentThumbnails}
 					attachmentThumbnailSize={attachmentThumbnailSize}
 					openSlideshow={this.openSlideshowForAttachments}>
 					{this.getNonEmbeddedAttachments()}
