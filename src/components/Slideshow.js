@@ -11,7 +11,7 @@ import Download from '../../assets/images/icons/download.svg'
 import Close from '../../assets/images/icons/close.svg'
 import LeftArrow from '../../assets/images/icons/left-arrow-minimal.svg'
 import RightArrow from '../../assets/images/icons/right-arrow-minimal.svg'
-import Search from '../../assets/images/icons/search.svg'
+import Search from '../../assets/images/icons/menu/search-outline.svg'
 import Plus from '../../assets/images/icons/plus.svg'
 import Minus from '../../assets/images/icons/minus.svg'
 

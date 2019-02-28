@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 viewBox="0 0 64 64" style="enable-background:new 0 0 64 64;" xml:space="preserve">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 64 64">
 	<path fill="currentColor" d="M63,64H1c-0.6,0-1-0.5-1-1V1c0-0.6,0.5-1,1-1H63c0.6,0,1,0.5,1,1V63C64,63.5,63.5,64,63,64z M2.1,61.9h59.9V2.1H2.1V61.9z"
 		/>
 	<path fill="currentColor" d="M62.2,51.3L46.5,33.5L32.7,47.2c-0.4,0.4-1.1,0.4-1.5,0c0,0-0.1-0.1-0.1-0.1L15.5,27.5L1.8,45l-1.6-1.3l14.5-18.6
