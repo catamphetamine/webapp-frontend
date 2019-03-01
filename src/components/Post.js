@@ -206,9 +206,10 @@ export function PostBlock({ attachments, attachmentThumbnailSize, openSlideshow,
 					</PostPicture>
 				)
 			case 'video':
+				const maxHeight = attachment.video.height ? Math.min(attachment.video.height, attachmentThumbnailSize) : attachmentThumbnailSize
 				return (
 					<PostVideo
-						height={content.fit === 'height' ? attachmentThumbnailSize : undefined}
+						height={content.fit === 'height' ? maxHeight : undefined}
 						onClick={(event) => {
 							event.preventDefault()
 							openSlideshow([attachment.video])

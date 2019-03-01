@@ -3,8 +3,17 @@ import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import filesize from 'filesize'
 
-import Picture, { TRANSPARENT_PIXEL, getAspectRatio as getPictureAspectRatio } from './Picture'
-import { VideoDuration, getAspectRatio as getVideoAspectRatio } from './Video'
+import Picture, {
+	TRANSPARENT_PIXEL,
+	getMaxSize as getPictureMaxSize,
+	getAspectRatio as getPictureAspectRatio
+} from './Picture'
+
+import {
+	VideoDuration,
+	getMaxSize as getVideoMaxSize,
+	getAspectRatio as getVideoAspectRatio
+} from './Video'
 
 import PostPicture from './PostPicture'
 import PostVideo from './PostVideo'
@@ -340,12 +349,29 @@ function getAttachmentAspectRatio(attachment) {
 	}
 }
 
+function getAttachmentMaxHeight(attachment) {
+	switch (attachment.type) {
+		case 'picture':
+			return getPictureMaxSize(attachment.picture).height
+		case 'video':
+			return getVideoMaxSize(attachment.video).height
+		default:
+			console.error(`Unknown attachment type: ${attachment.type}`)
+			console.log(attachment)
+			return
+	}
+}
+
 function inscribeThumbnailHeightIntoSize(attachment, size) {
 	const aspectRatio = getAttachmentAspectRatio(attachment)
-	if (aspectRatio <= 1) {
-		return size
+	const maxHeight = getAttachmentMaxHeight(attachment)
+	if (aspectRatio > 1) {
+		size = size / aspectRatio
 	}
-	return size / aspectRatio
+	if (maxHeight < size) {
+		return maxHeight
+	}
+	return size
 }
 
 /**
