@@ -18,6 +18,10 @@
 .post__inline-spoiler--hidden {
 	background-color: var(--gray-color-lightest);
 	border-radius: 0.2em;
+	&.post__inline-spoiler--censored {
+		background-color: #f0e1e1;
+		cursor: not-allowed;
+	}
 }
 
 .post__inline-spoiler-contents--hidden {
