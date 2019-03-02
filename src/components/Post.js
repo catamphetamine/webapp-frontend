@@ -280,7 +280,7 @@ export function PostInlineContentElement({ children: content, ...rest }) {
 		)
 	} else if (content.type === 'spoiler') {
 		return (
-			<PostInlineSpoiler rule={content.rule}>
+			<PostInlineSpoiler rule={content.rule} content={content.content}>
 				{_content}
 			</PostInlineSpoiler>
 		)

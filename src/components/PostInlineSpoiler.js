@@ -20,6 +20,7 @@ export default class PostInlineSpoiler extends React.Component {
 		const {
 			hidden,
 			rule,
+			content,
 			children
 		} = this.props
 
@@ -30,7 +31,7 @@ export default class PostInlineSpoiler extends React.Component {
 
 		return (
 			<span
-				title={hidden && rule !== '*' ? rule : undefined}
+				title={hidden && rule && typeof content === 'string' ? content : undefined}
 				onClick={this.onClick}
 				onPointerEnter={rule ? undefined : this.peek}
 				onPointerLeave={rule ? undefined : this.unpeek}
@@ -55,6 +56,7 @@ export default class PostInlineSpoiler extends React.Component {
 PostInlineSpoiler.propTypes = {
 	hidden: PropTypes.bool.isRequired,
 	rule: PropTypes.string,
+	content: PropTypes.any,
 	children: PropTypes.node.isRequired
 }
 
