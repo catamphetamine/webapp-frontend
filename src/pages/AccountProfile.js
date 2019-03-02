@@ -14,6 +14,8 @@ import {
 	getAccountPosts
 } from '../redux/account'
 
+import { openSlideshow } from '../redux/slideshow'
+
 import AccountHeader from '../components/AccountHeader'
 import AccountSummary from '../components/AccountSummary'
 import AccountActions from '../components/AccountActions'
@@ -51,16 +53,17 @@ import './AccountProfile.css'
 	account: account.account,
 	posts: account.posts
 }), {
+	openSlideshow
 })
 export default class Profile extends React.Component
 {
 	static propTypes = {
 		account: accountShapeProfile,
-		posts: PropTypes.arrayOf(postShape)
+		posts: PropTypes.arrayOf(postShape),
+		openSlideshow: PropTypes.func.isRequired
 	}
 
-	render()
-	{
+	render() {
 		const {
 			account,
 			posts
@@ -98,7 +101,7 @@ export default class Profile extends React.Component
 									{/*<ContentSectionHeader>
 										Craft
 									</ContentSectionHeader>*/}
-									<Post post={post}/>
+									<Post post={post} openSlideshow={openSlideshow}/>
 								</ContentSection>
 							))}
 						</div>

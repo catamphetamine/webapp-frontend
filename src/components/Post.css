@@ -43,9 +43,7 @@
 }
 
 /* For play video icon. */
-.post__video .rrui__video,
-.post__attachment-thumbnail__button {
-	position: relative;
+.post__video .rrui__video {
 	&:hover {
 		.rrui__video__play-icon-background {
 			fill : rgba(0, 0, 0, 0.8);

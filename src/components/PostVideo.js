@@ -4,7 +4,7 @@ import { videoAttachmentShape } from '../PropTypes'
 import Picture from './Picture'
 import Video from './Video'
 
-import { getVideoURL } from '../utility/video'
+import { getVideoUrl } from '../utility/video'
 
 import './PostVideo.css'
 
@@ -20,7 +20,7 @@ export default class PostVideo extends React.Component {
 
 		let url
 		if (video.source.provider) {
-			url = getVideoURL(video.source.id, video.source.provider)
+			url = getVideoUrl(video.source.id, video.source.provider)
 		}
 
 		return (

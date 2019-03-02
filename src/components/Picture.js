@@ -529,6 +529,10 @@ export function getMaxSize({ sizes }) {
 	return sizes[sizes.length - 1]
 }
 
+export function getUrl(picture) {
+	return getMaxSize(picture).url
+}
+
 export function isVector({ type }) {
 	return type === 'image/svg+xml' // || (sizes.length === 1 && SVG_FILE_URL.test(sizes[0].url))
 }

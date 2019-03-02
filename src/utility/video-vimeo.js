@@ -44,7 +44,7 @@ export default
 		}
 	},
 
-	getEmbeddedVideoURL(id, options = {}) {
+	getEmbeddedVideoUrl(id, options = {}) {
 		const parameters = {}
 		if (options.color) {
 			parameters.color = options.color
@@ -58,7 +58,7 @@ export default
 		return `https://player.vimeo.com/video/${id}${getUrlQueryPart(parameters)}`
 	},
 
-	getVideoURL(id) {
+	getVideoUrl(id) {
 		return `https://vimeo.com/${id}`
 	}
 }

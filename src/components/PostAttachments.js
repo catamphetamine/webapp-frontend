@@ -5,12 +5,14 @@ import filesize from 'filesize'
 
 import Picture, {
 	TRANSPARENT_PIXEL,
+	getUrl as getPictureUrl,
 	getMaxSize as getPictureMaxSize,
 	getAspectRatio as getPictureAspectRatio
 } from './Picture'
 
 import {
 	VideoDuration,
+	getUrl as getVideoUrl,
 	getMaxSize as getVideoMaxSize,
 	getAspectRatio as getVideoAspectRatio
 } from './Video'
@@ -82,61 +84,82 @@ export default function PostAttachments({
 
 	return (
 		<div className="post__attachments">
-			{titlePictureOrVideo && titlePictureOrVideo.type === 'picture' &&
-				<PostPicture
-					onClick={createOnOpenSlideshow(0)}>
-					{titlePictureOrVideo}
-				</PostPicture>
-			}
+			{titlePictureOrVideo && titlePictureOrVideo.type === 'picture' && (
+				openSlideshow
+				?
+				<button
+					type="button"
+					onClick={createOnOpenSlideshow(0)}
+					className="rrui__button-reset">
+					<PostPicture>
+						{titlePictureOrVideo}
+					</PostPicture>
+				</button>
+				:
+				<a
+					target="_blank"
+					href={getPictureUrl(titlePictureOrVideo.picture)}>
+					<PostPicture>
+						{titlePictureOrVideo}
+					</PostPicture>
+				</a>
+			)}
 			{titlePictureOrVideo && titlePictureOrVideo.type === 'video' &&
 				<PostVideo
-					onClick={createOnOpenSlideshow(0)}>
+					onClick={openSlideshow ? createOnOpenSlideshow(0) : undefined}>
 					{titlePictureOrVideo}
 				</PostVideo>
 			}
 			{picturesAndVideos.length > 0 &&
 				<ul className="post__attachment-thumbnails">
-					{picturesAndVideos.map((pictureOrVideo, i) => (
-						<li
-							key={`picture-or-video-${i}`}
-							className={classNames(
-								'post__attachment-thumbnail',
-								pictureOrVideo.type === 'picture' &&
-									pictureOrVideo.picture.kind &&
-									`post__attachment-thumbnail--${pictureOrVideo.picture.kind}`
-							)}>
-							{/* When copy-pasting content an `<img/>` inside a `<button/>`
-							    is ignored, that's why placing a "dummy" transparent pixel
-							    having the correct `alt` before the `<button/>`. */}
-							<img
-								aria-hidden
-								src={TRANSPARENT_PIXEL}
-								width={0}
-								height={0}
-								alt={pictureOrVideo.title}
-								style={POSITION_ABSOLUTE}/>
-							<button
-								aria-label={pictureOrVideo.title}
-								onClick={createOnOpenSlideshow(i + (titlePictureOrVideo ? 1 : 0))}
-								className="rrui__button-reset post__attachment-thumbnail__button">
-								<Picture
-									preview
-									fit="height"
-									height={inscribeThumbnailHeightIntoSize(pictureOrVideo, attachmentThumbnailSize)}
-									picture={pictureOrVideo.type === 'video' ? pictureOrVideo.video.picture : pictureOrVideo.picture}
-									saveBandwidth={saveBandwidth}
-									className="post__attachment-thumbnail__picture"/>
-								{pictureOrVideo.type === 'video' &&
-									<VideoDuration video={pictureOrVideo.video}/>
+					{picturesAndVideos.map((pictureOrVideo, i) => {
+						const attachmentThumbnail = (
+							<AttachmentThumbnail
+								attachment={pictureOrVideo}
+								saveBandwidth={saveBandwidth}
+								maxSize={attachmentThumbnailSize}
+								moreAttachmentsCount={i === picturesAndVideos.length - 1 ? picturesAndVideosMoreCount : undefined}/>
+						)
+						return (
+							<li
+								key={`picture-or-video-${i}`}
+								className={classNames(
+									'post__attachment-thumbnail',
+									pictureOrVideo.type === 'picture' &&
+										pictureOrVideo.picture.kind &&
+										`post__attachment-thumbnail--${pictureOrVideo.picture.kind}`
+								)}>
+								{/* When copy-pasting content an `<img/>` inside a `<button/>`
+								    is ignored, that's why placing a "dummy" transparent pixel
+								    having the correct `alt` before the `<button/>`. */}
+								<img
+									aria-hidden
+									src={TRANSPARENT_PIXEL}
+									width={0}
+									height={0}
+									alt={pictureOrVideo.title}
+									style={POSITION_ABSOLUTE}/>
+								{openSlideshow &&
+									<button
+										type="button"
+										aria-label={pictureOrVideo.title}
+										onClick={createOnOpenSlideshow(i + (titlePictureOrVideo ? 1 : 0))}
+										className="rrui__button-reset post__attachment-thumbnail__clickable">
+										{attachmentThumbnail}
+									</button>
 								}
-								{(i === picturesAndVideos.length - 1 && picturesAndVideosMoreCount > 0) &&
-									<div className="post__attachment-thumbnail__more-count">
-										+{picturesAndVideosMoreCount + 1}
-									</div>
+								{!openSlideshow &&
+									<a
+										target="_blank"
+										href={getAttachmentUrl(pictureOrVideo)}
+										aria-label={pictureOrVideo.title}
+										className="post__attachment-thumbnail__clickable">
+										{attachmentThumbnail}
+									</a>
 								}
-							</button>
-						</li>
-					))}
+							</li>
+						)
+					})}
 				</ul>
 			}
 			{audios.length > 0 &&
@@ -184,7 +207,7 @@ export default function PostAttachments({
 }
 
 PostAttachments.propTypes = {
-	openSlideshow: PropTypes.func.isRequired,
+	openSlideshow: PropTypes.func,
 	expandFirstPictureOrVideo: PropTypes.bool.isRequired,
 	saveBandwidth: PropTypes.bool.isRequired,
 	attachmentThumbnailSize: PropTypes.number.isRequired,
@@ -349,6 +372,19 @@ function getAttachmentAspectRatio(attachment) {
 	}
 }
 
+function getAttachmentUrl(attachment) {
+	switch (attachment.type) {
+		case 'picture':
+			return getPictureUrl(attachment.picture)
+		case 'video':
+			return getVideoUrl(attachment.video)
+		default:
+			console.error(`Unknown attachment type: ${attachment.type}`)
+			console.log(attachment)
+			return
+	}
+}
+
 function getAttachmentMaxHeight(attachment) {
 	switch (attachment.type) {
 		case 'picture':
@@ -388,4 +424,38 @@ export function sortByAspectRatioAscending(attachments) {
 	return attachments.sort((a, b) => {
 		return getAttachmentAspectRatio(a) - getAttachmentAspectRatio(b)
 	})
+}
+
+function AttachmentThumbnail({
+	attachment,
+	maxSize,
+	saveBandwidth,
+	moreAttachmentsCount
+}) {
+	return (
+		<React.Fragment>
+			<Picture
+				preview
+				fit="height"
+				height={inscribeThumbnailHeightIntoSize(attachment, maxSize)}
+				picture={attachment.type === 'video' ? attachment.video.picture : attachment.picture}
+				saveBandwidth={saveBandwidth}
+				className="post__attachment-thumbnail__picture"/>
+			{attachment.type === 'video' &&
+				<VideoDuration video={attachment.video}/>
+			}
+			{moreAttachmentsCount > 0 &&
+				<div className="post__attachment-thumbnail__more-count">
+					+{moreAttachmentsCount + 1}
+				</div>
+			}
+		</React.Fragment>
+	)
+}
+
+AttachmentThumbnail.propTypes = {
+	attachment: postAttachmentShape.isRequired,
+	maxSize: PropTypes.number.isRequired,
+	saveBandwidth: PropTypes.bool,
+	moreAttachmentsCount: PropTypes.number
 }

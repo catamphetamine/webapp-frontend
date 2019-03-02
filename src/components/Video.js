@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import classNames from 'classnames'
 
 import { videoShape } from '../PropTypes'
-import { getEmbeddedVideoURL } from '../utility/video'
+import { getEmbeddedVideoUrl, getVideoUrl } from '../utility/video'
 
 import Picture, { getMaxSize as getMaxPictureSize, scaleDownSize } from './Picture'
 import VideoPlayIcon from './VideoPlayIcon'
@@ -98,6 +98,7 @@ export default class Video extends React.Component {
 		if (_onClick) {
 			return (
 				<button
+					type="button"
 					aria-label={this.props['aria-label']}
 					onClick={_onClick}
 					style={_style}
@@ -173,7 +174,7 @@ export default class Video extends React.Component {
 			// `allowFullScreen` property is for legacy browsers support.
 			return (
 				<iframe
-					src={getEmbeddedVideoURL(video.source.id, video.source.provider, {
+					src={getEmbeddedVideoUrl(video.source.id, video.source.provider, {
 						autoPlay
 					})}
 					frameBorder={0}
@@ -221,6 +222,18 @@ Video.defaultProps = {
 }
 
 const showsPreview = (props) => props.showPreview && props.video.picture ? true : false
+
+export function getUrl(video) {
+	if (video.source.provider === 'file') {
+		const size = video.source.sizes[video.source.sizes.length - 1]
+		return size.url
+	}
+	if (video.source.provider === 'Vimeo' || video.source.provider === 'YouTube') {
+		return getVideoUrl(video.source.id, video.source.provider)
+	}
+	console.error(`Unsupported video provider: ${video.source.provider}`)
+	return
+}
 
 export function getAspectRatio(video) {
 	if (video.aspectRatio) {

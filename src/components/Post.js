@@ -27,13 +27,16 @@ import PostLink from './PostLink'
 import loadYouTubeLinks from '../utility/post/loadYouTubeLinks'
 import expandStandaloneAttachmentLinks from '../utility/post/expandStandaloneAttachmentLinks'
 
-import { openSlideshow } from '../redux/slideshow'
+// import { openSlideshow } from '../redux/slideshow'
 
 import './Post.css'
 
-@connect(() => ({}), {
-	openSlideshow
-})
+// Passing `openSlideshow` as an explicit property instead
+// to avoid having a lot of `@connect()`s executing on pages
+// with a lot of posts (for example, `chanchan` imageboard client).
+// @connect(() => ({}), {
+// 	openSlideshow
+// })
 export default class Post extends React.Component {
 	static propTypes = {
 		post: postShape.isRequired,
@@ -49,7 +52,7 @@ export default class Post extends React.Component {
 			PropTypes.number
 		]),
 		attachmentThumbnailSize: PropTypes.number,
-		openSlideshow: PropTypes.func.isRequired,
+		openSlideshow: PropTypes.func,
 		url: PropTypes.string,
 		locale: PropTypes.string,
 		className: PropTypes.string
@@ -157,7 +160,7 @@ export default class Post extends React.Component {
 					saveBandwidth={saveBandwidth}
 					maxAttachmentThumbnails={maxAttachmentThumbnails}
 					attachmentThumbnailSize={attachmentThumbnailSize}
-					openSlideshow={this.openSlideshowForAttachments}>
+					openSlideshow={openSlideshow && this.openSlideshowForAttachments}>
 					{this.getNonEmbeddedAttachments()}
 				</PostAttachments>
 				{hasFooter(post) &&
@@ -199,10 +202,13 @@ export function PostBlock({ attachments, attachmentThumbnailSize, openSlideshow,
 			case 'picture':
 				return (
 					<PostPicture
-						onClick={(event) => {
-							event.preventDefault()
-							openSlideshow([attachment.picture])
-						}}>
+						onClick={openSlideshow ?
+							(event) => {
+								event.preventDefault()
+								openSlideshow([attachment.picture])
+							} :
+							undefined
+						}>
 						{attachment}
 					</PostPicture>
 				)
@@ -211,10 +217,13 @@ export function PostBlock({ attachments, attachmentThumbnailSize, openSlideshow,
 				return (
 					<PostVideo
 						height={content.fit === 'height' ? maxHeight : undefined}
-						onClick={(event) => {
-							event.preventDefault()
-							openSlideshow([attachment.video])
-						}}>
+						onClick={openSlideshow ?
+							(event) => {
+								event.preventDefault()
+								openSlideshow([attachment.video])
+							} :
+							undefined
+						}>
 						{attachment}
 					</PostVideo>
 				)

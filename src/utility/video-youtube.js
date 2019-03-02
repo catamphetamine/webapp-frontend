@@ -120,7 +120,7 @@ export default {
 		// throw new Error(`No picture found for YouTube video ${id}`)
 	},
 
-	getEmbeddedVideoURL(id, options = {}) {
+	getEmbeddedVideoUrl(id, options = {}) {
 		const parameters = {}
 		if (options.autoPlay) {
 			parameters.autoplay = 1
@@ -128,7 +128,7 @@ export default {
 		return `https://www.youtube.com/embed/${id}${getUrlQueryPart(parameters)}`
 	},
 
-	getVideoURL(id) {
+	getVideoUrl(id) {
 		return `https://youtube.com/watch?v=${id}`
 	}
 }

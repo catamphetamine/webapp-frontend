@@ -26,13 +26,13 @@
 {
 	--post-attachment-hover-shadow: 0 0 0.3em rgba(0,0,0,0.2), 0 0 0.15em rgba(0,0,0,0.18);
 
+	position: relative;
 	margin-top: var(--post-content-vertical-spacing);
 	margin-right: var(--post-content-vertical-spacing);
 	padding: var(--picture-border-width); /* the padding is for box-shadow */
 }
 
-.post__attachment-thumbnail__button {
-	/*position: relative;*/
+.post__attachment-thumbnail__clickable {
 	display: block;
 	/* Material Design Card elevation shadow. */
 	/* https://codepen.io/sdthornton/pen/wBZdXq */
