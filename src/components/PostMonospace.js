@@ -13,7 +13,7 @@ export default function PostMonospace({ inline, children }) {
 		)
 	}
 	return (
-		<pre className="post__monospace">
+		<pre className="post__monospace post__block">
 			{children}
 		</pre>
 	)

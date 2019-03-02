@@ -1,11 +1,14 @@
 .post__monospace {
 	line-height: var(--line-height);
-	background-color: var(--gray-color-lightest);
 	border-radius: var(--border-radius);
 	margin-left: calc(-1 * var(--unit) * 0.5);
 	margin-right: calc(-1 * var(--unit) * 0.5);
 	padding-left: calc(var(--unit) * 0.5);
 	padding-right: calc(var(--unit) * 0.5);
+	margin-top: -1px;
+	margin-bottom: -1px;
+	border: 1px solid #f5f5f5;
+	background-color: #fcfcfc;
 }
 
 .post.content-section {
@@ -16,6 +19,8 @@
 		padding-right: var(--content-section-horizontal-padding);
 		padding-top: 0.5em;
 		padding-bottom: 0.5em;
+		border-left: none;
+		border-right: none;
 		width: calc(100% + 2 * var(--content-section-horizontal-padding));
 		border-radius: 0;
 	}
