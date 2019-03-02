@@ -867,7 +867,7 @@ class Slideshow extends React.Component {
 				onMouseDown={this.onMouseDown}
 				onMouseUp={this.onMouseUp}
 				onMouseMove={this.onMouseMove}
-				onMouseLeave={this.onMouseLeave}
+				onPointerOut={this.onMouseLeave}
 				onClick={this.onBackgroundClick}
 				onWheel={this.onWheel}>
 				<ul
