@@ -11,6 +11,7 @@ import PostHeader from './PostHeader'
 import PostSubheading from './PostSubheading'
 import PostParagraph from './PostParagraph'
 import PostList from './PostList'
+import PostMonospace from './PostMonospace'
 import PostQuote from './PostQuote'
 import PostInlineQuote from './PostInlineQuote'
 import PostInlineSpoiler from './PostInlineSpoiler'
@@ -172,7 +173,7 @@ function toArray(object) {
 }
 
 export function PostBlock({ attachments, attachmentThumbnailSize, openSlideshow, serviceIcons, children: content }) {
-	if (Array.isArray(content)) {
+	if (Array.isArray(content) || typeof content === 'string') {
 		return (
 			<PostParagraph>
 				<PostInlineContent openSlideshow={openSlideshow} serviceIcons={serviceIcons}>
@@ -180,14 +181,14 @@ export function PostBlock({ attachments, attachmentThumbnailSize, openSlideshow,
 				</PostInlineContent>
 			</PostParagraph>
 		)
-	} else if (typeof content === 'string') {
-		return <PostParagraph>{content}</PostParagraph>
 	} else if (content.type === 'heading') {
 		return <PostSubheading>{content}</PostSubheading>
 	} else if (content.type === 'list') {
 		return <PostList>{content}</PostList>
 	} else if (content.type === 'quote') {
 		return <PostQuote>{content}</PostQuote>
+	} else if (content.type === 'monospace') {
+		return <PostMonospace>{content.content}</PostMonospace>
 	} else if (content.type === 'attachment') {
 		const attachment = attachments.filter(_ => _.id === content.attachmentId)[0]
 		if (!attachment) {
@@ -220,16 +221,25 @@ export function PostBlock({ attachments, attachmentThumbnailSize, openSlideshow,
 			case 'audio':
 				return <PostAudio>{attachment}</PostAudio>
 			default:
-				console.error(`Unknown embedded attachment type: ${attachment.type}`)
+				console.error(`Unknown embedded attachment type: "${attachment.type}"\n`, attachment)
 				return null
 		}
 	} else {
 		console.error(`Unsupported post content:\n`, content)
-		return null
+		return (
+			<PostParagraph>
+				<PostInlineContent openSlideshow={openSlideshow} serviceIcons={serviceIcons}>
+					{(Array.isArray(content.content) || content.content) ? content.content : JSON.stringify(content.content)}
+				</PostInlineContent>
+			</PostParagraph>
+		)
 	}
 }
 
 function PostInlineContent({ openSlideshow, serviceIcons, children }) {
+	if (typeof children === 'string') {
+		return children
+	}
 	return children.map((content, i) => (
 		<PostInlineContentElement
 			key={i}
@@ -242,12 +252,14 @@ function PostInlineContent({ openSlideshow, serviceIcons, children }) {
 
 export function PostInlineContentElement({ children: content, ...rest }) {
 	const { openSlideshow, serviceIcons } = rest
-	if (Array.isArray(content)) {
-		return <PostInlineContent>{content}</PostInlineContent>
-	} else if (content === '\n') {
+	if (content === '\n') {
 		return <br/>
-	} else if (typeof content === 'string') {
-		return content
+	} else if (Array.isArray(content) || typeof content === 'string') {
+		return (
+			<PostInlineContent openSlideshow={openSlideshow} serviceIcons={serviceIcons}>
+				{content}
+			</PostInlineContent>
+		)
 	}
 	const _content = content.content && (
 		<PostInlineContentElement {...rest}>
@@ -300,6 +312,12 @@ export function PostInlineContentElement({ children: content, ...rest }) {
 				serviceIcons={serviceIcons}>
 				{_content}
 			</PostLink>
+		)
+	} else if (content.type === 'monospace') {
+		return (
+			<PostMonospace inline>
+				{_content}
+			</PostMonospace>
 		)
 	} else {
 		console.error(`Unsupported post inline content:\n`, content)

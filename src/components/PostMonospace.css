@@ -1,0 +1,22 @@
+.post__monospace {
+	line-height: var(--line-height);
+	background-color: var(--gray-color-lightest);
+	border-radius: var(--border-radius);
+	margin-left: calc(-1 * var(--unit) * 0.5);
+	margin-right: calc(-1 * var(--unit) * 0.5);
+	padding-left: calc(var(--unit) * 0.5);
+	padding-right: calc(var(--unit) * 0.5);
+}
+
+.post.content-section {
+	.post__monospace {
+		margin-left: calc(var(--content-section-horizontal-padding) * -1);
+		margin-right: calc(var(--content-section-horizontal-padding) * -1);
+		padding-left: var(--content-section-horizontal-padding);
+		padding-right: var(--content-section-horizontal-padding);
+		padding-top: 0.5em;
+		padding-bottom: 0.5em;
+		width: calc(100% + 2 * var(--content-section-horizontal-padding));
+		border-radius: 0;
+	}
+}

@@ -159,15 +159,21 @@ export const postStyledText = shape({
 	style: string.isRequired,
 	content: oneOfType([
 		string,
-		// postStyledText
 		object
 	]).isRequired
+})
+
+export const postMonospace = shape({
+	type: oneOf(['monospace']).isRequired,
+	inline: bool,
+	content: arrayOf(postInlineElement).isRequired
 })
 
 const postNewLine = oneOf(['\n'])
 
 const postInlineElementContent = oneOfType([
 	string,
+	postNewLine,
 	arrayOf([
 		string,
 		postNewLine,
