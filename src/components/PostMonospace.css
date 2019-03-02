@@ -19,8 +19,11 @@
 	padding-right: 0.25em;
 }
 
-.post__monospace.post__block:first-child {
-	margin-top: 1em;
+.post__monospace.post__block {
+	margin-top: 0.5em;
+	&:first-child {
+		margin-top: 1em;
+	}
 }
 
 .post.content-section {
