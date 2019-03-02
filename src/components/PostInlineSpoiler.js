@@ -19,7 +19,7 @@ export default class PostInlineSpoiler extends React.Component {
 	render() {
 		const {
 			hidden,
-			rule,
+			censored,
 			content,
 			children
 		} = this.props
@@ -31,16 +31,16 @@ export default class PostInlineSpoiler extends React.Component {
 
 		return (
 			<span
-				title={hidden && rule && typeof content === 'string' ? content : undefined}
+				title={hidden && censored && typeof content === 'string' ? content : undefined}
 				onClick={this.onClick}
-				onPointerEnter={rule ? undefined : this.peek}
-				onPointerLeave={rule ? undefined : this.unpeek}
+				onPointerEnter={censored ? undefined : this.peek}
+				onPointerLeave={censored ? undefined : this.unpeek}
 				onTouchStart={this.peek}
 				onTouchEnd={this.unpeek}
 				onTouchCancel={this.unpeek}
 				className={classNames('post__inline-spoiler', {
 					'post__inline-spoiler--hidden': !show && !peek && hidden,
-					'post__inline-spoiler--censored': rule
+					'post__inline-spoiler--censored': censored
 				})}>
 				<span
 					className={classNames('post__inline-spoiler-contents', {
@@ -55,7 +55,7 @@ export default class PostInlineSpoiler extends React.Component {
 
 PostInlineSpoiler.propTypes = {
 	hidden: PropTypes.bool.isRequired,
-	rule: PropTypes.string,
+	censored: PropTypes.bool,
 	content: PropTypes.any,
 	children: PropTypes.node.isRequired
 }

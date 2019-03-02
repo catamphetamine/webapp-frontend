@@ -165,7 +165,7 @@ export const postStyledText = shape({
 
 export const postMonospace = shape({
 	type: oneOf(['monospace']).isRequired,
-	inline: bool,
+	censored: bool,
 	content: arrayOf(postInlineElement).isRequired
 })
 
