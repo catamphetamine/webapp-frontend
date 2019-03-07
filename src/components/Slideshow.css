@@ -65,6 +65,11 @@
 	width: 100%;
 	height: 100%;
 	background-color: black;
+	/* Sometimes `video.width` and `video.height` are incorrect
+	   which would result in a wrong placement on screen.
+	   Centering such videos works around such bugs. */
+	display: flex;
+	align-items: center;
 }
 
 .rrui__slideshow__video .rrui__picture,
