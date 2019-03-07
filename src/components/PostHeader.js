@@ -47,7 +47,7 @@ export default function PostHeader({ url, locale, post }) {
 				<h1 className="post__heading">
 					{post.titleCensored &&
 						<PostInlineContent>
-							{post.title}
+							{post.titleCensored}
 						</PostInlineContent>
 					}
 					{!post.titleCensored && post.title}
