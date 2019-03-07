@@ -22,7 +22,7 @@ import PostVideo from './PostVideo'
 import PostAudio from './PostAudio'
 
 import {
-	postAttachmentShape,
+	postAttachment,
 	fileAttachmentShape
 } from '../PropTypes'
 
@@ -215,7 +215,7 @@ PostAttachments.propTypes = {
 		PropTypes.oneOf([false]),
 		PropTypes.number
 	]).isRequired,
-	children: PropTypes.arrayOf(postAttachmentShape)
+	children: PropTypes.arrayOf(postAttachment)
 }
 
 PostAttachments.defaultProps = {
@@ -454,7 +454,7 @@ function AttachmentThumbnail({
 }
 
 AttachmentThumbnail.propTypes = {
-	attachment: postAttachmentShape.isRequired,
+	attachment: postAttachment.isRequired,
 	maxSize: PropTypes.number.isRequired,
 	saveBandwidth: PropTypes.bool,
 	moreAttachmentsCount: PropTypes.number

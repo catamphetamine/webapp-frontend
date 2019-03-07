@@ -217,14 +217,19 @@ export const postInlineQuote = shape({
 	content: postInlineElementContent.isRequired
 })
 
-const postInlineElement = oneOfType([
+export const postReadMore = shape({
+	type: oneOf(['read-more']).isRequired
+})
+
+export const postInlineElement = oneOfType([
 	postText,
 	postStyledText,
 	postInlineLink,
 	postInlineQuote,
-	// Custom chan.
+	postReadMore,
 	postNewLine,
 	postSpoiler,
+	// Custom chan.
 	postPostLinkShape
 ])
 
@@ -263,7 +268,8 @@ export const postBlock = oneOfType([
 	postParagraph,
 	postList,
 	postQuote,
-	postEmbeddedAttachmentShape
+	postEmbeddedAttachmentShape,
+	postReadMore
 ])
 
 export const pictureAttachmentShape = shape({
@@ -303,7 +309,7 @@ export const fileAttachmentShape = shape({
 	url: string.isRequired
 })
 
-export const postAttachmentShape = oneOfType([
+export const postAttachment = oneOfType([
 	pictureAttachmentShape,
 	videoAttachmentShape,
 	audioAttachmentShape,
@@ -314,6 +320,13 @@ export const postAttachmentShape = oneOfType([
 export const postShape = shape({
 	id: id.isRequired,
 	title: string,
+	titleCensored: oneOfType([
+		string,
+		arrayOf(oneOfType([
+			string,
+			postSpoiler
+		]))
+	]),
 	content: oneOfType([
 		string,
 		arrayOf(postBlock)
@@ -325,7 +338,7 @@ export const postShape = shape({
 		string,
 		number
 	])),
-	attachments: arrayOf(postAttachmentShape)
+	attachments: arrayOf(postAttachment)
 })
 
 export const locationShape = shape({

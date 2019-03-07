@@ -4,6 +4,7 @@ import classNames from 'classnames'
 import { Link } from 'react-website'
 
 import AccountPicture from './AccountPicture'
+import PostInlineContent from './PostInlineContent'
 import PostDate from './PostDate'
 import { accountLink } from './AccountLink'
 import { postShape } from '../PropTypes'
@@ -44,7 +45,12 @@ export default function PostHeader({ url, locale, post }) {
 			</div>
 			{post.title &&
 				<h1 className="post__heading">
-					{post.title}
+					{post.titleCensored &&
+						<PostInlineContent>
+							{post.title}
+						</PostInlineContent>
+					}
+					{!post.titleCensored && post.title}
 				</h1>
 			}
 		</header>
