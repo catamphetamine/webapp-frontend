@@ -873,6 +873,11 @@ class Slideshow extends React.Component {
 				<ul
 					ref={this.slides}
 					style={{
+						// `will-change` performs the costly "Composite Layers"
+						// operation at mount instead of when navigating through slides.
+						// Otherwise that "Composite Layers" operation would take about
+						// 30ms a couple of times sequentially causing a visual lag.
+						'will-change': 'transform, opacity',
 						transitionDuration: this.transitionDuration,
 						transform: this.slides.current ? this.getTransform() : undefined,
 						opacity: this.slides.current ? 1 : 0
