@@ -2,7 +2,6 @@
 
 :root
 {
-	--slideshow-button-size-small  : calc(var(--unit) * 2);
 	--slideshow-button-size-medium : calc(var(--unit) * 3);
 	--slideshow-button-size-big    : calc(var(--unit) * 4);
 
@@ -181,12 +180,6 @@
 	{
 		width  : var(--slideshow-button-size-big);
 		height : var(--slideshow-button-size-big);
-	}
-
-	@mixin xxs
-	{
-		width  : var(--slideshow-button-size-small);
-		height : var(--slideshow-button-size-small);
 	}
 }
 
