@@ -193,19 +193,16 @@
 	}
 }
 
-.rrui__slideshow__action-item
-{
-	margin-right : var(--slideshow-button-margin);
-
-	@mixin xxs
-	{
-		margin-right : var(--slideshow-button-margin-small);
+.rrui__slideshow__action-item {
+	line-height: 0;
+	margin-right: var(--slideshow-button-margin);
+	@mixin xxs {
+		margin-right: var(--slideshow-button-margin-small);
 	}
 }
 
-.rrui__slideshow__action-item:last-child
-{
-	margin-right : 0;
+.rrui__slideshow__action-item:last-child {
+	margin-right: 0;
 }
 
 .rrui__slideshow__action:first-child,

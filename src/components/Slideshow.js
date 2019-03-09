@@ -15,6 +15,8 @@ import Search from '../../assets/images/icons/menu/search-outline.svg'
 import Plus from '../../assets/images/icons/plus.svg'
 import Minus from '../../assets/images/icons/minus.svg'
 
+import GoogleIcon from '../../assets/images/icons/services/google-thin-monochrome.svg'
+
 import './Slideshow.css'
 
 export default function SlideshowWrapper(props) {
@@ -94,6 +96,13 @@ const PicturePlugin = {
 	getDownloadLink(slide) {
 		return slide.sizes[slide.sizes.length - 1].url
 	},
+	getOtherActions(slide) {
+		return [{
+			name: 'searchInGoogle',
+			icon: GoogleIcon,
+			link: `https://images.google.com/searchbyimage?image_url=${slide.sizes[slide.sizes.length - 1].url}`
+		}]
+	},
 	canRender(slide) {
 		return slide.sizes !== undefined
 	},
@@ -125,6 +134,7 @@ const PLUGINS = [
 
 class Slideshow extends React.Component {
 	static propTypes = {
+		messages: PropTypes.object.isRequired,
 		onClose: PropTypes.func.isRequired,
 		i: PropTypes.number.isRequired,
 		inline: PropTypes.bool.isRequired,
@@ -830,6 +840,14 @@ class Slideshow extends React.Component {
 		return true
 	}
 
+	getOtherActions() {
+		const plugin = this.getPluginForSlide()
+		if (plugin.getOtherActions) {
+			return plugin.getOtherActions(this.getCurrentSlide())
+		}
+		return []
+	}
+
 	// style={this.panToCloseOffsetNormalized ? { backgroundColor: this.getBackgroundColor() } : undefined}
 	//
 	// getBackgroundColor() {
@@ -840,6 +858,7 @@ class Slideshow extends React.Component {
 		const {
 			inline,
 			showScaleButtons,
+			messages,
 			children: slides
 		} = this.props
 
@@ -877,7 +896,7 @@ class Slideshow extends React.Component {
 						// operation at mount instead of when navigating through slides.
 						// Otherwise that "Composite Layers" operation would take about
 						// 30ms a couple of times sequentially causing a visual lag.
-						'will-change': 'transform, opacity',
+						willChange: 'transform',
 						transitionDuration: this.transitionDuration,
 						transform: this.slides.current ? this.getTransform() : undefined,
 						opacity: this.slides.current ? 1 : 0
@@ -901,6 +920,7 @@ class Slideshow extends React.Component {
 							{showScaleButtons &&
 								<button
 									type="button"
+									title={messages.actions.scaleDown}
 									onClick={this.onScaleDown}
 									className="rrui__button-reset rrui__slideshow__action">
 									<Minus className="rrui__slideshow__action-icon"/>
@@ -908,6 +928,7 @@ class Slideshow extends React.Component {
 							}
 							<button
 								type="button"
+								title={messages.actions.scaleReset}
 								onClick={this.onScaleToggle}
 								className="rrui__button-reset rrui__slideshow__action">
 								<Search className="rrui__slideshow__action-icon"/>
@@ -915,6 +936,7 @@ class Slideshow extends React.Component {
 							{showScaleButtons &&
 								<button
 									type="button"
+									title={messages.actions.scaleUp}
 									onClick={this.onScaleUp}
 									className="rrui__button-reset rrui__slideshow__action">
 									<Plus className="rrui__slideshow__action-icon"/>
@@ -928,6 +950,7 @@ class Slideshow extends React.Component {
 							<a
 								download
 								target="_blank"
+								title={messages.actions.download}
 								href={this.getPluginForSlide().getDownloadLink(this.getCurrentSlide())}
 								className="rrui__slideshow__action rrui__slideshow__action--link">
 								<Download className="rrui__slideshow__action-icon rrui__slideshow__action-icon--download"/>
@@ -935,10 +958,37 @@ class Slideshow extends React.Component {
 						</li>
 					}
 
+					{this.getOtherActions().map(({ name, icon: Icon, link, action }) => {
+						const icon = <Icon className={`rrui__slideshow__action-icon rrui__slideshow__action-icon--${name}`}/>
+						return (
+							<li key={name} className="rrui__slideshow__action-item">
+								{link &&
+									<a
+										target="_blank"
+										href={link}
+										title={messages.actions[name]}
+										className="rrui__slideshow__action rrui__slideshow__action--link">
+										{icon}
+									</a>
+								}
+								{!link &&
+									<button
+										type="button"
+										onClick={action}
+										title={messages.actions[name]}
+										className="rrui__button-reset rrui__slideshow__action">
+										{icon}
+									</button>
+								}
+							</li>
+						)
+					})}
+
 					{this.shouldShowCloseButton() &&
 						<li className="rrui__slideshow__action-item">
 							<button
 								type="button"
+								title={messages.actions.close}
 								onClick={this.close}
 								className="rrui__button-reset rrui__slideshow__action">
 								<Close className="rrui__slideshow__action-icon"/>
@@ -950,6 +1000,7 @@ class Slideshow extends React.Component {
 				{slides.length > 1 && i > 0 &&
 					<button
 						type="button"
+						title={messages.actions.previous}
 						onClick={this.onShowPrevious}
 						className="rrui__button-reset rrui__slideshow__action rrui__slideshow__previous">
 						<LeftArrow className="rrui__slideshow__action-icon"/>
@@ -959,6 +1010,7 @@ class Slideshow extends React.Component {
 				{slides.length > 1 && i < slides.length - 1 &&
 					<button
 						type="button"
+						title={messages.actions.next}
 						onClick={this.onShowNext}
 						className="rrui__button-reset rrui__slideshow__action rrui__slideshow__next">
 						<RightArrow className="rrui__slideshow__action-icon"/>
