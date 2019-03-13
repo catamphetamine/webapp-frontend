@@ -1,16 +1,16 @@
 import React from 'react'
-import { postHeading } from '../PropTypes'
+import { postInlineContent } from '../PropTypes'
 
 import './PostSubheading.css'
 
-export default function PostSubheading({ children: heading }) {
+export default function PostSubheading({ children: content }) {
 	return (
 		<h2 className="post__subheading">
-			{heading.text}
+			{content}
 		</h2>
 	)
 }
 
 PostSubheading.propTypes = {
-	children: postHeading.isRequired
+	children: postInlineContent.isRequired
 }

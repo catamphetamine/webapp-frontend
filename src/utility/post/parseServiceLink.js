@@ -11,8 +11,10 @@ export default function parseServiceLink(url) {
 		url = new URL(url)
 	} catch (error) {
 		// Can throw "Invalid URL".
-		console.error(url)
-		console.error(error)
+		console.error(`Incorrect URL: ${url}`)
+		if (error.message.indexOf('Invalid URL') < 0) {
+			console.error(error)
+		}
 		return
 	}
 	// Remove `www.` in the beginning.
@@ -130,6 +132,9 @@ const SERVICES = {
 		}
 	},
 	'teleg.run': {
+		name: 'telegram'
+	},
+	'tlg.wtf': {
 		name: 'telegram'
 	},
 	'archivach.org': {

@@ -171,7 +171,7 @@ export const postMonospace = shape({
 
 const postNewLine = oneOf(['\n'])
 
-const postInlineElementContent = oneOfType([
+export const postInlineContent = oneOfType([
 	string,
 	postNewLine,
 	arrayOf([
@@ -186,14 +186,14 @@ export const postInlineLink = shape({
 	...linkShape
 })
 
-export const postHeading = shape({
-	type: oneOf(['heading']).isRequired,
-	content: string.isRequired
+export const postSubheading = shape({
+	type: oneOf(['subheading']).isRequired,
+	content: postInlineContent.isRequired
 })
 
 export const postSpoiler = shape({
 	type: oneOf(['spoiler']).isRequired,
-	content: postInlineElementContent.isRequired
+	content: postInlineContent.isRequired
 })
 
 export const postPostLinkShape = shape({
@@ -207,14 +207,14 @@ export const postPostLinkShape = shape({
 
 export const postQuote = shape({
 	type: oneOf(['quote']).isRequired,
-	content: postInlineElementContent.isRequired,
+	content: postInlineContent.isRequired,
 	source: string,
 	url: string
 })
 
 export const postInlineQuote = shape({
 	type: oneOf(['inline-quote']).isRequired,
-	content: postInlineElementContent.isRequired
+	content: postInlineContent.isRequired
 })
 
 export const postReadMore = shape({
@@ -240,7 +240,7 @@ export const postParagraph = oneOfType([
 
 export const postList = shape({
 	type: oneOf(['list']).isRequired,
-	items: arrayOf(postInlineElementContent).isRequired
+	items: arrayOf(postInlineContent).isRequired
 })
 
 // export const postPictureShape = shape({
@@ -264,7 +264,7 @@ export const postEmbeddedAttachmentShape = shape({
 })
 
 export const postBlock = oneOfType([
-	postHeading,
+	postSubheading,
 	postParagraph,
 	postList,
 	postQuote,

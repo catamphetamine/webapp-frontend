@@ -9,12 +9,16 @@ import PostQuote from './PostQuote'
 import PostPicture from './PostPicture'
 import PostVideo from './PostVideo'
 import PostAudio from './PostAudio'
+import PostReadMore from './PostReadMore'
 
 import PostInlineContent from './PostInlineContent'
 
 import { postBlock, postAttachment } from '../PropTypes'
 
 export default function PostBlock({
+	url,
+	onReadMore,
+	readMoreLabel,
 	attachments,
 	attachmentThumbnailSize,
 	openSlideshow,
@@ -24,19 +28,44 @@ export default function PostBlock({
 	if (Array.isArray(content) || typeof content === 'string') {
 		return (
 			<PostParagraph>
-				<PostInlineContent openSlideshow={openSlideshow} serviceIcons={serviceIcons}>
+				<PostInlineContent
+					url={url}
+					onReadMore={onReadMore}
+					readMoreLabel={readMoreLabel}
+					openSlideshow={openSlideshow}
+					serviceIcons={serviceIcons}>
 					{content}
 				</PostInlineContent>
 			</PostParagraph>
 		)
 	} else if (content.type === 'heading') {
-		return <PostSubheading>{content}</PostSubheading>
+		return (
+			<PostSubheading>
+				<PostInlineContent
+					url={url}
+					onReadMore={onReadMore}
+					readMoreLabel={readMoreLabel}
+					openSlideshow={openSlideshow}
+					serviceIcons={serviceIcons}>
+					{content}
+				</PostInlineContent>
+			</PostSubheading>
+		)
 	} else if (content.type === 'list') {
-		return <PostList>{content}</PostList>
+		return <PostList>{content.items}</PostList>
 	} else if (content.type === 'quote') {
 		return <PostQuote>{content}</PostQuote>
 	} else if (content.type === 'monospace') {
 		return <PostMonospace>{content.content}</PostMonospace>
+	} else if (content.type === 'read-more') {
+		return (
+			<PostParagraph>
+				<PostReadMore
+					url={url}
+					onReadMore={onReadMore}
+					readMoreLabel={readMoreLabel}/>
+			</PostParagraph>
+		)
 	} else if (content.type === 'attachment') {
 		const attachment = attachments.filter(_ => _.id === content.attachmentId)[0]
 		if (!attachment) {
@@ -82,7 +111,12 @@ export default function PostBlock({
 		console.error(`Unsupported post content:\n`, content)
 		return (
 			<PostParagraph>
-				<PostInlineContent openSlideshow={openSlideshow} serviceIcons={serviceIcons}>
+				<PostInlineContent
+					url={url}
+					onReadMore={onReadMore}
+					readMoreLabel={readMoreLabel}
+					openSlideshow={openSlideshow}
+					serviceIcons={serviceIcons}>
 					{(Array.isArray(content.content) || content.content) ? content.content : JSON.stringify(content.content)}
 				</PostInlineContent>
 			</PostParagraph>
@@ -91,6 +125,9 @@ export default function PostBlock({
 }
 
 PostBlock.propTypes = {
+	url: PropTypes.string,
+	onReadMore: PropTypes.func.isRequired,
+	readMoreLabel: PropTypes.string,
 	attachments: PropTypes.arrayOf(postAttachment).isRequired,
 	attachmentThumbnailSize: PropTypes.number,
 	openSlideshow: PropTypes.func,

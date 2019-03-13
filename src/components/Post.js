@@ -42,8 +42,15 @@ export default class Post extends React.Component {
 		openSlideshow: PropTypes.func,
 		url: PropTypes.string,
 		locale: PropTypes.string,
+		readMoreLabel: PropTypes.string,
 		className: PropTypes.string
 	}
+
+	state = {
+		showingPreview: this.props.post.contentPreview !== undefined
+	}
+
+	expandContent = () => this.setState({ showingPreview: false })
 
 	getNonEmbeddedAttachments() {
 		const { post } = this.props
@@ -110,14 +117,17 @@ export default class Post extends React.Component {
 			saveBandwidth,
 			serviceIcons,
 			openSlideshow,
+			readMoreLabel,
 			className
 		} = this.props
 
+		const { showingPreview } = this.state
+
 		const attachments = post.attachments || []
-		const postContent = post.content && toArray(post.content)
+		const postContent = showingPreview ? post.contentPreview : post.content
 
 		return (
-			<article className={classNames( className, 'post', {
+			<article className={classNames(className, 'post', {
 				'post--titled': post.title,
 				'post--starts-with-text': post.content && (typeof post.content === 'string' || typeof post.content[0] === 'string' || Array.isArray(post.content[0])),
 				'post--anonymous': !post.account,
@@ -128,11 +138,14 @@ export default class Post extends React.Component {
 					post={post}
 					url={url}
 					locale={locale}/>
-				{post.content &&
+				{postContent &&
 					<div className="post__content">
 						{postContent.map((content, i) => (
 							<PostBlock
 								key={i}
+								url={url}
+								onReadMore={this.expandContent}
+								readMoreLabel={readMoreLabel}
 								attachments={attachments}
 								attachmentThumbnailSize={attachmentThumbnailSize}
 								openSlideshow={openSlideshow}

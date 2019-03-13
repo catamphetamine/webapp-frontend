@@ -1,14 +1,19 @@
 import React from 'react'
-import { postList } from '../PropTypes'
+import PropTypes from 'prop-types'
+import { postInlineContent } from '../PropTypes'
+
+import PostInlineContent from './PostInlineContent'
 
 import './PostList.css'
 
-export default function PostList({ children: list }) {
+export default function PostList({ children }) {
 	return (
 		<ul className="post__list">
-			{list.items.map((item, i) => (
+			{children.map((item, i) => (
 				<li key={i} className="post__list-item">
-					{item}
+					<PostInlineContent>
+						{item}
+					</PostInlineContent>
 				</li>
 			))}
 		</ul>
@@ -16,5 +21,5 @@ export default function PostList({ children: list }) {
 }
 
 PostList.propTypes = {
-	children: postList.isRequired
+	children: PropTypes.arrayOf(postInlineContent).isRequired
 }

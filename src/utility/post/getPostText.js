@@ -4,7 +4,7 @@
  * Can optionally ignore attachments (or skip them unless there's no text).
  * Can optionally exclude `quotes` and `inline-quote`s.
  * @param  {object} post
- * @param  {object} options — `{ messages, excludeQuotes, ignoreAttachments, skipAttachments }`
+ * @param  {object} options — `{ softLimit, messages, excludeQuotes, ignoreAttachments, skipAttachments }`
  * @return {string}
  */
 export default function getPostText(post, options = {}) {
@@ -16,12 +16,27 @@ export default function getPostText(post, options = {}) {
 		return post.content
 	}
 	// Concatenate post paragraphs' text.
-	const text = post.content.map((paragraph) => {
-		return getContentText(paragraph, {
+	let text = ''
+	let softLimit = options.softLimit
+	for (const block of post.content) {
+		const blockText = getContentText(block, softLimit, {
 			...options,
 			attachments: post.attachments
-		})
-	}).filter(_ => _).map(_ => _.trim()).join('\n\n')
+		}).trim()
+		if (!blockText) {
+			continue
+		}
+		if (text) {
+			text += '\n\n'
+		}
+		text += blockText
+		if (softLimit !== undefined) {
+			softLimit -= blockText.length
+			if (softLimit <= 0) {
+				break
+			}
+		}
+	}
 	if (text) {
 		return text
 	}
@@ -43,19 +58,31 @@ export default function getPostText(post, options = {}) {
 	return ''
 }
 
-function getContentText(content, options) {
-	if (Array.isArray(content)) {
-		content = removePostLinks(content)
-		if (options.excludeQuotes) {
-			content = removeQuotes(content)
-		}
-		return content.map(_ => getContentText(_, options)).join('')
-	}
+export function getContentText(content, softLimit, options = {}) {
 	if (typeof content === 'string') {
 		return content
 	}
+	if (Array.isArray(content)) {
+		content = removePostLinks(content)
+		if (options.excludeQuotes) {
+			// Remove block-level quotes.
+			content = removeQuotes(content)
+		}
+		let text = ''
+		for (const part of content) {
+			const partText = getContentText(part, softLimit, options)
+			text += partText
+			if (softLimit !== undefined) {
+				softLimit -= partText.length
+				if (softLimit <= 0) {
+					break
+				}
+			}
+		}
+		return text
+	}
 	const part = content
-	const getContent = () => getContentText(part.content, options)
+	const getContent = () => getContentText(part.content, softLimit, options)
 	switch (part.type) {
 		case 'quote':
 			if (options.excludeQuotes) {

@@ -6,16 +6,27 @@ import PostInlineQuote from './PostInlineQuote'
 import PostInlineSpoiler from './PostInlineSpoiler'
 import PostText from './PostText'
 import PostLink from './PostLink'
+import PostReadMore from './PostReadMore'
 
 import { postParagraph, postInlineElement } from '../PropTypes'
 
-export default function PostInlineContent({ openSlideshow, serviceIcons, children }) {
+export default function PostInlineContent({
+	url,
+	onReadMore,
+	readMoreLabel,
+	openSlideshow,
+	serviceIcons,
+	children
+}) {
 	if (typeof children === 'string') {
 		return children
 	}
 	return children.map((content, i) => (
 		<PostInlineContentElement
 			key={i}
+			url={url}
+			onReadMore={onReadMore}
+			readMoreLabel={readMoreLabel}
 			openSlideshow={openSlideshow}
 			serviceIcons={serviceIcons}>
 			{content}
@@ -24,18 +35,32 @@ export default function PostInlineContent({ openSlideshow, serviceIcons, childre
 }
 
 PostInlineContent.propTypes = {
+	url: PropTypes.string,
+	onReadMore: PropTypes.func.isRequired,
+	readMoreLabel: PropTypes.string,
 	openSlideshow: PropTypes.func,
 	serviceIcons: PropTypes.objectOf(PropTypes.func),
 	children: postParagraph.isRequired
 }
 
 function PostInlineContentElement({ children: content, ...rest }) {
-	const { openSlideshow, serviceIcons } = rest
+	const {
+		url,
+		onReadMore,
+		readMoreLabel,
+		openSlideshow,
+		serviceIcons
+	} = rest
 	if (content === '\n') {
 		return <br/>
 	} else if (Array.isArray(content) || typeof content === 'string') {
 		return (
-			<PostInlineContent openSlideshow={openSlideshow} serviceIcons={serviceIcons}>
+			<PostInlineContent
+				url={url}
+				onReadMore={onReadMore}
+				readMoreLabel={readMoreLabel}
+				openSlideshow={openSlideshow}
+				serviceIcons={serviceIcons}>
 				{content}
 			</PostInlineContent>
 		)
@@ -98,6 +123,16 @@ function PostInlineContentElement({ children: content, ...rest }) {
 				{_content}
 			</PostMonospace>
 		)
+	} else if (content.type === 'read-more') {
+		return (
+			<React.Fragment>
+				{' '}
+				<PostReadMore
+					url={url}
+					onReadMore={onReadMore}
+					readMoreLabel={readMoreLabel}/>
+			</React.Fragment>
+		)
 	} else {
 		console.error(`Unsupported post inline content:\n`, content)
 		return null
@@ -105,6 +140,9 @@ function PostInlineContentElement({ children: content, ...rest }) {
 }
 
 PostInlineContentElement.propTypes = {
+	url: PropTypes.string,
+	onReadMore: PropTypes.func.isRequired,
+	readMoreLabel: PropTypes.string,
 	openSlideshow: PropTypes.func,
 	serviceIcons: PropTypes.objectOf(PropTypes.func),
 	children: postInlineElement.isRequired

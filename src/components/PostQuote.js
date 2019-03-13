@@ -1,6 +1,8 @@
 import React from 'react'
 import { postQuote } from '../PropTypes'
 
+import PostInlineContent from './PostInlineContent'
+
 import './PostQuote.css'
 
 export default function PostQuote({ children: quote }) {
@@ -9,7 +11,9 @@ export default function PostQuote({ children: quote }) {
 			<blockquote
 				cite={quote.url || quote.source}
 				className="post__quote-text">
-				{quote.text}
+				<PostInlineContent>
+					{quote.content}
+				</PostInlineContent>
 			</blockquote>
 			{quote.source &&
 				<div className="post__quote-source">

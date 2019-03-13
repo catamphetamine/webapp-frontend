@@ -1,11 +1,11 @@
 /**
  * Trims whitespace (including newlines)
  * in the beginning and in the end.
- * `content` internals will be mutated.
+ * *** `content` internals will be mutated. ***
  * @param  {any[][]} content
  * @return {any[][]} [result]
  */
-export default function trimWhitespace(content) {
+export default function trimWhitespace(content, options = {}) {
 	// `content` internals will be mutated.
 	// content = content.slice()
 	let i = 0
@@ -14,8 +14,12 @@ export default function trimWhitespace(content) {
 		// Could be an embedded video.
 		// (not necessarily an array)
 		if (Array.isArray(paragraph)) {
-			trimLeft(paragraph)
-			trimRight(paragraph)
+			if (options.left !== false) {
+				trim(paragraph, 'left')
+			}
+			if (options.right !== false) {
+				trim(paragraph, 'right')
+			}
 			if (paragraph.length === 0) {
 				content.splice(i, 1)
 				i--
@@ -28,59 +32,66 @@ export default function trimWhitespace(content) {
 	}
 }
 
-const WHITESPACE = /^\s+$/
 const START_WHITESPACE = /^\s+/
 const END_WHITESPACE = /\s+$/
 
-function trimLeft(content) {
-	let i = 0
-	while (i < content.length) {
+/**
+ * Trims inline content at one side.
+ * *** Mutates the `content` passed ***
+ * @param {any[]} content — Inline content.
+ * @param {string} side — Either "left" or "right".
+ */
+export function trim(content, side) {
+	let i = side === 'left' ? 0 : content.length - 1
+	let whitespaceTrimmed = false
+	while (side === 'left' ? i < content.length : i >= 0) {
 		if (typeof content[i] === 'string') {
-			if (WHITESPACE.test(content[i])) {
+			const trimmedText = content[i].replace(side === 'left' ? START_WHITESPACE : END_WHITESPACE, '')
+			if (!trimmedText) {
+				whitespaceTrimmed = true
 				content.splice(i, 1)
-				i--
+				if (side === 'left') {
+					i--
+				}
 			} else {
-				content[i] = content[i].replace(START_WHITESPACE, '')
-				// Stops at the first non-new-line.
-				return false
+				if (trimmedText !== content[i]) {
+					whitespaceTrimmed = true
+				}
+				content[i] = trimmedText
+				// Non-whitespace content found.
+				return whitespaceTrimmed
 			}
 		} else {
-			// It's assumed here that if a string `content` is set
-			// then it's not empty and is trimmed.
-			if (!Array.isArray(content[i].content)) {
-				return false
+			let contentArray = content[i].content
+			if (!Array.isArray(contentArray)) {
+				contentArray = [contentArray]
 			}
-			const canProceed = trimLeft(content[i].content)
-			if (canProceed === false) {
-				return false
+			const trimmed = trim(contentArray, side)
+			if (trimmed) {
+				whitespaceTrimmed = true
 			}
-		}
-		i++
-	}
-}
-
-function trimRight(content) {
-	let i = content.length - 1
-	while (i >= 0) {
-		if (typeof content[i] === 'string') {
-			if (WHITESPACE.test(content[i])) {
+			if (contentArray.length === 0) {
+				// Remove the empty part and proceed.
 				content.splice(i, 1)
+				if (side === 'left') {
+					i--
+				}
 			} else {
-				content[i] = content[i].replace(END_WHITESPACE, '')
-				// Stops at the first non-new-line.
-				return false
-			}
-		} else {
-			// It's assumed here that if a string `content` is set
-			// then it's not empty and is trimmed.
-			if (!Array.isArray(content[i].content)) {
-				return false
-			}
-			const canProceed = trimRight(content[i].content)
-			if (canProceed === false) {
-				return false
+				// The content was possibly trimmed so update it.
+				if (Array.isArray(content[i].content)) {
+					content[i].content = contentArray
+				} else {
+					content[i].content = contentArray[0]
+				}
+				// Non-whitespace content found (and possibly trimmed from whitespace).
+				return whitespaceTrimmed
 			}
 		}
-		i--
+		if (side === 'left') {
+			i++
+		} else {
+			i--
+		}
 	}
+	return whitespaceTrimmed
 }
