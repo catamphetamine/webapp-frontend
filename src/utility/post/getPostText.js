@@ -8,37 +8,36 @@
  * @return {string}
  */
 export default function getPostText(post, options = {}) {
-	if (!post.content) {
-		return ''
-	}
 	// Simple case optimization.
 	if (typeof post.content === 'string') {
 		return post.content
 	}
-	// Concatenate post paragraphs' text.
-	let text = ''
-	let softLimit = options.softLimit
-	for (const block of post.content) {
-		const blockText = getContentText(block, softLimit, {
-			...options,
-			attachments: post.attachments
-		}).trim()
-		if (!blockText) {
-			continue
-		}
-		if (text) {
-			text += '\n\n'
-		}
-		text += blockText
-		if (softLimit !== undefined) {
-			softLimit -= blockText.length
-			if (softLimit <= 0) {
-				break
+	if (post.content) {
+		// Concatenate post paragraphs' text.
+		let text = ''
+		let softLimit = options.softLimit
+		for (const block of post.content) {
+			const blockText = getContentText(block, softLimit, {
+				...options,
+				attachments: post.attachments
+			}).trim()
+			if (!blockText) {
+				continue
+			}
+			if (text) {
+				text += '\n\n'
+			}
+			text += blockText
+			if (softLimit !== undefined) {
+				softLimit -= blockText.length
+				if (softLimit <= 0) {
+					break
+				}
 			}
 		}
-	}
-	if (text) {
-		return text
+		if (text) {
+			return text
+		}
 	}
 	// If there're any attachments then fall back to attachment text.
 	if (post.attachments.length > 0 && !options.ignoreAttachments) {
