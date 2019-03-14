@@ -24,9 +24,13 @@ import './Post.css'
 // @connect(() => ({}), {
 // 	openSlideshow
 // })
-export default class Post extends React.Component {
+export default class Post extends React.PureComponent {
 	static propTypes = {
 		post: postShape.isRequired,
+		replies: arrayOf(oneOfType([
+			string,
+			number
+		])),
 		compact: PropTypes.bool,
 		commentsCount: PropTypes.number,
 		attachmentsCount: PropTypes.number,
@@ -106,6 +110,7 @@ export default class Post extends React.Component {
 	render() {
 		const {
 			post,
+			replies,
 			compact,
 			url,
 			locale,
@@ -164,7 +169,7 @@ export default class Post extends React.Component {
 					{this.getNonEmbeddedAttachments()}
 				</PostAttachments>
 				{hasFooter(post) &&
-					<PostFooter post={post}/>
+					<PostFooter post={post} replies={replies}/>
 				}
 			</article>
 		);
@@ -174,4 +179,3 @@ export default class Post extends React.Component {
 function toArray(object) {
 	return Array.isArray(object) ? object : [object]
 }
-
