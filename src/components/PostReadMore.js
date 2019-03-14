@@ -2,6 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-website'
 
+import './PostReadMore.css'
+
 export default class PostReadMore extends React.Component {
 	onClick = (event) => {
 		event.preventDefault()
@@ -17,13 +19,13 @@ export default class PostReadMore extends React.Component {
 
 		if (url) {
 			return (
-				<Link to={url} onClick={this.onClick}>
+				<Link to={url} onClick={this.onClick} className="post__read-more">
 					{readMoreLabel}
 				</Link>
 			)
 		}
 		return (
-			<button type="button" onClick={this.onClick} className="rrui__button-reset">
+			<button type="button" onClick={this.onClick} className="rrui__button-reset post__read-more">
 				{readMoreLabel}
 			</button>
 		)

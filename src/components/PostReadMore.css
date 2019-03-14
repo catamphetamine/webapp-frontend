@@ -1,0 +1,29 @@
+.post__read-more {
+	font-family: var(--font-family);
+	font-weight: 500;
+}
+
+/*
+.post__read-more {
+	border-radius: 0.2em;
+	padding-left: 0.25em;
+	padding-right: 0.25em;
+	padding-top: 0.1em;
+	padding-bottom: 0.1em;
+	margin-top: -0.1em;
+	margin-bottom: -0.1em;
+	color: var(--base-color-darkest);
+	border: 1px solid var(--base-color-darkest);
+}
+
+.post__read-more:hover {
+	color: var(--base-color-dark);
+	border-color: var(--base-color-dark);
+}
+
+.post__read-more:active {
+	color: var(--white-color);
+	background-color: var(--base-color-light);
+	border-color: var(--base-color-light);
+}
+*/
