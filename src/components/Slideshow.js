@@ -132,7 +132,7 @@ const PLUGINS = [
 	PicturePlugin
 ]
 
-class Slideshow extends React.Component {
+class Slideshow extends React.PureComponent {
 	static propTypes = {
 		messages: PropTypes.object.isRequired,
 		onClose: PropTypes.func.isRequired,
