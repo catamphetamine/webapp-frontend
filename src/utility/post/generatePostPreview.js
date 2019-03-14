@@ -69,7 +69,6 @@ class PreviewGenerator {
 						// Leaves "\n" at the end so that later it detects a "new line" trim point
 						// and appends `{ type: 'read-more' }` as a block-level part.
 						trimmedBlock = this.trimAtPoint(block, 'new-line')
-						// trimmedBlock = trimAtNewLine(block, this.getCharacterPointsLeft())
 						if (!trimmedBlock || !this.willTrimLongEnoughAfter(countCharacters(trimmedBlock, 'points'))) {
 							trimmedBlock = this.trimAtPoint(block, 'sentence-end')
 							if (!trimmedBlock || !this.willTrimLongEnoughAfter(countCharacters(trimmedBlock, 'points'))) {
@@ -191,13 +190,13 @@ class PreviewGenerator {
 		let overflow = countCharacters(block, 'points') - this.getCharacterPointsLeft()
 		const indexes = searchContent(block, (content) => {
 			if (typeof content === 'string') {
-				const characterCount = countCharacters(content, 'points')
-				overflow -= characterCount
+				const characterPoints = countCharacters(content, 'points')
+				overflow -= characterPoints
 				if (overflow < 0) {
 					if (type === 'new-line') {
 						return content === '\n'
 					}
-					let index = content.length - (overflow + characterCount)
+					let index = content.length - (overflow + characterPoints)
 					while ((index = this.findTrimPoint(content, type, index - 1)) >= 0) {
 						if (overflow + (index + 1) <= 0) {
 							trimPointIndex = index
@@ -212,19 +211,17 @@ class PreviewGenerator {
 				// Leaves the "\n" character for detecting block-level trim later in `.generate()`.
 				// include: type === 'new-line' ? false : undefined,
 				transform: type === 'new-line' ? undefined : (part) => {
-					if (trimPointIndex > 0) {
-						if (typeof part === 'string') {
-							return trimTextAtIndex(part, trimPointIndex + 1, type)
-						} else if (typeof part.content === 'string') {
-							return {
-								...part,
-								content: trimTextAtIndex(part.content, trimPointIndex + 1, type)
-							}
-						} else {
-							console.error('Unsupported content part for trimming')
-							console.error(part)
-							return part
+					if (typeof part === 'string') {
+						return trimTextAtIndex(part, trimPointIndex + 1, type)
+					} else if (typeof part.content === 'string') {
+						return {
+							...part,
+							content: trimTextAtIndex(part.content, trimPointIndex + 1, type)
 						}
+					} else {
+						console.error('Unsupported content part for trimming')
+						console.error(part)
+						return part
 					}
 				}
 			})
@@ -306,23 +303,6 @@ function countCharacters(content, mode) {
 		console.error(content)
 	}
 }
-
-// function trimAtNewLine(block, maxLength) {
-// 	let points = 0
-// 	let parts = []
-// 	let partsBeforeNewLine
-// 	for (const part of block) {
-// 		if (points > maxLength) {
-// 			break
-// 		}
-// 		points += countCharacters(part, 'points')
-// 		parts.push(part)
-// 		if (part === '\n') {
-// 			partsBeforeNewLine = parts.slice()
-// 		}
-// 	}
-// 	return partsBeforeNewLine
-// }
 
 function trimTextAtIndex(text, index, type) {
 	text = text.slice(0, index)
