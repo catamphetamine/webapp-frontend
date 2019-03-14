@@ -1,6 +1,66 @@
+.post__header-top {
+	display: flex;
+	justify-content: space-between;
+}
+
 .post__summary {
 	display: flex;
+	align-items: flex-start;
+}
+
+.post__badges {
+	display: flex;
+	list-style: none;
+	margin-top: 0;
+	margin-bottom: 0;
+	margin-right: var(--unit);
+	padding: 0;
+}
+
+.post__badge {
+	width: calc(var(--unit) * 1.5);
+	height: calc(var(--unit) * 1.5);
+	margin-right: var(--unit);
+
+	&:last-child {
+		margin-right: 0;
+	}
+}
+
+.post__badge-icon {
+	/* Removes the weird spacing. */
+	display: block;
+	width: 100%;
+	height: 100%;
+	opacity: 0.5;
+}
+
+.post__actions {
+	display: flex;
+	align-items: flex-start;
+}
+
+.post__more-actions {
+	display: flex;
 	align-items: center;
+	justify-content: center;
+	width: calc(var(--unit) * 2);
+	height: calc(var(--unit) * 1.5);
+	color: rgba(0,0,0,0.2);
+	cursor: pointer;
+	&:hover {
+		color: rgba(0,0,0,0.275);
+	}
+	&:active {
+		color: var(--base-color-dark);
+	}
+}
+
+.post__more-actions-icon {
+	width: calc(var(--unit) * 1.5);
+	/* `<OnClick/>`'s `filter` is set up to ignore clicks on `<button/>`s.
+	   `<svg/>` is required to ignore clicks in order for them to be registered by `<button/>`. */
+	pointer-events: none;
 }
 
 .post--compact.post--anonymous {

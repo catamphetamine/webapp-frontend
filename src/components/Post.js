@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 // import { connect } from 'react-redux'
 import classNames from 'classnames'
 
-import { postShape } from '../PropTypes'
+import { postShape, postBadge } from '../PropTypes'
 
 import Slideshow from './Slideshow'
 import PostHeader from './PostHeader'
@@ -27,9 +27,11 @@ import './Post.css'
 export default class Post extends React.PureComponent {
 	static propTypes = {
 		post: postShape.isRequired,
-		replies: arrayOf(oneOfType([
-			string,
-			number
+		thread: PropTypes.object,
+		badges: PropTypes.arrayOf(postBadge),
+		replies: PropTypes.arrayOf(oneOfType([
+			PropTypes.string,
+			PropTypes.number
 		])),
 		compact: PropTypes.bool,
 		commentsCount: PropTypes.number,
@@ -110,6 +112,8 @@ export default class Post extends React.PureComponent {
 	render() {
 		const {
 			post,
+			thread,
+			badges,
 			replies,
 			compact,
 			url,
@@ -141,7 +145,9 @@ export default class Post extends React.PureComponent {
 			})}>
 				<PostHeader
 					post={post}
+					thread={thread}
 					url={url}
+					badges={badges}
 					locale={locale}/>
 				{postContent &&
 					<div className="post__content">

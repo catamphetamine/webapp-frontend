@@ -4,6 +4,7 @@ import {
 	number,
 	string,
 	bool,
+	func,
 	object,
 	oneOf,
 	oneOfType,
@@ -335,6 +336,13 @@ export const postShape = shape({
 	commentsCount: number,
 	attachmentsCount: number,
 	attachments: arrayOf(postAttachment)
+})
+
+export const postBadge = shape({
+	name: string.isRequired,
+	icon: func.isRequired,
+	title: func.isRequired,
+	condition: func.isRequired
 })
 
 export const locationShape = shape({
