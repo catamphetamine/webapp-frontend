@@ -29,7 +29,7 @@ export default function getPostText(post, options = {}) {
 			}
 			text += blockText
 			if (softLimit !== undefined) {
-				softLimit -= blockText.length
+				softLimit -= blockText.length - countOccurrences(blockText, '\n')
 				if (softLimit <= 0) {
 					break
 				}
@@ -72,7 +72,7 @@ export function getContentText(content, softLimit, options = {}) {
 			const partText = getContentText(part, softLimit, options)
 			text += partText
 			if (softLimit !== undefined) {
-				softLimit -= partText.length
+				softLimit -= partText.length - countOccurrences(partText, '\n')
 				if (softLimit <= 0) {
 					break
 				}
@@ -222,4 +222,14 @@ function getHumanReadableLinkAddress(url) {
 		.replace(/^https?:\/\/(www\.)?/, '')
 		// Remove `/` in the end.
 		.replace(/\/$/, '')
+}
+
+function countOccurrences(string, character) {
+	let count = 0
+	for (const char of string) {
+		if (char === character) {
+			count++
+		}
+	}
+	return count
 }
