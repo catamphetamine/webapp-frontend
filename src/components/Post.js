@@ -8,7 +8,7 @@ import { postShape } from '../PropTypes'
 import Slideshow from './Slideshow'
 import PostHeader from './PostHeader'
 import PostBlock from './PostBlock'
-import PostAttachments, { sortByAspectRatioAscending } from './PostAttachments'
+import PostAttachments, { sortPostAttachments } from './PostAttachments'
 import PostFooter, { hasFooter } from './PostFooter'
 
 import loadYouTubeLinks from '../utility/post/loadYouTubeLinks'
@@ -77,7 +77,7 @@ export default class Post extends React.Component {
 		const attachments = this.getNonEmbeddedAttachments()
 
 		let picturesAndVideos = attachments.filter(_ => _.type === 'picture' || _.type === 'video')
-		sortByAspectRatioAscending(picturesAndVideos)
+		sortPostAttachments(picturesAndVideos)
 		picturesAndVideos = picturesAndVideos.map(_ => _.type === 'picture' ? _.picture : _.video)
 
 		openSlideshow(picturesAndVideos, i)

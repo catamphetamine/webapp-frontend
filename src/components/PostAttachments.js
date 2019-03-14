@@ -50,7 +50,7 @@ export default function PostAttachments({
 		picturesAndVideos = picturesAndVideos.slice(1)
 	}
 
-	sortByAspectRatioAscending(picturesAndVideos)
+	sortPostAttachments(picturesAndVideos)
 
 	const audios = attachments.filter(_ => _.type === 'audio')
 	const links = attachments.filter(_ => _.type === 'link')
@@ -410,13 +410,26 @@ function inscribeThumbnailHeightIntoSize(attachment, size) {
 	return size
 }
 
+function getAttachmentThumbnailHeight(attachment) {
+	switch (attachment.type) {
+		case 'picture':
+			return attachment.picture.sizes[0].height
+		case 'video':
+			return attachment.video.picture.sizes[0].height
+		default:
+			console.error(`Unknown attachment type: ${attachment.type}`)
+			console.log(attachment)
+			return 0
+	}
+}
+
 /**
  * Sorts attachments by their aspect ratio ascending (the tallest ones first).
  * Mutates the original array (could add `.slice()` but not required).
  * @param  {object[]} attachments
  * @return {object[]}
  */
-export function sortByAspectRatioAscending(attachments) {
+function sortByAspectRatioAscending(attachments) {
 	// A minor optimization.
 	if (attachments.length === 1) {
 		return attachments
@@ -424,6 +437,20 @@ export function sortByAspectRatioAscending(attachments) {
 	return attachments.sort((a, b) => {
 		return getAttachmentAspectRatio(a) - getAttachmentAspectRatio(b)
 	})
+}
+
+function sortByThumbnailHeightDescending(attachments) {
+	// A minor optimization.
+	if (attachments.length === 1) {
+		return attachments
+	}
+	return attachments.sort((a, b) => {
+		return getAttachmentThumbnailHeight(b) - getAttachmentThumbnailHeight(a)
+	})
+}
+
+export function sortPostAttachments(attachments) {
+	return sortByThumbnailHeightDescending(attachments)
 }
 
 function AttachmentThumbnail({
