@@ -9,6 +9,11 @@
 	   doesn't have such extra visual spacing. Therefore reduce it for text. */
 	--post-text-vertical-space-adjustment: 0.25em;
 
+	/* Long hyperlinks can overflow post on small screens.
+	   (for example, on mobile devices)
+	   `word-break` fixes that by forcing word breaks on overflow. */
+	word-break: break-all;
+
 	/* When selecting text <br/>s also get selected
 	   which results in a bit of a visual clutter.
 	   (for example, in the end of `<PostInlineQuote/>`
