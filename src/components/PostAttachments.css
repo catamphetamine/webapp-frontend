@@ -77,9 +77,12 @@
 
 .post__files {
 	margin: 0;
-	margin-top: var(--post-content-vertical-spacing);
+	/*margin-top: var(--post-content-vertical-spacing);*/
 	padding: 0;
-	list-style: none
+	list-style: none;
+	li {
+		margin-top: var(--post-content-vertical-spacing);
+	}
 }
 
 .post__file-size {
