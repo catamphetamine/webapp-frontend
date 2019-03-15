@@ -81,8 +81,17 @@
 	padding: 0;
 	list-style: none;
 	li {
+		display: flex;
+		align-items: center;
 		margin-top: var(--post-content-vertical-spacing);
 	}
+}
+
+.post__file-icon {
+	width: 0.94em;
+	height: 0.94em;
+	margin-right: 0.25em;
+	margin-bottom: 0.06em;
 }
 
 .post__file-size {

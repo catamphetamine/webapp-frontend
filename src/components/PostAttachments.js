@@ -26,6 +26,9 @@ import {
 	fileAttachmentShape
 } from '../PropTypes'
 
+import DocumentIcon from '../../assets/images/icons/document.svg'
+import DownloadIcon from '../../assets/images/icons/download-cloud.svg'
+
 import './PostAttachments.css'
 
 export default function PostAttachments({
@@ -54,7 +57,17 @@ export default function PostAttachments({
 
 	const audios = attachments.filter(_ => _.type === 'audio')
 	const links = attachments.filter(_ => _.type === 'link')
-	const files = attachments.filter(_ => !_.type)
+	const files = attachments.filter(_ => {
+		switch (_.type) {
+			case 'picture':
+			case 'video':
+			case 'audio':
+			case 'link':
+				return false
+			default:
+				return true
+		}
+	})
 
 	// const shouldExpandFirstPicture = pictures.length === 1 || (pictures.length > 1 && videos.length !== 1)
 	// const shouldExpandFirstVideo = videos.length === 1 || (videos.length > 1 && pictures.length !== 1)
@@ -188,6 +201,7 @@ export default function PostAttachments({
 				<ul className="post__files">
 					{files.map((file, i) => (
 						<li key={i}>
+							<FileIcon contentType={file.contentType} className="post__file-icon"/>
 							<PostAttachmentFile file={file}/>
 							{file.size &&
 								<span className="post__file-size">
@@ -485,4 +499,17 @@ AttachmentThumbnail.propTypes = {
 	maxSize: PropTypes.number.isRequired,
 	saveBandwidth: PropTypes.bool,
 	moreAttachmentsCount: PropTypes.number
+}
+
+function FileIcon({ contentType, ...rest }) {
+	switch (contentType) {
+		case 'application/pdf':
+			return <DocumentIcon {...rest}/>
+		default:
+			return <DownloadIcon {...rest}/>
+	}
+}
+
+FileIcon.propTypes = {
+	contentType: PropTypes.string
 }

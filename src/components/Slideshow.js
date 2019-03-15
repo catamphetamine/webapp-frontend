@@ -7,7 +7,7 @@ import Picture, { getAspectRatio, getMaxSize as getMaxPictureSize, isVector } fr
 import Video, { getMaxSize as getMaxVideoSize } from './Video'
 import { pictureShape } from '../PropTypes'
 
-import Download from '../../assets/images/icons/download.svg'
+import Download from '../../assets/images/icons/download-cloud.svg'
 import Close from '../../assets/images/icons/close.svg'
 import LeftArrow from '../../assets/images/icons/left-arrow-minimal.svg'
 import RightArrow from '../../assets/images/icons/right-arrow-minimal.svg'
