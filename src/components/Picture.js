@@ -514,7 +514,12 @@ function prefetchImage(url) {
 		const image = new Image()
 		// image.onload = () => setTimeout(resolve, 1000)
 		image.onload = resolve
-		image.onerror = reject
+		image.onerror = (event) => {
+			if (event.path && event.path[0]) {
+				console.error(`Image not found: ${event.path[0].src}`)
+			}
+			reject(event)
+		}
 		image.src = url
 	})
 }

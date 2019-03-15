@@ -94,11 +94,6 @@ p
 	margin-bottom : 0;
 }
 
-li
-{
-	line-height   : var(--line-height);
-}
-
 .position-relative
 {
 	position : relative;

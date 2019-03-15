@@ -9,19 +9,15 @@
 
 /** Change bullet color of list item by replacing it with CSS. */
 
-.post__list-item
-{
+.post__list-item {
+	line-height: var(--line-height);
 	list-style: none;
-
-	&:before
-	{
-		position : relative;
-		top      : 0;
-
-		padding-right : 0.45em;
-
-		color     : var(--gray-color-dark);
-		content   : "\2022";
-		font-size : 1em;
+	&:before {
+		position: relative;
+		top: 0;
+		padding-right: 0.45em;
+		content: "\2022";
+		font-size: 1em;
+		color: var(--gray-color-dark);
 	}
 }
