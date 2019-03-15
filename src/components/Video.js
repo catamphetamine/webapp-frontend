@@ -59,9 +59,12 @@ export default class Video extends React.Component {
 				}
 			case 'height':
 				return {
-					width: getAspectRatio(video) * maxHeight + 'px',
-					height: maxHeight + 'px'
+					paddingBottom: 100 / getAspectRatio(video) + '%'
 				}
+				// return {
+				// 	width: getAspectRatio(video) * maxHeight + 'px',
+				// 	height: maxHeight + 'px'
+				// }
 			case 'scale-down':
 				let maxSize = getMaxSize(video)
 				if (maxWidth && maxHeight) {
@@ -75,6 +78,23 @@ export default class Video extends React.Component {
 	}
 
 	render() {
+		const {
+			video,
+			maxHeight
+		} = this.props
+		if (maxHeight) {
+			return (
+				<div
+					style={{ maxWidth: getAspectRatio(video) * maxHeight + 'px' }}
+					className="rrui__video__max-width-fix">
+					{this.render_()}
+				</div>
+			)
+		}
+		return this.render_()
+	}
+
+	render_() {
 		const {
 			video,
 			fit,
@@ -102,7 +122,7 @@ export default class Video extends React.Component {
 					aria-label={this.props['aria-label']}
 					onClick={_onClick}
 					style={_style}
-					className={classNames('rrui__button-reset', _className)}>
+					className={classNames('rrui__button-reset', 'rrui__video__button', _className)}>
 					{showPreview && this.renderPreview()}
 					{!showPreview && this.renderVideo()}
 				</button>
