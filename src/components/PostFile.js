@@ -4,6 +4,7 @@ import filesize from 'filesize'
 
 import { postFile } from '../PropTypes'
 
+import ArchiveIcon from '../../assets/images/icons/archive.svg'
 import DocumentIcon from '../../assets/images/icons/document.svg'
 import DownloadIcon from '../../assets/images/icons/download-cloud.svg'
 
@@ -35,8 +36,12 @@ PostFile.propTypes = {
 
 function FileIcon({ contentType, ...rest }) {
 	switch (contentType) {
+		case 'text/plain':
 		case 'application/pdf':
 			return <DocumentIcon {...rest}/>
+		case 'application/zip':
+		case 'application/x-7z-compressed':
+			return <ArchiveIcon {...rest}/>
 		default:
 			return <DownloadIcon {...rest}/>
 	}
@@ -59,5 +64,12 @@ export const EXAMPLE_2 = {
 	name: 'Industrial society and its future',
 	ext: '.pdf',
 	size: 350 * 1024,
+	url: 'https://google.com'
+}
+
+export const EXAMPLE_3 = {
+	contentType: 'application/zip',
+	name: 'Mirrors-Edge-PC-RePack-R.G.-Mehaniki',
+	ext: '.zip',
 	url: 'https://google.com'
 }

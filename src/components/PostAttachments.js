@@ -36,7 +36,8 @@ import PostLinkBlock, {
 
 import PostFile, {
 	EXAMPLE_1 as FILE_EXAMPLE_1,
-	EXAMPLE_2 as FILE_EXAMPLE_2
+	EXAMPLE_2 as FILE_EXAMPLE_2,
+	EXAMPLE_3 as FILE_EXAMPLE_3
 } from './PostFile'
 
 import {
@@ -483,31 +484,36 @@ const TEST_ATTACHMENTS = [
 	},
 	{
 		id: 3,
+		type: 'file',
+		file: FILE_EXAMPLE_3
+	},
+	{
+		id: 4,
 		type: 'picture',
 		picture: PICTURE_EXAMPLE
 	},
 	{
-		id: 4,
+		id: 5,
 		type: 'video',
 		video: VIDEO_EXAMPLE
 	},
 	{
-		id: 5,
+		id: 6,
 		type: 'audio',
 		audio: AUDIO_EXAMPLE_1
 	},
 	{
-		id: 6,
+		id: 7,
 		type: 'audio',
 		audio: AUDIO_EXAMPLE_2
 	},
 	{
-		id: 7,
+		id: 8,
 		type: 'link',
 		link: LINK_EXAMPLE_1
 	},
 	{
-		id: 8,
+		id: 9,
 		type: 'link',
 		link: LINK_EXAMPLE_2
 	}
