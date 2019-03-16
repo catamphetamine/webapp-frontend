@@ -40,6 +40,11 @@
 	&:hover {
 		box-shadow: var(--post-attachment-hover-shadow);
 	}
+	&:focus {
+		.post__attachment-thumbnail__picture {
+			--picture-border-color: var(--base-color-darkest);
+		}
+	}
 }
 
 .post__attachment-thumbnail__more-count {

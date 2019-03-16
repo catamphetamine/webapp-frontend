@@ -1,5 +1,13 @@
 @import "../styles/common";
 
+.post__date-link {
+	/* `background-color` will be set on `:focus`. */
+	margin-left: -0.25em;
+	margin-right: -0.25em;
+	padding-left: 0.25em;
+	padding-right: 0.25em;
+}
+
 .post__date {
 	margin-top: 0.1em;
 	color: var(--gray-color-dark);
