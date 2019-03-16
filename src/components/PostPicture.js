@@ -20,3 +20,15 @@ PostPicture.propTypes = {
 	onClick: PropTypes.func,
 	children: pictureAttachmentShape.isRequired
 }
+
+export const EXAMPLE = {
+	type: 'image/jpeg',
+	title: 'Google',
+	description: 'Google search engine logo',
+	date: new Date(2013, 2, 1), // March 1st, 2013.
+	sizes: [{
+		width: 272,
+		height: 92,
+		url: 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png'
+	}]
+}

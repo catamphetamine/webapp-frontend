@@ -4,7 +4,7 @@ import classNames from 'classnames'
 
 import { ActivityIndicator, FadeInOut } from 'react-responsive-ui'
 
-import { pictureShape } from '../PropTypes'
+import { picture } from '../PropTypes'
 
 import './Picture.css'
 
@@ -69,7 +69,7 @@ export default class Picture extends PureComponent
 			'image/webp'
 		]),
 
-		picture: pictureShape,
+		picture: picture,
 
 		// // In "bandwidth saving" mode it won't load
 		// // sharper images for "retina" displays

@@ -1,7 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
-import filesize from 'filesize'
 
 import Picture, {
 	TRANSPARENT_PIXEL,
@@ -17,19 +16,37 @@ import {
 	getAspectRatio as getVideoAspectRatio
 } from './Video'
 
-import PostPicture from './PostPicture'
-import PostVideo from './PostVideo'
-import PostAudio from './PostAudio'
+import PostPicture, {
+	EXAMPLE as PICTURE_EXAMPLE
+} from './PostPicture'
+
+import PostVideo, {
+	EXAMPLE as VIDEO_EXAMPLE
+} from './PostVideo'
+
+import PostAudio, {
+	EXAMPLE_1 as AUDIO_EXAMPLE_1,
+	EXAMPLE_2 as AUDIO_EXAMPLE_2
+} from './PostAudio'
+
+import PostLinkBlock, {
+	EXAMPLE_1 as LINK_EXAMPLE_1,
+	EXAMPLE_2 as LINK_EXAMPLE_2
+} from './PostLinkBlock'
+
+import PostFile, {
+	EXAMPLE_1 as FILE_EXAMPLE_1,
+	EXAMPLE_2 as FILE_EXAMPLE_2
+} from './PostFile'
 
 import {
-	postAttachment,
-	fileAttachmentShape
+	postAttachment
 } from '../PropTypes'
 
-import DocumentIcon from '../../assets/images/icons/document.svg'
-import DownloadIcon from '../../assets/images/icons/download-cloud.svg'
-
 import './PostAttachments.css'
+
+// Set to `true` to test rendering of all supported attachment types.
+const TEST = false
 
 export default function PostAttachments({
 	expandFirstPictureOrVideo,
@@ -39,6 +56,10 @@ export default function PostAttachments({
 	maxAttachmentThumbnails,
 	children: attachments
 }) {
+	if (TEST) {
+		attachments = TEST_ATTACHMENTS
+	}
+
 	if (attachments.length === 0) {
 		return null
 	}
@@ -55,19 +76,9 @@ export default function PostAttachments({
 
 	sortPostAttachments(picturesAndVideos)
 
-	const audios = attachments.filter(_ => _.type === 'audio')
-	const links = attachments.filter(_ => _.type === 'link')
-	const files = attachments.filter(_ => {
-		switch (_.type) {
-			case 'picture':
-			case 'video':
-			case 'audio':
-			case 'link':
-				return false
-			default:
-				return true
-		}
-	})
+	const audios = attachments.filter(_ => _.type === 'audio').map(_ => _.audio)
+	const links = attachments.filter(_ => _.type === 'link').map(_ => _.link)
+	const files = attachments.filter(_ => _.type === 'file').map(_ => _.file)
 
 	// const shouldExpandFirstPicture = pictures.length === 1 || (pictures.length > 1 && videos.length !== 1)
 	// const shouldExpandFirstVideo = videos.length === 1 || (videos.length > 1 && pictures.length !== 1)
@@ -175,43 +186,15 @@ export default function PostAttachments({
 					})}
 				</ul>
 			}
-			{audios.length > 0 &&
-				<ul className="post__audios">
-					{audios.map((audio, i) => (
-						<li key={i}>
-							<PostAudio>
-								{audio}
-							</PostAudio>
-						</li>
-					))}
-				</ul>
-			}
-			{links.length > 0 &&
-				<ul className="post__links">
-					{links.map((link, i) => (
-						<li key={i}>
-							<PostAttachmentLink>
-								{link}
-							</PostAttachmentLink>
-						</li>
-					))}
-				</ul>
-			}
-			{files.length > 0 &&
-				<ul className="post__files">
-					{files.map((file, i) => (
-						<li key={i}>
-							<FileIcon contentType={file.contentType} className="post__file-icon"/>
-							<PostAttachmentFile file={file}/>
-							{file.size &&
-								<span className="post__file-size">
-									{filesize(file.size)}
-								</span>
-							}
-						</li>
-					))}
-				</ul>
-			}
+			{audios.length > 0 && audios.map((audio, i) => (
+				<PostAudio key={i} audio={audio}/>
+			))}
+			{links.length > 0 && links.map((link, i) => (
+				<PostLinkBlock key={i} link={link}/>
+			))}
+			{files.length > 0 && files.map((file, i) => (
+				<PostFile key={i} file={file}/>
+			))}
 			{/* Insert a "new line" after attachments when copy-pasting selected content */}
 			<div style={POSITION_ABSOLUTE}>
 				<br/>
@@ -359,20 +342,6 @@ const POSITION_ABSOLUTE = {
 // 	height: 1080
 // }]))
 
-const PostAttachmentFile = ({ file }) => {
-	return (
-		<a
-			target="_blank"
-			href={file.url}>
-			{`${file.name}${file.ext}`}
-		</a>
-	)
-}
-
-PostAttachmentFile.propTypes = {
-	file: fileAttachmentShape.isRequired
-}
-
 function getAttachmentAspectRatio(attachment) {
 	switch (attachment.type) {
 		case 'picture':
@@ -501,15 +470,45 @@ AttachmentThumbnail.propTypes = {
 	moreAttachmentsCount: PropTypes.number
 }
 
-function FileIcon({ contentType, ...rest }) {
-	switch (contentType) {
-		case 'application/pdf':
-			return <DocumentIcon {...rest}/>
-		default:
-			return <DownloadIcon {...rest}/>
+const TEST_ATTACHMENTS = [
+	{
+		id: 1,
+		type: 'file',
+		file: FILE_EXAMPLE_1
+	},
+	{
+		id: 2,
+		type: 'file',
+		file: FILE_EXAMPLE_2
+	},
+	{
+		id: 3,
+		type: 'picture',
+		picture: PICTURE_EXAMPLE
+	},
+	{
+		id: 4,
+		type: 'video',
+		video: VIDEO_EXAMPLE
+	},
+	{
+		id: 5,
+		type: 'audio',
+		audio: AUDIO_EXAMPLE_1
+	},
+	{
+		id: 6,
+		type: 'audio',
+		audio: AUDIO_EXAMPLE_2
+	},
+	{
+		id: 7,
+		type: 'link',
+		link: LINK_EXAMPLE_1
+	},
+	{
+		id: 8,
+		type: 'link',
+		link: LINK_EXAMPLE_2
 	}
-}
-
-FileIcon.propTypes = {
-	contentType: PropTypes.string
-}
+]

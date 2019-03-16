@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 
-import { videoShape } from '../PropTypes'
+import { video } from '../PropTypes'
 import { getEmbeddedVideoUrl, getVideoUrl } from '../utility/video'
 
 import Picture, { getMaxSize as getMaxPictureSize, scaleDownSize } from './Picture'
@@ -80,13 +80,13 @@ export default class Video extends React.Component {
 	render() {
 		const {
 			video,
+			fit,
 			maxHeight
 		} = this.props
-		if (maxHeight) {
+		if (fit === 'height') {
 			return (
 				<div
-					style={{ maxWidth: getAspectRatio(video) * maxHeight + 'px' }}
-					className="rrui__video__max-width-fix">
+					style={{ maxWidth: getAspectRatio(video) * maxHeight + 'px' }}>
 					{this.render_()}
 				</div>
 			)
@@ -214,7 +214,7 @@ export default class Video extends React.Component {
 }
 
 Video.propTypes = {
-	video: videoShape.isRequired,
+	video: video.isRequired,
 	width: PropTypes.number,
 	height: PropTypes.number,
 	fit: PropTypes.oneOf([
@@ -297,7 +297,7 @@ export function VideoDuration({ video }) {
 }
 
 VideoDuration.propTypes = {
-	video: videoShape.isRequired
+	video: video.isRequired
 }
 
 function formatVideoDuration(seconds) {

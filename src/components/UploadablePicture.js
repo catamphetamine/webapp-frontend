@@ -232,21 +232,18 @@ export default class UploadablePicture extends Component
 	}
 }
 
-const pictureShape = PropTypes.shape
-({
+const picturePropType = PropTypes.shape({
 	sizes: PropTypes.arrayOf(PropTypes.object).isRequired
 })
 
 export class Picture extends Component
 {
-	static propTypes =
-	{
-		defaultPicture : pictureShape,
-		picture : pictureShape
+	static propTypes = {
+		defaultPicture : picturePropType,
+		picture : picturePropType
 	}
 
-	render()
-	{
+	render() {
 		const {
 			defaultPicture,
 			picture,

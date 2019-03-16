@@ -5,7 +5,6 @@ import throttle from 'lodash/throttle'
 
 import Picture, { getAspectRatio, getMaxSize as getMaxPictureSize, isVector } from './Picture'
 import Video, { getMaxSize as getMaxVideoSize } from './Video'
-import { pictureShape } from '../PropTypes'
 
 import Download from '../../assets/images/icons/download-cloud.svg'
 import Close from '../../assets/images/icons/close.svg'

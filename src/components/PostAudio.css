@@ -1,4 +1,9 @@
-.post__audio
-{
+.post__audio {
+	margin-top: var(--post-content-vertical-spacing);
 
+	h1 {
+		margin-top: 0.4em;
+		margin-bottom: 0;
+		font-weight: normal;
+	}
 }
