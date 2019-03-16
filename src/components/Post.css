@@ -11,9 +11,9 @@
 
 	/* Long hyperlinks can overflow post on small screens.
 	   (for example, on mobile devices)
-	   `word-break` fixes that by forcing word breaks on overflow.
-	   https://developer.mozilla.org/en-US/docs/Web/CSS/word-break */
-	word-break: break-all;
+	   `overflow-wrap` fixes that by forcing word breaks on overflow.
+	   https://developer.mozilla.org/en-US/docs/Web/CSS/overflow-wrap */
+	overflow-wrap: break-word;
 
 	/* When selecting text <br/>s also get selected
 	   which results in a bit of a visual clutter.
