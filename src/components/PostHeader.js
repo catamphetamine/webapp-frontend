@@ -10,6 +10,7 @@ import { accountLink } from './AccountLink'
 import { postShape, postBadge } from '../PropTypes'
 
 import EllipsisIcon from '../../assets/images/icons/ellipsis.svg'
+import PersonIcon from '../../assets/images/icons/menu/person-outline.svg'
 
 import './PostHeader.css'
 
@@ -45,11 +46,11 @@ export default class PostHeader extends React.PureComponent {
 										account={post.account}
 										className="post__account-picture"/>
 								</Link>
-								<div className="post__name-and-date">
+								<div className="post__account-name-and-date">
 									<Link
 										to={accountLink(post.account)}
 										rel="author"
-										className="post__name">
+										className="post__account-name">
 										{post.account.name}
 									</Link>
 									<PostDate
@@ -68,13 +69,14 @@ export default class PostHeader extends React.PureComponent {
 					</div>
 					<div className="post__actions">
 						{badges && badges.length > 0 &&
-							<ul className="post__badges">
+							<div className="post__badges">
 								{badges.map(({ name, title, icon: Icon }) => (
-									<li key={name} title={title(locale)} className="post__badge">
-										<Icon className={`post__badge-icon post__badge-icon--${name}`}/>
-									</li>
+									<Icon
+										key={name}
+										title={title(locale)}
+										className={`post__badge post__badge--${name}`}/>
 								))}
-							</ul>
+							</div>
 						}
 						<button
 							type="button"
@@ -84,6 +86,21 @@ export default class PostHeader extends React.PureComponent {
 						</button>
 					</div>
 				</div>
+				{(post.authorName || post.authorName2) &&
+					<div className={classNames('post__author', post.authorRole && `post__author--${post.authorRole}`)}>
+						<PersonIcon className="post__author-icon"/>
+						{post.authorName &&
+							<div className="post__author-name">
+								{post.authorName}
+							</div>
+						}
+						{post.authorName2 &&
+							<div className="post__author-name post__author-name--2">
+								{post.authorName2}
+							</div>
+						}
+					</div>
+				}
 				{post.title &&
 					<h1 className="post__heading">
 						{post.titleCensored &&

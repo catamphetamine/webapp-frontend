@@ -10,29 +10,20 @@
 
 .post__badges {
 	display: flex;
-	list-style: none;
-	margin-top: 0;
-	margin-bottom: 0;
 	margin-right: var(--unit);
-	padding: 0;
+	/* Fallback for really small screens. */
+	flex-wrap: wrap;
 }
 
 .post__badge {
 	width: calc(var(--unit) * 1.5);
 	height: calc(var(--unit) * 1.5);
 	margin-right: var(--unit);
+	opacity: 0.5;
 
 	&:last-child {
 		margin-right: 0;
 	}
-}
-
-.post__badge-icon {
-	/* Removes the weird spacing. */
-	display: block;
-	width: 100%;
-	height: 100%;
-	opacity: 0.5;
 }
 
 .post__actions {
@@ -78,13 +69,13 @@
 	}
 }
 
-.post__name-and-date {
+.post__account-name-and-date {
 	display : flex;
 	flex-direction : column;
 	margin-left : var(--unit);
 }
 
-.post__name {
+.post__account-name {
 	color : var(--base-color-dark);
 }
 
@@ -93,6 +84,30 @@
 	height : calc(var(--unit) * 4);
 	border-radius : var(--border-radius);
 	box-shadow : 0 0 0 1px var(--content-section-divider-color);
+}
+
+.post__author {
+	display: flex;
+	align-items: center;
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+	color: var(--gray-color);
+}
+
+.post__author-icon {
+	width: 1em;
+	height: 1em;
+	margin-right: 0.35em;
+	margin-bottom: 0.1em;
+}
+
+.post__author-name {
+	font-family: var(--font-family);
+	font-weight: 300;
+}
+
+.post__author-name + .post__author-name--2 {
+	margin-left: 0.35em;
 }
 
 .post__heading {
