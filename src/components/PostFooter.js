@@ -17,10 +17,10 @@ export default function PostFooter({ post, replies }) {
 					{post.commentsCount}
 				</div>
 			}
-			{post.attachmentsCount > 0 &&
+			{post.commentAttachmentsCount > 0 &&
 				<div className="post__footer__count">
 					<AttachmentsIcon className="post__footer__icon post__footer__icon--attachments-count"/>
-					{post.attachmentsCount}
+					{post.commentAttachmentsCount}
 				</div>
 			}
 			{replies && replies.length > 0 &&
@@ -39,6 +39,6 @@ PostFooter.propTypes = {
 
 export function hasFooter(post) {
 	return post.commentsCount > 0 ||
-		post.attachmentsCount > 0 ||
+		post.commentAttachmentsCount > 0 ||
 		(post.replies && post.replies.length > 0)
 }

@@ -34,8 +34,6 @@ export default class Post extends React.PureComponent {
 			PropTypes.number
 		])),
 		compact: PropTypes.bool,
-		commentsCount: PropTypes.number,
-		attachmentsCount: PropTypes.number,
 		expandFirstPictureOrVideo: PropTypes.bool,
 		saveBandwidth: PropTypes.bool,
 		serviceIcons: PropTypes.objectOf(PropTypes.func),
@@ -118,8 +116,6 @@ export default class Post extends React.PureComponent {
 			compact,
 			url,
 			locale,
-			commentsCount,
-			attachmentsCount,
 			expandFirstPictureOrVideo,
 			maxAttachmentThumbnails,
 			attachmentThumbnailSize,
