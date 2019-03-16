@@ -28,7 +28,18 @@
 }
 
 .post__inline-spoiler--hidden {
-	.post__inline-spoiler-contents {
+	/* A "censored" spoiler may be placed inside a regular "spoiler".
+	   Hence using the ">" selector. */
+	> .post__inline-spoiler-contents {
 		opacity: 0;
+	}
+}
+
+.post__inline-spoiler--hidden:not(.post__inline-spoiler--censored):hover {
+	background-color: transparent;
+	/* A "censored" spoiler may be placed inside a regular "spoiler".
+	   Hence using the ">" selector. */
+	> .post__inline-spoiler-contents {
+		opacity: 1;
 	}
 }

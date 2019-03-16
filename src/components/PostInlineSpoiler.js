@@ -8,11 +8,13 @@ export default class PostInlineSpoiler extends React.Component {
 	state = {}
 
 	show = () => this.setState({ show: true })
-	peek = () => this.setState({ peek: true })
-	unpeek = () => this.setState({ peek: false })
 
+	// Showing spoiler contents on click is also for
+	// mobile devices which don't have "hover" event.
 	onClick = (event) => {
-		// event.preventDefault()
+		// "Prevent default" to disable click fall-through.
+		// (for example, when links are placed inside spoilers).
+		event.preventDefault()
 		this.show()
 	}
 
@@ -25,7 +27,6 @@ export default class PostInlineSpoiler extends React.Component {
 		} = this.props
 
 		const {
-			peek,
 			show
 		} = this.state
 
@@ -34,13 +35,8 @@ export default class PostInlineSpoiler extends React.Component {
 				data-hide={!show && hidden ? true : undefined}
 				title={hidden && censored && typeof content === 'string' ? content : undefined}
 				onClick={this.onClick}
-				onPointerEnter={censored ? undefined : this.peek}
-				onPointerLeave={censored ? undefined : this.unpeek}
-				onTouchStart={this.peek}
-				onTouchEnd={this.unpeek}
-				onTouchCancel={this.unpeek}
 				className={classNames('post__inline-spoiler', {
-					'post__inline-spoiler--hidden': !show && !peek && hidden,
+					'post__inline-spoiler--hidden': !show && hidden,
 					'post__inline-spoiler--censored': censored
 				})}>
 				<span className="post__inline-spoiler-contents">
