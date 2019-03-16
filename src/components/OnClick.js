@@ -11,19 +11,31 @@ export default class OnClick extends React.Component {
 		panOffsetThreshold: PropTypes.number.isRequired,
 		onClick: PropTypes.func.isRequired,
 		link: PropTypes.string,
-		filter: PropTypes.func.isRequired,
+		filter: PropTypes.func,
 		onClickClassName: PropTypes.string,
 		className: PropTypes.string
 	}
 
 	static defaultProps = {
-		panOffsetThreshold: 5,
-		filter: () => true
+		panOffsetThreshold: 5
 	}
 
 	state = {}
 
 	shouldOpenLink = false
+
+	container = React.createRef()
+
+	filter(element) {
+		const { filter } = this.props
+		if (isClickable(element, this.container.current)) {
+			return false
+		}
+		if (filter && !filter(element)) {
+			return false
+		}
+		return true
+	}
 
 	onDragStart = (event) => {
 		event.preventDefault()
@@ -36,7 +48,7 @@ export default class OnClick extends React.Component {
 			// Reset.
 			return this.onTouchCancel()
 		}
-		if (!filter(event.target)) {
+		if (!this.filter(event.target)) {
 			return
 		}
 		this.onPanStart(
@@ -86,7 +98,7 @@ export default class OnClick extends React.Component {
 			default:
 				return this.onPanCancel()
 		}
-		if (!filter(event.target)) {
+		if (!this.filter(event.target)) {
 			return
 		}
 		this.onPanStart(
@@ -181,7 +193,7 @@ export default class OnClick extends React.Component {
 
 	onClick = (event) => {
 		const { filter } = this.props
-		if (filter(event.target)) {
+		if (this.filter(event.target)) {
 			event.preventDefault()
 		}
 	}
@@ -206,6 +218,7 @@ export default class OnClick extends React.Component {
 		return (
 			<div
 				{...rest}
+				ref={this.container}
 				onDragStart={this.onDragStart}
 				onTouchStart={this.onTouchStart}
 				onTouchEnd={this.onTouchEnd}
@@ -221,4 +234,16 @@ export default class OnClick extends React.Component {
 			</div>
 		)
 	}
+}
+
+function isClickable(element, maxParent) {
+	if (!element || element === maxParent) {
+		return false
+	}
+	switch (element.tagName) {
+		case 'A':
+		case 'BUTTON':
+			return true
+	}
+	return isClickable(element.parentNode)
 }

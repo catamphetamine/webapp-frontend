@@ -27,6 +27,8 @@
 	}
 }
 
-.post__inline-spoiler-contents--hidden {
-	opacity: 0;
+.post__inline-spoiler--hidden {
+	.post__inline-spoiler-contents {
+		opacity: 0;
+	}
 }

@@ -31,6 +31,7 @@ export default class PostInlineSpoiler extends React.Component {
 
 		return (
 			<span
+				data-hide={!show && hidden ? true : undefined}
 				title={hidden && censored && typeof content === 'string' ? content : undefined}
 				onClick={this.onClick}
 				onPointerEnter={censored ? undefined : this.peek}
@@ -42,10 +43,7 @@ export default class PostInlineSpoiler extends React.Component {
 					'post__inline-spoiler--hidden': !show && !peek && hidden,
 					'post__inline-spoiler--censored': censored
 				})}>
-				<span
-					className={classNames('post__inline-spoiler-contents', {
-						'post__inline-spoiler-contents--hidden': !show && !peek && hidden
-					})}>
+				<span className="post__inline-spoiler-contents">
 					{children}
 				</span>
 			</span>
