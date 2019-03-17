@@ -47,6 +47,12 @@
 	}
 }
 
+.post__attachment-thumbnail--spoiler {
+	.rrui__picture__image {
+		filter: blur(14px);
+	}
+}
+
 .post__attachment-thumbnail__more-count {
 	position : absolute;
 	top      : 0;

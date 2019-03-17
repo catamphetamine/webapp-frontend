@@ -2,12 +2,15 @@
 
 .rrui__picture
 {
-	position      : relative;
-	border-radius : inherit;
-	user-select   : none;
+	position: relative;
+	border-radius: inherit;
+	user-select: none;
 	/* Don't know why `font-size: 0` rule was added. */
 	/* Perhaps there was some whitespace. */
-	font-size : 0;
+	font-size: 0;
+	/* If the `<img/>` image is blurred then `overflow: hidden`
+	   prevents it bleeding over the edges. */
+	overflow: hidden;
 }
 
 /*

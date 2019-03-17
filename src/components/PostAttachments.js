@@ -152,7 +152,8 @@ export default function PostAttachments({
 									'post__attachment-thumbnail',
 									pictureOrVideo.type === 'picture' &&
 										pictureOrVideo.picture.kind &&
-										`post__attachment-thumbnail--${pictureOrVideo.picture.kind}`
+										`post__attachment-thumbnail--${pictureOrVideo.picture.kind}`,
+									pictureOrVideo.spoiler && 'post__attachment-thumbnail--spoiler'
 								)}>
 								{/* When copy-pasting content an `<img/>` inside a `<button/>`
 								    is ignored, that's why placing a "dummy" transparent pixel
