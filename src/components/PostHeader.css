@@ -15,18 +15,20 @@
 	flex-wrap: wrap;
 }
 
+.post__badge-container {
+	margin-right: var(--unit);
+	&:last-child {
+		margin-right: 0;
+	}
+}
+
 .post__badge {
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	width: calc(var(--unit) * 1.5);
 	height: calc(var(--unit) * 1.5);
-	margin-right: var(--unit);
 	opacity: 0.5;
-
-	&:last-child {
-		margin-right: 0;
-	}
 }
 
 .post__actions {

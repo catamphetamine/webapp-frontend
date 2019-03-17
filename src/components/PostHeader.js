@@ -73,12 +73,17 @@ export default class PostHeader extends React.PureComponent {
 								{badges.map(({ name, title, icon, getIcon, getIconProps }) => {
 									const Icon = getIcon ? getIcon(post, locale) : icon
 									const props = getIconProps && getIconProps(post, locale)
+									// `title` doesn't work on SVGs for some reason
+									// (perhaps because SVGs don't have background)
+									// so I moved `title` to a `<div/>`.
 									return (
 										<div
 											key={name}
 											title={title && title(post, locale)}
-											className={`post__badge post__badge--${name}`}>
-											<Icon {...props}/>
+											className="post__badge-container">
+											<Icon
+												{...props}
+												className={`post__badge post__badge--${name}`}/>
 										</div>
 									)
 								})}
