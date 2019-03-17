@@ -338,8 +338,9 @@ export const postShape = shape({
 
 export const postBadge = shape({
 	name: string.isRequired,
-	icon: func.isRequired,
-	title: func.isRequired,
+	icon: func,
+	getIcon: func,
+	title: func,
 	condition: func.isRequired
 })
 

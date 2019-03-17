@@ -16,6 +16,9 @@
 }
 
 .post__badge {
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	width: calc(var(--unit) * 1.5);
 	height: calc(var(--unit) * 1.5);
 	margin-right: var(--unit);
@@ -101,12 +104,17 @@
 	margin-bottom: 0.1em;
 }
 
-.post__author-name {
+.post__author-name,
+.post__author-name-2 {
 	font-family: var(--font-family);
 	font-weight: 300;
 }
 
-.post__author-name + .post__author-name--2 {
+.post__author-name {
+	color: var(--base-color-darkest);
+}
+
+.post__author-name + .post__author-name-2 {
 	margin-left: 0.35em;
 }
 

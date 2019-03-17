@@ -70,12 +70,18 @@ export default class PostHeader extends React.PureComponent {
 					<div className="post__actions">
 						{badges && badges.length > 0 &&
 							<div className="post__badges">
-								{badges.map(({ name, title, icon: Icon }) => (
-									<Icon
-										key={name}
-										title={title(locale)}
-										className={`post__badge post__badge--${name}`}/>
-								))}
+								{badges.map(({ name, title, icon, getIcon, getIconProps }) => {
+									const Icon = getIcon ? getIcon(post, locale) : icon
+									const props = getIconProps && getIconProps(post, locale)
+									return (
+										<div
+											key={name}
+											title={title && title(post, locale)}
+											className={`post__badge post__badge--${name}`}>
+											<Icon {...props}/>
+										</div>
+									)
+								})}
 							</div>
 						}
 						<button
@@ -95,7 +101,7 @@ export default class PostHeader extends React.PureComponent {
 							</div>
 						}
 						{post.authorName2 &&
-							<div className="post__author-name post__author-name--2">
+							<div className="post__author-name-2">
 								{post.authorName2}
 							</div>
 						}
