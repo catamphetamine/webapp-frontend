@@ -62,7 +62,8 @@ const VideoPlugin = {
 		wasExpanded,
 		onClick,
 		maxWidth,
-		maxHeight
+		maxHeight,
+		style
 	}) {
 		return (
 			<Video
@@ -74,6 +75,7 @@ const VideoPlugin = {
 				canPlay={isShown}
 				maxWidth={maxWidth}
 				maxHeight={maxHeight}
+				style={style}
 				className="rrui__slideshow__video"/>
 		)
 	}
@@ -109,7 +111,8 @@ const PicturePlugin = {
 		slide,
 		onClick,
 		maxWidth,
-		maxHeight
+		maxHeight,
+		style
 	}) {
 		// fit={shouldUpscaleSmallSlides ? 'contain' : 'scale-down'}
 		// onClick={onClickPrecise}
@@ -121,6 +124,7 @@ const PicturePlugin = {
 				showLoadingPlaceholder
 				maxWidth={maxWidth}
 				maxHeight={maxHeight}
+				style={style}
 				className="rrui__slideshow__picture"/>
 		)
 	}
@@ -893,7 +897,6 @@ class Slideshow extends React.PureComponent {
 				onWheel={this.onWheel}>
 				<ul
 					ref={this.slides}
-					onClick={this.onSlideClick}
 					style={{
 						// `will-change` performs the costly "Composite Layers"
 						// operation at mount instead of when navigating through slides.
@@ -908,7 +911,6 @@ class Slideshow extends React.PureComponent {
 					{slides.map((slide, j) => (
 						<li
 							key={j}
-							style={j === i ? this.getScaleStyle() : undefined}
 							className="rrui__slideshow__slide">
 							{slidesShown[j] && this.renderSlide(slide, j, expandedSlideIndex === j)}
 						</li>
@@ -1037,8 +1039,10 @@ class Slideshow extends React.PureComponent {
 			slide,
 			isShown,
 			wasExpanded,
+			onClick: this.onSlideClick,
 			maxWidth: this.getSlideshowWidth(),
 			maxHeight: this.getSlideshowHeight(),
+			style: isShown ? this.getScaleStyle() : undefined
 			// shouldUpscaleSmallSlides: this.shouldUpscaleSmallSlides()
 		})
 	}
