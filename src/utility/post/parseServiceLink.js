@@ -6,6 +6,10 @@
 export default function parseServiceLink(url) {
 	// Remove `/` in the end.
 	url = url.replace(/\/$/, '')
+	// Fix same protocol links.
+	if (url[0] === '/' && url[1] === '/') {
+		url = window.location.protocol + url
+	}
 	// `URL` is not available in IE11.
 	try {
 		url = new URL(url)
