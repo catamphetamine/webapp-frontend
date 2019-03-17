@@ -145,8 +145,6 @@ class Slideshow extends React.PureComponent {
 		// previousNextClickRatio: PropTypes.number.isRequired,
 		closeOnOverlayClick: PropTypes.bool.isRequired,
 		panOffsetThreshold: PropTypes.number.isRequired,
-		panOffsetPrevNextThreshold: PropTypes.number.isRequired,
-		panOffsetPrevNextWidthRatioThreshold: PropTypes.number.isRequired,
 		emulatePanResistanceOnClose: PropTypes.bool.isRequired,
 		slideInDuration: PropTypes.number.isRequired,
 		minSlideInDuration: PropTypes.number.isRequired,
@@ -175,10 +173,7 @@ class Slideshow extends React.PureComponent {
 		// previousNextClickRatio: 0,
 		closeOnOverlayClick: true,
 		panOffsetThreshold: 5,
-		panOffsetPrevNextThreshold: 20,
-		panOffsetPrevNextWidthRatioThreshold: 0.05,
 		emulatePanResistanceOnClose: false,
-		slideInDurationBaseWidth: 1980,
 		slideInDuration: 500,
 		minSlideInDuration: 150,
 		showScaleButtons: true,
@@ -196,7 +191,9 @@ class Slideshow extends React.PureComponent {
 	container = React.createRef()
 	slides = React.createRef()
 
-	panOffset = 0
+	panOffsetX = 0
+	panOffsetY = 0
+
 	transitionDuration = 0
 
 	constructor(props)
@@ -604,7 +601,10 @@ class Slideshow extends React.PureComponent {
 		if (isButton(event.target)) {
 			return
 		}
-		this.onPanStart(event.changedTouches[0].clientX)
+		this.onPanStart(
+			event.changedTouches[0].clientX,
+			event.changedTouches[0].clientY
+		)
 	}
 
 	onTouchEnd = (event) => {
@@ -619,7 +619,10 @@ class Slideshow extends React.PureComponent {
 
 	onTouchMove = (event) => {
 		if (this.isPanning) {
-			this.onPan(event.changedTouches[0].clientX)
+			this.onPan(
+				event.changedTouches[0].clientX,
+				event.changedTouches[0].clientY
+			)
 		}
 	}
 
@@ -638,7 +641,10 @@ class Slideshow extends React.PureComponent {
 		if (isButton(event.target)) {
 			return
 		}
-		this.onPanStart(event.clientX)
+		this.onPanStart(
+			event.clientX,
+			event.clientY
+		)
 	}
 
 	onMouseUp = () => {
@@ -649,7 +655,10 @@ class Slideshow extends React.PureComponent {
 
 	onMouseMove = (event) => {
 		if (this.isPanning) {
-			this.onPan(event.clientX)
+			this.onPan(
+				event.clientX,
+				event.clientY
+			)
 		}
 	}
 
@@ -659,81 +668,109 @@ class Slideshow extends React.PureComponent {
 		}
 	}
 
-	onPanStart(startingPosition) {
+	onPanStart(x, y) {
 		this.finishTransition()
 		this.isPanning = true
-		this.panOrigin = startingPosition
-		// `this.panOffset = 0` will do. No need for complicating things.
-		// this.panOffset = getTranslateX(this.slides.current) - this.state.i * this.getSlideshowWidth()
-		// This is for `this.emulatePanResistance()`
-		// so that it doesn't call DOM on each mousemove/touchmove.
+		this.panOriginX = x
+		this.panOriginY = y
 		this.slideshowWidth = this.getSlideshowWidth()
 	}
 
-	onActualPanStart(actualPanOrigin) {
-		this.panOrigin = actualPanOrigin
+	onActualPanStart(x, y) {
+		this.panOriginX = x
+		this.panOriginY = y
+		this.panSpeed = 0
+		this.panSpeedSampleOffset = undefined
+		this.panSpeedSampleTimestamp = undefined
 		this.isActuallyPanning = true
 		this.container.current.classList.add('rrui__slideshow--panning')
 	}
 
 	onPanEnd() {
 		const {
-			panOffsetPrevNextThreshold,
-			panOffsetPrevNextWidthRatioThreshold,
 			slideInDuration,
-			minSlideInDuration,
-			slideInDurationBaseWidth
+			minSlideInDuration
 		} = this.props
 
-		if (this.panOffset !== 0) {
-			const pannedWidthRatio = this.panOffset / this.getSlideshowWidth()
-			if (pannedWidthRatio < -1 * panOffsetPrevNextThreshold ||
-				this.panOffset < -1 * panOffsetPrevNextWidthRatioThreshold) {
-				this.showNext()
-			} else if (pannedWidthRatio > panOffsetPrevNextWidthRatioThreshold ||
-				this.panOffset > panOffsetPrevNextThreshold) {
-				this.showPrevious()
+		if (this.panOffsetX || this.panOffsetY) {
+			this.calculatePanSpeedThrottled()
+			if (this.panOffsetX !== 0) {
+				const speedFactor = Math.exp(this.panSpeed * 4)
+				const pannedWidthRatio = this.panOffsetX / this.getSlideshowWidth()
+				if (pannedWidthRatio < -1 * 0.5 / speedFactor) {
+					this.showNext()
+				} else if (pannedWidthRatio > 0.5 / speedFactor) {
+					this.showPrevious()
+				}
+				this.panOffsetX = 0
+				this.transitionDuration = minSlideInDuration + Math.abs(pannedWidthRatio) * (slideInDuration - minSlideInDuration)
+			} else if (this.panOffsetY !== 0) {
+				const pannedHeightRatio = Math.abs(this.panOffsetY) / this.getSlideshowHeight()
+				const speedFactor = Math.pow(this.panSpeed * 5, 2)
+				if (pannedHeightRatio > 0.5 / speedFactor) {
+					this.close()
+				}
+				this.panOffsetY = 0
+				this.transitionDuration = minSlideInDuration + Math.abs(pannedHeightRatio) * (slideInDuration - minSlideInDuration)
 			}
-			this.transitionDuration = minSlideInDuration + Math.abs(pannedWidthRatio) * (slideInDuration - minSlideInDuration) * (this.getSlideshowWidth() / slideInDurationBaseWidth)
 			this.updateSlideTransitionDuration()
-			this.panOffset = 0
 			this.updateSlidePosition()
 			this.transitionOngoing = true
 			this.transitionEndTimer = setTimeout(this.ifStillMounted(this.onTransitionEnd), this.transitionDuration)
-			// this.refreshPanToCloseStyle()
 		}
+		// Rest.
 		this.container.current.classList.remove('rrui__slideshow--panning')
 		this.wasPanning = this.isActuallyPanning
 		setTimeout(this.ifStillMounted(() => this.wasPanning = false), 0)
 		this.isActuallyPanning = false
 		this.isPanning = false
+		this.panDirection = undefined
 	}
 
-	onPan(position) {
+	onPan(positionX, positionY) {
 		const {
 			emulatePanResistanceOnClose,
 			panOffsetThreshold
 		} = this.props
 
 		if (!this.isActuallyPanning) {
-			const panOffset = position - this.panOrigin
+			const panOffsetX = positionX - this.panOriginX
+			const panOffsetY = positionY - this.panOriginY
 			// Don't treat accidental `touchmove`
 			// (or `mousemove`) events as panning.
-			if (Math.abs(panOffset) <= panOffsetThreshold) {
+			const isPanningX = Math.abs(panOffsetX) > panOffsetThreshold
+			const isPanningY = Math.abs(panOffsetY) > panOffsetThreshold
+			if (!isPanningX && !isPanningY) {
 				return
 			}
-			this.onActualPanStart(this.panOrigin + Math.sign(panOffset) * panOffsetThreshold)
+			this.onActualPanStart(
+				this.panOriginX + Math.sign(panOffsetX) * panOffsetThreshold,
+				this.panOriginY + Math.sign(panOffsetY) * panOffsetThreshold,
+			)
+			// Can only pan in one direction: either horizontally or vertically.
+			this.panDirection = isPanningX ? 'horizontal' : 'vertical'
 		}
 
-		this.panOffset = position - this.panOrigin
+		if (this.panDirection === 'horizontal') {
+			this.panOffsetX = positionX - this.panOriginX
+		} else {
+			this.panOffsetY = positionY - this.panOriginY
+		}
+
+		// Calculate speed.
+		this.calculatePanSpeedThrottled()
 
 		// Emulate pan resistance when there are
 		// no more slides to navigate to.
 		if (emulatePanResistanceOnClose) {
-			if ((this.isFirst() && this.panOffset > 0) ||
-				(this.isLast() && this.panOffset < 0)) {
-				// this.refreshPanToCloseStyle()
-				this.panOffset = this.emulatePanResistance(this.panOffset)
+			if (this.panDirection === 'horizontal') {
+				if ((this.isFirst() && this.panOffsetX > 0) ||
+					(this.isLast() && this.panOffsetX < 0)) {
+					// this.refreshPanToCloseStyle()
+					this.panOffsetX = this.emulatePanResistance(this.panOffsetX)
+				}
+			} else {
+				this.panOffsetY = this.emulatePanResistance(this.panOffsetY)
 			}
 		}
 		// this.panToCloseOffsetNormalized = undefined
@@ -754,22 +791,24 @@ class Slideshow extends React.PureComponent {
 		}
 	}
 
-	// refreshPanToCloseStyle() {
-	// 	const {
-	// 		panOffsetPrevNextWidthRatioThreshold
-	// 	} = this.props
-	// 	const coefficient = 3
-	// 	this.panToCloseOffsetNormalized = Math.abs(this.panOffset / this.getSlideshowWidth()) / (panOffsetPrevNextWidthRatioThreshold * coefficient)
-	// 	if (this.panToCloseOffsetNormalized > 1) {
-	// 		this.panToCloseOffsetNormalized = 1
-	// 	}
-	// 	this.container.current.style.backgroundColor = this.getBackgroundColor()
-	// 	// this.container.current.style.opacity = 1 - this.panToCloseOffsetNormalized
-	// }
+	calculatePanSpeed() {
+		const now = Date.now()
+		const offset = this.panDirection === 'horizontal' ? this.panOffsetX : this.panOffsetY
+		if (this.panSpeedSampleTimestamp && this.panSpeedSampleOffset) {
+			const dt = now - this.panSpeedSampleTimestamp
+			if (dt > 0) {
+				const dxy = offset - this.panSpeedSampleOffset
+				this.panSpeed = Math.abs(dxy) / dt
+			}
+		}
+		this.panSpeedSampleTimestamp = now
+		this.panSpeedSampleOffset = offset
+	}
+
+	calculatePanSpeedThrottled = throttle(this.calculatePanSpeed, 10)
 
 	finishTransition() {
 		if (this.transitionOngoing) {
-			// this.panOffset = current transitionX
 			this.onTransitionEnd()
 			clearTimeout(this.transitionEndTimer)
 		}
@@ -791,7 +830,7 @@ class Slideshow extends React.PureComponent {
 
 	getTransform() {
 		const { i } = this.state
-		return `translateX(${-1 * (this.getSlideshowWidth() * i - this.panOffset)}px)`
+		return `translate(${-1 * (this.getSlideshowWidth() * i - this.panOffsetX)}px, ${this.panOffsetY}px)`
 	}
 
 	getScaleStyle() {
