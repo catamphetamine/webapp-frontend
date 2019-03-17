@@ -8,21 +8,22 @@
 	align-items: flex-start;
 }
 
-.post__badges {
+.post__header-badges {
 	display: flex;
 	margin-right: var(--unit);
 	/* Fallback for really small screens. */
 	flex-wrap: wrap;
+	user-select: none;
 }
 
-.post__badge-container {
+.post__header-badge-container {
 	margin-right: var(--unit);
 	&:last-child {
 		margin-right: 0;
 	}
 }
 
-.post__badge {
+.post__header-badge {
 	display: flex;
 	align-items: center;
 	justify-content: center;

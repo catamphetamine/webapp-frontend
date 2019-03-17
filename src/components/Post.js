@@ -28,7 +28,8 @@ export default class Post extends React.PureComponent {
 	static propTypes = {
 		post: postShape.isRequired,
 		thread: PropTypes.object,
-		badges: PropTypes.arrayOf(postBadge),
+		headerBadges: PropTypes.arrayOf(postBadge),
+		footerBadges: PropTypes.arrayOf(postBadge),
 		replies: PropTypes.arrayOf(oneOfType([
 			PropTypes.string,
 			PropTypes.number
@@ -111,7 +112,8 @@ export default class Post extends React.PureComponent {
 		const {
 			post,
 			thread,
-			badges,
+			headerBadges,
+			footerBadges,
 			replies,
 			compact,
 			url,
@@ -143,7 +145,7 @@ export default class Post extends React.PureComponent {
 					post={post}
 					thread={thread}
 					url={url}
-					badges={badges}
+					badges={headerBadges}
 					locale={locale}/>
 				{postContent &&
 					<div className="post__content">
@@ -170,9 +172,10 @@ export default class Post extends React.PureComponent {
 					openSlideshow={openSlideshow && this.openSlideshowForAttachments}>
 					{this.getNonEmbeddedAttachments()}
 				</PostAttachments>
-				{hasFooter(post) &&
-					<PostFooter post={post} replies={replies}/>
-				}
+				<PostFooter
+					post={post}
+					badges={footerBadges}
+					locale={locale}/>
 			</article>
 		);
 	}

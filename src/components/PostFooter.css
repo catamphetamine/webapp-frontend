@@ -23,38 +23,28 @@
 	}
 }
 
-.post__footer__icon {
-	width: 1em;
-	height: 1em;
-}
-
-.post__footer__icon--comments-count {
-	margin-top: -0.1em;
-	margin-right: 0.35em;
-}
-
-.post__footer__icon--attachments-count {
-	width: 0.95em;
-	height: 0.95em;
-	margin-top: -0.05em;
-	margin-right: 0.35em;
-}
-
-.post__footer__icon--replies-count {
-	/* The arrow icon's left side by default doesn't align
-	   perfectly with the text's left border. */
-	margin-left: 0.05em;
-	margin-right: 0.35em;
-}
-
-.post__footer__count {
+.post__footer-badges {
 	display: flex;
-	align-items: center;
+	margin-right: var(--unit);
+	/* Fallback for really small screens. */
+	flex-wrap: wrap;
 	/* `cursor: default` overrides <OnClick/>'s `cursor: pointer`. */
 	/* cursor: default; */
 	user-select: none;
 }
 
-.post__footer__count:not(:last-child) {
+.post__footer-badge {
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	margin-right: calc(var(--unit) * 1.5);
+	&:last-child {
+		margin-right: 0;
+	}
+}
+
+.post__footer-badge-icon {
+	width: 1em;
+	height: 1em;
+	margin-right: 0.35em;
 }

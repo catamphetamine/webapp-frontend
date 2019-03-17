@@ -1,44 +1,41 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
-import { postShape } from '../PropTypes'
-
-import CommentsIcon from '../../assets/images/icons/menu/message-outline.svg'
-import AttachmentsIcon from '../../assets/images/icons/picture.svg'
-import ReplyIcon from '../../assets/images/icons/reply.svg'
+import { postShape, postBadge } from '../PropTypes'
 
 import './PostFooter.css'
 
-export default function PostFooter({ post, replies }) {
+export default function PostFooter({ post, badges, locale }) {
+	if (badges) {
+		badges = badges.filter(_ => _.condition(post))
+	}
+	if (!badges || badges.length === 0) {
+		return null
+	}
 	return (
 		<footer className="post__footer">
-			{post.commentsCount > 0 &&
-				<div className="post__footer__count">
-					<CommentsIcon className="post__footer__icon post__footer__icon--comments-count"/>
-					{post.commentsCount}
-				</div>
-			}
-			{post.commentAttachmentsCount > 0 &&
-				<div className="post__footer__count">
-					<AttachmentsIcon className="post__footer__icon post__footer__icon--attachments-count"/>
-					{post.commentAttachmentsCount}
-				</div>
-			}
-			{replies && replies.length > 0 &&
-				<div className="post__footer__count">
-					<ReplyIcon className="post__footer__icon post__footer__icon--replies-count"/>
-					{replies.length}
-				</div>
-			}
+			<div className="post__footer-badges">
+				{/*
+				// `title` doesn't work on SVGs for some reason
+				// (perhaps because SVGs don't have background)
+				// so I moved `title` to a `<div/>`.
+				*/}
+				{badges.map(({ name, icon: Icon, title, content }) => (
+					<div
+						key={name}
+						title={title && title(post, locale)}
+						className="post__footer-badge">
+						<Icon className={`post__footer-badge-icon post__footer-badge-icon--${name}`}/>
+						{content(post)}
+					</div>
+				))}
+			</div>
 		</footer>
 	)
 }
 
 PostFooter.propTypes = {
-	post: postShape.isRequired
-}
-
-export function hasFooter(post) {
-	return post.commentsCount > 0 ||
-		post.commentAttachmentsCount > 0 ||
-		(post.replies && post.replies.length > 0)
+	post: postShape.isRequired,
+	badges: PropTypes.arrayOf(postBadge),
+	locale: PropTypes.string
 }

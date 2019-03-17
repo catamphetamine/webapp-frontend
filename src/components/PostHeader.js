@@ -69,7 +69,7 @@ export default class PostHeader extends React.PureComponent {
 					</div>
 					<div className="post__actions">
 						{badges && badges.length > 0 &&
-							<div className="post__badges">
+							<div className="post__header-badges">
 								{badges.map(({ name, title, icon, getIcon, getIconProps }) => {
 									const Icon = getIcon ? getIcon(post, locale) : icon
 									const props = getIconProps && getIconProps(post, locale)
@@ -80,10 +80,10 @@ export default class PostHeader extends React.PureComponent {
 										<div
 											key={name}
 											title={title && title(post, locale)}
-											className="post__badge-container">
+											className="post__header-badge-container">
 											<Icon
 												{...props}
-												className={`post__badge post__badge--${name}`}/>
+												className={`post__header-badge post__header-badge--${name}`}/>
 										</div>
 									)
 								})}
