@@ -36,9 +36,9 @@ const VideoPlugin = {
 		}
 		return getAspectRatio(slide.picture)
 	},
-	isScaleDownAllowed(slide) {
-		return false
-	},
+	// isScaleDownAllowed(slide) {
+	// 	return false
+	// },
 	canDownload(slide) {
 		switch (slide.source.provider) {
 			case 'file':
@@ -86,9 +86,9 @@ const PicturePlugin = {
 	getAspectRatio(slide) {
 		return getAspectRatio(slide)
 	},
-	isScaleDownAllowed(slide) {
-		return isVector(slide)
-	},
+	// isScaleDownAllowed(slide) {
+	// 	return isVector(slide)
+	// },
 	canDownload(slide) {
 		return true
 	},
@@ -362,7 +362,10 @@ class Slideshow extends React.PureComponent {
 	// Won't scale down past the original 1:1 size.
 	// (for non-vector images)
 	doesAllowScalingDownCurrentSlide() {
-		return this.getPluginForSlide().isScaleDownAllowed(this.getCurrentSlide())
+		if (this.getPluginForSlide().isScaleDownAllowed) {
+			return this.getPluginForSlide().isScaleDownAllowed(this.getCurrentSlide())
+		}
+		return true
 	}
 
 	getCurrentSlide() {
@@ -890,6 +893,7 @@ class Slideshow extends React.PureComponent {
 				onWheel={this.onWheel}>
 				<ul
 					ref={this.slides}
+					onClick={this.onSlideClick}
 					style={{
 						// `will-change` performs the costly "Composite Layers"
 						// operation at mount instead of when navigating through slides.
@@ -1033,10 +1037,8 @@ class Slideshow extends React.PureComponent {
 			slide,
 			isShown,
 			wasExpanded,
-			onClick: this.onSlideClick,
 			maxWidth: this.getSlideshowWidth(),
 			maxHeight: this.getSlideshowHeight(),
-			// onClickPrecise: this.onSlideClickPrecise,
 			// shouldUpscaleSmallSlides: this.shouldUpscaleSmallSlides()
 		})
 	}
