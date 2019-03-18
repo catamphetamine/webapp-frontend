@@ -3,6 +3,9 @@ import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import throttle from 'lodash/throttle'
 
+// `body-scroll-lock` has been modified a bit, see the info in the header of the file.
+import { disableBodyScroll, enableBodyScroll, clearAllBodyScrollLocks } from '../utility/body-scroll-lock'
+
 import Picture, { getAspectRatio, getMaxSize as getMaxPictureSize, isVector } from './Picture'
 import Video, { getMaxSize as getMaxVideoSize } from './Video'
 
@@ -123,7 +126,7 @@ const PicturePlugin = {
 				picture={slide}
 				fit="contain"
 				onClick={onClick}
-				showLoadingPlaceholder
+				showLoadingIndicator
 				maxWidth={maxWidth}
 				maxHeight={maxHeight}
 				style={style}
@@ -221,7 +224,27 @@ class Slideshow extends React.PureComponent {
 			this.unlistenFullScreen = onFullScreenChange(this.onFullScreenChange)
 		}
 		window.addEventListener('resize', this.onWindowResize)
+		// Without this in iOS Safari body content would scroll.
+		// https://medium.com/jsdownunder/locking-body-scroll-for-all-devices-22def9615177
+		const scrollBarWidth = getScrollBarWidth()
+		disableBodyScroll(this.container.current, {
+			// Apply the scrollbar-compensating padding immediately when setting
+			// body's `overflow: hidden` to prevent "jitter" ("jank") (visual lag).
+			// (for the `<body/>`)
+			reserveScrollBarGap: true,
+			onBodyOverflowHide: () => {
+				// Apply the scrollbar-compensating padding immediately when setting
+				// body's `overflow: hidden` to prevent "jitter" ("jank") (visual lag).
+				// (for the slideshow `position: fixed` layer)
+				this.container.current.style.paddingRight = scrollBarWidth + 'px'
+				// Render the slideshow with scrollbar-compensating padding in future re-renders.
+				this.containerStyle = {
+					paddingRight: scrollBarWidth + 'px'
+				}
+			}
+		})
 		// `this.slides.current` is now available for `this.getSlideshowWidth()`.
+		// Also updates `this.containerStyle` for scrollbar width compensation.
 		this.forceUpdate()
 		this._isMounted = true
 	}
@@ -238,6 +261,9 @@ class Slideshow extends React.PureComponent {
 		clearTimeout(this.transitionEndTimer)
 		window.removeEventListener('resize', this.onWindowResize)
 		this._isMounted = false
+		// Disable `body-scroll-lock` (as per their README).
+		enableBodyScroll(this.container.current)
+		clearAllBodyScrollLocks()
 	}
 
 	// Only execute `fn` if the component is still mounted.
@@ -595,6 +621,7 @@ class Slideshow extends React.PureComponent {
 	}
 
 	onTouchStart = (event) => {
+		this.isTouchDevice = true
 		// Ignore multitouch.
 		if (event.touches.length > 1) {
 			// Reset.
@@ -665,8 +692,12 @@ class Slideshow extends React.PureComponent {
 	}
 
 	onMouseLeave = () => {
-		if (this.isPanning) {
-			this.onPanEnd()
+		// `onMouseLeave` is called immediately
+		// when starting to pan on touch devices.
+		if (!this.isTouchDevice) {
+			if (this.isPanning) {
+				this.onPanEnd()
+			}
 		}
 	}
 
@@ -922,6 +953,7 @@ class Slideshow extends React.PureComponent {
 			<div
 				ref={this.container}
 				tabIndex={-1}
+				style={this.containerStyle}
 				className={classNames('rrui__slideshow', {
 					'rrui__slideshow--fullscreen': !inline,
 					'rrui__slideshow--panning': this.isActuallyPanning
@@ -938,138 +970,140 @@ class Slideshow extends React.PureComponent {
 				onPointerOut={this.onMouseLeave}
 				onClick={this.onBackgroundClick}
 				onWheel={this.onWheel}>
-				<ul
-					ref={this.slides}
-					style={{
-						// `will-change` performs the costly "Composite Layers"
-						// operation at mount instead of when navigating through slides.
-						// Otherwise that "Composite Layers" operation would take about
-						// 30ms a couple of times sequentially causing a visual lag.
-						willChange: 'transform',
-						transitionDuration: this.transitionDuration,
-						transform: this.slides.current ? this.getTransform() : undefined,
-						opacity: this.slides.current ? 1 : 0
-					}}
-					className="rrui__slideshow__slides">
-					{slides.map((slide, j) => (
-						<li
-							key={j}
-							className="rrui__slideshow__slide">
-							{slidesShown[j] && this.renderSlide(slide, j, expandedSlideIndex === j)}
-						</li>
-					))}
-				</ul>
+				<div style={{ position: 'relative', width: '100%', height: '100%' }}>
+					<ul
+						ref={this.slides}
+						style={{
+							// `will-change` performs the costly "Composite Layers"
+							// operation at mount instead of when navigating through slides.
+							// Otherwise that "Composite Layers" operation would take about
+							// 30ms a couple of times sequentially causing a visual lag.
+							willChange: 'transform',
+							transitionDuration: this.transitionDuration,
+							transform: this.slides.current ? this.getTransform() : undefined,
+							opacity: this.slides.current ? 1 : 0
+						}}
+						className="rrui__slideshow__slides">
+						{slides.map((slide, j) => (
+							<li
+								key={j}
+								className="rrui__slideshow__slide">
+								{slidesShown[j] && this.renderSlide(slide, j, expandedSlideIndex === j)}
+							</li>
+						))}
+					</ul>
 
-				<ul className="rrui__slideshow__actions-top-right">
-					{this.shouldShowScaleButton() &&
-						<li className={classNames('rrui__slideshow__action-item', {
-							'rrui__slideshow__action-group': showScaleButtons
-						})}>
-							{showScaleButtons &&
-								<button
-									type="button"
-									title={messages.actions.scaleDown}
-									onClick={this.onScaleDown}
-									className="rrui__button-reset rrui__slideshow__action">
-									<Minus className="rrui__slideshow__action-icon"/>
-								</button>
-							}
-							<button
-								type="button"
-								title={messages.actions.scaleReset}
-								onClick={this.onScaleToggle}
-								className="rrui__button-reset rrui__slideshow__action">
-								<ScaleFrame className="rrui__slideshow__action-icon"/>
-							</button>
-							{showScaleButtons &&
-								<button
-									type="button"
-									title={messages.actions.scaleUp}
-									onClick={this.onScaleUp}
-									className="rrui__button-reset rrui__slideshow__action">
-									<Plus className="rrui__slideshow__action-icon"/>
-								</button>
-							}
-						</li>
-					}
-
-					{this.shouldShowDownloadButton() &&
-						<li className="rrui__slideshow__action-item">
-							<a
-								download
-								target="_blank"
-								title={messages.actions.download}
-								href={this.getPluginForSlide().getDownloadLink(this.getCurrentSlide())}
-								className="rrui__slideshow__action rrui__slideshow__action--link">
-								<Download className="rrui__slideshow__action-icon rrui__slideshow__action-icon--download"/>
-							</a>
-						</li>
-					}
-
-					{this.getOtherActions().map(({ name, icon: Icon, link, action }) => {
-						const icon = <Icon className={`rrui__slideshow__action-icon rrui__slideshow__action-icon--${name}`}/>
-						return (
-							<li key={name} className="rrui__slideshow__action-item">
-								{link &&
-									<a
-										target="_blank"
-										href={link}
-										title={messages.actions[name]}
-										className="rrui__slideshow__action rrui__slideshow__action--link">
-										{icon}
-									</a>
-								}
-								{!link &&
+					<ul className="rrui__slideshow__actions-top-right">
+						{this.shouldShowScaleButton() &&
+							<li className={classNames('rrui__slideshow__action-item', {
+								'rrui__slideshow__action-group': showScaleButtons
+							})}>
+								{showScaleButtons &&
 									<button
 										type="button"
-										onClick={action}
-										title={messages.actions[name]}
+										title={messages.actions.scaleDown}
+										onClick={this.onScaleDown}
 										className="rrui__button-reset rrui__slideshow__action">
-										{icon}
+										<Minus className="rrui__slideshow__action-icon"/>
+									</button>
+								}
+								<button
+									type="button"
+									title={messages.actions.scaleReset}
+									onClick={this.onScaleToggle}
+									className="rrui__button-reset rrui__slideshow__action">
+									<ScaleFrame className="rrui__slideshow__action-icon"/>
+								</button>
+								{showScaleButtons &&
+									<button
+										type="button"
+										title={messages.actions.scaleUp}
+										onClick={this.onScaleUp}
+										className="rrui__button-reset rrui__slideshow__action">
+										<Plus className="rrui__slideshow__action-icon"/>
 									</button>
 								}
 							</li>
-						)
-					})}
+						}
 
-					{this.shouldShowCloseButton() &&
-						<li className="rrui__slideshow__action-item">
-							<button
-								type="button"
-								title={messages.actions.close}
-								onClick={this.close}
-								className="rrui__button-reset rrui__slideshow__action">
-								<Close className="rrui__slideshow__action-icon"/>
-							</button>
-						</li>
+						{this.shouldShowDownloadButton() &&
+							<li className="rrui__slideshow__action-item">
+								<a
+									download
+									target="_blank"
+									title={messages.actions.download}
+									href={this.getPluginForSlide().getDownloadLink(this.getCurrentSlide())}
+									className="rrui__slideshow__action rrui__slideshow__action--link">
+									<Download className="rrui__slideshow__action-icon rrui__slideshow__action-icon--download"/>
+								</a>
+							</li>
+						}
+
+						{this.getOtherActions().map(({ name, icon: Icon, link, action }) => {
+							const icon = <Icon className={`rrui__slideshow__action-icon rrui__slideshow__action-icon--${name}`}/>
+							return (
+								<li key={name} className="rrui__slideshow__action-item">
+									{link &&
+										<a
+											target="_blank"
+											href={link}
+											title={messages.actions[name]}
+											className="rrui__slideshow__action rrui__slideshow__action--link">
+											{icon}
+										</a>
+									}
+									{!link &&
+										<button
+											type="button"
+											onClick={action}
+											title={messages.actions[name]}
+											className="rrui__button-reset rrui__slideshow__action">
+											{icon}
+										</button>
+									}
+								</li>
+							)
+						})}
+
+						{this.shouldShowCloseButton() &&
+							<li className="rrui__slideshow__action-item">
+								<button
+									type="button"
+									title={messages.actions.close}
+									onClick={this.close}
+									className="rrui__button-reset rrui__slideshow__action">
+									<Close className="rrui__slideshow__action-icon"/>
+								</button>
+							</li>
+						}
+					</ul>
+
+					{slides.length > 1 && i > 0 &&
+						<button
+							type="button"
+							title={messages.actions.previous}
+							onClick={this.onShowPrevious}
+							className="rrui__button-reset rrui__slideshow__action rrui__slideshow__previous">
+							<LeftArrow className="rrui__slideshow__action-icon"/>
+						</button>
 					}
-				</ul>
 
-				{slides.length > 1 && i > 0 &&
-					<button
-						type="button"
-						title={messages.actions.previous}
-						onClick={this.onShowPrevious}
-						className="rrui__button-reset rrui__slideshow__action rrui__slideshow__previous">
-						<LeftArrow className="rrui__slideshow__action-icon"/>
-					</button>
-				}
+					{slides.length > 1 && i < slides.length - 1 &&
+						<button
+							type="button"
+							title={messages.actions.next}
+							onClick={this.onShowNext}
+							className="rrui__button-reset rrui__slideshow__action rrui__slideshow__next">
+							<RightArrow className="rrui__slideshow__action-icon"/>
+						</button>
+					}
 
-				{slides.length > 1 && i < slides.length - 1 &&
-					<button
-						type="button"
-						title={messages.actions.next}
-						onClick={this.onShowNext}
-						className="rrui__button-reset rrui__slideshow__action rrui__slideshow__next">
-						<RightArrow className="rrui__slideshow__action-icon"/>
-					</button>
-				}
-
-				{slides.length > 1 &&
-					<div className="rrui__slideshow__progress rrui__slideshow__controls-center rrui__slideshow__controls-bottom">
-						<SlideshowProgress i={i} count={slides.length}/>
-					</div>
-				}
+					{slides.length > 1 &&
+						<div className="rrui__slideshow__progress rrui__slideshow__controls-center rrui__slideshow__controls-bottom">
+							<SlideshowProgress i={i} count={slides.length}/>
+						</div>
+					}
+				</div>
 			</div>
 		)
 	}
@@ -1215,3 +1249,7 @@ function createRange(N) {
 // 	left: '22%',
 // 	top: '22%'
 // }
+
+function getScrollBarWidth() {
+	return window.innerWidth - document.documentElement.clientWidth
+}

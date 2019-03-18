@@ -41,6 +41,11 @@ export default class Picture extends PureComponent
 		border : PropTypes.bool.isRequired,
 
 		// Can show a spinner while the initial image is loading.
+		// Will display the image over the loading indicator.
+		showLoadingIndicator : PropTypes.bool.isRequired,
+
+		// Can show a spinner while the initial image is loading.
+		// Will show the image only after it loads.
 		showLoadingPlaceholder : PropTypes.bool.isRequired,
 
 		// // `<img/>` fade in duration.
@@ -85,6 +90,7 @@ export default class Picture extends PureComponent
 		fit: 'width',
 		border: false,
 		showLoadingPlaceholder: false,
+		showLoadingIndicator: false,
 		saveBandwidth: false,
 		// fadeInDuration: 0
 	}
@@ -181,6 +187,7 @@ export default class Picture extends PureComponent
 			fit,
 			border,
 			showLoadingPlaceholder,
+			showLoadingIndicator,
 			// fadeInDuration,
 			style,
 			className,
@@ -212,6 +219,8 @@ export default class Picture extends PureComponent
 		// 	}
 		// }
 
+		const showImagePlaceholder = showLoadingPlaceholder && !initialImageLoaded
+
 		return (
 			<div
 				ref={ this.container }
@@ -231,7 +240,7 @@ export default class Picture extends PureComponent
 				dynamically (via javascript): by the time the component mounts
 				`this.getContainerWidth()` returns screen width and not the actual
 				`<div/>` width, so aspect ratio is unknown at mount in those cases. */}
-				{ !initialImageLoaded && fit !== 'width' && showLoadingPlaceholder &&
+				{ ((showLoadingPlaceholder || showLoadingIndicator) && !initialImageLoaded) && fit !== 'width' &&
 					<div className="rrui__picture__loading-container">
 						<FadeInOut show fadeInInitially fadeInDuration={3000} fadeOutDuration={3000}>
 							{initialImageLoadError ?
@@ -240,7 +249,7 @@ export default class Picture extends PureComponent
 									title="Retry"
 									className="rrui__picture__loading rrui__picture__loading--error"/>
 								:
-								<ActivityIndicator className="rrui__picture__loading"/>
+								<ActivityIndicator className="post__attachment-thumbnail__loading-indicator"/>
 							}
 						</FadeInOut>
 					</div>
@@ -251,7 +260,7 @@ export default class Picture extends PureComponent
 					</FadeInOut>
 				*/}
 
-				{ initialImageLoaded && fit !== 'repeat-x' &&
+				{ !(showLoadingPlaceholder && !initialImageLoaded) && fit !== 'repeat-x' &&
 					<img
 						ref={ this.picture }
 						src={ typeof window === 'undefined' ? TRANSPARENT_PIXEL : (this.getUrl() || TRANSPARENT_PIXEL) }
@@ -332,7 +341,7 @@ export default class Picture extends PureComponent
 	onImageChange(newSize) {
 		const { size } = this.state
 		if (!size) {
-			prefetchImage(newSize.url).then(() => {
+			preloadImage(newSize.url).then(() => {
 				if (this._isMounted) {
 					this.setState({ initialImageLoaded: true })
 				}
@@ -509,10 +518,9 @@ class InteractiveResize
 }
 
 // Preloads an image before displaying it.
-function prefetchImage(url) {
+export function preloadImage(url) {
 	return new Promise((resolve, reject) => {
 		const image = new Image()
-		// image.onload = () => setTimeout(resolve, 1000)
 		image.onload = resolve
 		image.onerror = (event) => {
 			if (event.path && event.path[0]) {
