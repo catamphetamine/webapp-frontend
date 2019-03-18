@@ -15,7 +15,8 @@ import ScaleFrame from '../../assets/images/icons/scale-frame.svg'
 import Plus from '../../assets/images/icons/plus.svg'
 import Minus from '../../assets/images/icons/minus.svg'
 
-import GoogleIcon from '../../assets/images/icons/services/google-thin-monochrome.svg'
+// import GoogleIcon from '../../assets/images/icons/services/google-thin-monochrome.svg'
+// import GoogleIcon from '../../assets/images/icons/services/google-monochrome.svg'
 
 import './Slideshow.css'
 
@@ -101,7 +102,7 @@ const PicturePlugin = {
 	getOtherActions(slide) {
 		return [{
 			name: 'searchInGoogle',
-			icon: GoogleIcon,
+			icon: Search, // SearchInGoogleIcon
 			link: `https://images.google.com/searchbyimage?image_url=${slide.sizes[slide.sizes.length - 1].url}`
 		}]
 	},
@@ -1192,3 +1193,25 @@ function createRange(N) {
 	}
 	return range
 }
+
+// function SearchInGoogleIcon({ className }) {
+// 	return (
+// 		<div className={className}>
+// 			<Search style={SEARCH_IN_GOOGLE_SEARCH_ICON_STYLE}/>
+// 			<GoogleIcon style={SEARCH_IN_GOOGLE_GOOGLE_ICON_STYLE}/>
+// 		</div>
+// 	)
+// }
+
+// const SEARCH_IN_GOOGLE_SEARCH_ICON_STYLE = {
+// 	width: '100%',
+// 	height: '100%',
+// }
+
+// const SEARCH_IN_GOOGLE_GOOGLE_ICON_STYLE = {
+// 	width: '40%',
+// 	height: '40%',
+// 	position: 'absolute',
+// 	left: '22%',
+// 	top: '22%'
+// }
