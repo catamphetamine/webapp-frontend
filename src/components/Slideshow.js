@@ -145,7 +145,9 @@ class Slideshow extends React.PureComponent {
 		messages: PropTypes.object.isRequired,
 		onClose: PropTypes.func.isRequired,
 		i: PropTypes.number.isRequired,
+		// Set to `true` to open slideshow in inline mode (rather than in a modal).
 		inline: PropTypes.bool.isRequired,
+		// Set to `true` to open slideshow in "native" browser fullscreen mode.
 		fullScreen: PropTypes.bool.isRequired,
 		overlayOpacity: PropTypes.number.isRequired,
 		// previousNextClickRatio: PropTypes.number.isRequired,
@@ -216,7 +218,7 @@ class Slideshow extends React.PureComponent {
 	}
 
 	componentDidMount() {
-		const { fullScreen } = this.props
+		const { fullScreen, inline } = this.props
 		if (document.activeElement) {
 			this.returnFocusTo = document.activeElement
 		}
@@ -226,23 +228,25 @@ class Slideshow extends React.PureComponent {
 			this.unlistenFullScreen = onFullScreenChange(this.onFullScreenChange)
 		}
 		window.addEventListener('resize', this.onWindowResize)
-		// Without this in iOS Safari body content would scroll.
-		// https://medium.com/jsdownunder/locking-body-scroll-for-all-devices-22def9615177
-		const scrollBarWidth = getScrollBarWidth()
-		disableBodyScroll(this.container.current, {
-			// Apply the scrollbar-compensating padding immediately when setting
-			// body's `overflow: hidden` to prevent "jitter" ("jank") (visual lag).
-			// (for the `<body/>`)
-			reserveScrollBarGap: true,
-			onBodyOverflowHide: () => {
+		if (!inline) {
+			// Without this in iOS Safari body content would scroll.
+			// https://medium.com/jsdownunder/locking-body-scroll-for-all-devices-22def9615177
+			const scrollBarWidth = getScrollBarWidth()
+			disableBodyScroll(this.container.current, {
 				// Apply the scrollbar-compensating padding immediately when setting
 				// body's `overflow: hidden` to prevent "jitter" ("jank") (visual lag).
-				// (for the slideshow `position: fixed` layer)
-				this.container.current.style.paddingRight = scrollBarWidth + 'px'
-				// Render the slideshow with scrollbar-compensating padding in future re-renders.
-				this.containerPaddingRight = scrollBarWidth + 'px'
-			}
-		})
+				// (for the `<body/>`)
+				reserveScrollBarGap: true,
+				onBodyOverflowHide: () => {
+					// Apply the scrollbar-compensating padding immediately when setting
+					// body's `overflow: hidden` to prevent "jitter" ("jank") (visual lag).
+					// (for the slideshow `position: fixed` layer)
+					this.container.current.style.paddingRight = scrollBarWidth + 'px'
+					// Render the slideshow with scrollbar-compensating padding in future re-renders.
+					this.containerPaddingRight = scrollBarWidth + 'px'
+				}
+			})
+		}
 		// `this.slides.current` is now available for `this.getSlideshowWidth()`.
 		// Also updates container padding-right for scrollbar width compensation.
 		this.forceUpdate()
@@ -250,7 +254,7 @@ class Slideshow extends React.PureComponent {
 	}
 
 	componentWillUnmount() {
-		const { fullScreen } = this.props
+		const { fullScreen, inline } = this.props
 		if (fullScreen) {
 			exitFullScreen()
 			this.unlistenFullScreen()
@@ -261,9 +265,11 @@ class Slideshow extends React.PureComponent {
 		clearTimeout(this.transitionEndTimer)
 		window.removeEventListener('resize', this.onWindowResize)
 		this._isMounted = false
-		// Disable `body-scroll-lock` (as per their README).
-		enableBodyScroll(this.container.current)
-		clearAllBodyScrollLocks()
+		if (!inline) {
+			// Disable `body-scroll-lock` (as per their README).
+			enableBodyScroll(this.container.current)
+			clearAllBodyScrollLocks()
+		}
 	}
 
 	// Only execute `fn` if the component is still mounted.
@@ -721,6 +727,7 @@ class Slideshow extends React.PureComponent {
 
 	onPanEnd() {
 		const {
+			inline,
 			overlayOpacity,
 			slideInDuration,
 			minSlideInDuration
@@ -749,8 +756,10 @@ class Slideshow extends React.PureComponent {
 			}
 			this.updateSlideTransitionDuration()
 			this.updateSlidePosition()
-			this.updateOverlayTransitionDuration()
-			this.updateOverlayOpacity(overlayOpacity)
+			if (!inline) {
+				this.updateOverlayTransitionDuration()
+				this.updateOverlayOpacity(overlayOpacity)
+			}
 			// Transition the slide back to it's original position.
 			this.transitionOngoing = true
 			this.transitionEndTimer = setTimeout(this.ifStillMounted(this.onTransitionEnd), this.transitionDuration)
@@ -766,6 +775,7 @@ class Slideshow extends React.PureComponent {
 
 	onPan(positionX, positionY) {
 		const {
+			inline,
 			overlayOpacity,
 			emulatePanResistanceOnClose,
 			panOffsetThreshold
@@ -811,17 +821,19 @@ class Slideshow extends React.PureComponent {
 			}
 		}
 		// Update overlay opacity.
-		if (this.panDirection === 'horizontal') {
-			if ((this.isFirst() && this.panOffsetX > 0) ||
-				(this.isLast() && this.panOffsetX < 0)) {
+		if (!inline) {
+			if (this.panDirection === 'horizontal') {
+				if ((this.isFirst() && this.panOffsetX > 0) ||
+					(this.isLast() && this.panOffsetX < 0)) {
+					this.updateOverlayOpacity(
+						overlayOpacity * (1 - (Math.abs(this.panOffsetX) / (this.getSlideshowWidth() / 2)))
+					)
+				}
+			} else {
 				this.updateOverlayOpacity(
-					overlayOpacity * (1 - (Math.abs(this.panOffsetX) / (this.getSlideshowWidth() / 2)))
+					overlayOpacity * (1 - (Math.abs(this.panOffsetY) / this.getSlideshowHeight()))
 				)
 			}
-		} else {
-			this.updateOverlayOpacity(
-				overlayOpacity * (1 - (Math.abs(this.panOffsetY) / this.getSlideshowHeight()))
-			)
 		}
 		// this.panToCloseOffsetNormalized = undefined
 		this.updateSlidePosition()
@@ -980,7 +992,7 @@ class Slideshow extends React.PureComponent {
 			<div
 				ref={this.container}
 				tabIndex={-1}
-				style={{
+				style={inline ? undefined : {
 					paddingRight: this.containerPaddingRight,
 					backgroundColor: this.getOverlayBackgroundColor(overlayOpacity)
 				}}
