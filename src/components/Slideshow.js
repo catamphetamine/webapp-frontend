@@ -729,9 +729,7 @@ class Slideshow extends React.PureComponent {
 		if (this.panOffsetX || this.panOffsetY) {
 			this.calculatePanSpeedThrottled()
 			if (this.panOffsetX !== 0) {
-				// const speedFactor = Math.exp(this.panSpeed * 4)
-				// Increased for mobile devices.
-				const speedFactor = Math.exp(this.panSpeed * 10)
+				const speedFactor = Math.exp(this.panSpeed * 4)
 				const pannedWidthRatio = this.panOffsetX / this.getSlideshowWidth()
 				if (pannedWidthRatio < -1 * 0.5 / speedFactor) {
 					this.showNext()
@@ -742,9 +740,7 @@ class Slideshow extends React.PureComponent {
 				this.transitionDuration = minSlideInDuration + Math.abs(pannedWidthRatio) * (slideInDuration - minSlideInDuration)
 			} else if (this.panOffsetY !== 0) {
 				const pannedHeightRatio = Math.abs(this.panOffsetY) / this.getSlideshowHeight()
-				// const speedFactor = Math.pow(this.panSpeed * 5, 2)
-				// Increased for mobile devices.
-				const speedFactor = Math.pow(this.panSpeed * 10, 2)
+				const speedFactor = 1 + Math.pow(this.panSpeed * 4, 2)
 				if (pannedHeightRatio > 0.5 / speedFactor) {
 					this.close()
 				}
