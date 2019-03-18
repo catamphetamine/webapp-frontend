@@ -147,6 +147,7 @@ class Slideshow extends React.PureComponent {
 		i: PropTypes.number.isRequired,
 		inline: PropTypes.bool.isRequired,
 		fullScreen: PropTypes.bool.isRequired,
+		overlayOpacity: PropTypes.number.isRequired,
 		// previousNextClickRatio: PropTypes.number.isRequired,
 		closeOnOverlayClick: PropTypes.bool.isRequired,
 		panOffsetThreshold: PropTypes.number.isRequired,
@@ -174,6 +175,7 @@ class Slideshow extends React.PureComponent {
 		i: 0,
 		inline: false,
 		fullScreen: false,
+		overlayOpacity: 0.85,
 		// // previousNextClickRatio: 0.33,
 		// previousNextClickRatio: 0,
 		closeOnOverlayClick: true,
@@ -238,13 +240,11 @@ class Slideshow extends React.PureComponent {
 				// (for the slideshow `position: fixed` layer)
 				this.container.current.style.paddingRight = scrollBarWidth + 'px'
 				// Render the slideshow with scrollbar-compensating padding in future re-renders.
-				this.containerStyle = {
-					paddingRight: scrollBarWidth + 'px'
-				}
+				this.containerPaddingRight = scrollBarWidth + 'px'
 			}
 		})
 		// `this.slides.current` is now available for `this.getSlideshowWidth()`.
-		// Also updates `this.containerStyle` for scrollbar width compensation.
+		// Also updates container padding-right for scrollbar width compensation.
 		this.forceUpdate()
 		this._isMounted = true
 	}
@@ -721,6 +721,7 @@ class Slideshow extends React.PureComponent {
 
 	onPanEnd() {
 		const {
+			overlayOpacity,
 			slideInDuration,
 			minSlideInDuration
 		} = this.props
@@ -748,6 +749,9 @@ class Slideshow extends React.PureComponent {
 			}
 			this.updateSlideTransitionDuration()
 			this.updateSlidePosition()
+			this.updateOverlayTransitionDuration()
+			this.updateOverlayOpacity(overlayOpacity)
+			// Transition the slide back to it's original position.
 			this.transitionOngoing = true
 			this.transitionEndTimer = setTimeout(this.ifStillMounted(this.onTransitionEnd), this.transitionDuration)
 		}
@@ -762,6 +766,7 @@ class Slideshow extends React.PureComponent {
 
 	onPan(positionX, positionY) {
 		const {
+			overlayOpacity,
 			emulatePanResistanceOnClose,
 			panOffsetThreshold
 		} = this.props
@@ -799,12 +804,24 @@ class Slideshow extends React.PureComponent {
 			if (this.panDirection === 'horizontal') {
 				if ((this.isFirst() && this.panOffsetX > 0) ||
 					(this.isLast() && this.panOffsetX < 0)) {
-					// this.refreshPanToCloseStyle()
 					this.panOffsetX = this.emulatePanResistance(this.panOffsetX)
 				}
 			} else {
 				this.panOffsetY = this.emulatePanResistance(this.panOffsetY)
 			}
+		}
+		// Update overlay opacity.
+		if (this.panDirection === 'horizontal') {
+			if ((this.isFirst() && this.panOffsetX > 0) ||
+				(this.isLast() && this.panOffsetX < 0)) {
+				this.updateOverlayOpacity(
+					overlayOpacity * (1 - (Math.abs(this.panOffsetX) / (this.getSlideshowWidth() / 2)))
+				)
+			}
+		} else {
+			this.updateOverlayOpacity(
+				overlayOpacity * (1 - (Math.abs(this.panOffsetY) / this.getSlideshowHeight()))
+			)
 		}
 		// this.panToCloseOffsetNormalized = undefined
 		this.updateSlidePosition()
@@ -850,6 +867,7 @@ class Slideshow extends React.PureComponent {
 	onTransitionEnd = () => {
 		this.transitionDuration = 0
 		this.updateSlideTransitionDuration()
+		this.updateOverlayTransitionDuration()
 		this.transitionOngoing = false
 	}
 
@@ -859,6 +877,18 @@ class Slideshow extends React.PureComponent {
 
 	updateSlidePosition() {
 		this.slides.current.style.transform = this.getTransform()
+	}
+
+	updateOverlayTransitionDuration() {
+		this.container.current.style.transitionDuration = `${this.transitionDuration}ms`
+	}
+
+	updateOverlayOpacity(opacity = this.props.overlayOpacity) {
+		this.container.current.style.backgroundColor = this.getOverlayBackgroundColor(opacity)
+	}
+
+	getOverlayBackgroundColor(opacity) {
+		return `rgba(0,0,0,${opacity})`
 	}
 
 	getTransform() {
@@ -928,16 +958,11 @@ class Slideshow extends React.PureComponent {
 		return []
 	}
 
-	// style={this.panToCloseOffsetNormalized ? { backgroundColor: this.getBackgroundColor() } : undefined}
-	//
-	// getBackgroundColor() {
-	// 	return `rgba(0,0,0,${1 - this.panToCloseOffsetNormalized})`
-	// }
-
 	render() {
 		const {
 			inline,
 			showScaleButtons,
+			overlayOpacity,
 			messages,
 			children: slides
 		} = this.props
@@ -953,7 +978,10 @@ class Slideshow extends React.PureComponent {
 			<div
 				ref={this.container}
 				tabIndex={-1}
-				style={this.containerStyle}
+				style={{
+					paddingRight: this.containerPaddingRight,
+					backgroundColor: this.getOverlayBackgroundColor(overlayOpacity)
+				}}
 				className={classNames('rrui__slideshow', {
 					'rrui__slideshow--fullscreen': !inline,
 					'rrui__slideshow--panning': this.isActuallyPanning
