@@ -168,8 +168,13 @@
 	background-color : rgba(0,0,0,0.7);
 	color : var(--white-color);
 
-	@mixin l-plus
-	{
+	/* Override link buttons :active color. */
+	&:active {
+		color: var(--white-color);
+		box-shadow: 0 0 0 1px var(--white-color);
+	}
+
+	@mixin l-plus {
 		width  : var(--slideshow-button-size-big);
 		height : var(--slideshow-button-size-big);
 	}
