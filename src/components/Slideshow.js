@@ -11,6 +11,7 @@ import Close from '../../assets/images/icons/close.svg'
 import LeftArrow from '../../assets/images/icons/left-arrow-minimal.svg'
 import RightArrow from '../../assets/images/icons/right-arrow-minimal.svg'
 import Search from '../../assets/images/icons/menu/search-outline.svg'
+import ScaleFrame from '../../assets/images/icons/scale-frame.svg'
 import Plus from '../../assets/images/icons/plus.svg'
 import Minus from '../../assets/images/icons/minus.svg'
 
@@ -835,12 +836,14 @@ class Slideshow extends React.PureComponent {
 
 	getScaleStyle() {
 		const { scale } = this.state
-		if (scale === 1) {
-			return
+		const style = {
+			/* Can be scaled via `style="transform: scale(...)". */
+			transition: 'transform 120ms ease-out'
 		}
-		return {
-			transform: `scale(${scale})`
+		if (scale !== 1) {
+			style.transform = `scale(${scale})`
 		}
+		return style
 	}
 
 	getPluginForSlide(slide = this.getCurrentSlide()) {
@@ -865,7 +868,7 @@ class Slideshow extends React.PureComponent {
 
 	shouldShowScaleButton() {
 		const { inline } = this.props
-		return !inline && this.isFullScreenSlide(false) === false
+		return !inline && this.isFullScreenSlide(true) === false
 	}
 
 	shouldShowDownloadButton() {
@@ -975,7 +978,7 @@ class Slideshow extends React.PureComponent {
 								title={messages.actions.scaleReset}
 								onClick={this.onScaleToggle}
 								className="rrui__button-reset rrui__slideshow__action">
-								<Search className="rrui__slideshow__action-icon"/>
+								<ScaleFrame className="rrui__slideshow__action-icon"/>
 							</button>
 							{showScaleButtons &&
 								<button

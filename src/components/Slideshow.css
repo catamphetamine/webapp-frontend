@@ -90,12 +90,6 @@
 	transform: translateX(-789px);
 }
 
-.rrui__slideshow__slide
-{
-	/* Can be scaled via `style="transform: scale(...)". */
-	transition : transform 120ms ease-out;
-}
-
 .rrui__slideshow__picture .rrui__picture__image
 {
 	cursor : pointer;
