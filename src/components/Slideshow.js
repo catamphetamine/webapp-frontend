@@ -855,7 +855,9 @@ class Slideshow extends React.PureComponent {
 		this.panSpeedSampleOffset = offset
 	}
 
-	calculatePanSpeedThrottled = throttle(this.calculatePanSpeed, 10)
+	calculatePanSpeedThrottled = throttle(this.calculatePanSpeed, 10, {
+		trailing: false
+	})
 
 	finishTransition() {
 		if (this.transitionOngoing) {
