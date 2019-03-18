@@ -3,7 +3,7 @@
 :root
 {
 	--slideshow-button-size-medium : calc(var(--unit) * 3);
-	--slideshow-button-size-big    : calc(var(--unit) * 4);
+	--slideshow-button-size-big    : calc(var(--unit) * 3.5);
 
 	--slideshow-button-margin-small : calc(var(--unit) / 2);
 	--slideshow-button-margin       : var(--unit);
