@@ -158,6 +158,7 @@ class Slideshow extends React.PureComponent {
 		minSlideInDuration: PropTypes.number.isRequired,
 		showScaleButtons: PropTypes.bool.isRequired,
 		scaleStep: PropTypes.number.isRequired,
+		minScaledSlideRatio: PropTypes.number.isRequired,
 		mouseWheelScaleFactor: PropTypes.number.isRequired,
 		fullScreenFitPrecisionFactor: PropTypes.number.isRequired,
 		plugins: PropTypes.arrayOf(PropTypes.shape({
@@ -187,6 +188,7 @@ class Slideshow extends React.PureComponent {
 		minSlideInDuration: 150,
 		showScaleButtons: true,
 		scaleStep: 0.5,
+		minScaledSlideRatio: 0.1,
 		mouseWheelScaleFactor: 0.33,
 		fullScreenFitPrecisionFactor: 0.85,
 		plugins: PLUGINS
@@ -335,14 +337,21 @@ class Slideshow extends React.PureComponent {
 	}
 
 	scaleDown = (event, factor = 1) => {
-		this.setState(({ scale }, { scaleStep }) => ({
-			scale: Math.max(
-				scale / (1 + scaleStep * factor),
-				// Won't scale down past the original 1:1 size.
-				// (for non-vector images)
-				this.doesAllowScalingDownCurrentSlide() ? 0 : 1
-			)
-		}))
+		// Performing scale calculations in `setState()` callback
+		// because a user can be scrolling fast and in that case
+		// the scale calculated before `setState()` may become
+		// outdated by the time the state is updated.
+		this.setState(({ scale }, { scaleStep }) => {
+			scale = scale / (1 + scaleStep * factor)
+			return {
+				scale: Math.max(
+					scale,
+					// Won't scale down past the original 1:1 size.
+					// (for non-vector images)
+					this.getMinScaleForCurrentSlide(scale)
+				)
+			}
+		})
 	}
 
 	scaleToggle = () => {
@@ -396,11 +405,19 @@ class Slideshow extends React.PureComponent {
 
 	// Won't scale down past the original 1:1 size.
 	// (for non-vector images)
-	doesAllowScalingDownCurrentSlide() {
+	getMinScaleForCurrentSlide(scale) {
+		const { minScaledSlideRatio } = this.props
 		if (this.getPluginForSlide().isScaleDownAllowed) {
-			return this.getPluginForSlide().isScaleDownAllowed(this.getCurrentSlide())
+			if (!this.getPluginForSlide().isScaleDownAllowed(this.getCurrentSlide())) {
+				return 1
+			}
 		}
-		return true
+		const slideWidthRatio = this.getSlideWidth() / this.getSlideshowWidth()
+		const slideHeightRatio = this.getSlideHeight() / this.getSlideshowHeight()
+		// Averaged ratio turned out to work better than "min" ratio.
+		// const slideRatio = Math.min(slideWidthRatio, slideHeightRatio)
+		const slideRatio = (slideWidthRatio + slideHeightRatio) / 2
+		return minScaledSlideRatio / slideRatio
 	}
 
 	getCurrentSlide() {
