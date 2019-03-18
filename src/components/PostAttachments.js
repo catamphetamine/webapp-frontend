@@ -1,8 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
+import { FadeInOut, ActivityIndicator } from 'react-responsive-ui'
 
 import Picture, {
+	preloadImage,
 	TRANSPARENT_PIXEL,
 	getUrl as getPictureUrl,
 	getMaxSize as getPictureMaxSize,
@@ -166,13 +168,11 @@ export default function PostAttachments({
 									alt={pictureOrVideo.title}
 									style={POSITION_ABSOLUTE}/>
 								{openSlideshow &&
-									<button
-										type="button"
-										aria-label={pictureOrVideo.title}
-										onClick={createOnOpenSlideshow(i + (titlePictureOrVideo ? 1 : 0))}
-										className="rrui__button-reset post__attachment-thumbnail__clickable">
+									<AttachmentButton
+										attachment={pictureOrVideo}
+										onClick={createOnOpenSlideshow(i + (titlePictureOrVideo ? 1 : 0))}>
 										{attachmentThumbnail}
-									</button>
+									</AttachmentButton>
 								}
 								{!openSlideshow &&
 									<a
@@ -519,3 +519,73 @@ const TEST_ATTACHMENTS = [
 		link: LINK_EXAMPLE_2
 	}
 ]
+
+class AttachmentButton extends React.Component {
+	static propTypes = {
+		attachment: PropTypes.object.isRequired,
+		onClick: PropTypes.func.isRequired,
+		children: PropTypes.node.isRequired
+	}
+
+	state = {
+		isLoading: false
+	}
+
+	constructor() {
+		super()
+		this.onClick = this.onClick.bind(this)
+	}
+
+	async onClick(event) {
+		const {
+			attachment,
+			onClick
+		} = this.props
+		if (attachment.type === 'picture') {
+			const picture = attachment.picture
+			// Assume that two-image picture attachments
+			// are a thumbnail and an original image.
+			// (that's the case for imageboards)
+			if (picture.sizes.length === 2) {
+				this.setState({
+					isLoading: true
+				})
+				// For testing/styling.
+				// await new Promise(_ => setTimeout(_, 30000000))
+				await preloadImage(picture.sizes[picture.sizes.length - 1].url)
+				this.setState({
+					isLoading: false
+				})
+			}
+		}
+		onClick({
+			preventDefault() {}
+		})
+	}
+
+	render() {
+		const {
+			attachment,
+			children
+		} = this.props
+		const {
+			isLoading
+		} = this.state
+		return (
+			<button
+				type="button"
+				aria-label={attachment.title}
+				onClick={this.onClick}
+				className="rrui__button-reset post__attachment-thumbnail__clickable">
+				{isLoading &&
+					<FadeInOut show fadeInInitially fadeInDuration={3000} fadeOutDuration={0}>
+						<div className="post__attachment-thumbnail__loading">
+							<ActivityIndicator className="post__attachment-thumbnail__loading-indicator"/>
+						</div>
+					</FadeInOut>
+				}
+				{children}
+			</button>
+		)
+	}
+}
