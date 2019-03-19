@@ -116,35 +116,6 @@
 	box-shadow : 0 0 0 1px var(--content-section-divider-color);
 }
 
-.post__author {
-	display: flex;
-	align-items: center;
-	margin-top: 0.5em;
-	margin-bottom: 0.5em;
-	color: var(--gray-color);
-}
-
-.post__author-icon {
-	width: 1em;
-	height: 1em;
-	margin-right: 0.35em;
-	margin-bottom: 0.1em;
-}
-
-.post__author-name,
-.post__author-name-2 {
-	font-family: var(--font-family);
-	font-weight: 300;
-}
-
-.post__author-name {
-	color: var(--base-color-darkest);
-}
-
-.post__author-name + .post__author-name-2 {
-	margin-left: 0.35em;
-}
-
 .post__heading {
 	margin-top: 0.5em;
 	margin-bottom: 0.5em;

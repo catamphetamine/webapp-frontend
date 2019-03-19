@@ -10,7 +10,6 @@ import { accountLink } from './AccountLink'
 import { postShape, postBadge } from '../PropTypes'
 
 import EllipsisIcon from '../../assets/images/icons/ellipsis.svg'
-import PersonIcon from '../../assets/images/icons/menu/person-outline.svg'
 
 import './PostHeader.css'
 
@@ -25,6 +24,7 @@ export default class PostHeader extends React.PureComponent {
 			thread,
 			url,
 			locale,
+			header: Header,
 			moreActionsLabel,
 			replyLabel,
 			onReply
@@ -115,21 +115,7 @@ export default class PostHeader extends React.PureComponent {
 						}
 					</div>
 				</div>
-				{(post.authorName || post.authorName2) &&
-					<div className={classNames('post__author', post.authorRole && `post__author--${post.authorRole}`)}>
-						<PersonIcon className="post__author-icon"/>
-						{post.authorName &&
-							<div className="post__author-name">
-								{post.authorName}
-							</div>
-						}
-						{post.authorName2 &&
-							<div className="post__author-name-2">
-								{post.authorName2}
-							</div>
-						}
-					</div>
-				}
+				{Header && <Header post={post}/>}
 				{post.title &&
 					<h1 className="post__heading">
 						{post.titleCensored &&
@@ -151,6 +137,7 @@ PostHeader.propTypes = {
 	badges: PropTypes.arrayOf(postBadge),
 	url: PropTypes.string,
 	locale: PropTypes.string,
+	header: PropTypes.func,
 	moreActionsLabel: PropTypes.string,
 	replyLabel: PropTypes.string,
 	onReply: PropTypes.func

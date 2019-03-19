@@ -28,6 +28,7 @@ export default class Post extends React.PureComponent {
 	static propTypes = {
 		post: postShape.isRequired,
 		thread: PropTypes.object,
+		header: PropTypes.func,
 		headerBadges: PropTypes.arrayOf(postBadge),
 		footerBadges: PropTypes.arrayOf(postBadge),
 		replies: PropTypes.arrayOf(oneOfType([
@@ -115,6 +116,7 @@ export default class Post extends React.PureComponent {
 		const {
 			post,
 			thread,
+			header,
 			headerBadges,
 			footerBadges,
 			replies,
@@ -151,8 +153,9 @@ export default class Post extends React.PureComponent {
 					post={post}
 					thread={thread}
 					url={url}
-					badges={headerBadges}
 					locale={locale}
+					header={header}
+					badges={headerBadges}
 					moreActionsLabel={moreActionsLabel}
 					replyLabel={replyLabel}
 					onReply={onReply}/>
