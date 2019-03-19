@@ -6,6 +6,8 @@
 .post__summary {
 	display: flex;
 	align-items: flex-start;
+	/* Fallback for really small screens. */
+	flex-wrap: wrap;
 }
 
 .post__summary-item {
