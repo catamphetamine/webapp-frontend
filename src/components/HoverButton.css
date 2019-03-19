@@ -1,0 +1,19 @@
+.hover-button {
+	&:hover {
+		background-color: var(--gray-color-transparent);
+		box-shadow: 0 0 0 1px var(--gray-color-lightest);
+	}
+}
+
+.hover-button,
+.hover-button--link {
+	border-radius: var(--border-radius);
+	&:focus {
+		background-color: var(--gray-color-transparent);
+		box-shadow: 0 0 0 1px var(--gray-color-lightest);
+	}
+	&:active {
+		color: var(--base-color-darkest);
+		background-color: var(--base-color-lightest);
+	}
+}

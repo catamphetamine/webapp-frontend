@@ -21,10 +21,13 @@ export default class PostHeader extends React.PureComponent {
 
 	render() {
 		const {
+			post,
+			thread,
 			url,
 			locale,
-			post,
-			thread
+			moreActionsLabel,
+			replyLabel,
+			onReply
 		} = this.props
 
 		let {
@@ -40,7 +43,7 @@ export default class PostHeader extends React.PureComponent {
 				<div className="post__header-top">
 					<div className="post__summary">
 						{post.account &&
-							<React.Fragment>
+							<div className="post__summary-item">
 								<Link to={accountLink(post.account)}>
 									<AccountPicture
 										account={post.account}
@@ -58,13 +61,25 @@ export default class PostHeader extends React.PureComponent {
 										link={url}
 										locale={locale}/>
 								</div>
-							</React.Fragment>
+							</div>
 						}
 						{!post.account &&
-							<PostDate
-								date={post.createdAt}
-								link={url}
-								locale={locale}/>
+							<div className="post__summary-item">
+								<PostDate
+									date={post.createdAt}
+									link={url}
+									locale={locale}/>
+							</div>
+						}
+						{onReply &&
+							<div className="post__summary-item">
+								<button
+									type="button"
+									onClick={onReply}
+									className="rrui__button-reset hover-button post__summary-button">
+									{replyLabel}
+								</button>
+							</div>
 						}
 					</div>
 					<div className="post__actions">
@@ -89,12 +104,15 @@ export default class PostHeader extends React.PureComponent {
 								})}
 							</div>
 						}
-						<button
-							type="button"
-							onClick={this.toggleMenu}
-							className="rrui__button-reset post__more-actions">
-							<EllipsisIcon className="post__more-actions-icon"/>
-						</button>
+						{moreActionsLabel &&
+							<button
+								type="button"
+								title={moreActionsLabel}
+								onClick={this.toggleMenu}
+								className="rrui__button-reset hover-button post__more-actions">
+								<EllipsisIcon className="post__more-actions-icon"/>
+							</button>
+						}
 					</div>
 				</div>
 				{(post.authorName || post.authorName2) &&
@@ -132,5 +150,8 @@ PostHeader.propTypes = {
 	thread: PropTypes.object,
 	badges: PropTypes.arrayOf(postBadge),
 	url: PropTypes.string,
-	locale: PropTypes.string
+	locale: PropTypes.string,
+	moreActionsLabel: PropTypes.string,
+	replyLabel: PropTypes.string,
+	onReply: PropTypes.func
 }

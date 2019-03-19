@@ -45,9 +45,12 @@ export default class Post extends React.PureComponent {
 		]),
 		attachmentThumbnailSize: PropTypes.number,
 		openSlideshow: PropTypes.func,
+		onReply: PropTypes.func,
 		url: PropTypes.string,
 		locale: PropTypes.string,
+		moreActionsLabel: PropTypes.string,
 		readMoreLabel: PropTypes.string,
+		replyLabel: PropTypes.string,
 		className: PropTypes.string
 	}
 
@@ -124,7 +127,10 @@ export default class Post extends React.PureComponent {
 			saveBandwidth,
 			serviceIcons,
 			openSlideshow,
+			onReply,
+			moreActionsLabel,
 			readMoreLabel,
+			replyLabel,
 			className
 		} = this.props
 
@@ -146,7 +152,10 @@ export default class Post extends React.PureComponent {
 					thread={thread}
 					url={url}
 					badges={headerBadges}
-					locale={locale}/>
+					locale={locale}
+					moreActionsLabel={moreActionsLabel}
+					replyLabel={replyLabel}
+					onReply={onReply}/>
 				{postContent &&
 					<div className="post__content">
 						{postContent.map((content, i) => (
