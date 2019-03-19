@@ -141,7 +141,7 @@
 .post__more-actions {
 	&:focus {
 		outline: none;
-		background-color: rgba(0,0,0,0.02);
+		background-color: var(--gray-color-transparent);
 		border-radius: calc(var(--unit) / 4);
 		box-shadow: 0 0 0 1px var(--gray-color-lightest);
 	}

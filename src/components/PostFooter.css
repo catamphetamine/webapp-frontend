@@ -58,19 +58,21 @@
 }
 
 .post__footer .post__badge-button {
-	margin-top: -0.25em;
-	margin-bottom: -0.25em;
-	margin-left: calc(-1 * var(--post-footer-badge-spacing) / 2);
-	margin-right: calc(-1 * var(--post-footer-badge-spacing) / 2);
-	padding-top: 0.25em;
-	padding-bottom: 0.25em;
-	padding-left: calc(var(--post-footer-badge-spacing) / 2);
-	padding-right: calc(var(--post-footer-badge-spacing) / 2);
+	margin-top: calc(-1 * var(--post-footer-badge-spacing) / 6);
+	margin-bottom: calc(-1 * var(--post-footer-badge-spacing) / 6);
+	margin-left: calc(-1 * var(--post-footer-badge-spacing) / 3);
+	margin-right: calc(-1 * var(--post-footer-badge-spacing) / 3);
+	padding-top: calc(var(--post-footer-badge-spacing) / 6);
+	padding-bottom: calc(var(--post-footer-badge-spacing) / 6);
+	padding-left: calc(var(--post-footer-badge-spacing) / 3);
+	padding-right: calc(var(--post-footer-badge-spacing) / 3);
 	border-radius: var(--border-radius);
 	&:hover, &:focus {
-		color: var(--gray-color-dark);
+		background-color: var(--gray-color-transparent);
+		box-shadow: 0 0 0 1px var(--gray-color-lightest);
 	}
 	&:active {
 		color: var(--base-color-darkest);
+		background-color: var(--base-color-lightest);
 	}
 }

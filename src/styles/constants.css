@@ -5,6 +5,8 @@
 	--white-color        : #ffffff;
 	--black-color        : #49515C;
 
+	--gray-color-transparent : rgba(0,0,0,0.015);
+
 	--gray-color-lightest : #F0F2F5;
 	--gray-color-light    : #DCDEE3;
 	--gray-color-lighter  : #B3B7BA;
@@ -13,9 +15,11 @@
 	--gray-color-dark     : #888C91;
 	--gray-color-darkest  : #5b636d;
 
+	--base-color-lightest : #00B3FF;
 	--base-color-light : #00B3FF;
 	--base-color       : #00A6ED;
 	--base-color-dark  : #0084BD;
+	--base-color-darkest : #0084BD;
 
 	/* Base color transparency: rgba(0, 179, 255, 0.6); */
 
