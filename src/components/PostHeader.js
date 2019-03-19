@@ -115,7 +115,7 @@ export default class PostHeader extends React.PureComponent {
 						}
 					</div>
 				</div>
-				{Header && <Header post={post}/>}
+				{Header && <Header post={post} locale={locale}/>}
 				{post.title &&
 					<h1 className="post__heading">
 						{post.titleCensored &&
