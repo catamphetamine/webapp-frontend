@@ -168,10 +168,15 @@
 	background-color : rgba(0,0,0,0.7);
 	color : var(--white-color);
 
-	/* Override link buttons :active color. */
+	&:hover {
+		color: var(--base-color);
+	}
+
 	&:active {
+		/* Override link buttons :active color. */
 		color: var(--white-color);
-		box-shadow: 0 0 0 1px var(--white-color);
+		background-color: var(--base-color);
+		/*box-shadow: 0 0 0 1px var(--white-color);*/
 	}
 
 	@mixin l-plus {
@@ -206,10 +211,6 @@
 .rrui__slideshow__action-group:first-child
 {
 	margin-left : 0;
-}
-
-.rrui__slideshow__action:hover {
-	background-color : var(--base-color);
 }
 
 .rrui__slideshow__action:active {
