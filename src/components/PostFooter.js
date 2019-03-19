@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import classNames from 'classnames'
 
 import { postShape, postBadge } from '../PropTypes'
 
@@ -20,14 +21,15 @@ export default function PostFooter({ post, badges, locale }) {
 				// (perhaps because SVGs don't have background)
 				// so I moved `title` to a `<div/>`.
 				*/}
-				{badges.map(({ name, icon: Icon, title, content }) => (
-					<div
+				{badges.map(({ name, icon: Icon, title, content, onClick }) => (
+					<PostBadge
 						key={name}
+						onClick={onClick && (() => onClick(post))}
 						title={title && title(post, locale)}
 						className="post__footer-badge">
 						<Icon className={`post__footer-badge-icon post__footer-badge-icon--${name}`}/>
 						{content(post)}
-					</div>
+					</PostBadge>
 				))}
 			</div>
 		</footer>
@@ -38,4 +40,27 @@ PostFooter.propTypes = {
 	post: postShape.isRequired,
 	badges: PropTypes.arrayOf(postBadge),
 	locale: PropTypes.string
+}
+
+function PostBadge({ onClick, children, ...rest }) {
+	if (onClick) {
+		children = (
+			<button
+				type="button"
+				onClick={onClick}
+				className="post__badge-button rrui__button-reset">
+				{children}
+			</button>
+		)
+	}
+	return (
+		<div {...rest}>
+			{children}
+		</div>
+	)
+}
+
+PostBadge.propTypes = {
+	onClick: PropTypes.func,
+	children: PropTypes.node.isRequired
 }
