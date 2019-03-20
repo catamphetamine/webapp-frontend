@@ -5,28 +5,34 @@ import { postText } from '../PropTypes'
 import './PostText.css'
 
 export default function PostText({ style, children }) {
-	const tag = getTagForStyle(style)
-	if (tag) {
-		return React.createElement(tag, null, children)
+	const Tag = getTagForStyle(style)
+	if (Tag) {
+		return (
+			<Tag>
+				{children}
+			</Tag>
+		)
 	}
-	const classNameModifier = getClassNameModifierForStyle(style)
-	if (classNameModifier) {
-		return React.createElement('span', {
-			className: `post__text--${classNameModifier}`
-		}, children)
-	}
+	return (
+		<span className={`post__text--${style}`}>
+			{children}
+		</span>
+	)
 	return children
 }
 
 PostText.propTypes = {
-	style: PropTypes.oneOf([
-		'bold',
-		'italic',
-		'underline',
-		'strikethrough',
-		'subscript',
-		'superscript'
-	]),
+	style: PropTypes.oneOfType([
+		PropTypes.oneOf([
+			'bold',
+			'italic',
+			'underline',
+			'strikethrough',
+			'subscript',
+			'superscript'
+		]),
+		PropTypes.string
+	]).isRequired,
 	children: PropTypes.oneOfType([
 		postText,
 		PropTypes.node
@@ -45,12 +51,5 @@ function getTagForStyle(style) {
 			return 'sup'
 		case 'subscript':
 			return 'sub'
-	}
-}
-
-function getClassNameModifierForStyle(style) {
-	switch (style) {
-		case 'underline':
-			return 'underline'
 	}
 }
