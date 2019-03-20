@@ -270,4 +270,22 @@ describe('parseServiceLink', () => {
 			}
 		)
 	})
+
+	it('should parse google docs links', () => {
+		expectToEqual(
+			parseServiceLink('https://docs.google.com/spreadsheets/d/1CXMrCVI3GfwHu8wObTixAlpA3ftjs87lkX017SaVl6I/edit#gid=0'),
+			{
+				service: 'google',
+				text: 'spreadsheets/1CXMrCVI3GfwHu8wObTixAlpA3ftjs87lkX017SaVl6I'
+			}
+		)
+
+		expectToEqual(
+			parseServiceLink('https://docs.google.com/document/d/1-XMrCVI3GfwHu8wObTixAlpA3ftjs87lkX017SaVl6I'),
+			{
+				service: 'google',
+				text: 'document/1-XMrCVI3GfwHu8wObTixAlpA3ftjs87lkX017SaVl6I'
+			}
+		)
+	})
 })

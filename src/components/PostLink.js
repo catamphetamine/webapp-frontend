@@ -99,5 +99,6 @@ const SERVICE_ICONS = {
 	'discord': DiscordIcon,
 	'twitter': TwitterIcon,
 	'telegram': TelegramIcon,
-	'github': GitHubIcon
+	'github': GitHubIcon,
+	'google': GoogleIcon
 }

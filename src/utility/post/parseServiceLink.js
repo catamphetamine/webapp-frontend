@@ -88,6 +88,15 @@ const SERVICES = {
 			}
 		}
 	},
+	'docs.google.com': {
+		name: 'google',
+		getText(url) {
+			const documentMatch = url.pathname.match(/^\/(spreadsheets|document)\/d\/([^\/]+)/)
+			if (documentMatch) {
+				return `${documentMatch[1]}/${documentMatch[2]}`
+			}
+		}
+	},
 	'google.com': {
 		name: 'google',
 		getText(url) {
