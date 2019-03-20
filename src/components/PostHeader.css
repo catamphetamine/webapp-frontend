@@ -59,7 +59,7 @@
 	justify-content: center;
 	width: calc(var(--unit) * 1.5);
 	height: calc(var(--unit) * 1.5);
-	opacity: 0.5;
+	opacity: 0.8;
 }
 
 .post__actions {
