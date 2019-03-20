@@ -50,6 +50,7 @@ export default class Post extends React.PureComponent {
 		onVote: PropTypes.func,
 		url: PropTypes.string,
 		locale: PropTypes.string,
+		onMoreActions: PropTypes.func,
 		moreActionsLabel: PropTypes.string,
 		readMoreLabel: PropTypes.string,
 		replyLabel: PropTypes.string,
@@ -132,6 +133,7 @@ export default class Post extends React.PureComponent {
 			openSlideshow,
 			onReply,
 			onVote,
+			onMoreActions,
 			moreActionsLabel,
 			readMoreLabel,
 			replyLabel,
@@ -158,6 +160,7 @@ export default class Post extends React.PureComponent {
 					locale={locale}
 					header={header}
 					badges={headerBadges}
+					onMoreActions={onMoreActions}
 					moreActionsLabel={moreActionsLabel}
 					replyLabel={replyLabel}
 					onReply={onReply}

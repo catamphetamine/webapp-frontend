@@ -16,7 +16,10 @@ import './PostHeader.css'
 
 export default class PostHeader extends React.PureComponent {
 	toggleMenu = () => {
-		alert('Not implemented')
+		const { onMoreActions } = this.props
+		if (onMoreActions) {
+			onMoreActions()
+		}
 	}
 
 	onUpVoteClick = () => {
@@ -182,6 +185,7 @@ PostHeader.propTypes = {
 	locale: PropTypes.string,
 	header: PropTypes.func,
 	moreActionsLabel: PropTypes.string,
+	onMoreActions: PropTypes.func,
 	replyLabel: PropTypes.string,
 	onReply: PropTypes.func,
 	onVote: PropTypes.func
