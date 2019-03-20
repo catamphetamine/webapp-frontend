@@ -10,12 +10,23 @@ import { accountLink } from './AccountLink'
 import { postShape, postBadge } from '../PropTypes'
 
 import EllipsisIcon from '../../assets/images/icons/ellipsis.svg'
+import LeftArrowIcon from '../../assets/images/icons/left-arrow-minimal.svg'
 
 import './PostHeader.css'
 
 export default class PostHeader extends React.PureComponent {
 	toggleMenu = () => {
 		alert('Not implemented')
+	}
+
+	onUpVoteClick = () => {
+		const { onVote } = this.props
+		onVote(true)
+	}
+
+	onDownVoteClick = () => {
+		const { onVote } = this.props
+		onVote(false)
 	}
 
 	render() {
@@ -27,7 +38,8 @@ export default class PostHeader extends React.PureComponent {
 			header: Header,
 			moreActionsLabel,
 			replyLabel,
-			onReply
+			onReply,
+			onVote
 		} = this.props
 
 		let {
@@ -37,6 +49,9 @@ export default class PostHeader extends React.PureComponent {
 		if (badges) {
 			badges = badges.filter(({ condition }) => condition(post, thread))
 		}
+
+		const hasBadges = badges && badges.length > 0
+		const hasVotes = onVote !== undefined
 
 		return (
 			<header className="post__header">
@@ -64,7 +79,7 @@ export default class PostHeader extends React.PureComponent {
 							</div>
 						}
 						{!post.account &&
-							<div className="post__summary-item">
+							<div className="post__summary-item post__header-misc">
 								<PostDate
 									date={post.createdAt}
 									link={url}
@@ -72,7 +87,7 @@ export default class PostHeader extends React.PureComponent {
 							</div>
 						}
 						{onReply &&
-							<div className="post__summary-item">
+							<div className="post__summary-item post__header-misc">
 								<button
 									type="button"
 									onClick={onReply}
@@ -83,25 +98,53 @@ export default class PostHeader extends React.PureComponent {
 						}
 					</div>
 					<div className="post__actions">
-						{badges && badges.length > 0 &&
-							<div className="post__header-badges">
-								{badges.map(({ name, title, icon, getIcon, getIconProps }) => {
-									const Icon = getIcon ? getIcon(post, locale) : icon
-									const props = getIconProps && getIconProps(post, locale)
-									// `title` doesn't work on SVGs for some reason
-									// (perhaps because SVGs don't have background)
-									// so I moved `title` to a `<div/>`.
-									return (
-										<div
-											key={name}
-											title={title && title(post, locale)}
-											className="post__header-badge-container">
-											<Icon
-												{...props}
-												className={`post__header-badge post__header-badge--${name}`}/>
+						{(hasBadges || hasVotes) &&
+							<div className="post__actions-except-more post__header-misc">
+								{hasVotes &&
+									<div className="post__votes">
+										<button
+											type="button"
+											className="hover-button post__summary-button post__vote post__vote--down rrui__button-reset"
+											onClick={this.onDownVoteClick}>
+											<LeftArrowIcon className="post__vote-icon post__vote-icon--down"/>
+										</button>
+										<div className={classNames('post__votes-count', {
+											'post__votes-count--neutral': post.upvotes === post.downvotes,
+											'post__votes-count--positive': post.upvotes > post.downvotes,
+											'post__votes-count--negative': post.upvotes < post.downvotes
+										})}>
+											{(post.downvotes > post.upvotes) && '−'}
+											{Math.abs(post.upvotes - post.downvotes)}
 										</div>
-									)
-								})}
+										<button
+											type="button"
+											className="hover-button post__summary-button post__vote post__vote--up rrui__button-reset"
+											onClick={this.onUpVoteClick}>
+											<LeftArrowIcon className="post__vote-icon post__vote-icon--up"/>
+										</button>
+									</div>
+								}
+								{hasBadges &&
+									<div className="post__header-badges">
+										{badges.map(({ name, title, icon, getIcon, getIconProps }) => {
+											const Icon = getIcon ? getIcon(post, locale) : icon
+											const props = getIconProps && getIconProps(post, locale)
+											// `title` doesn't work on SVGs for some reason
+											// (perhaps because SVGs don't have background)
+											// so I moved `title` to a `<div/>`.
+											return (
+												<div
+													key={name}
+													title={title && title(post, locale)}
+													className="post__header-badge-container">
+													<Icon
+														{...props}
+														className={`post__header-badge post__header-badge--${name}`}/>
+												</div>
+											)
+										})}
+									</div>
+								}
 							</div>
 						}
 						{moreActionsLabel &&
@@ -140,5 +183,6 @@ PostHeader.propTypes = {
 	header: PropTypes.func,
 	moreActionsLabel: PropTypes.string,
 	replyLabel: PropTypes.string,
-	onReply: PropTypes.func
+	onReply: PropTypes.func,
+	onVote: PropTypes.func
 }

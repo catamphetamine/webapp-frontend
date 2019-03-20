@@ -1,5 +1,9 @@
 @import "../styles/common";
 
+.post__date-link {
+	color: inherit;
+}
+
 .post__date {
 	margin-top: 0.1em;
 	font-weight: 300;

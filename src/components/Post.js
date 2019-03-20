@@ -47,6 +47,7 @@ export default class Post extends React.PureComponent {
 		attachmentThumbnailSize: PropTypes.number,
 		openSlideshow: PropTypes.func,
 		onReply: PropTypes.func,
+		onVote: PropTypes.func,
 		url: PropTypes.string,
 		locale: PropTypes.string,
 		moreActionsLabel: PropTypes.string,
@@ -130,6 +131,7 @@ export default class Post extends React.PureComponent {
 			serviceIcons,
 			openSlideshow,
 			onReply,
+			onVote,
 			moreActionsLabel,
 			readMoreLabel,
 			replyLabel,
@@ -158,7 +160,8 @@ export default class Post extends React.PureComponent {
 					badges={headerBadges}
 					moreActionsLabel={moreActionsLabel}
 					replyLabel={replyLabel}
-					onReply={onReply}/>
+					onReply={onReply}
+					onVote={onVote}/>
 				{postContent &&
 					<div className="post__content">
 						{postContent.map((content, i) => (
