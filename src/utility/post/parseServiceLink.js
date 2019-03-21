@@ -68,6 +68,12 @@ const SERVICES = {
 					return match[1].replace(/\/videos$/, '')
 				}
 			}
+			if (url.pathname.indexOf('/c/') === 0) {
+				const match = url.pathname.match(/^\/c\/(.+)/)
+				if (match) {
+					return match[1].replace(/\/videos$/, '')
+				}
+			}
 			if (url.pathname === '/playlist' && url.searchParams.get('list')) {
 				return `playlist/${url.searchParams.get('list')}`
 			}
