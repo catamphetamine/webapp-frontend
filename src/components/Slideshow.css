@@ -170,6 +170,7 @@
 
 	&:hover {
 		color: var(--base-color);
+		/*box-shadow: 0 0 0 1px inset var(--base-color);*/
 	}
 
 	&:active {
