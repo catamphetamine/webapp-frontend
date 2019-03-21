@@ -56,7 +56,18 @@ export default function PostBlock({
 	} else if (content.type === 'quote') {
 		return <PostQuote>{content}</PostQuote>
 	} else if (content.type === 'monospace') {
-		return <PostMonospace>{content.content}</PostMonospace>
+		return (
+			<PostMonospace>
+				<PostInlineContent
+					url={url}
+					onReadMore={onReadMore}
+					readMoreLabel={readMoreLabel}
+					openSlideshow={openSlideshow}
+					serviceIcons={serviceIcons}>
+					{content.content}
+				</PostInlineContent>
+			</PostMonospace>
+		)
 	} else if (content.type === 'read-more') {
 		return (
 			<PostParagraph>

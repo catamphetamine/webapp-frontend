@@ -107,6 +107,14 @@ export function getContentText(content, softLimit, options = {}) {
 				return getHumanReadableLinkAddress(part.url)
 			}
 			return part.content
+		case 'monospace':
+			if (!part.inline && options.excludeCodeBlocks) {
+				if (options.messages && options.messages.code) {
+					return '(' + options.messages.code.toLowerCase() + ')'
+				}
+				return ''
+			}
+			return getContent()
 		case 'attachment':
 			if (options.ignoreAttachments || options.skipAttachments) {
 				return ''

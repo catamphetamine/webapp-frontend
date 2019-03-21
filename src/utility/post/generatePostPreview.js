@@ -88,14 +88,19 @@ class PreviewGenerator {
 						}
 						break
 					case 'heading':
-						if (!this.countIfFits(block.content)) {
+						if (this.countIfFits(block.content)) {
+							trimmedBlock = block
+						}
+						break
+					case 'monospace':
+						if (this.countIfFits(block.content)) {
 							trimmedBlock = block
 						}
 						break
 					case 'list':
 						const trimmedItems = []
 						for (const item of block.items) {
-							if (this.countIfFits(item)) {
+							if (!this.countIfFits(item)) {
 								break
 							}
 							trimmedItems.push(item)
