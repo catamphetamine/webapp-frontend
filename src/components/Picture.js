@@ -398,7 +398,7 @@ export function getPreferredSize(sizes, width, options = {})
 
 	let pixelRatio = 1
 
-	if (typeof window !== 'undefined' && window.devicePixelRatio) { // && !saveBandwidth) {
+	if (typeof window !== 'undefined' && window.devicePixelRatio) {
 		pixelRatio = window.devicePixelRatio
 	}
 
@@ -413,15 +413,27 @@ export function getPreferredSize(sizes, width, options = {})
 			return size
 		}
 		if (size.width > width) {
-			if (saveBandwidth && previousSize) {
-				const deltaWidthSmaller = width - previousSize.width
-				const deltaWidthLarger = size.width - width
-				// Prefer larger size if it's not too much oversized.
-				if (deltaWidthLarger / width < 0.2) {
-					return size
-				}
-				return previousSize
-			}
+			// if (saveBandwidth && previousSize) {
+			// 	// Prefer larger size unless it's too oversized.
+			// 	const aspectRatio = sizes[sizes.length - 1].width / sizes[sizes.length - 1].height
+			// 	//
+			// 	const w1 = previousSize.width
+			// 	const h1 = previousSize.height
+			// 	const dw1 = width - w1
+			// 	const dh1 = dw1 / aspectRatio
+			// 	//
+			// 	const w2 = size.width
+			// 	const h2 = size.height
+			// 	const dw2 = w2 - width
+			// 	const dh2 = dw2 / aspectRatio
+			// 	//
+			// 	const dS1 = dw1 * h1 + dh1 * w1 + dw1 * dh1
+			// 	const dS2 = dw2 * h2 + dh2 * w2 + dw2 * dh2
+			// 	//
+			// 	if (dS2 / dS1 > 10) {
+			// 		return previousSize
+			// 	}
+			// }
 			return size
 		}
 		previousSize = size

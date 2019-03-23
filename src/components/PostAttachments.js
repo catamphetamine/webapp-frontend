@@ -5,6 +5,7 @@ import { FadeInOut, ActivityIndicator } from 'react-responsive-ui'
 
 import Picture, {
 	preloadImage,
+	getPreferredSize,
 	TRANSPARENT_PIXEL,
 	getUrl as getPictureUrl,
 	getMaxSize as getPictureMaxSize,
@@ -543,20 +544,17 @@ class AttachmentButton extends React.Component {
 		} = this.props
 		if (attachment.type === 'picture') {
 			const picture = attachment.picture
-			// Assume that two-image picture attachments
-			// are a thumbnail and an original image.
-			// (that's the case for imageboards)
-			if (picture.sizes.length === 2) {
-				this.setState({
-					isLoading: true
-				})
-				// For testing/styling.
-				// await new Promise(_ => setTimeout(_, 30000000))
-				await preloadImage(picture.sizes[picture.sizes.length - 1].url)
-				this.setState({
-					isLoading: false
-				})
-			}
+			// Preload the picture.
+			const size = getPreferredSize(picture.sizes, window.clientWidth)
+			this.setState({
+				isLoading: true
+			})
+			// For testing/styling.
+			// await new Promise(_ => setTimeout(_, 30000000))
+			await preloadImage(size.url)
+			this.setState({
+				isLoading: false
+			})
 		}
 		onClick({
 			preventDefault() {}
