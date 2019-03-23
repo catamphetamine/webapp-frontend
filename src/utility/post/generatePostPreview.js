@@ -10,6 +10,10 @@ const EMBEDDED_ATTACHMENT_COST = 100
 const EMBEDDED_PICTURE_COST = 200
 const EMBEDDED_VIDEO_COST = 200
 
+// If the total content length doesn't exceed
+// `(1 + FIT_FACTOR) * limit` then preview is not neccessary.
+const FIT_FACTOR = 0.3
+
 export default function generatePostPreview(post, options) {
 	if (!post.content) {
 		return
@@ -81,58 +85,80 @@ class PreviewGenerator {
 					}
 				}
 			} else {
-				switch (block.type) {
-					case 'attachment':
-						if (this.countAttachmentIfFits(this.getAttachmentById(block.attachmentId))) {
-							trimmedBlock = block
-						}
-						break
-					case 'heading':
-						if (this.countIfFits(block.content)) {
-							trimmedBlock = block
-						}
-						break
-					case 'monospace':
-						if (this.countIfFits(block.content)) {
-							trimmedBlock = block
-						}
-						break
-					case 'list':
-						const trimmedItems = []
-						for (const item of block.items) {
-							if (!this.countIfFits(item)) {
-								break
-							}
-							trimmedItems.push(item)
-						}
-						if (trimmedItems.length === block.items.length) {
-							trimmedBlock = block
-						} else if (trimmedItems.length > 0 && trimmedItems.length < block.items.length) {
-							trimmedBlock = {
-								...block,
-								items: trimmedItems
+				const blockType = CONTENT_BLOCKS[block.type]
+				if (blockType) {
+					let _block = block
+					if (block.type === 'attachment') {
+						_block = this.getAttachmentById(block.attachmentId)
+					}
+					if (_block) {
+						const result = blockType.countIfFits(_block, this.countIfFits)
+						if (result) {
+							if (result === true) {
+								trimmedBlock = block
+							} else {
+								trimmedBlock = result
 							}
 						}
-						break
-					case 'quote':
-						if (block.source) {
-							this.countIfFits(block.source)
-						}
-						// Won't trim mid-quote.
-						if (this.countIfFits(block.content)) {
-							trimmedBlock = block
-						}
-						break
-					default:
-						console.error(`Unsupported post block type: ${block.type}`)
-						break
+					}
+				} else {
+					console.error(`Unsupported post block type: ${block.type}`)
 				}
 			}
 			if (trimmedBlock) {
 				this.preview.push(trimmedBlock)
 			}
+			// If trim point reached.
 			if (trimmedBlock !== block) {
-				// Add "Read more" button.
+				// See if the rest content exceeds the threshold.
+				let points = this.blockLevelTrimCharacterPoints
+				let i = this.content.indexOf(block)
+				let thresholdExceeded = false
+				const countIfFits = (count) => {
+					if (typeof count !== 'number') {
+						count = countCharacters(count, 'points')
+					}
+					if (!this.doesExceedThreshold(points + count)) {
+						points += count
+						return true
+					}
+				}
+				while (i < this.content.length) {
+					const block = this.content[i]
+					if (typeof block === 'string' || Array.isArray(block)) {
+						points += countCharacters(block, 'points')
+						if (this.doesExceedThreshold(points)) {
+							thresholdExceeded = true
+						}
+					} else {
+						const blockType = CONTENT_BLOCKS[block.type]
+						thresholdExceeded = true
+						if (blockType) {
+							let _block = block
+							if (block.type === 'attachment') {
+								_block = this.getAttachmentById(block.attachmentId)
+							}
+							if (_block) {
+								if (blockType.countIfFits(_block, countIfFits) === true) {
+									thresholdExceeded = false
+								}
+							}
+						} else {
+							console.error(`Unsupported post block type: ${block.type}`)
+						}
+					}
+					if (thresholdExceeded) {
+						break
+					}
+					points += NEW_PARAGRAPH_COST
+					i++
+				}
+				// If the rest content doesn't exceed the threshold
+				// then don't generate a preview.
+				if (!thresholdExceeded) {
+					return
+				}
+				// Add "Read more" button and return the preview.
 				const hadNewLinesAtTheEnd = trimmedBlock && typeof trimmedBlock !== 'string' && trim(trimmedBlock, 'right')
 				if (trimmedBlock && !hadNewLinesAtTheEnd) {
 					this.preview[this.preview.length - 1] = addReadMore(this.preview[this.preview.length - 1])
@@ -145,6 +171,14 @@ class PreviewGenerator {
 			this.blockLevelTrimCharacterCount = this.characterCount
 			this.blockLevelTrimCharacterPoints = this.characterPoints
 		}
+	}
+
+	doesExceedThreshold(points) {
+		return points > this.options.limit * (1 + this.getFitFactor())
+	}
+
+	getFitFactor() {
+		return this.options.fitFactor === undefined ? FIT_FACTOR : this.options.fitFactor
 	}
 
 	// It would be more preferable to use "characters left" instead of "character points left"
@@ -166,7 +200,14 @@ class PreviewGenerator {
 		return points > this.getCharacterPointsLeft()
 	}
 
-	countIfFits(content) {
+	countIfFits = (content) => {
+		if (typeof content === 'number') {
+			if (this.willOverflow(content)) {
+				return
+			}
+			this.characterPoints += content
+			return true
+		}
 		const points = countCharacters(content, 'points')
 		if (this.willOverflow(points)) {
 			return
@@ -244,34 +285,14 @@ class PreviewGenerator {
 		return startFromIndex
 	}
 
-	countAttachmentIfFits(attachment) {
+	getAttachmentById(id) {
+		const attachment = this.attachments.find(_ => _.id === id)
 		if (!attachment) {
-			console.error(`Attachment not found`)
+			console.error(`Attachment ${id} not found`)
 			console.error(this.content)
 			console.error(this.attachments)
-			return
 		}
-		const points = this.getAttachmentCharacterPoints(attachment)
-		if (this.willOverflow(points)) {
-			return
-		}
-		this.characterPoints += points
-		return true
-	}
-
-	getAttachmentCharacterPoints(attachment) {
-		switch (attachment.type) {
-			case 'picture':
-				return EMBEDDED_PICTURE_COST
-			case 'video':
-				return EMBEDDED_VIDEO_COST
-			default:
-				return EMBEDDED_ATTACHMENT_COST
-		}
-	}
-
-	getAttachmentById(id) {
-		return this.attachments.find(_ => _.id === id)
+		return attachment
 	}
 }
 
@@ -315,4 +336,60 @@ function trimTextAtIndex(text, index, type) {
 		text += '…'
 	}
 	return text
+}
+
+const CONTENT_BLOCKS = {
+	'attachment': {
+		countIfFits(attachment, countIfFits) {
+			return countIfFits(getAttachmentCharacterPoints(attachment))
+		}
+	},
+	'heading': {
+		countIfFits(block, countIfFits) {
+			return countIfFits(block.content)
+		}
+	},
+	'monospace': {
+		countIfFits(block, countIfFits) {
+			return countIfFits(block.content)
+		}
+	},
+	'list': {
+		countIfFits(block, countIfFits) {
+			const trimmedItems = []
+			for (const item of block.items) {
+				if (!countIfFits(item)) {
+					break
+				}
+				trimmedItems.push(item)
+				if (!countIfFits('\n')) {
+					break
+				}
+			}
+			if (trimmedItems.length === block.items.length) {
+				return true
+			} else if (trimmedItems.length > 0 && trimmedItems.length < block.items.length) {
+				return {
+					...block,
+					items: trimmedItems
+				}
+			}
+		}
+	},
+	'quote': {
+		countIfFits(block, countIfFits) {
+			return countIfFits(block.source) && countIfFits(block.content)
+		}
+	}
+}
+
+function getAttachmentCharacterPoints(attachment) {
+	switch (attachment.type) {
+		case 'picture':
+			return EMBEDDED_PICTURE_COST
+		case 'video':
+			return EMBEDDED_VIDEO_COST
+		default:
+			return EMBEDDED_ATTACHMENT_COST
+	}
 }

@@ -10,6 +10,9 @@ function getPostPreviewTest(post, options, expected) {
 			attachments: []
 		}
 	}
+	if (options.fitFactor === undefined) {
+		options.fitFactor = 0
+	}
 	expectToEqual(generatePostPreview(post, options), expected)
 }
 
@@ -384,6 +387,57 @@ describe('getPostText', () => {
 						type: 'spoiler',
 						content: 'spoilerrr …'
 					},
+					{ type: 'read-more' }
+				]
+			]
+		)
+	})
+
+	it('should not generate preview if rest content fits within threshold', () => {
+		getPostPreviewTest(
+			[
+				[
+					'Some long enough sentence so that it surpasses the limit but still fits within threshold.'
+				]
+			],
+			{
+				limit: 70,
+				fitFactor: 0
+			},
+			[
+				[
+					'Some long enough sentence so that it surpasses the limit but still …',
+					{ type: 'read-more' }
+				]
+			]
+		)
+
+		getPostPreviewTest(
+			[
+				[
+					'Some long enough sentence so that it surpasses the limit but still fits within threshold.'
+				]
+			],
+			{
+				limit: 70,
+				fitFactor: 0.3
+			},
+			undefined
+		)
+
+		getPostPreviewTest(
+			[
+				[
+					'Some long enough sentence so that it surpasses the limit but still fits within threshold.'
+				]
+			],
+			{
+				limit: 70,
+				fitFactor: 0.2
+			},
+			[
+				[
+					'Some long enough sentence so that it surpasses the limit but still …',
 					{ type: 'read-more' }
 				]
 			]
