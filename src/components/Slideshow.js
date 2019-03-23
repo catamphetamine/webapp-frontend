@@ -243,9 +243,11 @@ class Slideshow extends React.PureComponent {
 					// Apply the scrollbar-compensating padding immediately when setting
 					// body's `overflow: hidden` to prevent "jitter" ("jank") (visual lag).
 					// (for the slideshow `position: fixed` layer)
-					this.container.current.style.paddingRight = scrollBarWidth + 'px'
-					// Render the slideshow with scrollbar-compensating padding in future re-renders.
-					this.containerPaddingRight = scrollBarWidth + 'px'
+					if (this.container.current) {
+						this.container.current.style.paddingRight = scrollBarWidth + 'px'
+						// Render the slideshow with scrollbar-compensating padding in future re-renders.
+						this.containerPaddingRight = scrollBarWidth + 'px'
+					}
 				}
 			})
 		}
@@ -436,7 +438,7 @@ class Slideshow extends React.PureComponent {
 			return this.slides.current.clientWidth
 		}
 		if (!inline) {
-			return window.clientWidth
+			return getViewportWidth()
 		}
 	}
 
@@ -1311,4 +1313,8 @@ function createRange(N) {
 
 function getScrollBarWidth() {
 	return window.innerWidth - document.documentElement.clientWidth
+}
+
+export function getViewportWidth() {
+	return document.documentElement.clientWidth
 }

@@ -43,6 +43,8 @@ import PostFile, {
 	EXAMPLE_3 as FILE_EXAMPLE_3
 } from './PostFile'
 
+import { getViewportWidth } from './Slideshow'
+
 import {
 	postAttachment
 } from '../PropTypes'
@@ -545,7 +547,7 @@ class AttachmentButton extends React.Component {
 		if (attachment.type === 'picture') {
 			const picture = attachment.picture
 			// Preload the picture.
-			const size = getPreferredSize(picture.sizes, window.clientWidth)
+			const size = getPreferredSize(picture.sizes, getViewportWidth())
 			this.setState({
 				isLoading: true
 			})
