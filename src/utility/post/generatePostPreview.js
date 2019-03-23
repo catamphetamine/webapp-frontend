@@ -12,7 +12,7 @@ const EMBEDDED_VIDEO_COST = 200
 
 // If the total content length doesn't exceed
 // `(1 + FIT_FACTOR) * limit` then preview is not neccessary.
-const FIT_FACTOR = 0.3
+const FIT_FACTOR = 0.2
 
 export default function generatePostPreview(post, options) {
 	if (!post.content) {
