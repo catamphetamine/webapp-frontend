@@ -448,7 +448,7 @@ class Slideshow extends React.PureComponent {
 			return this.slides.current.clientHeight
 		}
 		if (!inline) {
-			return window.clientHeight
+			return getViewportHeight()
 		}
 	}
 
@@ -1317,4 +1317,8 @@ function getScrollBarWidth() {
 
 export function getViewportWidth() {
 	return document.documentElement.clientWidth
+}
+
+function getViewportHeight() {
+	return document.documentElement.clientHeight
 }
