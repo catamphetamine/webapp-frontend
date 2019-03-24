@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import classNames from 'classnames'
 
 import openLinkInNewTab from '../utility/openLinkInNewTab'
+import { isClickable } from '../utility/dom'
 
 import './OnClick.css'
 
@@ -234,16 +235,4 @@ export default class OnClick extends React.Component {
 			</div>
 		)
 	}
-}
-
-function isClickable(element, maxParent) {
-	if (!element || element === maxParent) {
-		return false
-	}
-	switch (element.tagName) {
-		case 'A':
-		case 'BUTTON':
-			return true
-	}
-	return isClickable(element.parentNode)
 }
