@@ -6,6 +6,7 @@ import classNames from 'classnames'
 import './PostLink.css'
 
 import GoogleIcon from '../../assets/images/icons/services/google.svg'
+import YandexIcon from '../../assets/images/icons/services/yandex.svg'
 import YouTubeIcon from '../../assets/images/icons/services/youtube.svg'
 import VimeoIcon from '../../assets/images/icons/services/vimeo.svg'
 import FacebookIcon from '../../assets/images/icons/services/facebook.svg'
@@ -100,5 +101,6 @@ const SERVICE_ICONS = {
 	'twitter': TwitterIcon,
 	'telegram': TelegramIcon,
 	'github': GitHubIcon,
-	'google': GoogleIcon
+	'google': GoogleIcon,
+	'yandex': YandexIcon
 }

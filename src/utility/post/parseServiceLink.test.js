@@ -296,4 +296,34 @@ describe('parseServiceLink', () => {
 			}
 		)
 	})
+
+	it('should parse google maps links', () => {
+		expectToEqual(
+			parseServiceLink('https://www.google.com/maps/@55.7456141,37.6462423,3a,75y,338.07h,80.99t/data=!3m6!1e1!3m4!1sSSc62Yvxzck88DABkvTQBA!2e0!7i13312!8i6656'),
+			{
+				service: 'google',
+				text: 'maps/@55.7456141,37.6462423,3a,75y,338.07h,80.99t'
+			}
+		)
+	})
+
+	it('should parse yandex search links', () => {
+		expectToEqual(
+			parseServiceLink('https://yandex.ru/search/?text=%D0%90%D0%B1%D0%B2&lr=213'),
+			{
+				service: 'yandex',
+				text: 'Абв'
+			}
+		)
+	})
+
+	it('should parse yandex maps links', () => {
+		expectToEqual(
+			parseServiceLink('https://yandex.ru/maps/213/moscow/?l=stv%2Csta&ll=37.672836%2C55.727706&panorama%5Bdirection%5D=40.453518%2C0.000000&panorama%5Bpoint%5D=37.692410%2C55.776097&panorama%5Bspan%5D=120.000000%2C66.095178&z=10.8'),
+			{
+				service: 'yandex',
+				text: 'maps/37.672836,55.727706'
+			}
+		)
+	})
 })

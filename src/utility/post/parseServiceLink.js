@@ -111,6 +111,25 @@ const SERVICES = {
 					return url.searchParams.get('q')
 				}
 			}
+			const coordinatesMatch = url.pathname.match(/^\/maps\/([^\/]+)/)
+			if (coordinatesMatch) {
+				return `maps/${coordinatesMatch[1]}`
+			}
+		}
+	},
+	'yandex.ru': {
+		name: 'yandex',
+		getText(url) {
+			// Yandex adds a trailing slash to the path for some weird reason.
+			if (url.pathname === '/search' || url.pathname === '/search/') {
+				if (url.searchParams.get('text')) {
+					return url.searchParams.get('text')
+				}
+			}
+			const coordinatesMatch = url.pathname.match(/^\/maps\/([^\/]+)/)
+			if (coordinatesMatch) {
+				return `maps/${url.searchParams.get('ll')}`
+			}
 		}
 	},
 	'instagram.com': {
