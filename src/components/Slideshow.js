@@ -2,9 +2,11 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import throttle from 'lodash/throttle'
+import FocusLock from 'react-focus-lock'
 
 // `body-scroll-lock` has been modified a bit, see the info in the header of the file.
 import { disableBodyScroll, enableBodyScroll, clearAllBodyScrollLocks } from '../utility/body-scroll-lock'
+import { isClickable } from '../utility/dom'
 
 import Picture, { getAspectRatio, getMaxSize as getMaxPictureSize, isVector } from './Picture'
 import Video, { getMaxSize as getMaxVideoSize } from './Video'
@@ -31,7 +33,8 @@ export default function SlideshowWrapper(props) {
 }
 
 const VideoPlugin = {
-	showCloseButtonForSingleSlide: true,
+	changeSlideOnClick: false,
+	// showCloseButtonForSingleSlide: true,
 	getMaxSize(slide) {
 		return getMaxVideoSize(slide)
 	},
@@ -62,24 +65,29 @@ const VideoPlugin = {
 		return slide.picture !== undefined
 	},
 	render({
+		ref,
 		slide,
 		isShown,
 		wasExpanded,
 		onClick,
 		maxWidth,
 		maxHeight,
+		tabIndex,
 		style
 	}) {
 		return (
 			<Video
+				ref={ref}
 				video={slide}
 				fit="scale-down"
+				onClick={onClick}
 				autoPlay={wasExpanded ? true : false}
 				showPreview={wasExpanded ? false : true}
 				showPlayIcon={wasExpanded ? false : true}
 				canPlay={isShown}
 				maxWidth={maxWidth}
 				maxHeight={maxHeight}
+				tabIndex={tabIndex}
 				style={style}
 				className="rrui__slideshow__video"/>
 		)
@@ -113,6 +121,7 @@ const PicturePlugin = {
 		return slide.sizes !== undefined
 	},
 	render({
+		ref,
 		slide,
 		onClick,
 		maxWidth,
@@ -123,6 +132,7 @@ const PicturePlugin = {
 		// onClick={onClickPrecise}
 		return (
 			<Picture
+				ref={ref}
 				picture={slide}
 				fit="contain"
 				onClick={onClick}
@@ -169,7 +179,7 @@ class Slideshow extends React.PureComponent {
 			getDownloadLink: PropTypes.func,
 			canRender: PropTypes.func.isRequired,
 			render: PropTypes.func.isRequired,
-			showCloseButtonForSingleSlide: PropTypes.bool
+			// showCloseButtonForSingleSlide: PropTypes.bool
 		})).isRequired,
 		children: PropTypes.arrayOf(PropTypes.any).isRequired
 	}
@@ -201,6 +211,10 @@ class Slideshow extends React.PureComponent {
 
 	container = React.createRef()
 	slides = React.createRef()
+	currentSlide = React.createRef()
+	previousButton = React.createRef()
+	nextButton = React.createRef()
+	closeButton = React.createRef()
 
 	panOffsetX = 0
 	panOffsetY = 0
@@ -221,9 +235,10 @@ class Slideshow extends React.PureComponent {
 
 	componentDidMount() {
 		const { fullScreen, inline } = this.props
-		if (document.activeElement) {
-			this.returnFocusTo = document.activeElement
-		}
+		// Focus is now handled by `react-focus-lock`.
+		// if (document.activeElement) {
+		// 	this.returnFocusTo = document.activeElement
+		// }
 		this.focus()
 		if (fullScreen) {
 			requestFullScreen(this.container.current)
@@ -263,9 +278,10 @@ class Slideshow extends React.PureComponent {
 			exitFullScreen()
 			this.unlistenFullScreen()
 		}
-		if (this.returnFocusTo) {
-			this.returnFocusTo.focus()
-		}
+		// Focus is now handled by `react-focus-lock`.
+		// if (this.returnFocusTo) {
+		// 	this.returnFocusTo.focus()
+		// }
 		clearTimeout(this.transitionEndTimer)
 		window.removeEventListener('resize', this.onWindowResize)
 		this._isMounted = false
@@ -320,13 +336,36 @@ class Slideshow extends React.PureComponent {
 	}
 
 	showSlide(i) {
+		if (i === this.state.i) {
+			return
+		}
+		const direction = i > this.state.i ? 'next' : 'previous'
 		this.markPicturesShown(i)
 		this.setState({
 			i,
 			// Reset slide display mode.
 			scale: 1,
 			expandedSlideIndex: undefined
-		})
+		}, () => this.focus(direction))
+	}
+
+	focus = (direction = 'next') => {
+		if (this.currentSlide.current.focus) {
+			this.currentSlide.current.focus()
+		} else {
+			if (direction === 'next' && this.nextButton.current) {
+				this.nextButton.current.focus()
+			} else if (direction === 'previous' && this.previousButton.current) {
+				this.previousButton.current.focus()
+			} else if (direction === 'previous' && this.nextButton.current) {
+				this.nextButton.current.focus()
+			} else if (this.closeButton.current) {
+				// Close button is not rendered in inline mode, for example.
+				this.closeButton.current.focus()
+			} else {
+				this.container.current.focus()
+			}
+		}
 	}
 
 	scaleUp = (event, factor = 1) => {
@@ -364,17 +403,17 @@ class Slideshow extends React.PureComponent {
 	}
 
 	onScaleUp = (event) => {
-		this.onActionClick()
+		// this.onActionClick()
 		this.scaleUp()
 	}
 
 	onScaleDown = (event) => {
-		this.onActionClick()
+		// this.onActionClick()
 		this.scaleDown()
 	}
 
 	onScaleToggle = (event) => {
-		this.onActionClick()
+		// this.onActionClick()
 		this.scaleToggle()
 	}
 
@@ -398,7 +437,7 @@ class Slideshow extends React.PureComponent {
 	}
 
 	onDownload = (event) => {
-		this.onActionClick()
+		// this.onActionClick()
 		const downloadInfo = this.getPluginForSlide().download(this.getCurrentSlide())
 		if (downloadInfo) {
 			downloadFile(downloadInfo.url, downloadInfo.title)
@@ -511,6 +550,9 @@ class Slideshow extends React.PureComponent {
 		// A "click" event is emitted on mouse up
 		// when a user finishes panning to next/previous slide.
 		if (this.wasPanning) {
+			// Prevent default so that the video slide doesn't play.
+			event.preventDefault()
+			// Stop propagation so that `onBackgroundClick` is not called.
 			event.stopPropagation()
 			return
 		}
@@ -535,8 +577,6 @@ class Slideshow extends React.PureComponent {
 			// }
 		}
 	}
-
-	focus = () => this.container.current.focus()
 
 	close = () => {
 		const { onClose } = this.props
@@ -575,18 +615,18 @@ class Slideshow extends React.PureComponent {
 	}
 
 	onShowPrevious = (event) => {
-		this.onActionClick()
+		// this.onActionClick()
 		this.showPrevious()
 	}
 
 	onShowNext = (event) => {
-		this.onActionClick()
+		// this.onActionClick()
 		this.showNext()
 	}
 
-	onActionClick() {
-		this.focus()
-	}
+	// onActionClick() {
+	// 	this.focus()
+	// }
 
 	onKeyDown = (event) => {
 		if (event.ctrlKey || event.altKey || event.shiftKey || event.metaKey) {
@@ -631,13 +671,13 @@ class Slideshow extends React.PureComponent {
 				this.close()
 				return
 
-			// "Spacebar".
-			// Play video
-			case 32:
-				event.preventDefault()
-				const { i } = this.state
-				this.setState({ expandedSlideIndex: i })
-				return
+			// // "Spacebar".
+			// // Play video
+			// case 32:
+			// 	event.preventDefault()
+			// 	const { i } = this.state
+			// 	this.setState({ expandedSlideIndex: i })
+			// 	return
 		}
 	}
 
@@ -977,9 +1017,9 @@ class Slideshow extends React.PureComponent {
 		if (inline) {
 			return false
 		}
-		if (slides.length === 1 && !this.getPluginForSlide().showCloseButtonForSingleSlide) {
-			return false
-		}
+		// if (slides.length === 1 && !this.getPluginForSlide().showCloseButtonForSingleSlide) {
+		// 	return false
+		// }
 		return true
 	}
 
@@ -1006,8 +1046,14 @@ class Slideshow extends React.PureComponent {
 			expandedSlideIndex
 		} = this.state
 
+		// `react-focus-lock` doesn't focus `<video/>` when cycling the Tab key.
+		// https://github.com/theKashey/react-focus-lock/issues/61
+
 		// `tabIndex={ -1 }` makes the `<div/>` focusable.
 		return (
+			<FocusLock
+				returnFocus
+				autoFocus={false}>
 			<div
 				ref={this.container}
 				tabIndex={-1}
@@ -1093,6 +1139,7 @@ class Slideshow extends React.PureComponent {
 									download
 									target="_blank"
 									title={messages.actions.download}
+									onKeyDown={clickTheLinkOnSpacebar}
 									href={this.getPluginForSlide().getDownloadLink(this.getCurrentSlide())}
 									className="rrui__slideshow__action rrui__slideshow__action--link">
 									<Download className="rrui__slideshow__action-icon rrui__slideshow__action-icon--download"/>
@@ -1129,6 +1176,7 @@ class Slideshow extends React.PureComponent {
 						{this.shouldShowCloseButton() &&
 							<li className="rrui__slideshow__action-item">
 								<button
+									ref={this.closeButton}
 									type="button"
 									title={messages.actions.close}
 									onClick={this.close}
@@ -1141,6 +1189,7 @@ class Slideshow extends React.PureComponent {
 
 					{slides.length > 1 && i > 0 &&
 						<button
+							ref={this.previousButton}
 							type="button"
 							title={messages.actions.previous}
 							onClick={this.onShowPrevious}
@@ -1151,6 +1200,7 @@ class Slideshow extends React.PureComponent {
 
 					{slides.length > 1 && i < slides.length - 1 &&
 						<button
+							ref={this.nextButton}
 							type="button"
 							title={messages.actions.next}
 							onClick={this.onShowNext}
@@ -1166,6 +1216,7 @@ class Slideshow extends React.PureComponent {
 					}
 				</div>
 			</div>
+			</FocusLock>
 		)
 	}
 
@@ -1174,6 +1225,8 @@ class Slideshow extends React.PureComponent {
 		const isShown = j === i
 
 		return this.getPluginForSlide(slide).render({
+			ref: isShown ? this.currentSlide : undefined,
+			tabIndex: isShown ? undefined : -1,
 			slide,
 			isShown,
 			wasExpanded,
@@ -1321,4 +1374,14 @@ export function getViewportWidth() {
 
 function getViewportHeight() {
 	return document.documentElement.clientHeight
+}
+
+function clickTheLinkOnSpacebar(event) {
+	switch (event.keyCode) {
+		// "Spacebar".
+		// Play video
+		case 32:
+			event.preventDefault()
+			event.target.click()
+	}
 }

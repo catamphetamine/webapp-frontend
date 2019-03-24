@@ -168,7 +168,9 @@
 	background-color : rgba(0,0,0,0.7);
 	color : var(--white-color);
 
-	&:hover {
+	outline: none;
+
+	&:hover, &:focus {
 		color: var(--base-color);
 		/*box-shadow: 0 0 0 1px inset var(--base-color);*/
 	}
@@ -336,11 +338,15 @@
 	box-shadow: 0 0 2px var(--black-color);
 }
 
-.rrui__slideshow__progress-dot--selected
-{
+.rrui__slideshow__progress-dot--selected {
 	background-color: var(--base-color);
 }
 
 .rrui__slideshow__video .rrui__video__play-icon {
 	--rrui-video-play-icon-size: 20%;
+}
+
+.rrui__slideshow__video {
+	/* A border around a video in a fullscreen slideshow disturbs the immersion. */
+	--rrui-video-focus-border-color: transparent;
 }
