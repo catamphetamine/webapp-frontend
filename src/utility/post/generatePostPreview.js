@@ -183,7 +183,7 @@ class PreviewGenerator {
 	// which is chosen to be avoided here for simplicity.
 	//
 	willTrimLongEnoughAt(characterCount) {
-		return this.withFitFactor(characterCount) > 0.7 * (this.characterCount + this.getCharacterPointsLeft())
+		return characterCount > 0.7 * (this.characterCount + this.getCharacterPointsLeft())
 	}
 
 	// Returns whether it would be ok to trim at some previous point (relative to the limit point).
