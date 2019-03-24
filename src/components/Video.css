@@ -7,10 +7,8 @@ and that's how the embedded video's aspect ratio is set.
 	display: block;
 	position: relative;
 	overflow: hidden;
-}
 
-.rrui__video:focus {
-	--picture-border-color: var(--base-color-darkest);
+	--rrui-video-focus-border-color: var(--base-color-darkest);
 }
 
 .rrui__video iframe,
@@ -23,8 +21,22 @@ and that's how the embedded video's aspect ratio is set.
 	height: 100%;
 }
 
-.rrui__video video {
+/* `overflow: visible` is for the `box-shadow` to be visible. */
+.rrui__video {
+	overflow: visible;
+}
+
+.rrui__video video:focus {
 	outline: none;
+	box-shadow: 0 0 0 1px var(--rrui-video-focus-border-color);
+}
+
+.rrui__video:focus {
+	--picture-border-color: var(--base-color-darkest);
+	.rrui__video__play-icon-border,
+	.rrui__video__play-icon-triangle {
+		fill: var(--base-color-light);
+	}
 }
 
 .rrui__video--aspect-ratio {

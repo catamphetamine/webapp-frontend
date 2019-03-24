@@ -16,6 +16,9 @@ export default class Video extends React.Component {
 		autoPlay: this.props.autoPlay
 	}
 
+	button = React.createRef()
+	video = React.createRef()
+
 	componentDidUpdate(prevProps) {
 		// On `showPreview` property change.
 		if (this.props.showPreview !== prevProps.showPreview) {
@@ -40,10 +43,32 @@ export default class Video extends React.Component {
 		}
 	}
 
-	showVideo = () => this.setState({
-		showPreview: false,
-		autoPlay: true
-	})
+	focus = () => {
+		if (this.button.current) {
+			this.button.current.focus()
+		} else if (this.video.current) {
+			this.video.current.focus()
+		}
+	}
+
+	showVideo = () => {
+		this.setState({
+			showPreview: false,
+			autoPlay: true
+		}, this.focus)
+	}
+
+	onClick = (event) => {
+		const { onClick } = this.props
+		const { showPreview } = this.state
+		if (onClick) {
+			onClick(event)
+		}
+		if (showPreview && !event.defaultPrevented) {
+			event.preventDefault()
+			this.showVideo()
+		}
+	}
 
 	getContainerStyle() {
 		const {
@@ -101,6 +126,7 @@ export default class Video extends React.Component {
 			// width,
 			// height,
 			onClick,
+			tabIndex,
 			style,
 			className
 		} = this.props
@@ -109,22 +135,22 @@ export default class Video extends React.Component {
 			showPreview
 		} = this.state
 
-		const _onClick = onClick || showPreview && this.showVideo
 		const _style = style ? { ...style, ...this.getContainerStyle() } : this.getContainerStyle()
 		const _className = classNames(className, 'rrui__video', {
 			'rrui__video--aspect-ratio': fit === 'width'
 		})
 
-		if (_onClick) {
+		if (showPreview) {
 			return (
 				<button
+					ref={this.button}
 					type="button"
 					aria-label={this.props['aria-label']}
-					onClick={_onClick}
+					onClick={this.onClick}
+					tabIndex={tabIndex}
 					style={_style}
 					className={classNames('rrui__button-reset', 'rrui__video__button', _className)}>
-					{showPreview && this.renderPreview()}
-					{!showPreview && this.renderVideo()}
+					{this.renderPreview()}
 				</button>
 			)
 		}
@@ -133,8 +159,7 @@ export default class Video extends React.Component {
 			<div
 				style={_style}
 				className={_className}>
-				{showPreview && this.renderPreview()}
-				{!showPreview && this.renderVideo()}
+				{this.renderVideo()}
 			</div>
 		)
 	}
@@ -163,7 +188,8 @@ export default class Video extends React.Component {
 
 	renderVideo() {
 		const {
-			video
+			video,
+			tabIndex
 		} = this.props
 
 		const {
@@ -174,6 +200,8 @@ export default class Video extends React.Component {
 			const size = video.source.sizes[video.source.sizes.length - 1]
 			return (
 				<video
+					ref={this.video}
+					tabIndex={tabIndex}
 					width="100%"
 					height="100%"
 					autoPlay={autoPlay}
@@ -231,6 +259,7 @@ Video.propTypes = {
 	canPlay: PropTypes.bool.isRequired,
 	showPlayIcon: PropTypes.bool,
 	onClick: PropTypes.func,
+	tabIndex: PropTypes.bool,
 	style: PropTypes.object,
 	className: PropTypes.string
 }
