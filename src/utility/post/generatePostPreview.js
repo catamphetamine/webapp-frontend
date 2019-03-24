@@ -43,7 +43,9 @@ class PreviewGenerator {
 			let trimmedBlock
 			if (typeof block === 'string') {
 				if (block === '\n') {
-					if (this.willOverflow(NEW_LINE_COST)) {
+					if (this.willOverflow(NEW_LINE_COST, false)) {
+						// Whitespace serves the purpose of making it
+						// move `{ type: "read-more" }` to a new paragraph.
 						trimmedBlock = ' '
 					} else {
 						trimmedBlock = block
@@ -54,13 +56,8 @@ class PreviewGenerator {
 						trimmedBlock = block
 					} else {
 						if (!this.willTrimLongEnoughAt(this.blockLevelTrimCharacterCount)) {
-							trimmedBlock = this.trimTextAtPoint(block, 'sentence-end')
-							if (!trimmedBlock || !this.willTrimLongEnoughAfter(countCharacters(trimmedBlock, 'points'))) {
-								trimmedBlock = this.trimTextAtPoint(block, 'whitespace')
-								if (!trimmedBlock || !this.willTrimLongEnoughAfter(countCharacters(trimmedBlock, 'points'))) {
-									trimmedBlock = this.trimTextAtPoint(block, 'any')
-								}
-							}
+							trimmedBlock = this.trimTextContent(block)
+							this.characterPoints += countCharacters(trimmedBlock, 'points')
 						}
 					}
 				}
@@ -74,13 +71,10 @@ class PreviewGenerator {
 						// and appends `{ type: 'read-more' }` as a block-level part.
 						trimmedBlock = this.trimAtPoint(block, 'new-line')
 						if (!trimmedBlock || !this.willTrimLongEnoughAfter(countCharacters(trimmedBlock, 'points'))) {
-							trimmedBlock = this.trimAtPoint(block, 'sentence-end')
-							if (!trimmedBlock || !this.willTrimLongEnoughAfter(countCharacters(trimmedBlock, 'points'))) {
-								trimmedBlock = this.trimAtPoint(block, 'whitespace')
-								if (!trimmedBlock || !this.willTrimLongEnoughAfter(countCharacters(trimmedBlock, 'points'))) {
-									trimmedBlock = this.trimAtPoint(block, 'any')
-								}
-							}
+							trimmedBlock = this.trimTextContent(block)
+						}
+						if (trimmedBlock) {
+							this.characterPoints += countCharacters(trimmedBlock, 'points')
 						}
 					}
 				}
@@ -109,7 +103,7 @@ class PreviewGenerator {
 				this.preview.push(trimmedBlock)
 			}
 			// If trim point reached.
-			if (trimmedBlock !== block) {
+			if (trimmedBlock !== block || this.characterPoints > this.options.limit) {
 				// See if the rest content exceeds the threshold.
 				let points = this.blockLevelTrimCharacterPoints
 				let i = this.content.indexOf(block)
@@ -174,20 +168,27 @@ class PreviewGenerator {
 	}
 
 	doesExceedThreshold(points) {
-		return points > this.options.limit * (1 + this.getFitFactor())
+		return points > this.characterPoints * (1 + this.getFitFactor())
 	}
 
 	getFitFactor() {
 		return this.options.fitFactor === undefined ? FIT_FACTOR : this.options.fitFactor
 	}
 
+	// Returns whether it would be ok to trim at some previous point (relative to the limit point).
+	// Is used to test whether it would be ok to discard current paragraph.
+	//
 	// It would be more preferable to use "characters left" instead of "character points left"
 	// but calculating "characters left" in context of a non-fitting block is extra computation
 	// which is chosen to be avoided here for simplicity.
+	//
 	willTrimLongEnoughAt(characterCount) {
-		return characterCount > 0.7 * (this.characterCount + this.getCharacterPointsLeft())
+		return this.withFitFactor(characterCount) > 0.7 * (this.characterCount + this.getCharacterPointsLeft())
 	}
 
+	// Returns whether it would be ok to trim at some previous point (relative to the limit point).
+	// Is used to test whether it would be ok to trim in the middle of current paragraph.
+	//
 	willTrimLongEnoughAfter(characterCount) {
 		return this.willTrimLongEnoughAt(this.characterCount + characterCount)
 	}
@@ -196,8 +197,16 @@ class PreviewGenerator {
 		return this.options.limit - this.characterPoints
 	}
 
-	willOverflow(points) {
-		return points > this.getCharacterPointsLeft()
+	willOverflow(points, withFitFactor = true) {
+		return this.characterPoints + points > this.withFitFactor(this.options.limit, withFitFactor)
+	}
+
+	withFitFactor(points, withFitFactor) {
+		if (withFitFactor) {
+			return Math.floor(points * (1 + this.getFitFactor()))
+		} else {
+			return points
+		}
 	}
 
 	countIfFits = (content) => {
@@ -217,11 +226,23 @@ class PreviewGenerator {
 		return true
 	}
 
-	trimTextAtPoint(text, type) {
+	trimTextContent(content) {
+		let trimmedBlock = this.trimAtPoint(content, 'sentence-end')
+		if (trimmedBlock && this.willTrimLongEnoughAfter(countCharacters(trimmedBlock, 'points'))) {
+			return trimmedBlock
+		}
+		trimmedBlock = this.trimAtPoint(content, 'whitespace', false)
+		if (trimmedBlock && this.willTrimLongEnoughAfter(countCharacters(trimmedBlock, 'points'))) {
+			return trimmedBlock
+		}
+		return this.trimAtPoint(content, 'any', false)
+	}
+
+	trimTextAtPoint(text, type, withFitFactor) {
 		if (this.getCharacterPointsLeft() == 0) {
 			return
 		}
-		const index = this.findTrimPoint(text, type, this.getCharacterPointsLeft() - 1)
+		const index = this.findTrimPoint(text, type, this.withFitFactor(this.getCharacterPointsLeft() - 1, withFitFactor))
 		if (index >= 0) {
 			text = text.slice(0, index + 1)
 			if (type === 'any' || type === 'whitespace') {
@@ -231,9 +252,12 @@ class PreviewGenerator {
 		}
 	}
 
-	trimAtPoint(block, type) {
+	trimAtPoint(block, type, withFitFactor = true) {
+		if (typeof block === 'string') {
+			return this.trimTextAtPoint(block, type, withFitFactor)
+		}
 		let trimPointIndex
-		let overflow = countCharacters(block, 'points') - this.getCharacterPointsLeft()
+		let overflow = countCharacters(block, 'points') - this.withFitFactor(this.getCharacterPointsLeft(), withFitFactor)
 		const indexes = searchContent(block, (content) => {
 			if (typeof content === 'string') {
 				const characterPoints = countCharacters(content, 'points')

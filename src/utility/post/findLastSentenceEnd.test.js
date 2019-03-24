@@ -37,4 +37,8 @@ describe('findLastSentenceEnd', () => {
 	it('should not confuse shortenings with end of sentence', () => {
 		expectToEqual(findLastSentenceEnd('Ab c.d. efg', 10), -1)
 	})
+
+	it('should accept start from index not fitting within text', () => {
+		expectToEqual(findLastSentenceEnd('Abc.', 10), 3)
+	})
 })

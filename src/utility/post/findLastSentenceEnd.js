@@ -2,7 +2,10 @@ const END_OF_SENTENCE_PUNCTUATION = ['.', '…', '?', '!']
 
 const WHITESPACE = /\s/
 
-export default function findLastSentenceEnd(text, startIndex = text.length - 1) {
+export default function findLastSentenceEnd(text, startIndex) {
+	if (startIndex === undefined || startIndex >= text.length) {
+		startIndex = text.length - 1
+	}
 	let i = startIndex
 	while (i >= 0) {
 		for (const character of END_OF_SENTENCE_PUNCTUATION) {
