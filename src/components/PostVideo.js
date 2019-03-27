@@ -20,7 +20,9 @@ export default class PostVideo extends React.Component {
 
 		let url
 		if (video.source.provider) {
-			url = getVideoUrl(video.source.id, video.source.provider)
+			url = getVideoUrl(video.source.id, video.source.provider, {
+				startAt: video.startAt
+			})
 		}
 
 		return (

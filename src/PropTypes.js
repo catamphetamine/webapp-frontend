@@ -67,6 +67,7 @@ export const video = shape({
 	description: string,
 	date: date,
 	duration: number,
+	startAt: number,
 	width: number,
 	height: number,
 	aspectRatio: number,

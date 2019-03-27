@@ -52,17 +52,25 @@ export default {
 	 * @param  {object} options
 	 * @return {object} [video] Returns `null` if the video doesn't exist. Returns `undefined` if it's not a YouTube video.
 	 */
-	parse: async function(url, options) {
+	parse: async function(url, options = {}) {
 		// Get video ID.
 		let id
+		let startAt
 		const location = parseURL(url)
 		if (location.hostname === 'www.youtube.com' || location.hostname === 'm.youtube.com') {
 			if (location.search) {
-				const query = parseQueryString(location.search.slice('/'.length))
+				const query = parseQueryString(location.search.slice('?'.length))
 				id = query.v
+				if (query.t) {
+					startAt = parseInt(query.t)
+				}
 			}
 		} else if (location.hostname === 'youtu.be') {
 			id = location.pathname.slice('/'.length)
+			const query = parseQueryString(location.search.slice('?'.length))
+			if (query.t) {
+				startAt = parseInt(query.t)
+			}
 		}
 
 		if (id) {
@@ -74,6 +82,7 @@ export default {
 					console.error(error)
 				}
 			}
+			// `null` means "Video doesn't exist" (for example, it was deleted).
 			if (video === null) {
 				return null
 			}
@@ -83,8 +92,11 @@ export default {
 				}
 			}
 			video.source = {
-				'provider': 'YouTube',
+				provider: 'YouTube',
 				id
+			}
+			if (startAt) {
+				video.startAt = startAt
 			}
 			return video
 		}
@@ -125,11 +137,20 @@ export default {
 		if (options.autoPlay) {
 			parameters.autoplay = 1
 		}
+		if (options.startAt) {
+			parameters.start = options.startAt
+		}
 		return `https://www.youtube.com/embed/${id}${getUrlQueryPart(parameters)}`
 	},
 
-	getVideoUrl(id) {
-		return `https://youtube.com/watch?v=${id}`
+	getVideoUrl(id, options = {}) {
+		const parameters = {
+			v: id
+		}
+		if (options.startAt) {
+			parameters.start = options.startAt
+		}
+		return `https://youtube.com/watch${getUrlQueryPart(parameters)}`
 	}
 }
 

@@ -226,7 +226,8 @@ export default class Video extends React.Component {
 			return (
 				<iframe
 					src={getEmbeddedVideoUrl(video.source.id, video.source.provider, {
-						autoPlay
+						autoPlay,
+						startAt: video.startAt
 					})}
 					frameBorder={0}
 					allow="autoplay; fullscreen"
@@ -281,7 +282,9 @@ export function getUrl(video) {
 		return size.url
 	}
 	if (video.source.provider === 'Vimeo' || video.source.provider === 'YouTube') {
-		return getVideoUrl(video.source.id, video.source.provider)
+		return getVideoUrl(video.source.id, video.source.provider, {
+			startAt: video.startAt
+		})
 	}
 	console.error(`Unsupported video provider: ${video.source.provider}`)
 	return
