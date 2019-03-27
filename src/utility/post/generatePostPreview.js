@@ -102,12 +102,15 @@ class PreviewGenerator {
 			if (trimmedBlock) {
 				this.preview.push(trimmedBlock)
 			}
+			if (trimmedBlock === block && this.characterPoints > this.options.limit) {
+				trimmedBlock = undefined
+			}
 			// If trim point reached.
-			if (trimmedBlock !== block || this.characterPoints > this.options.limit) {
+			if (trimmedBlock !== block) {
 				// See if the rest content exceeds the threshold.
 				let points = this.blockLevelTrimCharacterPoints
 				let i = this.content.indexOf(block)
-				let thresholdExceeded = false
+				let restContentExceedsThreshold = false
 				const countIfFits = (count) => {
 					if (typeof count !== 'number') {
 						count = countCharacters(count, 'points')
@@ -122,11 +125,11 @@ class PreviewGenerator {
 					if (typeof block === 'string' || Array.isArray(block)) {
 						points += countCharacters(block, 'points')
 						if (this.doesExceedThreshold(points)) {
-							thresholdExceeded = true
+							restContentExceedsThreshold = true
 						}
 					} else {
 						const blockType = CONTENT_BLOCKS[block.type]
-						thresholdExceeded = true
+						restContentExceedsThreshold = true
 						if (blockType) {
 							let _block = block
 							if (block.type === 'attachment') {
@@ -134,14 +137,14 @@ class PreviewGenerator {
 							}
 							if (_block) {
 								if (blockType.countIfFits(_block, countIfFits) === true) {
-									thresholdExceeded = false
+									restContentExceedsThreshold = false
 								}
 							}
 						} else {
 							console.error(`Unsupported post block type: ${block.type}`)
 						}
 					}
-					if (thresholdExceeded) {
+					if (restContentExceedsThreshold) {
 						break
 					}
 					points += NEW_PARAGRAPH_COST
@@ -149,14 +152,16 @@ class PreviewGenerator {
 				}
 				// If the rest content doesn't exceed the threshold
 				// then don't generate a preview.
-				if (!thresholdExceeded) {
+				if (!restContentExceedsThreshold) {
 					return
 				}
 				// Add "Read more" button and return the preview.
 				const hadNewLinesAtTheEnd = trimmedBlock && typeof trimmedBlock !== 'string' && trim(trimmedBlock, 'right')
 				if (trimmedBlock && !hadNewLinesAtTheEnd) {
-					this.preview[this.preview.length - 1] = addReadMore(this.preview[this.preview.length - 1])
+					// Append "Read more" button to the end of the last paragraph.
+					this.preview[this.preview.length - 1] = addReadMore(trimmedBlock)
 				} else {
+					// Append "Read more" button in a new paragraph.
 					this.preview.push({ type: 'read-more' })
 				}
 				return this.preview
@@ -193,8 +198,8 @@ class PreviewGenerator {
 		return this.willTrimLongEnoughAt(this.characterCount + characterCount)
 	}
 
-	getCharacterPointsLeft() {
-		return this.options.limit - this.characterPoints
+	getCharacterPointsLeft(withFitFactor) {
+		return this.withFitFactor(this.options.limit, withFitFactor) - this.characterPoints
 	}
 
 	willOverflow(points, withFitFactor = true) {
@@ -239,10 +244,10 @@ class PreviewGenerator {
 	}
 
 	trimTextAtPoint(text, type, withFitFactor) {
-		if (this.getCharacterPointsLeft() == 0) {
+		if (this.getCharacterPointsLeft(withFitFactor) === 0) {
 			return
 		}
-		const index = this.findTrimPoint(text, type, this.withFitFactor(this.getCharacterPointsLeft() - 1, withFitFactor))
+		const index = this.findTrimPoint(text, type, this.getCharacterPointsLeft(withFitFactor) - 1)
 		if (index >= 0) {
 			text = text.slice(0, index + 1)
 			if (type === 'any' || type === 'whitespace') {
@@ -257,7 +262,7 @@ class PreviewGenerator {
 			return this.trimTextAtPoint(block, type, withFitFactor)
 		}
 		let trimPointIndex
-		let overflow = countCharacters(block, 'points') - this.withFitFactor(this.getCharacterPointsLeft(), withFitFactor)
+		let overflow = countCharacters(block, 'points') - this.getCharacterPointsLeft(withFitFactor)
 		const indexes = searchContent(block, (content) => {
 			if (typeof content === 'string') {
 				const characterPoints = countCharacters(content, 'points')
