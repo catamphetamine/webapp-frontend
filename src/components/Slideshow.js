@@ -351,20 +351,21 @@ class Slideshow extends React.PureComponent {
 
 	focus = (direction = 'next') => {
 		if (this.currentSlide.current.focus) {
-			this.currentSlide.current.focus()
-		} else {
-			if (direction === 'next' && this.nextButton.current) {
-				this.nextButton.current.focus()
-			} else if (direction === 'previous' && this.previousButton.current) {
-				this.previousButton.current.focus()
-			} else if (direction === 'previous' && this.nextButton.current) {
-				this.nextButton.current.focus()
-			} else if (this.closeButton.current) {
-				// Close button is not rendered in inline mode, for example.
-				this.closeButton.current.focus()
-			} else {
-				this.container.current.focus()
+			if (this.currentSlide.current.focus() !== false) {
+				return
 			}
+		}
+		if (direction === 'next' && this.nextButton.current) {
+			this.nextButton.current.focus()
+		} else if (direction === 'previous' && this.previousButton.current) {
+			this.previousButton.current.focus()
+		} else if (direction === 'previous' && this.nextButton.current) {
+			this.nextButton.current.focus()
+		} else if (this.closeButton.current) {
+			// Close button is not rendered in inline mode, for example.
+			this.closeButton.current.focus()
+		} else {
+			this.container.current.focus()
 		}
 	}
 

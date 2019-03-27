@@ -48,6 +48,8 @@ export default class Video extends React.Component {
 			this.button.current.focus()
 		} else if (this.video.current) {
 			this.video.current.focus()
+		} else {
+			return false
 		}
 	}
 
