@@ -47,7 +47,7 @@
 	}
 }
 
-.post__attachment-thumbnail--spoiler {
+.post__attachment-thumbnail__picture--spoiler {
 	.rrui__picture__image {
 		filter: blur(14px);
 	}

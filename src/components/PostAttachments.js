@@ -143,13 +143,6 @@ export default function PostAttachments({
 			{picturesAndVideos.length > 0 &&
 				<ul className="post__attachment-thumbnails">
 					{picturesAndVideos.map((pictureOrVideo, i) => {
-						const attachmentThumbnail = (
-							<AttachmentThumbnail
-								attachment={pictureOrVideo}
-								saveBandwidth={saveBandwidth}
-								maxSize={attachmentThumbnailSize}
-								moreAttachmentsCount={i === picturesAndVideos.length - 1 ? picturesAndVideosMoreCount : undefined}/>
-						)
 						return (
 							<li
 								key={`picture-or-video-${i}`}
@@ -157,8 +150,7 @@ export default function PostAttachments({
 									'post__attachment-thumbnail',
 									pictureOrVideo.type === 'picture' &&
 										pictureOrVideo.picture.kind &&
-										`post__attachment-thumbnail--${pictureOrVideo.picture.kind}`,
-									pictureOrVideo.spoiler && 'post__attachment-thumbnail--spoiler'
+										`post__attachment-thumbnail--${pictureOrVideo.picture.kind}`
 								)}>
 								{/* When copy-pasting content an `<img/>` inside a `<button/>`
 								    is ignored, that's why placing a "dummy" transparent pixel
@@ -170,22 +162,15 @@ export default function PostAttachments({
 									height={0}
 									alt={pictureOrVideo.title}
 									style={POSITION_ABSOLUTE}/>
-								{openSlideshow &&
-									<AttachmentButton
+								<AttachmentClickable
+									attachment={pictureOrVideo}
+									onClick={openSlideshow ? createOnOpenSlideshow(i + (titlePictureOrVideo ? 1 : 0)) : undefined}>
+									<AttachmentThumbnail
 										attachment={pictureOrVideo}
-										onClick={createOnOpenSlideshow(i + (titlePictureOrVideo ? 1 : 0))}>
-										{attachmentThumbnail}
-									</AttachmentButton>
-								}
-								{!openSlideshow &&
-									<a
-										target="_blank"
-										href={getAttachmentUrl(pictureOrVideo)}
-										aria-label={pictureOrVideo.title}
-										className="post__attachment-thumbnail__clickable">
-										{attachmentThumbnail}
-									</a>
-								}
+										saveBandwidth={saveBandwidth}
+										maxSize={attachmentThumbnailSize}
+										moreAttachmentsCount={i === picturesAndVideos.length - 1 ? picturesAndVideosMoreCount : undefined}/>
+								</AttachmentClickable>
 							</li>
 						)
 					})}
@@ -443,6 +428,7 @@ export function sortPostAttachments(attachments) {
 
 function AttachmentThumbnail({
 	attachment,
+	isRevealed,
 	maxSize,
 	saveBandwidth,
 	moreAttachmentsCount
@@ -455,7 +441,9 @@ function AttachmentThumbnail({
 				height={inscribeThumbnailHeightIntoSize(attachment, maxSize)}
 				picture={attachment.type === 'video' ? attachment.video.picture : attachment.picture}
 				saveBandwidth={saveBandwidth}
-				className="post__attachment-thumbnail__picture"/>
+				className={classNames('post__attachment-thumbnail__picture', {
+					'post__attachment-thumbnail__picture--spoiler': attachment.spoiler && !isRevealed
+				})}/>
 			{attachment.type === 'video' &&
 				<VideoDuration video={attachment.video}/>
 			}
@@ -470,6 +458,7 @@ function AttachmentThumbnail({
 
 AttachmentThumbnail.propTypes = {
 	attachment: postAttachment.isRequired,
+	isRevealed: PropTypes.bool,
 	maxSize: PropTypes.number.isRequired,
 	saveBandwidth: PropTypes.bool,
 	moreAttachmentsCount: PropTypes.number
@@ -527,6 +516,8 @@ class AttachmentButton extends React.Component {
 	static propTypes = {
 		attachment: PropTypes.object.isRequired,
 		onClick: PropTypes.func.isRequired,
+		title: PropTypes.string,
+		className: PropTypes.string,
 		children: PropTypes.node.isRequired
 	}
 
@@ -566,6 +557,8 @@ class AttachmentButton extends React.Component {
 	render() {
 		const {
 			attachment,
+			title,
+			className,
 			children
 		} = this.props
 		const {
@@ -574,9 +567,9 @@ class AttachmentButton extends React.Component {
 		return (
 			<button
 				type="button"
-				aria-label={attachment.title}
+				title={title}
 				onClick={this.onClick}
-				className="rrui__button-reset post__attachment-thumbnail__clickable">
+				className={classNames('rrui__button-reset', className)}>
 				{isLoading &&
 					<FadeInOut show fadeInInitially fadeInDuration={3000} fadeOutDuration={0}>
 						<div className="post__attachment-thumbnail__loading">
@@ -586,6 +579,58 @@ class AttachmentButton extends React.Component {
 				}
 				{children}
 			</button>
+		)
+	}
+}
+
+class AttachmentClickable extends React.Component {
+	static propTypes = {
+		attachment: PropTypes.object.isRequired,
+		onClick: PropTypes.func,
+		children: PropTypes.node.isRequired
+	}
+	state = {}
+	onClick = (event) => {
+		const {
+			attachment,
+			onClick
+		} = this.props
+		if (attachment.spoiler) {
+			this.setState({
+				isRevealed: true
+			})
+		}
+		if (onClick) {
+			onClick(event)
+		}
+	}
+	render() {
+		const {
+			onClick,
+			attachment,
+			children
+		} = this.props
+		const {
+			isRevealed
+		} = this.state
+		const props = {
+			title: attachment.title,
+			onClick: this.onClick,
+			className: 'post__attachment-thumbnail__clickable'
+		}
+		let component
+		if (onClick) {
+			component = AttachmentButton
+			props.attachment = attachment
+		} else {
+			component = 'a'
+			props.target = '_blank'
+			props.href = getAttachmentUrl(attachment)
+		}
+		return React.createElement(
+			component,
+			props,
+			React.cloneElement(children, { isRevealed })
 		)
 	}
 }
