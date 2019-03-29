@@ -72,28 +72,33 @@ export default {
 				startAt = parseInt(query.t)
 			}
 		}
-
+		// Get video info by ID.
 		if (id) {
 			let video
 			if (options.youTubeApiKey) {
 				try {
 					video = await getVideoData(id, options.youTubeApiKey, options)
+					// `null` means "Video doesn't exist" (for example, it was deleted).
+					if (video === null) {
+						return null
+					}
 				} catch (error) {
+					// Inability to get YouTube video info via the API
+					// is not considered critical.
 					console.error(error)
 				}
 			}
-			// `null` means "Video doesn't exist" (for example, it was deleted).
-			if (video === null) {
-				return null
-			}
 			if (!video) {
-				video = {
-					picture: await this.getPicture(id)
-				}
+				video = {}
 			}
 			video.source = {
 				provider: 'YouTube',
 				id
+			}
+			if (!video.picture) {
+				if (options.picture !== false) {
+					video.picture = await this.getPicture(id)
+				}
 			}
 			if (startAt) {
 				video.startAt = startAt
