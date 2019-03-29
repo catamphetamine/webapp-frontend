@@ -58,6 +58,7 @@ export default function PostAttachments({
 	expandFirstPictureOrVideo,
 	attachmentThumbnailSize,
 	saveBandwidth,
+	spoilerLabel,
 	openSlideshow,
 	maxAttachmentThumbnails,
 	children: attachments
@@ -164,6 +165,7 @@ export default function PostAttachments({
 									style={POSITION_ABSOLUTE}/>
 								<AttachmentClickable
 									attachment={pictureOrVideo}
+									spoilerLabel={spoilerLabel}
 									onClick={openSlideshow ? createOnOpenSlideshow(i + (titlePictureOrVideo ? 1 : 0)) : undefined}>
 									<AttachmentThumbnail
 										attachment={pictureOrVideo}
@@ -196,6 +198,7 @@ export default function PostAttachments({
 PostAttachments.propTypes = {
 	openSlideshow: PropTypes.func,
 	expandFirstPictureOrVideo: PropTypes.bool.isRequired,
+	spoilerLabel: PropTypes.string,
 	saveBandwidth: PropTypes.bool.isRequired,
 	attachmentThumbnailSize: PropTypes.number.isRequired,
 	maxAttachmentThumbnails: PropTypes.oneOfType([
@@ -590,9 +593,12 @@ class AttachmentClickable extends React.Component {
 	static propTypes = {
 		attachment: PropTypes.object.isRequired,
 		onClick: PropTypes.func,
+		spoilerLabel: PropTypes.string,
 		children: PropTypes.node.isRequired
 	}
-	state = {}
+	state = {
+		isRevealed: this.props.attachment.spoiler ? false : true
+	}
 	onClick = (event) => {
 		const {
 			attachment,
@@ -611,13 +617,14 @@ class AttachmentClickable extends React.Component {
 		const {
 			onClick,
 			attachment,
+			spoilerLabel,
 			children
 		} = this.props
 		const {
 			isRevealed
 		} = this.state
 		const props = {
-			title: attachment.title,
+			title: isRevealed ? attachment.title : spoilerLabel,
 			onClick: this.onClick,
 			className: 'post__attachment-thumbnail__clickable'
 		}

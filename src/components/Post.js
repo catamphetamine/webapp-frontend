@@ -53,6 +53,7 @@ export default class Post extends React.PureComponent {
 		onMoreActions: PropTypes.func,
 		moreActionsLabel: PropTypes.string,
 		readMoreLabel: PropTypes.string,
+		spoilerLabel: PropTypes.string,
 		replyLabel: PropTypes.string,
 		className: PropTypes.string
 	}
@@ -137,6 +138,7 @@ export default class Post extends React.PureComponent {
 			moreActionsLabel,
 			readMoreLabel,
 			replyLabel,
+			spoilerLabel,
 			className
 		} = this.props
 
@@ -187,6 +189,7 @@ export default class Post extends React.PureComponent {
 					saveBandwidth={saveBandwidth}
 					maxAttachmentThumbnails={maxAttachmentThumbnails}
 					attachmentThumbnailSize={attachmentThumbnailSize}
+					spoilerLabel={spoilerLabel}
 					openSlideshow={openSlideshow && this.openSlideshowForAttachments}>
 					{this.getNonEmbeddedAttachments()}
 				</PostAttachments>
