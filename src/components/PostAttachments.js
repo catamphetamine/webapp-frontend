@@ -444,6 +444,9 @@ function AttachmentThumbnail({
 				className={classNames('post__attachment-thumbnail__picture', {
 					'post__attachment-thumbnail__picture--spoiler': attachment.spoiler && !isRevealed
 				})}/>
+			{attachment.type === 'picture' && attachment.picture.type === 'image/gif' &&
+				<VideoDuration/>
+			}
 			{attachment.type === 'video' &&
 				<VideoDuration video={attachment.video}/>
 			}

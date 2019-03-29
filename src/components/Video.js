@@ -326,13 +326,13 @@ export function getMaxSize(video) {
 export function VideoDuration({ video }) {
 	return (
 		<div className="rrui__video__duration">
-			{video.duration === undefined ? '▶' : formatVideoDuration(video.duration)}
+			{video && video.duration !== undefined ? formatVideoDuration(video.duration) : '▶'}
 		</div>
 	)
 }
 
 VideoDuration.propTypes = {
-	video: video.isRequired
+	video: video
 }
 
 function formatVideoDuration(seconds) {
