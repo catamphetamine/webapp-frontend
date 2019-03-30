@@ -15,6 +15,7 @@ import VKIcon from '../../assets/images/icons/services/vk.svg'
 import DiscordIcon from '../../assets/images/icons/services/discord.svg'
 import TelegramIcon from '../../assets/images/icons/services/telegram.svg'
 import TwitterIcon from '../../assets/images/icons/services/twitter.svg'
+import TwitchIcon from '../../assets/images/icons/services/twitch.svg'
 import GitHubIcon from '../../assets/images/icons/services/github.svg'
 
 import getHumanReadableLinkAddress from '../utility/post/getHumanReadableLinkAddress'
@@ -102,5 +103,6 @@ const SERVICE_ICONS = {
 	'telegram': TelegramIcon,
 	'github': GitHubIcon,
 	'google': GoogleIcon,
-	'yandex': YandexIcon
+	'yandex': YandexIcon,
+	'twitch': TwitchIcon
 }

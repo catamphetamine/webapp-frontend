@@ -326,4 +326,30 @@ describe('parseServiceLink', () => {
 			}
 		)
 	})
+
+	it('should parse `twitch.tv` links', () => {
+		expectToEqual(
+			parseServiceLink('https://www.twitch.tv/videos/251041651'),
+			{
+				service: 'twitch',
+				text: 'videos/251041651'
+			}
+		)
+
+		expectToEqual(
+			parseServiceLink('https://www.twitch.tv/honeymad/'),
+			{
+				service: 'twitch',
+				text: 'honeymad'
+			}
+		)
+
+		expectToEqual(
+			parseServiceLink('https://www.twitch.tv/honeymad/videos'),
+			{
+				service: 'twitch',
+				text: 'honeymad/videos'
+			}
+		)
+	})
 })

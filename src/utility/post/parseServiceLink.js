@@ -132,6 +132,9 @@ const SERVICES = {
 			}
 		}
 	},
+	'twitch.tv': {
+		name: 'twitch'
+	},
 	'instagram.com': {
 		name: 'instagram'
 	},
