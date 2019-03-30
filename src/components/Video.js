@@ -182,7 +182,7 @@ export default class Video extends React.Component {
 					<VideoPlayIcon className="rrui__video__play-icon--center"/>
 				}
 				{!showPlayIcon &&
-					<VideoDuration video={video}/>
+					<VideoDuration duration={video.duration}/>
 				}
 			</React.Fragment>
 		);
@@ -323,16 +323,19 @@ export function getMaxSize(video) {
 	return getMaxPictureSize(video.picture)
 }
 
-export function VideoDuration({ video }) {
+export function VideoDuration({ duration, children }) {
 	return (
-		<div className="rrui__video__duration">
-			{video && video.duration !== undefined ? formatVideoDuration(video.duration) : '▶'}
+		<div className={classNames('rrui__video__duration', {
+			'rrui__video__duration--time': duration
+		})}>
+			{duration ? formatVideoDuration(duration) : (children || '▶')}
 		</div>
 	)
 }
 
 VideoDuration.propTypes = {
-	video: video
+	duration: PropTypes.number,
+	children: PropTypes.string
 }
 
 function formatVideoDuration(seconds) {

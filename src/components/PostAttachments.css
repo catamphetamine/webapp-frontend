@@ -47,11 +47,14 @@
 	}
 }
 
+/* Blur radius depends on the actual image dimensions. */
+/*
 .post__attachment-thumbnail__picture--spoiler {
 	.rrui__picture__image {
 		filter: blur(14px);
 	}
 }
+*/
 
 .post__attachment-thumbnail__loading {
 	position: absolute;

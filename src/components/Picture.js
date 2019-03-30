@@ -64,6 +64,9 @@ export default class Picture extends PureComponent
 			'repeat-x'
 		]).isRequired,
 
+		// Blurs the `<img/>`.
+		blur : PropTypes.number,
+
 		// (optional)
 		// Image type (for example, vector or raster).
 		type: PropTypes.oneOf([
@@ -189,6 +192,7 @@ export default class Picture extends PureComponent
 			showLoadingPlaceholder,
 			showLoadingIndicator,
 			// fadeInDuration,
+			blur,
 			style,
 			className,
 			children,
@@ -264,7 +268,7 @@ export default class Picture extends PureComponent
 					<img
 						ref={ this.picture }
 						src={ typeof window === 'undefined' ? TRANSPARENT_PIXEL : (this.getUrl() || TRANSPARENT_PIXEL) }
-						style={ getImageStyle(fit) }
+						style={ blur ? addBlur(getImageStyle(fit), blur) : getImageStyle(fit) }
 						className="rrui__picture__image"/>
 				}
 
@@ -627,4 +631,18 @@ export function scaleDownSize(size, maxWidth, maxHeight, fit) {
 		}
 	}
 	return size
+}
+
+function addBlur(style, radius) {
+	return {
+		...style,
+		// https://caniuse.com/#feat=css-filters
+		filter: `blur(${radius}px)`,
+		// Works around the white edges bug.
+		// https://stackoverflow.com/questions/28870932/how-to-remove-white-border-from-blur-background-image
+		width: `calc(100% + ${2 * radius}px)`,
+		height: `calc(100% + ${2 * radius}px)`,
+		marginLeft: `-${radius}px`,
+		marginTop: `-${radius}px`
+	}
 }

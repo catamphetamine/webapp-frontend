@@ -170,6 +170,7 @@ export default function PostAttachments({
 									<AttachmentThumbnail
 										attachment={pictureOrVideo}
 										saveBandwidth={saveBandwidth}
+										spoilerLabel={spoilerLabel}
 										maxSize={attachmentThumbnailSize}
 										moreAttachmentsCount={i === picturesAndVideos.length - 1 ? picturesAndVideosMoreCount : undefined}/>
 								</AttachmentClickable>
@@ -374,16 +375,16 @@ function getAttachmentMaxHeight(attachment) {
 	}
 }
 
-function inscribeThumbnailHeightIntoSize(attachment, size) {
+function inscribeThumbnailHeightIntoSize(attachment, maxExtent) {
 	const aspectRatio = getAttachmentAspectRatio(attachment)
 	const maxHeight = getAttachmentMaxHeight(attachment)
 	if (aspectRatio > 1) {
-		size = size / aspectRatio
+		maxExtent = maxExtent / aspectRatio
 	}
-	if (maxHeight < size) {
+	if (maxHeight < maxExtent) {
 		return maxHeight
 	}
-	return size
+	return maxExtent
 }
 
 function getAttachmentThumbnailHeight(attachment) {
@@ -429,29 +430,40 @@ export function sortPostAttachments(attachments) {
 	return sortByThumbnailHeightDescending(attachments)
 }
 
+const BLUR_FACTOR = 0.1
+
 function AttachmentThumbnail({
 	attachment,
 	isRevealed,
 	maxSize,
 	saveBandwidth,
+	spoilerLabel,
 	moreAttachmentsCount
 }) {
+	const height = inscribeThumbnailHeightIntoSize(attachment, maxSize)
+	const width = height * getAttachmentAspectRatio(attachment)
 	return (
 		<React.Fragment>
 			<Picture
 				preview
 				fit="height"
-				height={inscribeThumbnailHeightIntoSize(attachment, maxSize)}
+				height={height}
 				picture={attachment.type === 'video' ? attachment.video.picture : attachment.picture}
 				saveBandwidth={saveBandwidth}
+				blur={ attachment.spoiler && !isRevealed ? Math.min(width, height) * BLUR_FACTOR : undefined }
 				className={classNames('post__attachment-thumbnail__picture', {
-					'post__attachment-thumbnail__picture--spoiler': attachment.spoiler && !isRevealed
+					// 'post__attachment-thumbnail__picture--spoiler': attachment.spoiler && !isRevealed
 				})}/>
+			{attachment.spoiler && !isRevealed && spoilerLabel &&
+				<AttachmentSpoilerBar style={{ fontSize: Math.floor(width / spoilerLabel.length) + 'px' }}>
+					{spoilerLabel}
+				</AttachmentSpoilerBar>
+			}
 			{attachment.type === 'picture' && attachment.picture.type === 'image/gif' &&
-				<VideoDuration/>
+				<VideoDuration>gif</VideoDuration>
 			}
 			{attachment.type === 'video' &&
-				<VideoDuration video={attachment.video}/>
+				<VideoDuration duration={attachment.video.duration}/>
 			}
 			{moreAttachmentsCount > 0 &&
 				<div className="post__attachment-thumbnail__more-count">
@@ -467,6 +479,7 @@ AttachmentThumbnail.propTypes = {
 	isRevealed: PropTypes.bool,
 	maxSize: PropTypes.number.isRequired,
 	saveBandwidth: PropTypes.bool,
+	spoilerLabel: PropTypes.string,
 	moreAttachmentsCount: PropTypes.number
 }
 
@@ -643,4 +656,16 @@ class AttachmentClickable extends React.Component {
 			React.cloneElement(children, { isRevealed })
 		)
 	}
+}
+
+function AttachmentSpoilerBar({ children, ...rest }) {
+	return (
+		<div {...rest} className="post__spoiler-bar post__attachment-thumbnail__spoiler-bar">
+			{children}
+		</div>
+	)
+}
+
+AttachmentSpoilerBar.propTypes = {
+	children: PropTypes.string.isRequired
 }

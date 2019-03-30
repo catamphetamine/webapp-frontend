@@ -60,3 +60,22 @@
 		}
 	}
 }
+
+.post__spoiler-bar {
+	position: absolute;
+	width: 100%;
+	left: 0;
+	bottom: 0;
+	display: flex;
+	justify-content: center;
+	overflow: hidden;
+	padding-bottom: 0.15em;
+	padding-top: 0.15em;
+	background: var(--black-color);
+	color: var(--white-color);
+	font-family: var(--font-family);
+	font-weight: 300;
+	text-transform: uppercase;
+	letter-spacing: 0.1em;
+	opacity: 0.75;
+}
