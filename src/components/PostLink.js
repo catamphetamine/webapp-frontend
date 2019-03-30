@@ -16,6 +16,7 @@ import DiscordIcon from '../../assets/images/icons/services/discord.svg'
 import TelegramIcon from '../../assets/images/icons/services/telegram.svg'
 import TwitterIcon from '../../assets/images/icons/services/twitter.svg'
 import TwitchIcon from '../../assets/images/icons/services/twitch.svg'
+import SteamIcon from '../../assets/images/icons/services/steam.svg'
 import GitHubIcon from '../../assets/images/icons/services/github.svg'
 
 import getHumanReadableLinkAddress from '../utility/post/getHumanReadableLinkAddress'
@@ -104,5 +105,6 @@ const SERVICE_ICONS = {
 	'github': GitHubIcon,
 	'google': GoogleIcon,
 	'yandex': YandexIcon,
-	'twitch': TwitchIcon
+	'twitch': TwitchIcon,
+	'steam': SteamIcon
 }

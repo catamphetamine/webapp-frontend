@@ -352,4 +352,38 @@ describe('parseServiceLink', () => {
 			}
 		)
 	})
+
+	it('should parse Steam links', () => {
+		expectToEqual(
+			parseServiceLink('https://store.steampowered.com/app/6200/Ghost_Master/?l=russian'),
+			{
+				service: 'steam',
+				text: 'Ghost_Master'
+			}
+		)
+
+		expectToEqual(
+			parseServiceLink('https://store.steampowered.com/news/?appids=365590'),
+			{
+				service: 'steam',
+				text: '365590/news'
+			}
+		)
+
+		expectToEqual(
+			parseServiceLink('http://steamcommunity.com/id/username'),
+			{
+				service: 'steam',
+				text: 'username'
+			}
+		)
+
+		expectToEqual(
+			parseServiceLink('https://steamcommunity.com/profiles/76561198436304058/recommended/365590/'),
+			{
+				service: 'steam',
+				text: '76561198436304058/recommended/365590'
+			}
+		)
+	})
 })

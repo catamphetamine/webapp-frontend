@@ -28,7 +28,7 @@ export default function parseServiceLink(url) {
 		return {
 			service: service.name,
 			text: (service.getText && service.getText(url)) ||
-				url.pathname.slice('/'.length) ||
+				trimTrailingSlash(url.pathname.slice('/'.length)) ||
 				(url.search + url.hash) ||
 				hostname
 		}
@@ -135,6 +135,31 @@ const SERVICES = {
 	'twitch.tv': {
 		name: 'twitch'
 	},
+	'store.steampowered.com': {
+		name: 'steam',
+		getText(url) {
+			const gameMatch = url.pathname.match(/^\/app\/\d+\/([^\/]+)/)
+			if (gameMatch) {
+				return gameMatch[1]
+			}
+			if (url.searchParams.get('appids')) {
+				return `${url.searchParams.get('appids')}${trimTrailingSlash(url.pathname)}`
+			}
+		}
+	},
+	'steamcommunity.com': {
+		name: 'steam',
+		getText(url) {
+			const idPageMatch = url.pathname.match(/^\/id\/([^\/]+)/)
+			if (idPageMatch) {
+				return idPageMatch[1]
+			}
+			const profilePageMatch = url.pathname.match(/^\/profiles\/./)
+			if (profilePageMatch) {
+				return trimTrailingSlash(url.pathname.slice('/profiles/'.length))
+			}
+		}
+	},
 	'instagram.com': {
 		name: 'instagram'
 	},
@@ -234,3 +259,10 @@ SERVICES['boards.4chan.org'] = SERVICES['4chan.org']
 SERVICES['m.youtube.com'] = SERVICES['youtube.com']
 SERVICES['arhivach.cf'] = SERVICES['archivach.org']
 SERVICES['arhivach.ng'] = SERVICES['archivach.org']
+
+function trimTrailingSlash(string) {
+	if (string && string[string.length - 1] === '/') {
+		return string.slice(0, -1)
+	}
+	return string
+}
