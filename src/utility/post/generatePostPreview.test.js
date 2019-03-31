@@ -104,7 +104,7 @@ describe('getPostText', () => {
 				]
 			],
 			{
-				limit: 26
+				limit: 24
 			},
 			[
 				[
@@ -123,7 +123,7 @@ describe('getPostText', () => {
 				]
 			],
 			{
-				limit: 26
+				limit: 24
 			},
 			[
 				[
@@ -142,7 +142,7 @@ describe('getPostText', () => {
 				]
 			],
 			{
-				limit: 26
+				limit: 24
 			},
 			[
 				[
@@ -428,7 +428,20 @@ describe('getPostText', () => {
 		getPostPreviewTest(
 			[
 				[
-					'Some long enough sentence so that it surpasses the limit but still fits within threshold.'
+					'Some long enough sentence so that it surpasses the limit but still fits within 2x threshold.'
+				]
+			],
+			{
+				limit: 70,
+				fitFactor: 0.2
+			},
+			undefined
+		)
+
+		getPostPreviewTest(
+			[
+				[
+					'Some long enough sentence so that it surpasses the limit but still fits within threshold even with x2 fit factor.'
 				]
 			],
 			{
@@ -466,7 +479,7 @@ describe('getPostText', () => {
 					"Анон, мне 23, живу с мамой, в универе не доучился, ни разу в жизни не работал. Понятное дело, что рано или поздно я буду вынужден обеспечивать себя самостоятельно. Но меня тянет блевать об одной мысле о работе, я не хочу быть рабом. Я скорее выпилюсь, чем буду хуярить за копейки до старости."
 				],
 				[
-					"Лет с 16 я надеялся, что придумаю лёгкий способ подняться и никогда не буду работать. В прошлом году я пытался вкатиться в хакинг, чтобы взломать какую-нибудь криптобиржу. Но у меня ничего не вышло.",
+					"Лет с 16 я надеялся, что придумаю лёгкий способ подняться и никогда не буду работать.",
 					{ type: 'read-more' }
 				]
 			]

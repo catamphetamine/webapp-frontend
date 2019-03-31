@@ -4,7 +4,7 @@ import searchContent from './searchContent'
 import findLastSentenceEnd from './findLastSentenceEnd'
 import splitContent from './splitContent'
 
-const NEW_LINE_COST = 20
+const NEW_LINE_COST = 30
 const NEW_PARAGRAPH_COST = 40
 const EMBEDDED_ATTACHMENT_COST = 100
 const EMBEDDED_PICTURE_COST = 200
@@ -13,6 +13,8 @@ const EMBEDDED_VIDEO_COST = 200
 // If the total content length doesn't exceed
 // `(1 + FIT_FACTOR) * limit` then preview is not neccessary.
 const FIT_FACTOR = 0.2
+
+const ENOUGH_CONTENT_FACTOR = 0.75
 
 export default function generatePostPreview(post, options) {
 	if (!post.content) {
@@ -43,7 +45,7 @@ class PreviewGenerator {
 			let trimmedBlock
 			if (typeof block === 'string') {
 				if (block === '\n') {
-					if (this.willOverflow(NEW_LINE_COST, false)) {
+					if (this.willOverflow(NEW_LINE_COST)) {
 						// Whitespace serves the purpose of making it
 						// move `{ type: "read-more" }` to a new paragraph.
 						trimmedBlock = ' '
@@ -52,29 +54,53 @@ class PreviewGenerator {
 					}
 					this.characterPoints += NEW_LINE_COST
 				} else {
-					if (this.countIfFits(block)) {
+					const points = countCharacters(block, 'points')
+					const characters = countCharacters(block, 'characters')
+					if (this.countIfFits(points, characters, 1)) {
 						trimmedBlock = block
 					} else {
 						if (!this.willTrimLongEnoughAt(this.blockLevelTrimCharacterCount)) {
-							trimmedBlock = this.trimTextContent(block)
-							this.characterPoints += countCharacters(trimmedBlock, 'points')
+							trimmedBlock = this.trimTextContentPreferrable(block, 0) ||
+								this.trimTextContentPreferrable(block, 1)
+							if (!trimmedBlock) {
+								if (this.countIfFits(points, characters, 2)) {
+									trimmedBlock = block
+								} else {
+									trimmedBlock = this.trimTextContentPreferrable(block, 2) ||
+										this.trimTextContentFallback(block) ||
+										this.trimTextContentAsIs(block)
+								}
+							}
 						}
 					}
 				}
 			}
 			else if (Array.isArray(block)) {
-				if (this.countIfFits(block)) {
+				const points = countCharacters(block, 'points')
+				const characters = countCharacters(block, 'characters')
+				if (this.countIfFits(points, characters, 1)) {
 					trimmedBlock = block
 				} else {
 					if (!this.willTrimLongEnoughAt(this.blockLevelTrimCharacterCount)) {
-						// Leaves "\n" at the end so that later it detects a "new line" trim point
-						// and appends `{ type: 'read-more' }` as a block-level part.
-						trimmedBlock = this.trimAtPoint(block, 'new-line')
-						if (!trimmedBlock || !this.willTrimLongEnoughAfter(countCharacters(trimmedBlock, 'points'))) {
-							trimmedBlock = this.trimTextContent(block)
-						}
-						if (trimmedBlock) {
-							this.characterPoints += countCharacters(trimmedBlock, 'points')
+						// Trimming at "\n" leaves the "\n" at the end so that
+						// later it detects a "new line" trim point and appends
+						// `{ type: 'read-more' }` as a block-level part.
+						trimmedBlock = this.trimTextContentAtNewLine(block, 0) ||
+							this.trimTextContentAtNewLine(block, 1) ||
+							this.trimTextContentPreferrable(block, 0) ||
+							this.trimTextContentPreferrable(block, 1)
+						if (!trimmedBlock) {
+							if (this.countIfFits(points, characters, 2)) {
+								trimmedBlock = block
+							} else {
+								// Trimming at "\n" leaves the "\n" at the end so that
+								// later it detects a "new line" trim point and appends
+								// `{ type: 'read-more' }` as a block-level part.
+								trimmedBlock = this.trimTextContentAtNewLine(block, 2) ||
+									this.trimTextContentPreferrable(block, 2) ||
+									this.trimTextContentFallback(block) ||
+									this.trimTextContentAsIs(block)
+							}
 						}
 					}
 				}
@@ -188,42 +214,56 @@ class PreviewGenerator {
 	// which is chosen to be avoided here for simplicity.
 	//
 	willTrimLongEnoughAt(characterCount) {
-		return characterCount > 0.7 * (this.characterCount + this.getCharacterPointsLeft())
+		return characterCount > ENOUGH_CONTENT_FACTOR * (this.characterCount + this.getCharacterPointsLeft())
 	}
 
 	// Returns whether it would be ok to trim at some previous point (relative to the limit point).
 	// Is used to test whether it would be ok to trim in the middle of current paragraph.
 	//
-	willTrimLongEnoughAfter(characterCount) {
-		return this.willTrimLongEnoughAt(this.characterCount + characterCount)
+	willTrimLongEnoughAfter(estimatedCharacterCount) {
+		return this.willTrimLongEnoughAt(this.characterCount + estimatedCharacterCount)
 	}
 
-	getCharacterPointsLeft(withFitFactor) {
-		return this.withFitFactor(this.options.limit, withFitFactor) - this.characterPoints
+	getCharacterPointsLeft(fitFactor) {
+		return this.withFitFactor(this.options.limit, fitFactor) - this.characterPoints
 	}
 
-	willOverflow(points, withFitFactor = true) {
-		return this.characterPoints + points > this.withFitFactor(this.options.limit, withFitFactor)
+	countIn(content, arg2) {
+		if (typeof content === 'number') {
+			this.characterPoints += content
+			this.characterCount += arg2
+		} else {
+			this.characterPoints += countCharacters(content, 'points')
+			this.characterCount += countCharacters(content, 'characters')
+		}
 	}
 
-	withFitFactor(points, withFitFactor) {
-		if (withFitFactor) {
-			return Math.floor(points * (1 + this.getFitFactor()))
+	willOverflow(points, fitFactor) {
+		return this.characterPoints + points > this.withFitFactor(this.options.limit, fitFactor)
+	}
+
+	withFitFactor(points, fitFactor = 0) {
+		if (fitFactor) {
+			return Math.floor(points * (1 + fitFactor * this.getFitFactor()))
 		} else {
 			return points
 		}
 	}
 
-	countIfFits = (content) => {
+	countIfFits = (content, fitFactor, arg3) => {
 		if (typeof content === 'number') {
-			if (this.willOverflow(content)) {
+			const points = content
+			const characters = fitFactor
+			fitFactor = arg3
+			if (this.willOverflow(points, fitFactor)) {
 				return
 			}
-			this.characterPoints += content
+			this.characterCount += characters
+			this.characterPoints += points
 			return true
 		}
 		const points = countCharacters(content, 'points')
-		if (this.willOverflow(points)) {
+		if (this.willOverflow(points, fitFactor)) {
 			return
 		}
 		this.characterCount += countCharacters(content, 'characters')
@@ -231,23 +271,39 @@ class PreviewGenerator {
 		return true
 	}
 
-	trimTextContent(content) {
-		let trimmedBlock = this.trimAtPoint(content, 'sentence-end')
-		if (trimmedBlock && this.willTrimLongEnoughAfter(countCharacters(trimmedBlock, 'points'))) {
-			return trimmedBlock
+	trimTextContent(content, type, fitFactor) {
+		const trimmedBlock = this.trimAtPoint(content, type, fitFactor)
+		if (trimmedBlock) {
+			const points = countCharacters(trimmedBlock, 'points')
+			const characters = countCharacters(trimmedBlock, 'characters')
+			if (this.willTrimLongEnoughAfter(points)) {
+				this.countIn(points, characters)
+				return trimmedBlock
+			}
 		}
-		trimmedBlock = this.trimAtPoint(content, 'whitespace', false)
-		if (trimmedBlock && this.willTrimLongEnoughAfter(countCharacters(trimmedBlock, 'points'))) {
-			return trimmedBlock
-		}
-		return this.trimAtPoint(content, 'any', false)
 	}
 
-	trimTextAtPoint(text, type, withFitFactor) {
-		if (this.getCharacterPointsLeft(withFitFactor) === 0) {
+	trimTextContentAtNewLine(content, fitFactor) {
+		return this.trimTextContent(content, 'new-line', fitFactor)
+	}
+
+	trimTextContentPreferrable(content, fitFactor) {
+		return this.trimTextContent(content, 'sentence-end', fitFactor)
+	}
+
+	trimTextContentFallback(content, fitFactor) {
+		return this.trimTextContent(content, 'whitespace', fitFactor)
+	}
+
+	trimTextContentAsIs(content, fitFactor) {
+		return this.trimTextContent(content, 'any', fitFactor)
+	}
+
+	trimTextAtPoint(text, type, fitFactor) {
+		if (this.getCharacterPointsLeft(fitFactor) === 0) {
 			return
 		}
-		const index = this.findTrimPoint(text, type, this.getCharacterPointsLeft(withFitFactor) - 1)
+		const index = this.findTrimPoint(text, type, this.getCharacterPointsLeft(fitFactor) - 1)
 		if (index >= 0) {
 			text = text.slice(0, index + 1)
 			if (type === 'any' || type === 'whitespace') {
@@ -257,12 +313,12 @@ class PreviewGenerator {
 		}
 	}
 
-	trimAtPoint(block, type, withFitFactor = true) {
+	trimAtPoint(block, type, fitFactor) {
 		if (typeof block === 'string') {
-			return this.trimTextAtPoint(block, type, withFitFactor)
+			return this.trimTextAtPoint(block, type, fitFactor)
 		}
 		let trimPointIndex
-		let overflow = countCharacters(block, 'points') - this.getCharacterPointsLeft(withFitFactor)
+		let overflow = countCharacters(block, 'points') - this.getCharacterPointsLeft(fitFactor)
 		const indexes = searchContent(block, (content) => {
 			if (typeof content === 'string') {
 				const characterPoints = countCharacters(content, 'points')
@@ -352,7 +408,11 @@ function countCharacters(content, mode) {
 		}
 		return content.length
 	} else if (content.content) {
-		return countCharacters(content.content, mode)
+		if (content.type === 'post-link' && content.quote) {
+			return countCharacters(content.quote, mode)
+		} else {
+			return countCharacters(content.content, mode)
+		}
 	} else {
 		console.error(`No "content" is present for an inline-level paragraph part:`)
 		console.error(content)
@@ -370,7 +430,7 @@ function trimTextAtIndex(text, index, type) {
 const CONTENT_BLOCKS = {
 	'attachment': {
 		countIfFits(attachment, countIfFits) {
-			return countIfFits(getAttachmentCharacterPoints(attachment))
+			return countIfFits(getAttachmentCharacterPoints(attachment), 1)
 		}
 	},
 	'heading': {
