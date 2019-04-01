@@ -53,6 +53,39 @@ export default class Video extends React.Component {
 		}
 	}
 
+	play = () => {
+		if (this.video.current) {
+			this.video.current.play()
+			return true
+		}
+	}
+
+	pause = () => {
+		if (this.video.current) {
+			this.video.current.pause()
+			return true
+		}
+	}
+
+	isPaused = () => {
+		if (this.video.current) {
+			return this.video.current.paused
+		}
+	}
+
+	hasEnded = () => {
+		if (this.video.current) {
+			return this.video.current.ended
+		}
+	}
+
+	seek = (seconds) => {
+		if (this.video.current) {
+			this.video.current.currentTime += seconds
+			return true
+		}
+	}
+
 	showVideo = () => {
 		this.setState({
 			showPreview: false,

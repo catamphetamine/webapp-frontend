@@ -8,20 +8,16 @@ import FocusLock from 'react-focus-lock'
 import { disableBodyScroll, enableBodyScroll, clearAllBodyScrollLocks } from '../utility/body-scroll-lock'
 import { isClickable } from '../utility/dom'
 
-import Picture, { getAspectRatio, getMaxSize as getMaxPictureSize, isVector } from './Picture'
-import Video, { getMaxSize as getMaxVideoSize } from './Video'
+import PicturePlugin from './Slideshow.Picture'
+import VideoPlugin from './Slideshow.Video'
 
 import Download from '../../assets/images/icons/download-cloud.svg'
 import Close from '../../assets/images/icons/close.svg'
 import LeftArrow from '../../assets/images/icons/left-arrow-minimal.svg'
 import RightArrow from '../../assets/images/icons/right-arrow-minimal.svg'
-import Search from '../../assets/images/icons/menu/search-outline.svg'
 import ScaleFrame from '../../assets/images/icons/scale-frame.svg'
 import Plus from '../../assets/images/icons/plus.svg'
 import Minus from '../../assets/images/icons/minus.svg'
-
-// import GoogleIcon from '../../assets/images/icons/services/google-thin-monochrome.svg'
-// import GoogleIcon from '../../assets/images/icons/services/google-monochrome.svg'
 
 import './Slideshow.css'
 
@@ -30,119 +26,6 @@ export default function SlideshowWrapper(props) {
 		return <Slideshow {...props}/>
 	}
 	return null
-}
-
-const VideoPlugin = {
-	changeSlideOnClick: false,
-	// showCloseButtonForSingleSlide: true,
-	getMaxSize(slide) {
-		return getMaxVideoSize(slide)
-	},
-	getAspectRatio(slide) {
-		if (slide.aspectRatio) {
-			return slide.aspectRatio
-		}
-		return getAspectRatio(slide.picture)
-	},
-	// isScaleDownAllowed(slide) {
-	// 	return false
-	// },
-	canDownload(slide) {
-		switch (slide.source.provider) {
-			case 'file':
-				return true
-			default:
-				return false
-		}
-	},
-	getDownloadLink(slide) {
-		switch (slide.source.provider) {
-			case 'file':
-				return slide.source.sizes[slide.source.sizes.length - 1].url
-		}
-	},
-	canRender(slide) {
-		return slide.picture !== undefined
-	},
-	render({
-		ref,
-		slide,
-		isShown,
-		wasExpanded,
-		onClick,
-		maxWidth,
-		maxHeight,
-		tabIndex,
-		style
-	}) {
-		return (
-			<Video
-				ref={ref}
-				video={slide}
-				fit="scale-down"
-				onClick={onClick}
-				autoPlay={wasExpanded ? true : false}
-				showPreview={wasExpanded ? false : true}
-				showPlayIcon={wasExpanded ? false : true}
-				canPlay={isShown}
-				maxWidth={maxWidth}
-				maxHeight={maxHeight}
-				tabIndex={tabIndex}
-				style={style}
-				className="rrui__slideshow__video"/>
-		)
-	}
-}
-
-const PicturePlugin = {
-	getMaxSize(slide) {
-		return getMaxPictureSize(slide)
-	},
-	getAspectRatio(slide) {
-		return getAspectRatio(slide)
-	},
-	// isScaleDownAllowed(slide) {
-	// 	return isVector(slide)
-	// },
-	canDownload(slide) {
-		return true
-	},
-	getDownloadLink(slide) {
-		return slide.sizes[slide.sizes.length - 1].url
-	},
-	getOtherActions(slide) {
-		return [{
-			name: 'searchInGoogle',
-			icon: Search, // SearchInGoogleIcon
-			link: `https://images.google.com/searchbyimage?image_url=${slide.sizes[slide.sizes.length - 1].url}`
-		}]
-	},
-	canRender(slide) {
-		return slide.sizes !== undefined
-	},
-	render({
-		ref,
-		slide,
-		onClick,
-		maxWidth,
-		maxHeight,
-		style
-	}) {
-		// fit={shouldUpscaleSmallSlides ? 'contain' : 'scale-down'}
-		// onClick={onClickPrecise}
-		return (
-			<Picture
-				ref={ref}
-				picture={slide}
-				fit="contain"
-				onClick={onClick}
-				showLoadingIndicator
-				maxWidth={maxWidth}
-				maxHeight={maxHeight}
-				style={style}
-				className="rrui__slideshow__picture"/>
-		)
-	}
 }
 
 const PLUGINS = [
@@ -630,10 +513,15 @@ class Slideshow extends React.PureComponent {
 	// }
 
 	onKeyDown = (event) => {
+		if (this.getPluginForSlide().onKeyDown) {
+			this.getPluginForSlide().onKeyDown(event, this.getCurrentSlide(), this.currentSlide)
+		}
+		if (event.defaultPrevented) {
+			return
+		}
 		if (event.ctrlKey || event.altKey || event.shiftKey || event.metaKey) {
 			return
 		}
-
 		switch (event.keyCode) {
 			// "Left Arrow".
 			// Show previous slide.
@@ -1342,28 +1230,6 @@ function createRange(N) {
 	}
 	return range
 }
-
-// function SearchInGoogleIcon({ className }) {
-// 	return (
-// 		<div className={className}>
-// 			<Search style={SEARCH_IN_GOOGLE_SEARCH_ICON_STYLE}/>
-// 			<GoogleIcon style={SEARCH_IN_GOOGLE_GOOGLE_ICON_STYLE}/>
-// 		</div>
-// 	)
-// }
-
-// const SEARCH_IN_GOOGLE_SEARCH_ICON_STYLE = {
-// 	width: '100%',
-// 	height: '100%',
-// }
-
-// const SEARCH_IN_GOOGLE_GOOGLE_ICON_STYLE = {
-// 	width: '40%',
-// 	height: '40%',
-// 	position: 'absolute',
-// 	left: '22%',
-// 	top: '22%'
-// }
 
 function getScrollBarWidth() {
 	return window.innerWidth - document.documentElement.clientWidth
