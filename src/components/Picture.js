@@ -15,6 +15,9 @@ export const TRANSPARENT_PIXEL = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA
 
 const GIF_EXTENSION = /\.gif$/i
 
+const PAGE_LOADED_AT = Date.now()
+const DEV_MODE_WAIT_FOR_STYLES = 1000
+
 /**
  * A `<Picture/>` is passed `picture.sizes` and is "responsive"
  * showing the size that suits most based on
@@ -126,9 +129,12 @@ export default class Picture extends PureComponent
 		if (process.env.NODE_ENV === 'production') {
 			this.setUpSizing()
 		} else {
-			this.setUpSizing()
-			// `chanchan` doesn't seem to require this workaround.
-			// setTimeout(this.setUpSizing, 1000)
+			const elapsed = Date.now() - PAGE_LOADED_AT
+			if (elapsed < DEV_MODE_WAIT_FOR_STYLES) {
+				setTimeout(this.setUpSizing, DEV_MODE_WAIT_FOR_STYLES - elapsed)
+			} else {
+				this.setUpSizing()
+			}
 		}
 	}
 
