@@ -206,6 +206,7 @@ export default class Video extends React.Component {
 					tabIndex={tabIndex}
 					width="100%"
 					height="100%"
+					poster={video.picture && video.picture.sizes[video.picture.sizes.length - 1].url}
 					autoPlay={autoPlay}
 					controls>
 					<source
