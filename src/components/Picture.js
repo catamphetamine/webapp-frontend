@@ -13,6 +13,8 @@ import Close from '../../assets/images/icons/close.svg'
 // When no picture is available for display.
 export const TRANSPARENT_PIXEL = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='
 
+const GIF_EXTENSION = /\.gif$/i
+
 /**
  * A `<Picture/>` is passed `picture.sizes` and is "responsive"
  * showing the size that suits most based on
@@ -103,8 +105,7 @@ export default class Picture extends PureComponent
 	container = React.createRef()
 	picture = React.createRef()
 
-	componentDidMount()
-	{
+	componentDidMount() {
 		this._isMounted = true
 
 		// When the DOM node has been mounted
@@ -122,23 +123,29 @@ export default class Picture extends PureComponent
 		// it will still load the full-sized 4K image on page load.
 		// There seems to be no way around this issue.
 		//
-		this.refreshSize()
+		if (process.env.NODE_ENV === 'production') {
+			this.setUpSizing()
+		} else {
+			this.setUpSizing()
+			// `chanchan` doesn't seem to require this workaround.
+			// setTimeout(this.setUpSizing, 1000)
+		}
+	}
 
+	setUpSizing = () => {
+		this.refreshSize()
 		if (!window.interactiveResize) {
 			window.interactiveResize = new InteractiveResize()
 		}
-
 		window.interactiveResize.add(this.refreshSize)
 	}
 
-	componentWillUnmount()
-	{
+	componentWillUnmount() {
 		this._isMounted = false
 		window.interactiveResize.remove(this.refreshSize)
 	}
 
-	componentDidUpdate(prevProps)
-	{
+	componentDidUpdate(prevProps) {
 		const { picture: { sizes } } = this.props
 		if (prevProps.picture.sizes !== sizes) {
 			this.refreshSize(true)
@@ -294,49 +301,50 @@ export default class Picture extends PureComponent
 				sizes
 			}
 		} = this.props
-
 		if (!sizes) {
 			return
 		}
-
+		const options = {
+			saveBandwidth
+		}
+		// When a GIF is small enough a JPG preview is generated,
+		// and so `sizes` contains the JPF preview and the original GIF
+		// which are of the same size so without this explicit `if` check
+		// the size returned would be the original GIF and not the JPG preview.
 		if (preview && type === 'image/gif') {
 			// Try non-gif sizes only first.
-			const preferredPreviewSize = getPreferredSize(
-				sizes.filter(_ => !/\.gif$/i.test(_.url)),
+			const size = getPreferredSize(
+				sizes.filter(_ => !GIF_EXTENSION.test(_.url)),
 				this.getWidth(),
-				{ saveBandwidth }
+				options
 			)
-			if (preferredPreviewSize) {
-				return preferredPreviewSize
+			if (size) {
+				return size
 			}
 		}
 		return getPreferredSize(
 			sizes,
 			this.getWidth(),
-			{ saveBandwidth }
+			options
 		)
 	}
 
-	refreshSize = (force) =>
-	{
+	refreshSize = (force) => {
 		const {
 			picture: {
 				sizes
 			}
 		} = this.props
-
-		const { size } = this.state
-
+		const {
+			size
+		} = this.state
 		if (!sizes) {
 			return
 		}
-
 		const preferredSize = this.getPreferredSize()
-
 		if (force ||
 			!size ||
-			(preferredSize && preferredSize.width > size.width))
-		{
+			(preferredSize && preferredSize.width > size.width)) {
 			this.onImageChange(preferredSize)
 			this.setState({ size: preferredSize })
 		}
@@ -403,26 +411,32 @@ export function getPreferredSize(sizes, width, options = {})
 	let pixelRatio = 1
 
 	if (typeof window !== 'undefined' && window.devicePixelRatio) {
-		pixelRatio = window.devicePixelRatio
+		if (!saveBandwidth) {
+			pixelRatio = window.devicePixelRatio
+		}
 	}
 
 	width *= pixelRatio
 
-	let previousSize
+	let preferredSize
 	for (const size of sizes) {
 		// if (size.width > maxWidth) {
-		// 	return previousSize || sizes[0]
+		// 	return preferredSize || sizes[0]
 		// }
 		if (size.width === width) {
 			return size
 		}
 		if (size.width > width) {
-			// if (saveBandwidth && previousSize) {
-			// 	// Prefer larger size unless it's too oversized.
+			// Prefer larger size unless it's too oversized.
+			if (saveBandwidth && preferredSize) {
+				if ((width - preferredSize.width) / (size.width - width) < 0.35) {
+					return preferredSize
+				}
+			}
 			// 	const aspectRatio = sizes[sizes.length - 1].width / sizes[sizes.length - 1].height
 			// 	//
-			// 	const w1 = previousSize.width
-			// 	const h1 = previousSize.height
+			// 	const w1 = preferredSize.width
+			// 	const h1 = preferredSize.height
 			// 	const dw1 = width - w1
 			// 	const dh1 = dw1 / aspectRatio
 			// 	//
@@ -435,15 +449,14 @@ export function getPreferredSize(sizes, width, options = {})
 			// 	const dS2 = dw2 * h2 + dh2 * w2 + dw2 * dh2
 			// 	//
 			// 	if (dS2 / dS1 > 10) {
-			// 		return previousSize
+			// 		return preferredSize
 			// 	}
-			// }
 			return size
 		}
-		previousSize = size
+		preferredSize = size
 	}
 
-	return previousSize
+	return preferredSize
 }
 
 const IMAGE_STYLE_BASE =
