@@ -53,6 +53,9 @@ export default class Video extends React.Component {
 		}
 	}
 
+	// `<video/>` docs:
+	// https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement
+
 	play = () => {
 		if (this.video.current) {
 			this.video.current.play()
@@ -73,13 +76,20 @@ export default class Video extends React.Component {
 		}
 	}
 
-	hasEnded = () => {
+	isStart = () => {
+		if (this.video.current) {
+			return this.video.current.currentTime === 0
+		}
+	}
+
+	isEnd = () => {
 		if (this.video.current) {
 			return this.video.current.ended
 		}
 	}
 
-	seek = (seconds) => {
+	seek = (forward) => {
+		const seconds = forward ? 5 : -5
 		if (this.video.current) {
 			this.video.current.currentTime += seconds
 			return true
@@ -102,6 +112,43 @@ export default class Video extends React.Component {
 		if (showPreview && !event.defaultPrevented) {
 			event.preventDefault()
 			this.showVideo()
+		}
+	}
+
+	onKeyDown = (event) => {
+		const { seekOnArrowKeys } = this.props
+		if (event.ctrlKey || event.altKey || event.shiftKey || event.metaKey) {
+			return
+		}
+		switch (event.keyCode) {
+			// (is already handled by the `<video/>` itself)
+			// // Pause/Play on Spacebar.
+			// case 32:
+			// 	if (video.isPaused()) {
+			// 		video.play()
+			// 	} else {
+			// 		video.pause()
+			// 	}
+			// 	event.preventDefault()
+			// 	break
+
+			// Seek backwards on Left Arrow key.
+			case 37:
+				if (seekOnArrowKeys) {
+					if (this.seek(false)) {
+						event.preventDefault()
+					}
+				}
+				break
+
+			// Seek forward on Right Arrow key.
+			case 39:
+				if (seekOnArrowKeys) {
+					if (this.seek(true)) {
+						event.preventDefault()
+					}
+				}
+				break
 		}
 	}
 
@@ -292,6 +339,7 @@ Video.propTypes = {
 	maxWidth: PropTypes.number,
 	maxHeight: PropTypes.number,
 	showPreview: PropTypes.bool.isRequired,
+	seekOnArrowKeys: PropTypes.bool.isRequired,
 	autoPlay: PropTypes.bool.isRequired,
 	canPlay: PropTypes.bool.isRequired,
 	showPlayIcon: PropTypes.bool,
@@ -304,6 +352,7 @@ Video.propTypes = {
 Video.defaultProps = {
 	fit: 'width',
 	showPreview: true,
+	seekOnArrowKeys: true,
 	autoPlay: false,
 	canPlay: true
 }

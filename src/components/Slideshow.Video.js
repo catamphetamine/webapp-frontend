@@ -28,30 +28,25 @@ export default {
 			case 'file':
 				const video = ref.current
 				switch (event.keyCode) {
-					// (is already handled by the `<video/>` itself)
-					// // Pause/Play on Spacebar.
-					// case 32:
-					// 	if (video.isPaused()) {
-					// 		video.play()
-					// 	} else {
-					// 		video.pause()
-					// 	}
-					// 	event.preventDefault()
-					// 	break
-
 					// Seek backwards on Left Arrow key.
 					case 37:
-						if (!video.hasEnded()) {
-							video.seek(-5)
-							event.preventDefault()
+						// Only seek backwards on left arrow key if the video isn't at its start.
+						// If the video is at its start then left arrow key will navigate to the previous slide.
+						if (video.isStart() === false) {
+							if (video.seek(false)) {
+								event.preventDefault()
+							}
 						}
 						break
 
 					// Seek forward on Right Arrow key.
 					case 39:
-						if (!video.hasEnded()) {
-							video.seek(5)
-							event.preventDefault()
+						// Only seek forward on right arrow key if the video hasn't ended.
+						// If the video has ended then right arrow key will navigate to the next slide.
+						if (video.isEnd() === false) {
+							if (video.seek(true)) {
+								event.preventDefault()
+							}
 						}
 						break
 				}
@@ -101,6 +96,7 @@ export default {
 				maxWidth={maxWidth}
 				maxHeight={maxHeight}
 				tabIndex={tabIndex}
+				seekOnArrowKeys={false}
 				style={style}
 				className="rrui__slideshow__video"/>
 		)
