@@ -28,9 +28,8 @@ export default class PostVideo extends React.Component {
 		return (
 			<section className="post__video">
 				<Video
-					fit={height ? 'height' : undefined}
-					maxHeight={height}
 					video={video}
+					maxHeight={height}
 					onClick={onClick}
 					aria-label={this.props['aria-label'] || video.title}/>
 				{video.title &&

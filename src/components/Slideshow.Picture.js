@@ -51,9 +51,9 @@ export default {
 			<Picture
 				ref={ref}
 				picture={slide}
-				fit="contain"
 				onClick={onClick}
 				showLoadingIndicator
+				fit="scale-down"
 				maxWidth={maxWidth}
 				maxHeight={maxHeight}
 				style={style}

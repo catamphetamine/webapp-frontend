@@ -336,18 +336,18 @@ const POSITION_ABSOLUTE = {
 // 	height: 1080
 // }]))
 
-function getAttachmentAspectRatio(attachment) {
-	switch (attachment.type) {
-		case 'picture':
-			return getPictureAspectRatio(attachment.picture)
-		case 'video':
-			return getVideoAspectRatio(attachment.video)
-		default:
-			console.error(`Unknown attachment type: ${attachment.type}`)
-			console.log(attachment)
-			return 1
-	}
-}
+// function getAttachmentAspectRatio(attachment) {
+// 	switch (attachment.type) {
+// 		case 'picture':
+// 			return getPictureAspectRatio(attachment.picture)
+// 		case 'video':
+// 			return getVideoAspectRatio(attachment.video)
+// 		default:
+// 			console.error(`Unknown attachment type: ${attachment.type}`)
+// 			console.log(attachment)
+// 			return 1
+// 	}
+// }
 
 function getAttachmentUrl(attachment) {
 	switch (attachment.type) {
@@ -362,30 +362,30 @@ function getAttachmentUrl(attachment) {
 	}
 }
 
-function getAttachmentMaxHeight(attachment) {
-	switch (attachment.type) {
-		case 'picture':
-			return getPictureMaxSize(attachment.picture).height
-		case 'video':
-			return getVideoMaxSize(attachment.video).height
-		default:
-			console.error(`Unknown attachment type: ${attachment.type}`)
-			console.log(attachment)
-			return
-	}
-}
+// function getAttachmentMaxHeight(attachment) {
+// 	switch (attachment.type) {
+// 		case 'picture':
+// 			return getPictureMaxSize(attachment.picture).height
+// 		case 'video':
+// 			return getVideoMaxSize(attachment.video).height
+// 		default:
+// 			console.error(`Unknown attachment type: ${attachment.type}`)
+// 			console.log(attachment)
+// 			return
+// 	}
+// }
 
-function inscribeThumbnailHeightIntoSize(attachment, maxExtent) {
-	const aspectRatio = getAttachmentAspectRatio(attachment)
-	const maxHeight = getAttachmentMaxHeight(attachment)
-	if (aspectRatio > 1) {
-		maxExtent = maxExtent / aspectRatio
-	}
-	if (maxHeight < maxExtent) {
-		return maxHeight
-	}
-	return maxExtent
-}
+// function inscribeThumbnailHeightIntoSize(attachment, maxExtent) {
+// 	const aspectRatio = getAttachmentAspectRatio(attachment)
+// 	const maxHeight = getAttachmentMaxHeight(attachment)
+// 	if (aspectRatio > 1) {
+// 		maxExtent = maxExtent / aspectRatio
+// 	}
+// 	if (maxHeight < maxExtent) {
+// 		return maxHeight
+// 	}
+// 	return maxExtent
+// }
 
 function getAttachmentThumbnailHeight(attachment) {
 	switch (attachment.type) {
@@ -400,21 +400,21 @@ function getAttachmentThumbnailHeight(attachment) {
 	}
 }
 
-/**
- * Sorts attachments by their aspect ratio ascending (the tallest ones first).
- * Mutates the original array (could add `.slice()` but not required).
- * @param  {object[]} attachments
- * @return {object[]}
- */
-function sortByAspectRatioAscending(attachments) {
-	// A minor optimization.
-	if (attachments.length === 1) {
-		return attachments
-	}
-	return attachments.sort((a, b) => {
-		return getAttachmentAspectRatio(a) - getAttachmentAspectRatio(b)
-	})
-}
+// /**
+//  * Sorts attachments by their aspect ratio ascending (the tallest ones first).
+//  * Mutates the original array (could add `.slice()` but not required).
+//  * @param  {object[]} attachments
+//  * @return {object[]}
+//  */
+// function sortByAspectRatioAscending(attachments) {
+// 	// A minor optimization.
+// 	if (attachments.length === 1) {
+// 		return attachments
+// 	}
+// 	return attachments.sort((a, b) => {
+// 		return getAttachmentAspectRatio(a) - getAttachmentAspectRatio(b)
+// 	})
+// }
 
 function sortByThumbnailHeightDescending(attachments) {
 	// A minor optimization.
@@ -440,22 +440,21 @@ function AttachmentThumbnail({
 	spoilerLabel,
 	moreAttachmentsCount
 }) {
-	const height = inscribeThumbnailHeightIntoSize(attachment, maxSize)
-	const width = height * getAttachmentAspectRatio(attachment)
+	const picture = attachment.type === 'video' ? attachment.video.picture : attachment.picture
 	return (
 		<React.Fragment>
 			<Picture
 				preview
-				fit="height"
-				height={height}
-				picture={attachment.type === 'video' ? attachment.video.picture : attachment.picture}
+				picture={picture}
+				width={picture.sizes[0].width}
+				height={picture.sizes[0].height}
 				saveBandwidth={saveBandwidth}
-				blur={ attachment.spoiler && !isRevealed ? Math.min(width, height) * BLUR_FACTOR : undefined }
+				blur={attachment.spoiler && !isRevealed ? Math.min(width, height) * BLUR_FACTOR : undefined}
 				className={classNames('post__attachment-thumbnail__picture', {
 					// 'post__attachment-thumbnail__picture--spoiler': attachment.spoiler && !isRevealed
 				})}/>
 			{attachment.spoiler && !isRevealed && spoilerLabel &&
-				<AttachmentSpoilerBar style={{ fontSize: Math.floor(width / spoilerLabel.length) + 'px' }}>
+				<AttachmentSpoilerBar width={width} height={height}>
 					{spoilerLabel}
 				</AttachmentSpoilerBar>
 			}
@@ -658,14 +657,27 @@ class AttachmentClickable extends React.Component {
 	}
 }
 
-function AttachmentSpoilerBar({ children, ...rest }) {
+function AttachmentSpoilerBar({ width, height, children: spoilerLabel, ...rest }) {
+	let fontSize = Math.floor(width / spoilerLabel.length)
+	if (fontSize > height) {
+		if (height > 20) {
+			fontSize = 16
+		} else {
+			return null
+		}
+	}
 	return (
-		<div {...rest} className="post__spoiler-bar post__attachment-thumbnail__spoiler-bar">
-			{children}
+		<div
+			{...rest}
+			style={{ fontSize: fontSize + 'px' }}
+			className="post__spoiler-bar post__attachment-thumbnail__spoiler-bar">
+			{spoilerLabel}
 		</div>
 	)
 }
 
 AttachmentSpoilerBar.propTypes = {
+	width: PropTypes.number.isRequired,
+	height: PropTypes.number.isRequired,
 	children: PropTypes.string.isRequired
 }

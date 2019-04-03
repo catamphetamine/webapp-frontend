@@ -152,26 +152,39 @@ export default class Video extends React.Component {
 		}
 	}
 
-	getContainerStyle() {
+	getFit() {
 		const {
-			video,
 			fit,
+			width,
+			height,
 			maxWidth,
 			maxHeight
 		} = this.props
+		if (fit) {
+			return fit
+		}
+		if (width || height) {
+			return 'exact'
+		}
+		if (maxWidth || maxHeight) {
+			return 'exact-contain'
+		}
+		return 'width'
+	}
+
+	getContainerStyle() {
+		const {
+			video,
+			maxWidth,
+			maxHeight
+		} = this.props
+		const fit = this.getFit()
 		switch (fit) {
 			case 'width':
+			case 'exact-contain':
 				return {
 					paddingBottom: 100 / getAspectRatio(video) + '%'
 				}
-			case 'height':
-				return {
-					paddingBottom: 100 / getAspectRatio(video) + '%'
-				}
-				// return {
-				// 	width: getAspectRatio(video) * maxHeight + 'px',
-				// 	height: maxHeight + 'px'
-				// }
 			case 'scale-down':
 				let maxSize = getMaxSize(video)
 				if (maxWidth && maxHeight) {
@@ -187,24 +200,33 @@ export default class Video extends React.Component {
 	render() {
 		const {
 			video,
-			fit,
+			maxWidth,
 			maxHeight
 		} = this.props
-		if (fit === 'height') {
-			return (
-				<div
-					style={{ maxWidth: getAspectRatio(video) * maxHeight + 'px' }}>
-					{this.render_()}
-				</div>
-			)
+		const fit = this.getFit()
+		switch (fit) {
+			case 'exact-contain':
+				// Setting `max-width: 100%` on the top-most container to make
+				// the whole thing downsize when the page width is not enough.
+				// Percentage `padding-bottom` is set on child element which sets aspect ratio.
+				// Setting `max-width` together with `padding-bottom` doesn't work:
+				// aspect ratio is not being inforced in that case.
+				// That's the reason the extra wrapper is introduced.
+				return (
+					<div style={{
+						maxWidth: (maxWidth || (maxHeight * getAspectRatio(video))) + 'px'
+					}}>
+						{this.render_(fit)}
+					</div>
+				)
+			default:
+				return this.render_(fit)
 		}
-		return this.render_()
 	}
 
-	render_() {
+	render_(fit) {
 		const {
 			video,
-			fit,
 			// width,
 			// height,
 			onClick,
@@ -223,6 +245,7 @@ export default class Video extends React.Component {
 		})
 
 		if (showPreview) {
+			// Percentage `padding-bottom` is set on the `<button/>` to enforce aspect ratio.
 			return (
 				<button
 					ref={this.button}
@@ -237,8 +260,10 @@ export default class Video extends React.Component {
 			)
 		}
 
+		// Percentage `padding-bottom` is set on the `<div/>` to enforce aspect ratio.
 		return (
 			<div
+				ref={this.container}
 				style={_style}
 				className={_className}>
 				{this.renderVideo()}
@@ -331,8 +356,6 @@ Video.propTypes = {
 	width: PropTypes.number,
 	height: PropTypes.number,
 	fit: PropTypes.oneOf([
-		'width',
-		'height',
 		'contain',
 		'scale-down'
 	]).isRequired,
@@ -350,7 +373,6 @@ Video.propTypes = {
 }
 
 Video.defaultProps = {
-	fit: 'width',
 	showPreview: true,
 	seekOnArrowKeys: true,
 	autoPlay: false,

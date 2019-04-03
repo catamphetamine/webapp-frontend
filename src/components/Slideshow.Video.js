@@ -87,12 +87,12 @@ export default {
 			<Video
 				ref={ref}
 				video={slide}
-				fit="scale-down"
 				onClick={onClick}
 				autoPlay={wasExpanded ? true : false}
 				showPreview={wasExpanded ? false : true}
 				showPlayIcon={wasExpanded ? false : true}
 				canPlay={isShown}
+				fit="scale-down"
 				maxWidth={maxWidth}
 				maxHeight={maxHeight}
 				tabIndex={tabIndex}
