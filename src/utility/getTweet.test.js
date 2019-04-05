@@ -1,4 +1,4 @@
-import getTweet, { parseTweet } from './getTweet'
+import getTweet, { parseTweet, parseTweetDateText } from './getTweet'
 
 import { describe, it } from './mocha'
 import expectToEqual from './expectToEqual'
@@ -8,7 +8,9 @@ const NASA_TWEET = {"url":"https:\/\/twitter.com\/Interior\/status\/463440424141
 const NASA_TWEET_PARSED = {
 	text: 'Sunsets don\'t get much better than this one over @GrandTetonNPS. #nature #sunset (link)',
 	url: 'https://twitter.com/Interior/status/463440424141459456',
+	date: new Date(2014, 4, 5),
 	authorName: 'US Department of the Interior',
+	authorId: 'Interior',
 	authorUrl: 'https://twitter.com/Interior'
 }
 
@@ -30,4 +32,15 @@ describe('parseTweet', () => {
 	})
 })
 
-
+describe('parseTweetDateText', () => {
+	it('should parse tweet date', () => {
+		expectToEqual(
+			parseTweetDateText('May 5, 2014'),
+			new Date(2014, 4, 5)
+		)
+		expectToEqual(
+			parseTweetDateText('March 13, 2019'),
+			new Date(2019, 2, 13)
+		)
+	})
+})

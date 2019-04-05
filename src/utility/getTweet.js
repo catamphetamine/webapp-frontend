@@ -17,7 +17,7 @@ let counter = 1
  * `{ url, html, author_url, author_name }`.
  * @param  {string} id
  * @param  {object} options — `{ messages }`
- * @return {object} [result] `{ url, text, authorName, authorUrl }`.
+ * @return {object} [result] `{ url, text, authorName, authorId, authorUrl }`.
  */
 export default async function getTweet(id, options) {
 	if (counter === Number.MAX_SAFE_INTEGER) {
@@ -42,7 +42,42 @@ export function parseTweet(json, options) {
 	return {
 		url: json.url,
 		text,
+		date: parseTweetDate(json.html),
 		authorName: json.author_name,
+		authorId: json.author_url.slice(json.author_url.lastIndexOf('/') + 1),
 		authorUrl: json.author_url
 	}
 }
+
+function parseTweetDate(html) {
+  const match = html.match(/<a .+?>([^<]+)<\/a><\/blockquote>/)
+  if (match) {
+  	return parseTweetDateText(match[1])
+  }
+}
+
+// "May 5, 2014", "March 13, 2019".
+export function parseTweetDateText(dateText) {
+  const match = dateText.match(/^([A-Za-z]+) (\d+), (\d+)$/)
+  if (match) {
+  	const monthIndex = MONTHS.indexOf(match[1])
+  	const day = parseInt(match[2])
+  	const year = parseInt(match[3])
+  	return new Date(year, monthIndex, day)
+  }
+}
+
+const MONTHS = [
+	'January',
+	'February',
+	'March',
+	'April',
+	'May',
+	'June',
+	'July',
+	'August',
+	'September',
+	'October',
+	'November',
+	'December'
+]
