@@ -1,6 +1,8 @@
 import React from 'react'
 
 import Picture, {
+	preloadImage,
+	getPreferredSize,
 	getAspectRatio,
 	getMaxSize as getMaxPictureSize,
 	isVector
@@ -36,6 +38,9 @@ export default {
 	},
 	canRender(slide) {
 		return slide.sizes !== undefined
+	},
+	preload(slide, width) {
+		return preloadImage(getPreferredSize(slide.sizes, width).url)
 	},
 	render({
 		ref,

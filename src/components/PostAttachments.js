@@ -4,8 +4,6 @@ import classNames from 'classnames'
 import { FadeInOut, ActivityIndicator } from 'react-responsive-ui'
 
 import Picture, {
-	preloadImage,
-	getPreferredSize,
 	TRANSPARENT_PIXEL,
 	getUrl as getPictureUrl,
 	getMaxSize as getPictureMaxSize,
@@ -44,6 +42,7 @@ import PostFile, {
 } from './PostFile'
 
 import { getViewportWidth } from './Slideshow'
+import SlideshowPicture from './Slideshow.Picture'
 
 import {
 	postAttachment
@@ -553,16 +552,16 @@ class AttachmentButton extends React.Component {
 			attachment,
 			onClick
 		} = this.props
+
 		if (attachment.type === 'picture') {
 			const picture = attachment.picture
 			// Preload the picture.
-			const size = getPreferredSize(picture.sizes, getViewportWidth())
 			this.setState({
 				isLoading: true
 			})
+			await SlideshowPicture.preload(attachment.picture, getViewportWidth())
 			// For testing/styling.
 			// await new Promise(_ => setTimeout(_, 30000000))
-			await preloadImage(size.url)
 			this.setState({
 				isLoading: false
 			})
