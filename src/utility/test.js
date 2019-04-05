@@ -1,4 +1,5 @@
 import './getTweet.test'
 import './getTweetText.test'
+import './getInstagramPost.test'
 import './video-youtube.test'
 import './post/test'
