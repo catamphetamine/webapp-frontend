@@ -76,16 +76,21 @@ export default {
 		if (id) {
 			let video
 			if (options.youTubeApiKey) {
-				try {
-					video = await getVideoData(id, options.youTubeApiKey, options)
-					// `null` means "Video doesn't exist" (for example, it was deleted).
-					if (video === null) {
-						return null
+				for (const youTubeApiKey of toArray(options.youTubeApiKey)) {
+					try {
+						video = await getVideoData(id, youTubeApiKey, options)
+						// `null` means "Video doesn't exist" (for example, it was deleted).
+						if (video === null) {
+							return null
+						}
+						if (video) {
+							break
+						}
+					} catch (error) {
+						// Inability to get YouTube video info via the API
+						// is not considered critical.
+						console.error(error)
 					}
-				} catch (error) {
-					// Inability to get YouTube video info via the API
-					// is not considered critical.
-					console.error(error)
 				}
 			}
 			if (!video) {
@@ -188,6 +193,15 @@ export default {
 async function getVideoData(id, youTubeApiKey, options) {
 	const response = await fetch(`https://content.googleapis.com/youtube/v3/videos?part=snippet,contentDetails${options.locale ? ',localizations' : ''}&id=${id}&key=${youTubeApiKey}${options.locale ? '&hl=' + options.locale : ''}`)
 	const json = await response.json()
+	if (json.error) {
+		// Example: "Bad Request".
+		const error = new Error(json.error.message)
+		// Example: `400`.
+		error.code = json.error.code
+		// Example: `[{domain: "usageLimits", reason: "keyInvalid", message: "Bad Request"}]`.
+		error.errors = json.error.errors
+		throw error
+	}
 	if (json.items.length === 0) {
 		console.error(`YouTube video "${id}" not found`)
 		// `null` means "Video doesn't exist".
@@ -297,4 +311,8 @@ if (parseISO8601Duration('P43W5DT5M54S') !== 26438754) {
 
 if (parseISO8601Duration('P1Y43W5DT5M54S') !== 57974754) {
 	throw new Error()
+}
+
+function toArray(anything) {
+	return Array.isArray(anything) ? anything : [anything]
 }
