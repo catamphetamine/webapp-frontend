@@ -60,10 +60,10 @@ export default class Post extends React.PureComponent {
 	}
 
 	state = {
-		showingPreview: this.props.post.contentPreview !== undefined
+		showPreview: true
 	}
 
-	expandContent = () => this.setState({ showingPreview: false })
+	expandContent = () => this.setState({ showPreview: false })
 
 	getNonEmbeddedAttachments() {
 		const { post } = this.props
@@ -105,9 +105,7 @@ export default class Post extends React.PureComponent {
 			loadYouTubeLinks(post, { youTubeApiKey }).then((found) => {
 				if (found && this._isMounted) {
 					expandStandaloneAttachmentLinks(post)
-					if (post.contentPreview) {
-						post.contentPreview = generatePostPreview(post, { limit: 500 })
-					}
+					post.contentPreview = generatePostPreview(post, { limit: 500 })
 					this.forceUpdate()
 				}
 			})
@@ -146,10 +144,10 @@ export default class Post extends React.PureComponent {
 			className
 		} = this.props
 
-		const { showingPreview } = this.state
+		const { showPreview } = this.state
 
 		const attachments = post.attachments || []
-		const postContent = showingPreview ? post.contentPreview : post.content
+		const postContent = showPreview && post.contentPreview ? post.contentPreview : post.content
 
 		return (
 			<article className={classNames(className, 'post', {
