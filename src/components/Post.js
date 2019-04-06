@@ -12,6 +12,7 @@ import PostAttachments, { sortPostAttachments } from './PostAttachments'
 import PostFooter, { hasFooter } from './PostFooter'
 
 import loadYouTubeLinks from '../utility/post/loadYouTubeLinks'
+import loadTwitterLinks from '../utility/post/loadTwitterLinks'
 import expandStandaloneAttachmentLinks from '../utility/post/expandStandaloneAttachmentLinks'
 import generatePostPreview from '../utility/post/generatePostPreview'
 
@@ -101,15 +102,28 @@ export default class Post extends React.PureComponent {
 			post,
 			youTubeApiKey
 		} = this.props
-		if (youTubeApiKey) {
-			loadYouTubeLinks(post, { youTubeApiKey }).then((found) => {
-				if (found && this._isMounted) {
-					expandStandaloneAttachmentLinks(post)
-					post.contentPreview = generatePostPreview(post, { limit: 500 })
-					this.forceUpdate()
+		const promises = [
+			loadTwitterLinks(post, {
+				// Replace these with proper `messages` when this is moved to `chanchan` repo maybe.
+				messages: {
+					link: 'Link',
+					media: 'Media'
 				}
 			})
+		]
+		if (youTubeApiKey) {
+			promises.push(
+				loadYouTubeLinks(post, { youTubeApiKey })
+			)
 		}
+		Promise.all(promises).then((results) => {
+			const foundSomething = results.find(_ => _)
+			if (foundSomething && this._isMounted) {
+				expandStandaloneAttachmentLinks(post)
+				post.contentPreview = generatePostPreview(post, { limit: 500 })
+				this.forceUpdate()
+			}
+		})
 		this._isMounted = true
 	}
 

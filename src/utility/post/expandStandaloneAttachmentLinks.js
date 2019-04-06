@@ -19,7 +19,10 @@ export default function expandStandaloneAttachmentLinks(post) {
 		let i = 0
 		while (i < paragraph.length) {
 			const block = paragraph[i]
-			if (typeof block === 'object' && block.type === 'link' && block.attachment) {
+			if (typeof block === 'object' &&
+				block.type === 'link' &&
+				block.attachment &&
+				shouldExpandAttachment(block.attachment)) {
 				const prevBlock = paragraph[i - 1]
 				const nextBlock = paragraph[i + 1]
 				if ((!prevBlock || prevBlock === '\n') && (!nextBlock || nextBlock === '\n')) {
@@ -90,4 +93,15 @@ function trimNewLines(array) {
 		array = array.slice(0, array.length - 1)
 	}
 	return array
+}
+
+function shouldExpandAttachment(attachment) {
+	switch (attachment.type) {
+		case 'audio':
+		case 'video':
+		case 'picture':
+			return true
+		default:
+			return false
+	}
 }

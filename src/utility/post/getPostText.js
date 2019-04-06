@@ -218,9 +218,9 @@ function getAttachmentTitle(attachment) {
 function getAttachmentMessage(attachment, messages) {
 	switch (attachment.type) {
 		case 'picture':
-			return messages.attachmentPicture
+			return messages.picture
 		case 'video':
-			return messages.attachmentVideo
+			return messages.video
 	}
 }
 

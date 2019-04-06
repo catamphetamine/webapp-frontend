@@ -41,7 +41,10 @@ export function parseInstagramPost(json) {
 		date: parseDate(json.html),
 		authorName: parseAuthorName(json.html, json.author_name),
 		authorId: json.author_name,
-		authorUrl: json.author_url
+		authorUrl: json.author_url,
+		pictureWidth: json.thumbnail_width,
+		pictureHeight: json.thumbnail_height,
+		pictureUrl: json.thumbnail_url
 	}
 }
 

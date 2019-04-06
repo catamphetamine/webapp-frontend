@@ -14,11 +14,14 @@ export default async function parseYouTubeLinks(post, options = {}) {
 		link => parseYouTubeLink(link, options),
 		post.content
 	))
-	return result.length > 0
+	return result.findIndex(_ => _) >= 0
 }
 
 async function parseYouTubeLink(link, options) {
 	if (link.service !== 'youtube') {
+		return
+	}
+	if (link.attachment) {
 		return
 	}
 	const video = await YouTube.parse(link.url, options)

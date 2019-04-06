@@ -11,7 +11,10 @@ const POST_PARSED = {
 	authorName: 'Zooey Deschanel',
 	authorId: 'zooeydeschanel',
 	authorUrl: 'https://www.instagram.com/zooeydeschanel',
-	date: new Date('2013-02-20T06:17:14+00:00')
+	date: new Date('2013-02-20T06:17:14+00:00'),
+	pictureWidth: 612,
+	pictureHeight: 612,
+	pictureUrl: 'https://scontent-arn2-1.cdninstagram.com/vp/fe285833a2d6da37c81165bc7e03f8d8/5D3E22F2/t51.2885-15/e15/11262720_891453137565191_1495973619_n.jpg?_nc_ht=scontent-arn2-1.cdninstagram.com'
 }
 
 // Instagram doesn't allow CORS on their oEmbed API.

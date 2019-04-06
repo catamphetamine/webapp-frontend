@@ -10,13 +10,17 @@ describe('expandStandaloneAttachmentLinks', () => {
 				[
 					{
 						type: 'link',
-						attachment: {}
+						attachment: {
+							type: 'video'
+						}
 					},
 					'abc',
 					'\n',
 					{
 						type: 'link',
-						attachment: {}
+						attachment: {
+							type: 'video'
+						}
 					}
 				]
 			],
@@ -30,7 +34,9 @@ describe('expandStandaloneAttachmentLinks', () => {
 					[
 						{
 							type: 'link',
-							attachment: {}
+							attachment: {
+								type: 'video'
+							}
 						},
 						'abc'
 					],
@@ -41,7 +47,8 @@ describe('expandStandaloneAttachmentLinks', () => {
 					}
 				],
 				attachments: [{
-					id: 1
+					id: 1,
+					type: 'video'
 				}]
 			}
 		)
@@ -53,7 +60,9 @@ describe('expandStandaloneAttachmentLinks', () => {
 				[
 					{
 						type: 'link',
-						attachment: {}
+						attachment: {
+							type: 'video'
+						}
 					},
 					'\n',
 					'abc',
@@ -84,7 +93,8 @@ describe('expandStandaloneAttachmentLinks', () => {
 					]
 				],
 				attachments: [{
-					id: 1
+					id: 1,
+					type: 'video'
 				}]
 			}
 		)
@@ -96,7 +106,9 @@ describe('expandStandaloneAttachmentLinks', () => {
 				[
 					{
 						type: 'link',
-						attachment: {}
+						attachment: {
+							type: 'video'
+						}
 					}
 				]
 			],
@@ -114,7 +126,8 @@ describe('expandStandaloneAttachmentLinks', () => {
 					}
 				],
 				attachments: [{
-					id: 1
+					id: 1,
+					type: 'video'
 				}]
 			}
 		)
@@ -136,7 +149,9 @@ describe('expandStandaloneAttachmentLinks', () => {
 					'\n',
 					{
 						type: 'link',
-						attachment: {}
+						attachment: {
+							type: 'video'
+						}
 					}
 				]
 			],
@@ -169,7 +184,8 @@ describe('expandStandaloneAttachmentLinks', () => {
 				attachments: [{
 					id: 1
 				}, {
-					id: 2
+					id: 2,
+					type: 'video'
 				}]
 			}
 		)

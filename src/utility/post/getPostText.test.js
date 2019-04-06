@@ -265,8 +265,8 @@ describe('getPostText', () => {
 			},
 			{
 				messages: {
-					attachmentPicture: 'Picture',
-					attachmentVideo: 'Video'
+					picture: 'Picture',
+					video: 'Video'
 				}
 			},
 			'Abc\n\nVideo\n\nDef\n\nPicture\n\nGhi'
@@ -312,8 +312,8 @@ describe('getPostText', () => {
 			},
 			{
 				messages: {
-					attachmentPicture: 'Picture',
-					attachmentVideo: 'Video'
+					picture: 'Picture',
+					video: 'Video'
 				}
 			},
 			'Abc\n\nVideo Title\n\nDef\n\nPicture Title\n\nGhi'
@@ -354,8 +354,8 @@ describe('getPostText', () => {
 			},
 			{
 				messages: {
-					attachmentPicture: 'Picture',
-					attachmentVideo: 'Video'
+					picture: 'Picture',
+					video: 'Video'
 				}
 			},
 			'Abc\n\nDef\n\nGhi'
@@ -400,8 +400,8 @@ describe('getPostText', () => {
 			},
 			{
 				messages: {
-					attachmentPicture: 'Picture',
-					attachmentVideo: 'Video'
+					picture: 'Picture',
+					video: 'Video'
 				},
 				skipAttachments: true
 			},
@@ -445,8 +445,8 @@ describe('getPostText', () => {
 			},
 			{
 				messages: {
-					attachmentPicture: 'Picture',
-					attachmentVideo: 'Video'
+					picture: 'Picture',
+					video: 'Video'
 				},
 				skipUntitledAttachments: true
 			},
@@ -483,8 +483,8 @@ describe('getPostText', () => {
 			},
 			{
 				messages: {
-					attachmentPicture: 'Picture',
-					attachmentVideo: 'Video'
+					picture: 'Picture',
+					video: 'Video'
 				},
 				skipAttachments: true
 			},
@@ -517,8 +517,8 @@ describe('getPostText', () => {
 			},
 			{
 				messages: {
-					attachmentPicture: 'Picture',
-					attachmentVideo: 'Video'
+					picture: 'Picture',
+					video: 'Video'
 				},
 				skipAttachments: true
 			},
@@ -551,8 +551,8 @@ describe('getPostText', () => {
 			},
 			{
 				messages: {
-					attachmentPicture: 'Picture',
-					attachmentVideo: 'Video'
+					picture: 'Picture',
+					video: 'Video'
 				},
 				ignoreAttachments: true
 			},

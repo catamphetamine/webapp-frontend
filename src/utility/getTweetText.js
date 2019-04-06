@@ -23,7 +23,12 @@ export default function getTweetText(html, { messages }) {
   // Replace hashtag links with hashtag text.
   textHtml = textHtml.replace(/<a [^>]+>#(.+?)<\/a>/g, '#$1')
   // Replace links with `(link)` messages.
-  textHtml = textHtml.replace(/<a [^>]+>.+?<\/a>/g, `(${messages.link})`)
+  textHtml = textHtml.replace(/<a [^>]+>(.+?)<\/a>/g, (_, text) => {
+    if ((messages.media || messages.attachment) && text.indexOf('pic.twitter.com') === 0) {
+      return `(${(messages.media || messages.attachment).toLowerCase()})`
+    }
+    return `(${messages.link.toLowerCase()})`
+  })
   // Replace new lines.
   textHtml = textHtml.replace(/<br>/g, '\n')
   // Return tweet text.
