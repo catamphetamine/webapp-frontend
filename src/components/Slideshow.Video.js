@@ -19,36 +19,45 @@ export default {
 	// 	return false
 	// },
 	onKeyDown(event, slide, ref) {
-		switch (slide.provider) {
-			case undefined:
-				const video = ref.current
-				switch (event.keyCode) {
-					// Seek backwards on Left Arrow key.
-					case 37:
-						// Only seek backwards on left arrow key if the video isn't at its start.
-						// If the video is at its start then left arrow key will navigate to the previous slide.
-						if (video.isStart() === false) {
-							if (video.seek(false)) {
-								event.preventDefault()
-							}
-						}
-						break
-
-					// Seek forward on Right Arrow key.
-					case 39:
-						// Only seek forward on right arrow key if the video hasn't ended.
-						// If the video has ended then right arrow key will navigate to the next slide.
-						if (video.isEnd() === false) {
-							if (video.seek(true)) {
-								event.preventDefault()
-							}
-						}
-						break
+		const video = ref.current
+		switch (event.keyCode) {
+			// Seek backwards on Left Arrow key.
+			case 37:
+				// Only seek backwards on left arrow key if the video isn't at its start.
+				// If the video is at its start then left arrow key will navigate to the previous slide.
+				if (video.hasStarted() === true) {
+					if (video.seek(false)) {
+						event.preventDefault()
+					}
 				}
-				return
-			default:
-				return
+				break
+
+			// Seek forward on Right Arrow key.
+			case 39:
+				// Only seek forward on right arrow key if the video hasn't ended.
+				// If the video has ended then right arrow key will navigate to the next slide.
+				if (video.hasEnded() === false) {
+					if (video.seek(true)) {
+						event.preventDefault()
+					}
+				}
+				break
+
+			// Volume Up on Up Arrow key.
+			case 38:
+				if (video.changeVolume(true)) {
+					event.preventDefault()
+				}
+				break
+
+			// Volume Down on Down Arrow key.
+			case 40:
+				if (video.changeVolume(false)) {
+					event.preventDefault()
+				}
+				break
 		}
+		return
 	},
 	canDownload(slide) {
 		switch (slide.provider) {
@@ -92,6 +101,7 @@ export default {
 				maxHeight={maxHeight}
 				tabIndex={tabIndex}
 				seekOnArrowKeys={false}
+				changeVolumeOnArrowKeys={false}
 				style={style}
 				className="rrui__slideshow__video"/>
 		)

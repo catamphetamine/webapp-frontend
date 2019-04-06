@@ -4,9 +4,12 @@ import classNames from 'classnames'
 
 import { video } from '../PropTypes'
 import { getEmbeddedVideoUrl, getVideoUrl } from '../utility/video'
+import { requestFullScreen, exitFullScreen, onFullScreenChange } from '../utility/dom'
 
 import Picture, { scaleDownSize } from './Picture'
 import VideoPlayIcon from './VideoPlayIcon'
+import HtmlVideo from './HtmlVideo'
+import YouTubeVideo from './YouTubeVideo'
 
 import './Video.css'
 
@@ -18,6 +21,21 @@ export default class Video extends React.Component {
 
 	button = React.createRef()
 	video = React.createRef()
+	youTubeVideo = React.createRef()
+	iframeVideo = React.createRef()
+
+	componentDidMount() {
+		const { video } = this.props
+		if (video.provider === 'YouTube') {
+			YouTubeVideo.loadApi()
+		}
+	}
+
+	componentWillUnmount() {
+		if (this.isFullScreen) {
+			this.exitFullScreen()
+		}
+	}
 
 	componentDidUpdate(prevProps) {
 		// On `showPreview` property change.
@@ -43,11 +61,19 @@ export default class Video extends React.Component {
 		}
 	}
 
+	getPlayer() {
+		return this.video.current || this.youTubeVideo.current
+	}
+
+	spacebarTogglesPlay() {
+		return this.getPlayer() === this.video.current
+	}
+
 	focus = () => {
 		if (this.button.current) {
 			this.button.current.focus()
-		} else if (this.video.current) {
-			this.video.current.focus()
+		} else if (this.getPlayer() && this.getPlayer().focus) {
+			this.getPlayer().focus()
 		} else {
 			return false
 		}
@@ -57,42 +83,128 @@ export default class Video extends React.Component {
 	// https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement
 
 	play = () => {
-		if (this.video.current) {
-			this.video.current.play()
+		if (this.getPlayer() && this.getPlayer().play) {
+			this.getPlayer().play()
 			return true
 		}
 	}
 
 	pause = () => {
-		if (this.video.current) {
-			this.video.current.pause()
+		if (this.getPlayer() && this.getPlayer().pause) {
+			this.getPlayer().pause()
 			return true
+		}
+	}
+
+	togglePlay() {
+		// // If rendering HTML5 `<video/>` which is focused
+		// // then it already handles play/pause of spacebar.
+		// if (this.video.current) {
+		// 	return true
+		// }
+		const isPaused = this.isPaused()
+		if (isPaused !== undefined) {
+			if (isPaused) {
+				return this.getPlayer().play()
+			} else {
+				return this.getPlayer().pause()
+			}
 		}
 	}
 
 	isPaused = () => {
-		if (this.video.current) {
-			return this.video.current.paused
+		if (this.getPlayer() && this.getPlayer().isPaused) {
+			return this.getPlayer().isPaused()
 		}
 	}
 
-	isStart = () => {
-		if (this.video.current) {
-			return this.video.current.currentTime === 0
+	hasStarted = () => {
+		if (this.getPlayer() && this.getPlayer().hasStarted) {
+			return this.getPlayer().hasStarted()
 		}
 	}
 
-	isEnd = () => {
-		if (this.video.current) {
-			return this.video.current.ended
+	hasEnded = () => {
+		if (this.getPlayer() && this.getPlayer().hasEnded) {
+			return this.getPlayer().hasEnded()
 		}
 	}
 
-	seek = (forward) => {
-		const seconds = forward ? 5 : -5
-		if (this.video.current) {
-			this.video.current.currentTime += seconds
+	seek(forward) {
+		const { seekStep } = this.props
+		const delta = forward ? seekStep : -1 * seekStep
+		if (this.getPlayer() && this.getPlayer().getCurrentTime) {
+			return this.seekTo(this.getPlayer().getCurrentTime() + delta)
+		}
+	}
+
+	seekTo(seconds) {
+		if (this.getPlayer() && this.getPlayer().seekTo) {
+			this.getPlayer().seekTo(seconds)
 			return true
+		}
+	}
+
+	setVolume(volume) {
+		if (this.getPlayer() && this.getPlayer().setVolume) {
+			this.getPlayer().setVolume(volume)
+			return true
+		}
+	}
+
+	getVolume() {
+		if (this.getPlayer() && this.getPlayer().getVolume) {
+			return this.getPlayer().getVolume()
+		}
+	}
+
+	getDuration() {
+		const { video } = this.props
+		// Even if `video` didn't contain `duration`
+		// YouTube player can return its duration.
+		if (this.getPlayer() && this.getPlayer().getDuration) {
+			return this.getPlayer().getDuration
+		}
+		return video.duration
+	}
+
+	changeVolume(up) {
+		const { changeVolumeStep } = this.props
+		const delta = up ? changeVolumeStep : -1 * changeVolumeStep
+		const volume = this.getVolume()
+		if (volume !== undefined) {
+			return this.setVolume(Math.min(Math.max(0, volume + delta), 1))
+		}
+	}
+
+	mute() {
+		if (this.getPlayer() && this.getPlayer().mute) {
+			this.getPlayer().mute()
+			return true
+		}
+	}
+
+	unMute() {
+		if (this.getPlayer() && this.getPlayer().unMute) {
+			this.getPlayer().unMute()
+			return true
+		}
+	}
+
+	isMuted() {
+		if (this.getPlayer() && this.getPlayer().isMuted) {
+			return this.getPlayer().isMuted()
+		}
+	}
+
+	toggleMute() {
+		const isMuted = this.isMuted()
+		if (isMuted !== undefined) {
+			if (isMuted) {
+				return this.unMute()
+			} else {
+				return this.mute()
+			}
 		}
 	}
 
@@ -116,21 +228,25 @@ export default class Video extends React.Component {
 	}
 
 	onKeyDown = (event) => {
-		const { seekOnArrowKeys } = this.props
+		const {
+			video,
+			seekOnArrowKeys,
+			changeVolumeOnArrowKeys
+		} = this.props
+
 		if (event.ctrlKey || event.altKey || event.shiftKey || event.metaKey) {
 			return
 		}
+
 		switch (event.keyCode) {
-			// (is already handled by the `<video/>` itself)
-			// // Pause/Play on Spacebar.
-			// case 32:
-			// 	if (video.isPaused()) {
-			// 		video.play()
-			// 	} else {
-			// 		video.pause()
-			// 	}
-			// 	event.preventDefault()
-			// 	break
+			// Pause/Play on Spacebar.
+			case 32:
+				if (!this.spacebarTogglesPlay()) {
+					if (this.togglePlay()) {
+						event.preventDefault()
+					}
+				}
+				break
 
 			// Seek backwards on Left Arrow key.
 			case 37:
@@ -149,8 +265,73 @@ export default class Video extends React.Component {
 					}
 				}
 				break
+
+			// Seek to start on Home key.
+			case 36:
+				if (this.seekTo(0)) {
+					event.preventDefault()
+				}
+				break
+
+			// Seek to end on End key.
+			case 35:
+				if (this.seekTo(video.duration)) {
+					event.preventDefault()
+				}
+				break
+
+			// Volume Up on Up Arrow key.
+			case 38:
+				if (changeVolumeOnArrowKeys) {
+					if (this.changeVolume(true)) {
+						event.preventDefault()
+					}
+				}
+				break
+
+			// Volume Down on Down Arrow key.
+			case 40:
+				if (changeVolumeOnArrowKeys) {
+					if (this.changeVolume(false)) {
+						event.preventDefault()
+					}
+				}
+				break
+
+			// Toggle mute on "M" key.
+			case 77:
+				if (this.toggleMute()) {
+					event.preventDefault()
+				}
+				break
+
+			// Toggle fullscreen on "F" key.
+			case 70:
+				const node = (this.getPlayer() && this.getPlayer().getNode()) || this.iframeVideo.current
+				if (node) {
+					if (this.isFullScreen) {
+						this.exitFullScreen()
+					} else {
+						this.enterFullScreen(node)
+					}
+					event.preventDefault()
+				}
+				break
 		}
 	}
+
+	enterFullScreen(node) {
+		if (requestFullScreen(node)) {
+			this.isFullScreen = true
+		}
+	}
+
+	exitFullScreen() {
+		exitFullScreen()
+		this.isFullScreen = false
+	}
+
+	onFullScreenChange() {}
 
 	getFit() {
 		const {
@@ -264,6 +445,7 @@ export default class Video extends React.Component {
 		return (
 			<div
 				ref={this.container}
+				onKeyDown={this.onKeyDown}
 				style={_style}
 				className={_className}>
 				{this.renderVideo()}
@@ -305,24 +487,26 @@ export default class Video extends React.Component {
 
 		if (!video.provider) {
 			return (
-				<video
+				<HtmlVideo
 					ref={this.video}
 					tabIndex={tabIndex}
+					video={video}
 					width="100%"
 					height="100%"
-					poster={video.picture && video.picture.url}
-					autoPlay={autoPlay}
-					controls>
-					<source
-						src={video.url}
-						type={video.type}/>
-				</video>
+					autoPlay={autoPlay}/>
 			)
-			/*
-			<video
-				width={width}
-				height={height} />
-			*/
+		}
+
+		if (video.provider === 'YouTube' && YouTubeVideo.hasApiLoaded()) {
+			return (
+				<YouTubeVideo
+					ref={this.youTubeVideo}
+					tabIndex={tabIndex}
+					video={video}
+					width="100%"
+					height="100%"
+					autoPlay={autoPlay}/>
+			)
 		}
 
 		if (video.provider === 'Vimeo' || video.provider === 'YouTube') {
@@ -330,6 +514,7 @@ export default class Video extends React.Component {
 			// `allowFullScreen` property is for legacy browsers support.
 			return (
 				<iframe
+					ref={this.iframeVideo}
 					src={getEmbeddedVideoUrl(video.id, video.provider, {
 						autoPlay,
 						startAt: video.startAt
@@ -362,11 +547,14 @@ Video.propTypes = {
 	maxHeight: PropTypes.number,
 	showPreview: PropTypes.bool.isRequired,
 	seekOnArrowKeys: PropTypes.bool.isRequired,
+	seekStep: PropTypes.number.isRequired,
+	changeVolumeOnArrowKeys: PropTypes.bool.isRequired,
+	changeVolumeStep: PropTypes.number.isRequired,
 	autoPlay: PropTypes.bool.isRequired,
 	canPlay: PropTypes.bool.isRequired,
 	showPlayIcon: PropTypes.bool,
 	onClick: PropTypes.func,
-	tabIndex: PropTypes.bool,
+	tabIndex: PropTypes.number,
 	style: PropTypes.object,
 	className: PropTypes.string
 }
@@ -374,6 +562,9 @@ Video.propTypes = {
 Video.defaultProps = {
 	showPreview: true,
 	seekOnArrowKeys: true,
+	seekStep: 5,
+	changeVolumeOnArrowKeys: true,
+	changeVolumeStep: 0.1,
 	autoPlay: false,
 	canPlay: true
 }

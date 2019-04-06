@@ -6,7 +6,7 @@ import FocusLock from 'react-focus-lock'
 
 // `body-scroll-lock` has been modified a bit, see the info in the header of the file.
 import { disableBodyScroll, enableBodyScroll, clearAllBodyScrollLocks } from '../utility/body-scroll-lock'
-import { isClickable } from '../utility/dom'
+import { isClickable, requestFullScreen, exitFullScreen, onFullScreenChange } from '../utility/dom'
 
 import PicturePlugin from './Slideshow.Picture'
 import VideoPlugin from './Slideshow.Video'
@@ -124,8 +124,9 @@ class Slideshow extends React.PureComponent {
 		// }
 		this.focus()
 		if (fullScreen) {
-			requestFullScreen(this.container.current)
-			this.unlistenFullScreen = onFullScreenChange(this.onFullScreenChange)
+			if (requestFullScreen(this.container.current)) {
+				this.unlistenFullScreen = onFullScreenChange(this.onFullScreenChange)
+			}
 		}
 		window.addEventListener('resize', this.onWindowResize)
 		if (!inline) {
@@ -159,6 +160,8 @@ class Slideshow extends React.PureComponent {
 		const { fullScreen, inline } = this.props
 		if (fullScreen) {
 			exitFullScreen()
+		}
+		if (this.unlistenFullScreen) {
 			this.unlistenFullScreen()
 		}
 		// Focus is now handled by `react-focus-lock`.
@@ -523,17 +526,21 @@ class Slideshow extends React.PureComponent {
 			return
 		}
 		switch (event.keyCode) {
-			// "Left Arrow".
 			// Show previous slide.
+			// "Left Arrow".
 			case 37:
+			// "Page Up".
+			case 33:
 				event.preventDefault()
 				this.finishTransition()
 				this.showPrevious()
 				return
 
-			// "Right Arrow".
 			// Show next slide.
+			// "Right Arrow".
 			case 39:
+			// "Page Down".
+			case 34:
 				event.preventDefault()
 				this.finishTransition()
 				this.showNext()
@@ -559,14 +566,6 @@ class Slideshow extends React.PureComponent {
 				event.preventDefault()
 				this.close()
 				return
-
-			// // "Spacebar".
-			// // Play video
-			// case 32:
-			// 	event.preventDefault()
-			// 	const { i } = this.state
-			// 	this.setState({ expandedSlideIndex: i })
-			// 	return
 		}
 	}
 
@@ -1166,42 +1165,6 @@ SlideshowProgress.propTypes = {
 
 SlideshowProgress.defaultProps = {
 	maxCountForDots: 10
-}
-
-function requestFullScreen(element) {
-	if (document.fullscreenElement ||
-		document.mozFullScreenElement ||
-		document.webkitFullscreenElement) {
-		return
-	}
-	if (element.requestFullscreen) {
-		element.requestFullscreen()
-	} else if (element.mozRequestFullScreen) {
-		element.mozRequestFullScreen()
-	} else if (element.webkitRequestFullscreen) {
-		element.webkitRequestFullscreen()
-	}
-}
-
-function exitFullScreen(element) {
-	if (document.cancelFullScreen) {
-		document.cancelFullScreen()
-	} else if (document.mozCancelFullScreen) {
-		document.mozCancelFullScreen()
-	} else if (document.webkitCancelFullScreen) {
-		document.webkitCancelFullScreen()
-	}
-}
-
-function onFullScreenChange(handler) {
-	document.addEventListener('webkitfullscreenchange', handler)
-	document.addEventListener('mozfullscreenchange', handler)
-	document.addEventListener('fullscreenchange', handler)
-	return () => {
-		document.removeEventListener('webkitfullscreenchange', handler)
-		document.removeEventListener('mozfullscreenchange', handler)
-		document.removeEventListener('fullscreenchange', handler)
-	}
 }
 
 function getTranslateX(element) {

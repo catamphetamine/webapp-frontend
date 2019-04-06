@@ -13,6 +13,7 @@ import PostFooter, { hasFooter } from './PostFooter'
 
 import loadYouTubeLinks from '../utility/post/loadYouTubeLinks'
 import expandStandaloneAttachmentLinks from '../utility/post/expandStandaloneAttachmentLinks'
+import generatePostPreview from '../utility/post/generatePostPreview'
 
 // import { openSlideshow } from '../redux/slideshow'
 
@@ -104,6 +105,9 @@ export default class Post extends React.PureComponent {
 			loadYouTubeLinks(post, { youTubeApiKey }).then((found) => {
 				if (found && this._isMounted) {
 					expandStandaloneAttachmentLinks(post)
+					if (post.contentPreview) {
+						post.contentPreview = generatePostPreview(post, { limit: 500 })
+					}
 					this.forceUpdate()
 				}
 			})
