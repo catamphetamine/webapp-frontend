@@ -595,6 +595,10 @@ export function getAspectRatio(video) {
 }
 
 export function getMaxSize(video) {
+	// `.width` and `.height` aren't required on a `video`
+	// because, for example, if it's a YouTube video
+	// which was parsed without using a YouTube API key
+	// it will only contain video ID and the thumbnail picture.
 	if (video.width && video.height) {
 		return video
 	}
