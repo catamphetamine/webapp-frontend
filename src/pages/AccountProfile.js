@@ -36,12 +36,12 @@ import './AccountProfile.css'
 	'profile:first_name': account && account.firstName,
 	'profile:last_name': account && account.lastName,
 	'profile:username': account && account.idAlias,
-	image: account && account.picture && account.picture.sizes.map((size) => ({
-		_: size.url,
-		width: size.width,
-		height: size.height,
+	image: account && account.picture && {
+		_: account.picture.url,
+		width: account.picture.width,
+		height: account.picture.height,
 		type: account.picture.type
-	}))
+	}
 }))
 @preload(async ({ dispatch, params }) => {
 	// `id` could be an `id` and it could be an `idAlias`.

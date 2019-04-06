@@ -6,7 +6,6 @@ import { FadeInOut, ActivityIndicator } from 'react-responsive-ui'
 import Picture, {
 	TRANSPARENT_PIXEL,
 	getUrl as getPictureUrl,
-	getMaxSize as getPictureMaxSize,
 	getAspectRatio as getPictureAspectRatio
 } from './Picture'
 
@@ -146,12 +145,9 @@ export default function PostAttachments({
 						return (
 							<li
 								key={`picture-or-video-${i}`}
-								className={classNames(
-									'post__attachment-thumbnail',
-									pictureOrVideo.type === 'picture' &&
-										pictureOrVideo.picture.kind &&
-										`post__attachment-thumbnail--${pictureOrVideo.picture.kind}`
-								)}>
+								className={classNames('post__attachment-thumbnail', {
+									'post__attachment-thumbnail--transparent': pictureOrVideo.type === 'picture' && pictureOrVideo.picture.transparent
+								})}>
 								{/* When copy-pasting content an `<img/>` inside a `<button/>`
 								    is ignored, that's why placing a "dummy" transparent pixel
 								    having the correct `alt` before the `<button/>`. */}
@@ -364,7 +360,7 @@ function getAttachmentUrl(attachment) {
 // function getAttachmentMaxHeight(attachment) {
 // 	switch (attachment.type) {
 // 		case 'picture':
-// 			return getPictureMaxSize(attachment.picture).height
+// 			return attachment.picture.height
 // 		case 'video':
 // 			return getVideoMaxSize(attachment.video).height
 // 		default:
@@ -389,9 +385,15 @@ function getAttachmentUrl(attachment) {
 function getAttachmentThumbnailHeight(attachment) {
 	switch (attachment.type) {
 		case 'picture':
-			return attachment.picture.sizes[0].height
+			if (attachment.picture.sizes) {
+				return attachment.picture.sizes[0].height
+			}
+			return attachment.picture.height
 		case 'video':
-			return attachment.video.picture.sizes[0].height
+			if (attachment.video.picture.sizes) {
+				return attachment.video.picture.sizes[0].height
+			}
+			return attachment.video.picture.height
 		default:
 			console.error(`Unknown attachment type: ${attachment.type}`)
 			console.log(attachment)
@@ -445,8 +447,8 @@ function AttachmentThumbnail({
 			<Picture
 				preview
 				picture={picture}
-				width={picture.sizes[0].width}
-				height={picture.sizes[0].height}
+				width={picture.sizes ? picture.sizes[0].width : picture.width}
+				height={picture.sizes ? picture.sizes[0].height : picture.height}
 				saveBandwidth={saveBandwidth}
 				blur={attachment.spoiler && !isRevealed ? Math.min(width, height) * BLUR_FACTOR : undefined}
 				className={classNames('post__attachment-thumbnail__picture', {

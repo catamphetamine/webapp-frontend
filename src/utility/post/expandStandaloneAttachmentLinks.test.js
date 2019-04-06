@@ -216,16 +216,15 @@ describe('expandStandaloneAttachmentLinks', () => {
 					"size": 325646,
 					"picture": {
 						"type": "image/png",
+						"width": 1000,
+						"height": 1300,
+						"url": "//i.4cdn.org/vg/1549230474936.png",
 						"sizes": [
 							{
+								"type": "image/jpeg",
 								"width": 192,
 								"height": 250,
 								"url": "//i.4cdn.org/vg/1549230474936s.jpg"
-							},
-							{
-								"width": 1000,
-								"height": 1300,
-								"url": "//i.4cdn.org/vg/1549230474936.png"
 							}
 						]
 					}
@@ -240,25 +239,22 @@ describe('expandStandaloneAttachmentLinks', () => {
 						"aspectRatio": 1.7777777777777777,
 						"picture": {
 							"type": "image/jpeg",
+							"url": "https://i.ytimg.com/vi/P8seXaqhrO8/maxresdefault.jpg",
+							"width": 1280,
+							"height": 720,
 							"sizes": [
 								{
+									"type": "image/jpeg",
 									"url": "https://i.ytimg.com/vi/P8seXaqhrO8/mqdefault.jpg",
 									"width": 320,
 									"height": 180
-								},
-								{
-									"url": "https://i.ytimg.com/vi/P8seXaqhrO8/maxresdefault.jpg",
-									"width": 1280,
-									"height": 720
 								}
 							]
 						},
 						"width": 1280,
 						"height": 720,
-						"source": {
-							"provider": "YouTube",
-							"id": "P8seXaqhrO8"
-						}
+						"provider": "YouTube",
+						"id": "P8seXaqhrO8"
 					}
 				},
 				{
@@ -271,25 +267,22 @@ describe('expandStandaloneAttachmentLinks', () => {
 						"aspectRatio": 1.7777777777777777,
 						"picture": {
 							"type": "image/jpeg",
+							"url": "https://i.ytimg.com/vi/kYn1hnGj8oI/maxresdefault.jpg",
+							"width": 1280,
+							"height": 720,
 							"sizes": [
 								{
+									"type": "image/jpeg",
 									"url": "https://i.ytimg.com/vi/kYn1hnGj8oI/mqdefault.jpg",
 									"width": 320,
 									"height": 180
-								},
-								{
-									"url": "https://i.ytimg.com/vi/kYn1hnGj8oI/maxresdefault.jpg",
-									"width": 1280,
-									"height": 720
 								}
 							]
 						},
 						"width": 1280,
 						"height": 720,
-						"source": {
-							"provider": "YouTube",
-							"id": "kYn1hnGj8oI"
-						}
+						"provider": "YouTube",
+						"id": "kYn1hnGj8oI"
 					}
 				}
 			],
@@ -434,16 +427,15 @@ describe('expandStandaloneAttachmentLinks', () => {
 						"size": 325646,
 						"picture": {
 							"type": "image/png",
+							"width": 1000,
+							"height": 1300,
+							"url": "//i.4cdn.org/vg/1549230474936.png",
 							"sizes": [
 								{
+									"type": "image/jpeg",
 									"width": 192,
 									"height": 250,
 									"url": "//i.4cdn.org/vg/1549230474936s.jpg"
-								},
-								{
-									"width": 1000,
-									"height": 1300,
-									"url": "//i.4cdn.org/vg/1549230474936.png"
 								}
 							]
 						}
@@ -458,25 +450,22 @@ describe('expandStandaloneAttachmentLinks', () => {
 							"aspectRatio": 1.7777777777777777,
 							"picture": {
 								"type": "image/jpeg",
+								"url": "https://i.ytimg.com/vi/P8seXaqhrO8/maxresdefault.jpg",
+								"width": 1280,
+								"height": 720,
 								"sizes": [
 									{
+										"type": "image/jpeg",
 										"url": "https://i.ytimg.com/vi/P8seXaqhrO8/mqdefault.jpg",
 										"width": 320,
 										"height": 180
-									},
-									{
-										"url": "https://i.ytimg.com/vi/P8seXaqhrO8/maxresdefault.jpg",
-										"width": 1280,
-										"height": 720
 									}
 								]
 							},
 							"width": 1280,
 							"height": 720,
-							"source": {
-								"provider": "YouTube",
-								"id": "P8seXaqhrO8"
-							}
+							"provider": "YouTube",
+							"id": "P8seXaqhrO8"
 						}
 					},
 					{
@@ -489,25 +478,22 @@ describe('expandStandaloneAttachmentLinks', () => {
 							"aspectRatio": 1.7777777777777777,
 							"picture": {
 								"type": "image/jpeg",
+								"url": "https://i.ytimg.com/vi/kYn1hnGj8oI/maxresdefault.jpg",
+								"width": 1280,
+								"height": 720,
 								"sizes": [
 									{
+										"type": "image/jpeg",
 										"url": "https://i.ytimg.com/vi/kYn1hnGj8oI/mqdefault.jpg",
 										"width": 320,
 										"height": 180
-									},
-									{
-										"url": "https://i.ytimg.com/vi/kYn1hnGj8oI/maxresdefault.jpg",
-										"width": 1280,
-										"height": 720
 									}
 								]
 							},
 							"width": 1280,
 							"height": 720,
-							"source": {
-								"provider": "YouTube",
-								"id": "kYn1hnGj8oI"
-							}
+							"provider": "YouTube",
+							"id": "kYn1hnGj8oI"
 						}
 					}
 				],

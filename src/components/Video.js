@@ -5,7 +5,7 @@ import classNames from 'classnames'
 import { video } from '../PropTypes'
 import { getEmbeddedVideoUrl, getVideoUrl } from '../utility/video'
 
-import Picture, { getMaxSize as getMaxPictureSize, scaleDownSize } from './Picture'
+import Picture, { scaleDownSize } from './Picture'
 import VideoPlayIcon from './VideoPlayIcon'
 
 import './Video.css'
@@ -303,20 +303,19 @@ export default class Video extends React.Component {
 			autoPlay
 		} = this.state
 
-		if (video.source.provider === 'file') {
-			const size = video.source.sizes[video.source.sizes.length - 1]
+		if (!video.provider) {
 			return (
 				<video
 					ref={this.video}
 					tabIndex={tabIndex}
 					width="100%"
 					height="100%"
-					poster={video.picture && video.picture.sizes[video.picture.sizes.length - 1].url}
+					poster={video.picture && video.picture.url}
 					autoPlay={autoPlay}
 					controls>
 					<source
-						src={size.url}
-						type={video.source.type}/>
+						src={video.url}
+						type={video.type}/>
 				</video>
 			)
 			/*
@@ -326,12 +325,12 @@ export default class Video extends React.Component {
 			*/
 		}
 
-		if (video.source.provider === 'Vimeo' || video.source.provider === 'YouTube') {
+		if (video.provider === 'Vimeo' || video.provider === 'YouTube') {
 			// https://developers.google.com/web/updates/2017/09/autoplay-policy-changes
 			// `allowFullScreen` property is for legacy browsers support.
 			return (
 				<iframe
-					src={getEmbeddedVideoUrl(video.source.id, video.source.provider, {
+					src={getEmbeddedVideoUrl(video.id, video.provider, {
 						autoPlay,
 						startAt: video.startAt
 					})}
@@ -346,7 +345,7 @@ export default class Video extends React.Component {
 			*/
 		}
 
-		console.error(`Unsupported video provider: ${video.source.provider}`)
+		console.error(`Unsupported video provider: ${video.provider}`)
 		return null
 	}
 }
@@ -382,16 +381,15 @@ Video.defaultProps = {
 const showsPreview = (props) => props.showPreview && props.video.picture ? true : false
 
 export function getUrl(video) {
-	if (video.source.provider === 'file') {
-		const size = video.source.sizes[video.source.sizes.length - 1]
-		return size.url
+	if (!video.provider) {
+		return video.url
 	}
-	if (video.source.provider === 'Vimeo' || video.source.provider === 'YouTube') {
-		return getVideoUrl(video.source.id, video.source.provider, {
+	if (video.provider === 'Vimeo' || video.provider === 'YouTube') {
+		return getVideoUrl(video.id, video.provider, {
 			startAt: video.startAt
 		})
 	}
-	console.error(`Unsupported video provider: ${video.source.provider}`)
+	console.error(`Unsupported video provider: ${video.provider}`)
 	return
 }
 
@@ -409,23 +407,7 @@ export function getMaxSize(video) {
 	if (video.width && video.height) {
 		return video
 	}
-	if (video.source.provider === 'file') {
-		return video.source.sizes[video.source.sizes.length - 1]
-	}
-	// // For HD-aspect-ratio YouTube videos assume default video size to be FullHD.
-	// // YouTube doesn't generate FullHD preview images for FullHD videos (and larger).
-	// // Upscaling HD videos to FullHD is fine.
-	// if (video.source.provider === 'YouTube') {
-	// 	const maxPictureSize = getMaxPictureSize(video.picture)
-	// 	if (maxPictureSize.width === 1280 && maxPictureSize.height === 720) {
-	// 		return {
-	// 			width: 1920,
-	// 			height: 1080
-	// 		}
-	// 	}
-	// 	return maxPictureSize
-	// }
-	return getMaxPictureSize(video.picture)
+	return video.picture
 }
 
 export function VideoDuration({ duration, children }) {

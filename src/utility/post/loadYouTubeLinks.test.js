@@ -74,18 +74,12 @@ describe('loadYouTubeLinks', () => {
 								"video": {
 									"picture": {
 										"type": "image/jpeg",
-										"sizes": [
-											{
-												"url": "https://img.youtube.com/vi/6CPXGQ0zoJE/maxresdefault.jpg",
-												"width": 1280,
-												"height": 720
-											}
-										]
+										"url": "https://img.youtube.com/vi/6CPXGQ0zoJE/maxresdefault.jpg",
+										"width": 1280,
+										"height": 720
 									},
-									"source": {
-										"provider": "YouTube",
-										"id": "6CPXGQ0zoJE"
-									}
+									"provider": "YouTube",
+									"id": "6CPXGQ0zoJE"
 								}
 							}
 						},
@@ -140,23 +134,20 @@ export function loadYouTubeLinksTestWithApiKey(youTubeApiKey) {
 										"aspectRatio": 1.7777777777777777,
 										"picture": {
 											"type": "image/jpeg",
+											"url": "https://i.ytimg.com/vi/6CPXGQ0zoJE/maxresdefault.jpg",
+											"width": 1280,
+											"height": 720,
 											"sizes": [
 												{
+													"type": "image/jpeg",
 													"url": "https://i.ytimg.com/vi/6CPXGQ0zoJE/mqdefault.jpg",
 													"width": 320,
 													"height": 180
-												},
-												{
-													"url": "https://i.ytimg.com/vi/6CPXGQ0zoJE/maxresdefault.jpg",
-													"width": 1280,
-													"height": 720
 												}
 											]
 										},
-										"source": {
-											"provider": "YouTube",
-											"id": "6CPXGQ0zoJE"
-										}
+										"provider": "YouTube",
+										"id": "6CPXGQ0zoJE"
 									}
 								}
 							},

@@ -9,11 +9,9 @@ import DefaultAccountPicture from '../../assets/images/account-picture.svg'
 const DEFAULT_ACCOUNT_PICTURE =
 {
 	type: 'image/svg+xml',
-	sizes: [{
-		url : DefaultAccountPicture,
-		width : 1,
-		height : 1
-	}]
+	url: DefaultAccountPicture,
+	width: 1,
+	height: 1
 }
 
 export default class AccountPicture extends React.Component

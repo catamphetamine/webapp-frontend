@@ -17,7 +17,7 @@ const PAGE_LOADED_AT = Date.now()
 const DEV_MODE_WAIT_FOR_STYLES = 1000
 
 /**
- * A `<Picture/>` is passed `picture.sizes` and is "responsive"
+ * A `<Picture/>` is "responsive"
  * showing the size that suits most based on
  * its actual display size (which could be set in "rem"s, for example)
  * with device pixel ratio being taken into account.
@@ -147,8 +147,8 @@ export default class Picture extends PureComponent
 	}
 
 	componentDidUpdate(prevProps) {
-		const { picture: { sizes } } = this.props
-		if (prevProps.picture.sizes !== sizes) {
+		const { picture } = this.props
+		if (prevProps.picture !== picture) {
 			this.refreshSize(true)
 		}
 	}
@@ -175,9 +175,7 @@ export default class Picture extends PureComponent
 
 	getContainerStyle() {
 		const {
-			picture: {
-				sizes
-			},
+			picture,
 			width,
 			height,
 			maxWidth,
@@ -192,21 +190,21 @@ export default class Picture extends PureComponent
 			case 'width':
 			case 'exact-contain':
 				return {
-					paddingBottom: 100 / _getAspectRatio(sizes) + '%'
+					paddingBottom: 100 / getAspectRatio(picture) + '%'
 				}
 			case 'exact':
 				return {
-					width: (width || (height * _getAspectRatio(sizes))) + 'px',
-					height: (height || (width / _getAspectRatio(sizes))) + 'px'
+					width: (width || (height * getAspectRatio(picture))) + 'px',
+					height: (height || (width / getAspectRatio(picture))) + 'px'
 				}
 			case 'contain':
 			case 'cover':
 			case 'scale-down':
 				let maxSize
 				if (maxWidth && maxHeight) {
-					maxSize = scaleDownSize(_getMaxSize(sizes), maxWidth, maxHeight, fit)
+					maxSize = scaleDownSize(picture, maxWidth, maxHeight, fit)
 				} else if (fit === 'scale-down') {
-					maxSize = _getMaxSize(sizes)
+					maxSize = picture
 				}
 				if (maxSize) {
 					return {
@@ -220,9 +218,7 @@ export default class Picture extends PureComponent
 
 	render() {
 		const {
-			picture: {
-				sizes
-			},
+			picture,
 			maxWidth,
 			maxHeight
 		} = this.props
@@ -237,7 +233,7 @@ export default class Picture extends PureComponent
 				// That's the reason the extra wrapper is introduced.
 				return (
 					<div style={{
-						maxWidth: (maxWidth || (maxHeight * _getAspectRatio(sizes))) + 'px'
+						maxWidth: (maxWidth || (maxHeight * getAspectRatio(picture))) + 'px'
 					}}>
 						{this.render_(fit)}
 					</div>
@@ -350,36 +346,31 @@ export default class Picture extends PureComponent
 		const {
 			preview,
 			saveBandwidth,
-			picture: {
-				type,
-				sizes
-			}
+			picture
 		} = this.props
-		if (!sizes) {
-			return
+		const maxSize = {
+			type: picture.type,
+			width: picture.width,
+			height: picture.height,
+			url: picture.url
 		}
-		return getPreferredSize(
-			sizes,
-			this.getWidth(),
-			{
-				preview,
-				saveBandwidth
-			}
-		)
+		if (picture.sizes) {
+			return getPreferredSize(
+				picture.sizes.concat(maxSize),
+				this.getWidth(),
+				{
+					preview,
+					saveBandwidth
+				}
+			)
+		}
+		return maxSize
 	}
 
 	refreshSize = (force) => {
 		const {
-			picture: {
-				sizes
-			}
-		} = this.props
-		const {
 			size
 		} = this.state
-		if (!sizes) {
-			return
-		}
 		const preferredSize = this.getPreferredSize()
 		if (force ||
 			!size ||
@@ -415,7 +406,7 @@ export default class Picture extends PureComponent
 	getWidth() {
 		const { picture } = this.props
 		return getWidth(
-			picture.sizes,
+			picture,
 			this.getFit(),
 			this.getContainerWidth(),
 			this.getContainerHeight()
@@ -425,7 +416,7 @@ export default class Picture extends PureComponent
 	getHeight() {
 		const { picture } = this.props
 		return getHeight(
-			picture.sizes,
+			picture,
 			this.getFit(),
 			this.getContainerWidth(),
 			this.getContainerHeight()
@@ -609,71 +600,59 @@ export function preloadImage(url) {
 const SVG_FILE_URL = /\.svg/i
 
 export function getAspectRatio(picture) {
-	return _getAspectRatio(picture.sizes)
-}
-
-function _getAspectRatio(sizes) {
-	return _getMaxSize(sizes).width / _getMaxSize(sizes).height
-}
-
-export function getMaxSize(picture) {
-	return _getMaxSize(picture.sizes)
-}
-
-function _getMaxSize(sizes) {
-	return sizes[sizes.length - 1]
+	return picture.width / picture.height
 }
 
 export function getUrl(picture) {
-	return getMaxSize(picture).url
+	return picture.url
 }
 
 export function isVector({ type }) {
-	return type === 'image/svg+xml' // || (sizes.length === 1 && SVG_FILE_URL.test(sizes[0].url))
+	return type === 'image/svg+xml' // || (!size && SVG_FILE_URL.test(picture.url))
 }
 
-function getWidth(sizes, fit, containerWidth, containerHeight) {
+function getWidth(picture, fit, containerWidth, containerHeight) {
 	switch (fit) {
 		case 'width':
 		case 'exact':
 		case 'exact-contain':
 			return containerWidth
 		case 'repeat-x':
-			return containerHeight * _getAspectRatio(sizes)
+			return containerHeight * getAspectRatio(picture)
 		case 'cover':
-			return Math.max(containerWidth, containerHeight * _getAspectRatio(sizes))
+			return Math.max(containerWidth, containerHeight * getAspectRatio(picture))
 		case 'contain':
-			return Math.min(containerWidth, containerHeight * _getAspectRatio(sizes))
+			return Math.min(containerWidth, containerHeight * getAspectRatio(picture))
 		case 'scale-down':
 			// if (isVector(picture)) {
 			// 	// Fit vector images as "contain".
-			// 	return getWidth(sizes, 'contain', containerWidth, containerHeight)
+			// 	return getWidth(picture, 'contain', containerWidth, containerHeight)
 			// }
-			return Math.min(containerWidth, _getMaxSize(sizes).width)
+			return Math.min(containerWidth, picture.width)
 		default:
 			throw new Error(`Unknown picture fit: ${fit}.`)
 	}
 }
 
-function getHeight(sizes, fit, containerWidth, containerHeight) {
+function getHeight(picture, fit, containerWidth, containerHeight) {
 	switch (fit) {
 		case 'width':
-			return containerWidth / _getAspectRatio(sizes)
+			return containerWidth / getAspectRatio(picture)
 		case 'exact':
 		case 'exact-contain':
 			return containerHeight
 		case 'repeat-x':
 			return containerHeight
 		case 'cover':
-			return Math.max(containerHeight, containerWidth / _getAspectRatio(sizes))
+			return Math.max(containerHeight, containerWidth / getAspectRatio(picture))
 		case 'contain':
-			return Math.min(containerHeight, containerWidth / _getAspectRatio(sizes))
+			return Math.min(containerHeight, containerWidth / getAspectRatio(picture))
 		case 'scale-down':
 			// if (isVector(picture)) {
 			// 	// Fit vector images as "contain".
-			// 	return getHeight(sizes, fit, containerWidth, containerHeight)
+			// 	return getHeight(picture, fit, containerWidth, containerHeight)
 			// }
-			return Math.min(containerHeight, _getMaxSize(sizes).height)
+			return Math.min(containerHeight, picture.height)
 		default:
 			throw new Error(`Unknown picture fit: ${fit}.`)
 	}

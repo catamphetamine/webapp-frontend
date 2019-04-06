@@ -4,7 +4,6 @@ import Picture, {
 	preloadImage,
 	getPreferredSize,
 	getAspectRatio,
-	getMaxSize as getMaxPictureSize,
 	isVector
 } from './Picture'
 
@@ -15,7 +14,7 @@ import Search from '../../assets/images/icons/menu/search-outline.svg'
 
 export default {
 	getMaxSize(slide) {
-		return getMaxPictureSize(slide)
+		return slide
 	},
 	getAspectRatio(slide) {
 		return getAspectRatio(slide)

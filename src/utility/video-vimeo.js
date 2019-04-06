@@ -29,16 +29,12 @@ export default
 				width: data.width,
 				height: data.height,
 				duration: data.duration,
-				source: {
-					provider: 'Vimeo',
-					id
-				},
+				provider: 'Vimeo',
+				id,
 				picture: {
 					type: 'image/jpeg',
-					sizes: [{
-						url: data.thumbnail_large,
-						...(await getImageSize(data.thumbnail_large))
-					}]
+					url: data.thumbnail_large,
+					...(await getImageSize(data.thumbnail_large))
 				}
 			}
 		}

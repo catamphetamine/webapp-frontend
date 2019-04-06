@@ -19,8 +19,8 @@ export default class PostVideo extends React.Component {
 		} = this.props
 
 		let url
-		if (video.source.provider) {
-			url = getVideoUrl(video.source.id, video.source.provider, {
+		if (video.provider) {
+			url = getVideoUrl(video.id, video.provider, {
 				startAt: video.startAt
 			})
 		}
@@ -61,20 +61,13 @@ export const EXAMPLE = {
 	title: 'Schlossbergbahn',
 	description: 'A .webm video example from WikiPedia',
 	date: new Date(2013, 2, 1), // March 1st, 2013.
+	size: 2 * 1024 * 1024, // in bytes
+	url: 'https://upload.wikimedia.org/wikipedia/commons/transcoded/8/87/Schlossbergbahn.webm/Schlossbergbahn.webm.480p.vp9.webm',
 	picture: {
 		type: 'image/jpeg',
-		sizes: [{
-			width: 220,
-			height: 124,
-			url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Schlossbergbahn.webm/220px--Schlossbergbahn.webm.jpg'
-		}]
-	},
-	source: {
-		provider: 'file',
-		sizes: [{
-			width: 854,
-			height: 480,
-			url: 'https://upload.wikimedia.org/wikipedia/commons/transcoded/8/87/Schlossbergbahn.webm/Schlossbergbahn.webm.480p.vp9.webm'
-		}]
+		width: 220,
+		height: 124,
+		size: 25 * 1024, // in bytes.
+		url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Schlossbergbahn.webm/220px--Schlossbergbahn.webm.jpg'
 	}
 }

@@ -5,10 +5,10 @@ import { audio } from '../PropTypes'
 import './PostAudio.css'
 
 export default function PostAudio({ audio }) {
-	if (audio.source.provider === 'file') {
+	if (!audio.provider) {
 		return <PostAudioFile audio={audio} className="post__audio"/>
 	}
-	console.error(`Unsupported audio provider: "${audio.source.provider}`)
+	console.error(`Unsupported audio provider: "${audio.provider}`)
 	return (
 		<div className="post__audio">
 			{audio.author} — {audio.title}
@@ -25,8 +25,8 @@ function PostAudioFile({ audio, className }) {
 		<section className={className}>
 			<audio controls>
 				<source
-					type={audio.source.type}
-					src={audio.source.url}/>
+					type={audio.type}
+					src={audio.url}/>
 			</audio>
 			<h1>
 				{audio.author} — {audio.title}
@@ -43,12 +43,9 @@ PostAudioFile.propTypes = {
 export const EXAMPLE_1 = {
 	author: 'U.N.K.L.E.',
 	title: 'Looking For The Rain ft. Mark Lanegan',
-	source: {
-		provider: 'file',
-		type: 'audio/ogg',
-		bitrate: 92 * 1024 * 8,
-		url: 'https://upload.wikimedia.org/wikipedia/commons/4/40/Toreador_song_cleaned.ogg'
-	}
+	type: 'audio/ogg',
+	bitrate: 92 * 1024 * 8,
+	url: 'https://upload.wikimedia.org/wikipedia/commons/4/40/Toreador_song_cleaned.ogg'
 }
 
 export const EXAMPLE_2 = {
@@ -59,16 +56,11 @@ export const EXAMPLE_2 = {
 	duration: 358,
 	picture: {
 		type: 'image/jpeg',
-		sizes: [{
-			width: 640,
-			height: 360,
-			url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/UNKLE.jpg/640px-UNKLE.jpg'
-		}]
+		width: 640,
+		height: 360,
+		url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/UNKLE.jpg/640px-UNKLE.jpg'
 	},
-	source: {
-		provider: 'file',
-		type: 'audio/ogg',
-		bitrate: 92 * 1024 * 8,
-		url: 'https://upload.wikimedia.org/wikipedia/commons/4/40/Toreador_song_cleaned.ogg'
-	}
+	type: 'audio/ogg',
+	bitrate: 92 * 1024 * 8,
+	url: 'https://upload.wikimedia.org/wikipedia/commons/4/40/Toreador_song_cleaned.ogg'
 }

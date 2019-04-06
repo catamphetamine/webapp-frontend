@@ -32,6 +32,12 @@
 	padding: var(--picture-border-width); /* the padding is for box-shadow */
 }
 
+.post__attachment-thumbnail--transparent {
+	--picture-border-width: 0;
+	--picture-background-color: transparent;
+	--post-attachment-hover-shadow: none;
+}
+
 .post__attachment-thumbnail__clickable {
 	display: block;
 	/* Material Design Card elevation shadow. */

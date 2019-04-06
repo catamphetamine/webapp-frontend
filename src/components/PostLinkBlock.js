@@ -43,10 +43,8 @@ export const EXAMPLE_2 = {
 	url: 'https://en.wikipedia.org/wiki/Dr._Strangelove',
 	picture: {
 		type: 'image/jpeg',
-		sizes: [{
-			width:  640,
-			height: 434,
-			url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Leonid_Brezhnev_and_Richard_Nixon_talks_in_1973.png/640px-Leonid_Brezhnev_and_Richard_Nixon_talks_in_1973.png'
-		}]
+		width: 640,
+		height: 434,
+		url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Leonid_Brezhnev_and_Richard_Nixon_talks_in_1973.png/640px-Leonid_Brezhnev_and_Richard_Nixon_talks_in_1973.png'
 	}
 }

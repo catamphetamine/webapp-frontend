@@ -61,7 +61,7 @@ export default class PostLink extends React.Component {
 				className={classNames(className, 'post__link', {
 					'post__link--icon': attachment && attachment.type === 'video'
 				})}>
-				{/* attachment && attachment.type === 'video' &&  attachment.video.source.provider === 'YouTube' && */}
+				{/* attachment && attachment.type === 'video' &&  attachment.video.provider === 'YouTube' && */}
 				{service && serviceIcon &&
 					React.createElement(serviceIcon, {
 						title: service,

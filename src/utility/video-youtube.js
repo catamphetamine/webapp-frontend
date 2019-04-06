@@ -91,10 +91,8 @@ export default {
 			if (!video) {
 				video = {}
 			}
-			video.source = {
-				provider: 'YouTube',
-				id
-			}
+			video.provider = 'YouTube'
+			video.id = id
 			if (!video.picture) {
 				if (options.picture !== false) {
 					video.picture = await this.getPicture(id)
@@ -117,10 +115,8 @@ export default {
 				}
 				return {
 					type: 'image/jpeg',
-					sizes: [{
-						url,
-						...imageSize
-					}]
+					url,
+					...imageSize
 				}
 			} catch (error) {
 				console.error(error)
@@ -129,10 +125,8 @@ export default {
 		console.error(`No picture found for YouTube video "${id}"`)
 		return {
 			type: 'image/jpeg',
-			sizes: [{
-				...PREVIEW_NOT_FOUND_PICTURE_SIZE,
-				url: getPictureSizeURL(id, PREVIEW_PICTURE_SIZES[0].name)
-			}]
+			...PREVIEW_NOT_FOUND_PICTURE_SIZE,
+			url: getPictureSizeURL(id, PREVIEW_PICTURE_SIZES[0].name)
 		}
 		// throw new Error(`No picture found for YouTube video ${id}`)
 	},
@@ -200,6 +194,21 @@ async function getVideoData(id, youTubeApiKey, options) {
 		return null
 	}
 	const { snippet, contentDetails } = json.items[0]
+	const pictureSizes = (
+		(snippet.thumbnails.medium || snippet.thumbnails.maxres) ? [
+			// 320 x 180 (HD).
+			snippet.thumbnails.medium,
+			// 1280 x 720 (HD).
+			snippet.thumbnails.maxres
+		] : [
+			// 120 x 90 (4:3, non-HD).
+			snippet.thumbnails.default,
+			// 480 x 360 (4:3, non-HD)
+			snippet.thumbnails.high,
+			// 640 x 480 (4:3, non-HD).
+			snippet.thumbnails.standard
+		]
+	).filter(_ => _)
 	const video = {
 		title: options.locale ? snippet.localized.title : snippet.title,
 		description: options.locale ? snippet.localized.description : snippet.description,
@@ -209,22 +218,14 @@ async function getVideoData(id, youTubeApiKey, options) {
 		aspectRatio: contentDetails.definition === 'hd' ? 16/9 : 4/3,
 		picture: {
 			type: 'image/jpeg',
-			sizes: (
-				(snippet.thumbnails.medium || snippet.thumbnails.maxres) ? [
-					// 320 x 180 (HD).
-					snippet.thumbnails.medium,
-					// 1280 x 720 (HD).
-					snippet.thumbnails.maxres
-				] : [
-					// 120 x 90 (4:3, non-HD).
-					snippet.thumbnails.default,
-					// 480 x 360 (4:3, non-HD)
-					snippet.thumbnails.high,
-					// 640 x 480 (4:3, non-HD).
-					snippet.thumbnails.standard
-				]
-			).filter(_ => _)
+			...pictureSizes[pictureSizes.length - 1]
 		}
+	}
+	if (pictureSizes.length > 1) {
+		video.picture.sizes = pictureSizes.slice(0, pictureSizes.length - 1).map((size) => ({
+			...size,
+			type: 'image/jpeg'
+		}))
 	}
 	// YouTube doesn't return video width or height.
 	switch (contentDetails.definition) {

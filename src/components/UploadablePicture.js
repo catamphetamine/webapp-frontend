@@ -232,15 +232,11 @@ export default class UploadablePicture extends Component
 	}
 }
 
-const picturePropType = PropTypes.shape({
-	sizes: PropTypes.arrayOf(PropTypes.object).isRequired
-})
-
 export class Picture extends Component
 {
 	static propTypes = {
-		defaultPicture : picturePropType,
-		picture : picturePropType
+		defaultPicture: PropTypes.object,
+		picture: PropTypes.object
 	}
 
 	render() {
@@ -253,7 +249,7 @@ export class Picture extends Component
 		return (
 			<ResponsivePicture
 				{...rest}
-				sizes={ picture && picture.sizes || defaultPicture && defaultPicture.sizes }/>
+				picture={picture || defaultPicture}/>
 		)
 	}
 }

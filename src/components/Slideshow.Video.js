@@ -1,31 +1,26 @@
 import React from 'react'
 
-import {
-	getAspectRatio as getPictureAspectRatio
-} from './Picture'
-
-import Video, {
-	getMaxSize as getMaxVideoSize
-} from './Video'
+import { getAspectRatio } from './Picture'
+import Video, { getMaxSize } from './Video'
 
 export default {
 	changeSlideOnClick: false,
 	// showCloseButtonForSingleSlide: true,
 	getMaxSize(slide) {
-		return getMaxVideoSize(slide)
+		return getMaxSize(slide)
 	},
 	getAspectRatio(slide) {
 		if (slide.aspectRatio) {
 			return slide.aspectRatio
 		}
-		return getPictureAspectRatio(slide.picture)
+		return getAspectRatio(slide.picture)
 	},
 	// isScaleDownAllowed(slide) {
 	// 	return false
 	// },
 	onKeyDown(event, slide, ref) {
-		switch (slide.source.provider) {
-			case 'file':
+		switch (slide.provider) {
+			case undefined:
 				const video = ref.current
 				switch (event.keyCode) {
 					// Seek backwards on Left Arrow key.
@@ -56,17 +51,17 @@ export default {
 		}
 	},
 	canDownload(slide) {
-		switch (slide.source.provider) {
-			case 'file':
+		switch (slide.provider) {
+			case undefined:
 				return true
 			default:
 				return false
 		}
 	},
 	getDownloadLink(slide) {
-		switch (slide.source.provider) {
-			case 'file':
-				return slide.source.sizes[slide.source.sizes.length - 1].url
+		switch (slide.provider) {
+			case undefined:
+				return slide.url
 		}
 	},
 	canRender(slide) {

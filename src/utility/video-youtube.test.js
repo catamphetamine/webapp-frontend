@@ -8,10 +8,8 @@ describe('video-youtube', () => {
 		expectToEqual(
 			await YouTube.parse('https://www.youtube.com/watch?v=6CPXGQ0zoJE&t=20', { picture: false }),
 			{
-				"source": {
-					"provider": "YouTube",
-					"id": "6CPXGQ0zoJE"
-				},
+				"provider": "YouTube",
+				"id": "6CPXGQ0zoJE",
 				"startAt": 20
 			}
 		)
@@ -21,10 +19,8 @@ describe('video-youtube', () => {
 		expectToEqual(
 			await YouTube.parse('https://youtu.be/6CPXGQ0zoJE?t=21', { picture: false }),
 			{
-				"source": {
-					"provider": "YouTube",
-					"id": "6CPXGQ0zoJE"
-				},
+				"provider": "YouTube",
+				"id": "6CPXGQ0zoJE",
 				"startAt": 21
 			}
 		)

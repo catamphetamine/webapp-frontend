@@ -23,12 +23,9 @@ import './AccountHeader.css'
 const DEFAULT_BACKGROUND_PICTURE =
 {
 	type: 'image/jpeg',
-	sizes:
-	[{
-		width  : 2429,
-		height : 782,
-		url    : DefaultBackgroundPicture
-	}]
+	width: 2429,
+	height: 782,
+	url: DefaultBackgroundPicture
 }
 
 export default class AccountHeader extends React.Component

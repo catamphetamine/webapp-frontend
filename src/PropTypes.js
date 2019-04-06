@@ -18,79 +18,97 @@ const id = oneOfType([
 
 const date = instanceOf(Date)
 
+const pictureType = oneOf([
+	'image/svg+xml',
+	'image/jpeg',
+	'image/gif',
+	'image/png',
+	'image/webp'
+])
+
+const videoType = oneOf([
+	'video/mp4',
+	'video/ogg',
+	'video/webm'
+])
+
+const audioType = oneOf([
+	'audio/mpeg',
+	'audio/ogg'
+])
+
+const coordinates = shape({
+	latitude: number.isRequired,
+	longitude: number.isRequired,
+	altitude: number
+})
+
 export const picture = shape({
-	type: oneOf([
-		'image/svg+xml',
-		'image/jpeg',
-		'image/gif',
-		'image/png',
-		'image/webp'
-	]).isRequired,
+	// Picture MIME type.
+	// Example: "image/jpeg".
+	type: pictureType.isRequired,
 	title: string,
 	description: string,
+	// Date the picture was created (taken) in the "local" timezone
+	// of the place where the picture was created (taken).
 	date: date,
+	// Date the picture was created (taken) in "UTC0" timezone.
 	dateUTC0: date,
-	coordinates: shape({
-		latitude: number,
-		longitude: number,
-		altitude: number
-	}),
+	// GPS coordinates of the place where the photo was taken.
+	coordinates,
+	// Picture file size (in bytes).
+	size: number,
+	// Picture file URL.
+	url: string.isRequired,
+	// Picture dimensions.
+	// Dimensions are also required for SVGs for calculating aspect ratio.
+	width: number.isRequired,
+	height: number.isRequired,
+	// `true` if the image has transparent background.
+	transparent: bool,
+	// Extra picture sizes (thumbnails).
 	sizes: arrayOf(shape({
+		// Thumbnail MIME type.
+		// Example: "image/jpeg".
+		type: pictureType.isRequired,
 		url: string.isRequired,
-		// Dimensions are also required for SVGs for calculating aspect ratio.
+		// Thumbnail dimensions.
 		width: number.isRequired,
 		height: number.isRequired
-	})).isRequired
-})
-
-const providerVideoSourceShape = shape({
-	provider: string.isRequired,
-	id: string.isRequired
-})
-
-const fileVideoSourceShape = shape({
-	type: oneOf([
-		'video/mp4',
-		'video/ogg',
-		'video/webm'
-	]).isRequired,
-	provider: oneOf(['file']).isRequired,
-	sizes: arrayOf(shape({
-		url: string.isRequired,
-		width: number.isRequired,
-		height: number.isRequired
-	})).isRequired
+	}))
 })
 
 export const video = shape({
 	title: string,
 	description: string,
+	// Date the video was created (taken) in the "local" timezone
+	// of the place where the video was created (taken).
 	date: date,
+	// Date the video was created (taken) in "UTC0" timezone.
+	dateUTC0: date,
+	// GPS coordinates of the place where the video was taken.
+	coordinates,
+	// Video duration (in seconds).
 	duration: number,
 	startAt: number,
 	width: number,
 	height: number,
 	aspectRatio: number,
+	// Video thumbnail.
 	picture: picture.isRequired,
-	source: oneOfType([
-		providerVideoSourceShape,
-		fileVideoSourceShape
-	]).isRequired
-})
-
-const providerAudioSourceShape = shape({
-	provider: string.isRequired,
-	id: string.isRequired
-})
-
-const fileAudioSourceShape = shape({
-	type: oneOf([
-		'audio/mpeg',
-		'audio/ogg'
-	]).isRequired,
-	provider: oneOf(['file']).isRequired,
-	bitrate: number,
-	url: string.isRequired
+	size: number,
+	// Video file URL.
+	url: string,
+	// Video file MIME type.
+	// Is required if `url` is present.
+	// Example: "video/webm".
+	type: videoType,
+	provider: oneOf([
+		'YouTube',
+		'Vimeo'
+	]),
+	// YouTube/Vimeo video `id`.
+	id: string
 })
 
 export const audio = shape({
@@ -100,10 +118,11 @@ export const audio = shape({
 	date: date,
 	duration: number,
 	picture: picture,
-	source: oneOfType([
-		providerAudioSourceShape,
-		fileAudioSourceShape
-	]).isRequired
+	type: audioType,
+	provider: string,
+	bitrate: number,
+	url: string,
+	id: string
 })
 
 export const postLinkBlock = shape({
@@ -298,7 +317,7 @@ export const linkAttachmentShape = shape({
 export const postFile = shape({
 	name: string.isRequired,
 	ext: string,
-	contentType: string,
+	type: string,
 	size: number,
 	url: string.isRequired
 })

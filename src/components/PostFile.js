@@ -14,7 +14,7 @@ export default function PostFile({ file }) {
 	return (
 		<div className="post__file">
 			<FileIcon
-				contentType={file.contentType}
+				type={file.type}
 				className="post__file-icon"/>
 			<a
 				target="_blank"
@@ -34,8 +34,8 @@ PostFile.propTypes = {
 	file: postFile.isRequired
 }
 
-function FileIcon({ contentType, ...rest }) {
-	switch (contentType) {
+function FileIcon({ type, ...rest }) {
+	switch (type) {
 		case 'text/plain':
 		case 'application/pdf':
 			return <DocumentIcon {...rest}/>
@@ -48,11 +48,11 @@ function FileIcon({ contentType, ...rest }) {
 }
 
 FileIcon.propTypes = {
-	contentType: PropTypes.string
+	type: PropTypes.string
 }
 
 export const EXAMPLE_1 = {
-	contentType: 'application/x-shockwave-flash',
+	type: 'application/x-shockwave-flash',
 	name: 'How to Raise a Dragon',
 	// ext: '.swf',
 	size: 5.5 * 1024 * 1024,
@@ -60,7 +60,7 @@ export const EXAMPLE_1 = {
 }
 
 export const EXAMPLE_2 = {
-	contentType: 'application/pdf',
+	type: 'application/pdf',
 	name: 'Industrial society and its future',
 	ext: '.pdf',
 	size: 350 * 1024,
@@ -68,7 +68,7 @@ export const EXAMPLE_2 = {
 }
 
 export const EXAMPLE_3 = {
-	contentType: 'application/zip',
+	type: 'application/zip',
 	name: 'Mirrors-Edge-PC-RePack-R.G.-Mehaniki',
 	ext: '.zip',
 	url: 'https://google.com'
