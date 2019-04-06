@@ -26,7 +26,7 @@ export default {
 		return true
 	},
 	getDownloadLink(slide) {
-		return slide.sizes[slide.sizes.length - 1].url
+		return slide.url
 	},
 	getOtherActions(slide) {
 		return [{

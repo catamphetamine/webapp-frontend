@@ -5,7 +5,6 @@ import { FadeInOut, ActivityIndicator } from 'react-responsive-ui'
 
 import Picture, {
 	TRANSPARENT_PIXEL,
-	getUrl as getPictureUrl,
 	getAspectRatio as getPictureAspectRatio
 } from './Picture'
 
@@ -127,7 +126,7 @@ export default function PostAttachments({
 				:
 				<a
 					target="_blank"
-					href={getPictureUrl(titlePictureOrVideo.picture)}>
+					href={titlePictureOrVideo.url}>
 					<PostPicture>
 						{titlePictureOrVideo}
 					</PostPicture>
@@ -347,7 +346,7 @@ const POSITION_ABSOLUTE = {
 function getAttachmentUrl(attachment) {
 	switch (attachment.type) {
 		case 'picture':
-			return getPictureUrl(attachment.picture)
+			return attachment.picture.url
 		case 'video':
 			return getVideoUrl(attachment.video)
 		default:

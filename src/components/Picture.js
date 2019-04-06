@@ -603,10 +603,6 @@ export function getAspectRatio(picture) {
 	return picture.width / picture.height
 }
 
-export function getUrl(picture) {
-	return picture.url
-}
-
 export function isVector({ type }) {
 	return type === 'image/svg+xml' // || (!size && SVG_FILE_URL.test(picture.url))
 }
