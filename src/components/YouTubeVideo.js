@@ -147,17 +147,37 @@ YouTubeVideo.propTypes = {
 }
 
 // https://developers.google.com/youtube/iframe_api_reference
-let loadingApi = false
+let apiStatus
+let apiPromise
 YouTubeVideo.loadApi = () => {
-	if (loadingApi) {
-		return
+	switch (apiStatus) {
+		case 'LOADED':
+			return Promise.resolve()
+		case 'LOADING':
+			return apiPromise
+		default:
+			if (apiStatus) {
+				return Promise.reject(new Error(`Unknown YouTube Player API status: ${apiStatus}`))
+			}
 	}
-	loadingApi = true
-	const script = document.createElement('script')
-	script.onerror = () => loadingApi = false
-	script.src = 'https://www.youtube.com/iframe_api'
-	const firstScriptTag = document.getElementsByTagName('script')[0]
-	firstScriptTag.parentNode.insertBefore(script, firstScriptTag)
+	apiStatus = 'LOADING'
+	apiPromise = new Promise((resolve, reject) => {
+		const script = document.createElement('script')
+		script.onerror = (error) => {
+			apiStatus = undefined
+			apiPromise = undefined
+			reject(error)
+		}
+		script.src = 'https://www.youtube.com/iframe_api'
+		window.onYouTubeIframeAPIReady = () => {
+			apiStatus = 'LOADED'
+			apiPromise = undefined
+			resolve()
+		}
+		const firstScriptTag = document.getElementsByTagName('script')[0]
+		firstScriptTag.parentNode.insertBefore(script, firstScriptTag)
+	})
+	return apiPromise
 }
 
 YouTubeVideo.hasApiLoaded = () => {
