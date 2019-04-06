@@ -4,6 +4,7 @@ import { getAspectRatio } from './Picture'
 import Video, { getMaxSize } from './Video'
 
 export default {
+	minInitialScale: 0.5,
 	changeSlideOnClick: false,
 	// showCloseButtonForSingleSlide: true,
 	getMaxSize(slide) {

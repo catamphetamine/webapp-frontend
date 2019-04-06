@@ -53,8 +53,7 @@ class Slideshow extends React.PureComponent {
 		scaleStep: PropTypes.number.isRequired,
 		minScaledSlideRatio: PropTypes.number.isRequired,
 		mouseWheelScaleFactor: PropTypes.number.isRequired,
-		// initialUpscaleFactor: PropTypes.number.isRequired,
-		minInitialScale: PropTypes.number.isRequired,
+		// minInitialScale: PropTypes.number.isRequired,
 		fullScreenFitPrecisionFactor: PropTypes.number.isRequired,
 		plugins: PropTypes.arrayOf(PropTypes.shape({
 			getMaxSize: PropTypes.func.isRequired,
@@ -85,8 +84,7 @@ class Slideshow extends React.PureComponent {
 		scaleStep: 0.5,
 		minScaledSlideRatio: 0.1,
 		mouseWheelScaleFactor: 0.33,
-		// initialUpscaleFactor: 1.3,
-		minInitialScale: 0.5,
+		// minInitialScale: 0.5,
 		fullScreenFitPrecisionFactor: 0.85,
 		plugins: PLUGINS
 	}
@@ -237,11 +235,15 @@ class Slideshow extends React.PureComponent {
 	}
 
 	getScaleForSlide(i) {
-		const { minInitialScale, children: slides } = this.props
+		const { children: slides } = this.props
 		const slide = slides[i]
+		const plugin = this.getPluginForSlide(slide)
+		const minInitialScale = plugin.minInitialScale
+		if (!minInitialScale) {
+			return 1
+		}
 		const maxWidth = this.getSlideshowWidth()
 		const maxHeight = this.getSlideshowHeight()
-		const plugin = this.getPluginForSlide(slide)
 		const maxSize = plugin.getMaxSize(slide)
 		const widthRatio = maxSize.width / maxWidth
 		const heightRatio = maxSize.height / maxHeight
