@@ -348,23 +348,14 @@ export default class Picture extends PureComponent
 			saveBandwidth,
 			picture
 		} = this.props
-		const maxSize = {
-			type: picture.type,
-			width: picture.width,
-			height: picture.height,
-			url: picture.url
-		}
-		if (picture.sizes) {
-			return getPreferredSize(
-				picture.sizes.concat(maxSize),
-				this.getWidth(),
-				{
-					preview,
-					saveBandwidth
-				}
-			)
-		}
-		return maxSize
+		return getPreferredSize(
+			picture,
+			this.getWidth(),
+			{
+				preview,
+				saveBandwidth
+			}
+		)
 	}
 
 	refreshSize = (force) => {
@@ -429,8 +420,25 @@ export default class Picture extends PureComponent
 	}
 }
 
+export function getPreferredSize(picture, width, options = {}) {
+	const maxSize = {
+		type: picture.type,
+		width: picture.width,
+		height: picture.height,
+		url: picture.url
+	}
+	if (picture.sizes) {
+		return _getPreferredSize(
+			picture.sizes.concat(maxSize),
+			width,
+			options
+		)
+	}
+	return maxSize
+}
+
 // `sizes` must be sorted from smallest to largest.
-export function getPreferredSize(sizes, width, options = {}) {
+function _getPreferredSize(sizes, width, options = {}) {
 	const {
 		preview,
 		saveBandwidth

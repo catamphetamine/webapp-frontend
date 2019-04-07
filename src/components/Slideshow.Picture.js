@@ -39,7 +39,7 @@ export default {
 		return slide.sizes !== undefined
 	},
 	preload(slide, width) {
-		return preloadImage(getPreferredSize(slide.sizes, width).url)
+		return preloadImage(getPreferredSize(slide, width).url)
 	},
 	render({
 		ref,
