@@ -123,6 +123,7 @@ export const audio = shape({
 	duration: number,
 	picture: picture,
 	provider: string,
+	size: number,
 	bitrate: number,
 	url: string,
 	id: string
