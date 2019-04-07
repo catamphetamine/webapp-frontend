@@ -6,4 +6,9 @@
 		margin-bottom: 0;
 		font-weight: normal;
 	}
+
+	audio:focus {
+		outline: none;
+		box-shadow: 0 0 0 1px var(--base-color-darkest);
+	}
 }

@@ -11,7 +11,9 @@ export default function PostAudio({ audio }) {
 	console.error(`Unsupported audio provider: "${audio.provider}`)
 	return (
 		<div className="post__audio">
-			{audio.author} — {audio.title}
+			{audio.author}
+			{audio.author && ' — '}
+			{audio.title}
 		</div>
 	)
 }
@@ -29,7 +31,9 @@ function PostAudioFile({ audio, className }) {
 					src={audio.url}/>
 			</audio>
 			<h1>
-				{audio.author} — {audio.title}
+				{audio.author}
+				{audio.author && ' — '}
+				{audio.title}
 			</h1>
 		</section>
 	)

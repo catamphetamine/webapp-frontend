@@ -23,6 +23,7 @@ const pictureType = oneOf([
 	'image/jpeg',
 	'image/gif',
 	'image/png',
+	'image/bmp',
 	'image/webp'
 ])
 
@@ -34,7 +35,9 @@ const videoType = oneOf([
 
 const audioType = oneOf([
 	'audio/mpeg',
-	'audio/ogg'
+	'audio/ogg',
+	'audio/flac',
+	'audio/opus'
 ])
 
 const coordinates = shape({
@@ -112,13 +115,13 @@ export const video = shape({
 })
 
 export const audio = shape({
-	author: string.isRequired,
+	type: audioType.isRequired,
+	author: string,
 	title: string.isRequired,
 	description: string,
 	date: date,
 	duration: number,
 	picture: picture,
-	type: audioType,
 	provider: string,
 	bitrate: number,
 	url: string,
