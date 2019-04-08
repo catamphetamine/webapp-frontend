@@ -441,13 +441,15 @@ function AttachmentThumbnail({
 	moreAttachmentsCount
 }) {
 	const picture = attachment.type === 'video' ? attachment.video.picture : attachment.picture
+	const width = picture.sizes ? picture.sizes[0].width : picture.width
+	const height = picture.sizes ? picture.sizes[0].height : picture.height
 	return (
 		<React.Fragment>
 			<Picture
 				preview
 				picture={picture}
-				width={picture.sizes ? picture.sizes[0].width : picture.width}
-				height={picture.sizes ? picture.sizes[0].height : picture.height}
+				width={width}
+				height={height}
 				saveBandwidth={saveBandwidth}
 				blur={attachment.spoiler && !isRevealed ? Math.min(width, height) * BLUR_FACTOR : undefined}
 				className={classNames('post__attachment-thumbnail__picture', {
