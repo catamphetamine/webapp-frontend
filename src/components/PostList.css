@@ -18,6 +18,6 @@
 		padding-right: 0.45em;
 		content: "\2022";
 		font-size: 1em;
-		color: var(--gray-color-dark);
+		color: var(--gray-color-600);
 	}
 }

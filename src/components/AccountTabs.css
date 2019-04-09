@@ -16,7 +16,7 @@
 	padding     : 0;
 	white-space : nowrap;
 	/*background-color : var(--white-color);*/
-	/*border-bottom : 1px solid var(--gray-color-lightest);*/
+	/*border-bottom : 1px solid var(--gray-color-100);*/
 
 	@mixin upto-xs {
 		height : calc(var(--unit) * 2.5);
@@ -51,7 +51,7 @@
 	height  : calc(var(--unit) * 3);
 	align-items : center;
 
-	color : var(--gray-color-600);
+	color : var(--gray-color-700);
 
 	padding-top   : var(--account-tabs-active-tab-marker-height);
 	border-bottom : var(--account-tabs-active-tab-marker-height) solid transparent;

@@ -12,6 +12,6 @@
 
 .post__file-size {
 	margin-left: 0.4em;
-	color: var(--gray-color);
+	color: var(--gray-color-400);
 	font-weight: 300;
 }

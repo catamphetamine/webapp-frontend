@@ -71,7 +71,7 @@
 	overflow: hidden;
 	padding-bottom: 0.15em;
 	padding-top: 0.15em;
-	background: var(--black-color);
+	background: var(--gray-color-900);
 	color: var(--white-color);
 	font-family: var(--font-family);
 	font-weight: 300;

@@ -4,7 +4,7 @@
 	padding: var(--unit);
 	color: inherit;
 	background-color: #fcfcfc;
-	border: 1px solid var(--gray-color-lightest);
+	border: 1px solid var(--gray-color-100);
 
 	h1 {
 		margin-top: 0;

@@ -12,7 +12,7 @@
 	--rrui-black-color        : var(--black-color);
 	--rrui-accent-color       : var(--base-color);
 	--rrui-accent-color-light : var(--base-color-light);
-	--rrui-gray-color         : var(--gray-color);
+	--rrui-gray-color         : var(--gray-color-400);
 }
 
 .rrui__input-field

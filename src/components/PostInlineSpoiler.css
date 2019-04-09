@@ -16,7 +16,7 @@
 }
 
 .post__inline-spoiler--hidden {
-	background-color: var(--gray-color-lightest);
+	background-color: var(--gray-color-100);
 	border-radius: 0.2em;
 }
 

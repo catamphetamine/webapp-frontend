@@ -25,7 +25,7 @@
 	min-height : calc(var(--account-header-picture-size) + var(--unit) * 4);
 	max-height : calc(var(--account-header-picture-size) + var(--unit) * 12);
 	/*max-height : calc(var(--unit) * 35);*/
-	background-color : var(--gray-color);
+	background-color : var(--gray-color-400);
 	border-bottom : 1px solid rgba(0, 0, 0, 0.1);
 
 	@mixin xs

@@ -3,7 +3,7 @@
 	justify-content: space-between;
 	margin-top: 0.8em;
 	font-weight: lighter;
-	color: var(--gray-color-dark);
+	color: var(--gray-color-600);
 
 	--post-footer-badge-spacing: calc(var(--unit) * 1.5);
 }

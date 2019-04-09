@@ -40,7 +40,7 @@
 	display: inline-block;
 	position: relative;
 	padding-left: 0.5em;
-	color: var(--gray-color-darkest);
+	color: var(--gray-color-700);
 }
 
 .post__inline-quote-marker {

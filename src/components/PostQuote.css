@@ -3,7 +3,7 @@
 .post__quote
 {
 	padding-left : 1em;
-	border-left  : 0.1em solid var(--gray-color-lightest);
+	border-left  : 0.1em solid var(--gray-color-100);
 	color        : var(--black-color);
 }
 
