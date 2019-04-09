@@ -9,6 +9,6 @@
 
 	audio:focus {
 		outline: none;
-		box-shadow: 0 0 0 1px var(--base-color-darkest);
+		box-shadow: 0 0 0 1px var(--base-color-700);
 	}
 }

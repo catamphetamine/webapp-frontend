@@ -171,15 +171,15 @@
 	outline: none;
 
 	&:hover, &:focus {
-		color: var(--base-color);
-		/*box-shadow: 0 0 0 1px inset var(--base-color);*/
+		color: var(--base-color-500);
+		/*box-shadow: 0 0 0 1px inset var(--base-color-500);*/
 	}
 
 	&:active {
 		/* Override link buttons :active color. */
 		color: var(--white-color);
-		background-color: var(--base-color);
-		/*box-shadow: 0 0 0 1px var(--white-color);*/
+		background-color: var(--base-color-500);
+		/*box-shadow: 0 0 0 1px var(--white-color-500);*/
 	}
 
 	@mixin l-plus {
@@ -217,7 +217,7 @@
 }
 
 .rrui__slideshow__action:active {
-	background-color : var(--base-color);
+	background-color : var(--base-color-500);
 }
 
 .rrui__slideshow__action-icon
@@ -339,7 +339,7 @@
 }
 
 .rrui__slideshow__progress-dot--selected {
-	background-color: var(--base-color);
+	background-color: var(--base-color-500);
 }
 
 .rrui__slideshow__video .rrui__video__play-icon {

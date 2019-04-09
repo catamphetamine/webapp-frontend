@@ -72,7 +72,7 @@
 
 .account-tabs__tab-link--active
 {
-	border-color : var(--base-color);
+	border-color : var(--base-color-500);
 	cursor : default;
 
 	color : var(--black-color);

@@ -49,7 +49,7 @@
 	/* Outline is not shown on `<a/>` for some reason. */
 	&:focus {
 		.post__attachment-thumbnail__picture {
-			--picture-border-color: var(--base-color-darkest);
+			--picture-border-color: var(--base-color-700);
 		}
 	}
 }

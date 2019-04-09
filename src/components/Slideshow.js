@@ -983,6 +983,7 @@ class Slideshow extends React.PureComponent {
 				onMouseUp={this.onMouseUp}
 				onMouseMove={this.onMouseMove}
 				onPointerOut={this.onMouseLeave}
+				onPointerCancel={this.onMouseLeave}
 				onClick={this.onBackgroundClick}
 				onWheel={this.onWheel}>
 				<div style={{ position: 'relative', width: '100%', height: '100%' }}>

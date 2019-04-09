@@ -13,7 +13,7 @@
 		box-shadow: 0 0 0 1px var(--gray-color-100);
 	}
 	&:active {
-		color: var(--base-color-darkest);
-		background-color: var(--base-color-lightest);
+		color: var(--base-color-700);
+		background-color: var(--base-color-300);
 	}
 }

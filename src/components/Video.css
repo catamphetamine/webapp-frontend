@@ -8,7 +8,7 @@ and that's how the embedded video's aspect ratio is set.
 	position: relative;
 	overflow: hidden;
 
-	--rrui-video-focus-border-color: var(--base-color-darkest);
+	--rrui-video-focus-border-color: var(--base-color-700);
 }
 
 .rrui__video iframe,
@@ -37,10 +37,10 @@ and that's how the embedded video's aspect ratio is set.
 }
 
 .rrui__video:focus {
-	--picture-border-color: var(--base-color-darkest);
+	--picture-border-color: var(--base-color-700);
 	.rrui__video__play-icon-border,
 	.rrui__video__play-icon-triangle {
-		fill: var(--base-color-light);
+		fill: var(--base-color-400);
 	}
 }
 

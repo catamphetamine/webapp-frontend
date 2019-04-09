@@ -12,18 +12,18 @@
 	padding-bottom: 0.1em;
 	margin-top: -0.1em;
 	margin-bottom: -0.1em;
-	color: var(--base-color-darkest);
-	border: 1px solid var(--base-color-darkest);
+	color: var(--base-color-700);
+	border: 1px solid var(--base-color-700);
 }
 
 .post__read-more:hover {
-	color: var(--base-color-dark);
-	border-color: var(--base-color-dark);
+	color: var(--base-color-600);
+	border-color: var(--base-color-600);
 }
 
 .post__read-more:active {
 	color: var(--white-color);
-	background-color: var(--base-color-light);
-	border-color: var(--base-color-light);
+	background-color: var(--base-color-400);
+	border-color: var(--base-color-400);
 }
 */

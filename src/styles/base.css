@@ -63,10 +63,10 @@ body
 }
 
 a {
-	color: var(--base-color-darkest);
+	color: var(--base-color-700);
 	text-decoration: none;
 	&:active {
-		color: var(--base-color-dark);
+		color: var(--base-color-600);
 	}
 }
 
@@ -78,7 +78,7 @@ a {
 
 /*a:active
 {
-	color: var(--base-color-dark);
+	color: var(--base-color-600);
 }*/
 
 /* Internet Explorer adds borders around all images */
@@ -101,5 +101,5 @@ p
 
 ::selection {
 	color: var(--white-color);
-	background-color: var(--base-color-darker);
+	background-color: var(--base-color-600);
 }

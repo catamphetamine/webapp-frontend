@@ -19,20 +19,40 @@
 	--gray-color-800 : #49515C;
 	--gray-color-900 : #404852;
 
-	--base-color-lightest : #00B3FF;
-	--base-color-light : #00B3FF;
-	--base-color       : #00A6ED;
-	--base-color-dark  : #0084BD;
-	--base-color-darkest : #0084BD;
+	--base-color-100 : #97E0FF;
+	--base-color-200 : #63D0FF;
+	--base-color-300 : #3FC6FF;
+	--base-color-400 : #25BEFF;
+	--base-color-500 : #00B3FF;
+	--base-color-600 : #009CDF;
+	--base-color-700 : #0084BD;
+	--base-color-800 : #006996;
+	--base-color-900 : #003F5A;
 
 	/* Base color transparency: rgba(0, 179, 255, 0.6); */
 
-	--accent-color-dark  : #C70049;
-	--accent-color       : #FC005D;
-	--accent-color-light : #FF4086;
+	--accent-color-100 : #FFA6C7;
+	--accent-color-200 : #FF78AA;
+	--accent-color-300 : #FF5191;
+	--accent-color-400 : #FF2A79;
+	--accent-color-500 : #FF005E;
+	--accent-color-600 : #D90050;
+	--accent-color-700 : #BC0045;
+	--accent-color-800 : #980038;
+	--accent-color-900 : #6E0029;
 
-	--error-color-dark : #BD0016;
-	--error-color      : #E6001B;
+	/* critical color */
+	/* warning color */
+	/* positive color */
+	--critical-color-100 : #FFA3AE;
+	--critical-color-200 : #FF7D8C;
+	--critical-color-300 : #FF5B6E;
+	--critical-color-400 : #FF3C53;
+	--critical-color-500 : #E6001B;
+	--critical-color-600 : #E3001B;
+	--critical-color-700 : #BB0016;
+	--critical-color-800 : #A20013;
+	--critical-color-900 : #77000E;
 
 	--background-color : #eaeaea;
 	--content-section-divider-color : #e3e4e8;

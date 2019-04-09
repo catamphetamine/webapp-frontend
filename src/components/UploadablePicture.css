@@ -43,7 +43,7 @@
 
 /*.uploadable-picture__droppable-overlay--cannot-drop
 {
-	background-color : var(--error-color);
+	background-color : var(--critical-color-600);
 }*/
 
 .uploadable-picture__change-overlay
