@@ -109,7 +109,8 @@ class AttachmentButton extends React.Component {
 					// Simulate `event` argument.
 					preventDefault() {
 						this.defaultPrevented = true
-					}
+					},
+					stopPropagation() {}
 				})
 		}
 	}
@@ -142,7 +143,8 @@ class AttachmentButton extends React.Component {
 			// Otherwise React would compain about not calling `event.persist()`.
 			preventDefault() {
 				this.defaultPrevented = true
-			}
+			},
+			stopPropagation() {}
 		})
 	}
 

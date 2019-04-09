@@ -219,8 +219,6 @@ export default class Video extends React.Component {
 		if (event.ctrlKey || event.altKey || event.shiftKey || event.metaKey) {
 			return
 		}
-		// Prevent hyperlink click.
-		event.preventDefault()
 		// Handle click event.
 		const { onClick } = this.props
 		const { showPreview } = this.state
@@ -231,6 +229,8 @@ export default class Video extends React.Component {
 			event.preventDefault()
 			this.showVideo()
 		}
+		// Prevent hyperlink click.
+		event.preventDefault()
 	}
 
 	onKeyDown = (event) => {
@@ -335,7 +335,8 @@ export default class Video extends React.Component {
 					// Simulate `event` argument.
 					preventDefault() {
 						this.defaultPrevented = true
-					}
+					},
+					stopPropagation() {}
 				})
 		}
 	}
