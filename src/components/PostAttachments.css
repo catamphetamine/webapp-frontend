@@ -46,6 +46,7 @@
 	&:hover {
 		box-shadow: var(--post-attachment-hover-shadow);
 	}
+	/* Outline is not shown on `<a/>` for some reason. */
 	&:focus {
 		.post__attachment-thumbnail__picture {
 			--picture-border-color: var(--base-color-darkest);

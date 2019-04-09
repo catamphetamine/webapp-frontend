@@ -1,56 +1,50 @@
 import React from 'react'
-import { videoAttachmentShape } from '../PropTypes'
+import PropTypes from 'prop-types'
 
-import Picture from './Picture'
-import Video from './Video'
-
-import { getVideoUrl } from '../utility/video'
+import Video, { getUrl } from './Video'
+import { videoAttachment } from '../PropTypes'
 
 import './PostVideo.css'
 
-export default class PostVideo extends React.Component {
-	render() {
-		const {
-			height,
-			onClick,
-			children: {
-				video
+export default function PostVideo({
+	attachment: {
+		video
+	},
+	maxHeight,
+	saveBandwidth,
+	spoilerLabel,
+	onClick
+}) {
+	const url = getUrl(video)
+	return (
+		<section className="post__video">
+			<Video
+				video={video}
+				maxHeight={maxHeight}
+				saveBandwidth={saveBandwidth}
+				spoilerLabel={spoilerLabel}
+				onClick={onClick}/>
+			{video.title &&
+				<h1 className="post__video-title">
+					{url &&
+						<a
+							target="_blank"
+							href={url}>
+							{video.title}
+						</a>
+					}
+					{!url && video.title}
+				</h1>
 			}
-		} = this.props
-
-		let url
-		if (video.provider) {
-			url = getVideoUrl(video.id, video.provider, {
-				startAt: video.startAt
-			})
-		}
-
-		return (
-			<section className="post__video">
-				<Video
-					video={video}
-					maxHeight={height}
-					onClick={onClick}
-					aria-label={this.props['aria-label'] || video.title}/>
-				{video.title &&
-					<h1 className="post__video-title">
-						{url &&
-							<a
-								target="_blank"
-								href={url}>
-								{video.title}
-							</a>
-						}
-						{!url && video.title}
-					</h1>
-				}
-			</section>
-		)
-	}
+		</section>
+	)
 }
 
 PostVideo.propTypes = {
-	children: videoAttachmentShape.isRequired
+	attachment: videoAttachment.isRequired,
+	maxHeight: PropTypes.number,
+	saveBandwidth: PropTypes.bool,
+	spoilerLabel: PropTypes.string
 }
 
 export const EXAMPLE = {

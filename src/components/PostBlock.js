@@ -23,6 +23,8 @@ export default function PostBlock({
 	attachmentThumbnailSize,
 	openSlideshow,
 	serviceIcons,
+	saveBandwidth,
+	spoilerLabel,
 	children: content
 }) {
 	if (Array.isArray(content) || typeof content === 'string') {
@@ -87,30 +89,32 @@ export default function PostBlock({
 			case 'picture':
 				return (
 					<PostPicture
+						attachment={attachment}
+						saveBandwidth={saveBandwidth}
+						spoilerLabel={spoilerLabel}
 						onClick={openSlideshow ?
 							(event) => {
 								event.preventDefault()
 								openSlideshow([attachment.picture])
 							} :
 							undefined
-						}>
-						{attachment}
-					</PostPicture>
+						}/>
 				)
 			case 'video':
 				const maxHeight = attachment.video.height ? Math.min(attachment.video.height, attachmentThumbnailSize) : attachmentThumbnailSize
 				return (
 					<PostVideo
-						height={content.fit === 'height' ? maxHeight : undefined}
+						attachment={attachment}
+						saveBandwidth={saveBandwidth}
+						spoilerLabel={spoilerLabel}
+						maxHeight={content.fit === 'height' ? maxHeight : undefined}
 						onClick={openSlideshow ?
 							(event) => {
 								event.preventDefault()
 								openSlideshow([attachment.video])
 							} :
 							undefined
-						}>
-						{attachment}
-					</PostVideo>
+						}/>
 				)
 			case 'audio':
 				return <PostAudio>{attachment}</PostAudio>
@@ -143,5 +147,7 @@ PostBlock.propTypes = {
 	attachmentThumbnailSize: PropTypes.number,
 	openSlideshow: PropTypes.func,
 	serviceIcons: PropTypes.objectOf(PropTypes.func),
+	saveBandwidth: PropTypes.bool,
+	spoilerLabel: PropTypes.string,
 	children: postBlock.isRequired
 }

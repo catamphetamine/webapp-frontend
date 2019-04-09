@@ -193,6 +193,8 @@ export default class Post extends React.PureComponent {
 								readMoreLabel={readMoreLabel}
 								attachments={attachments}
 								attachmentThumbnailSize={attachmentThumbnailSize}
+								saveBandwidth={saveBandwidth}
+								spoilerLabel={spoilerLabel}
 								openSlideshow={openSlideshow}
 								serviceIcons={serviceIcons}>
 								{content}

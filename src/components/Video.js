@@ -216,6 +216,12 @@ export default class Video extends React.Component {
 	}
 
 	onClick = (event) => {
+		if (event.ctrlKey || event.altKey || event.shiftKey || event.metaKey) {
+			return
+		}
+		// Prevent hyperlink click.
+		event.preventDefault()
+		// Handle click event.
 		const { onClick } = this.props
 		const { showPreview } = this.state
 		if (onClick) {
@@ -317,6 +323,20 @@ export default class Video extends React.Component {
 					event.preventDefault()
 				}
 				break
+		}
+	}
+
+	onPreviewKeyDown = (event) => {
+		switch (event.keyCode) {
+			// Click on Spacebar.
+			case 32:
+				event.preventDefault()
+				return this.onClick({
+					// Simulate `event` argument.
+					preventDefault() {
+						this.defaultPrevented = true
+					}
+				})
 		}
 	}
 
@@ -428,16 +448,18 @@ export default class Video extends React.Component {
 		if (showPreview) {
 			// Percentage `padding-bottom` is set on the `<button/>` to enforce aspect ratio.
 			return (
-				<button
+				<a
 					ref={this.button}
-					type="button"
+					target="_blank"
+					href={getUrl(video)}
 					aria-label={this.props['aria-label']}
+					onKeyDown={this.onPreviewKeyDown}
 					onClick={this.onClick}
 					tabIndex={tabIndex}
 					style={_style}
 					className={classNames('rrui__button-reset', 'rrui__video__button', _className)}>
 					{this.renderPreview()}
-				</button>
+				</a>
 			)
 		}
 
@@ -568,8 +590,6 @@ Video.defaultProps = {
 	autoPlay: false,
 	canPlay: true
 }
-
-const showsPreview = (props) => props.showPreview && props.video.picture ? true : false
 
 export function getUrl(video) {
 	if (!video.provider) {

@@ -294,25 +294,25 @@ export const postBlock = oneOfType([
 	postReadMore
 ])
 
-export const pictureAttachmentShape = shape({
+export const pictureAttachment = shape({
 	id,
 	type: oneOf(['picture']).isRequired,
 	picture: picture.isRequired
 })
 
-export const videoAttachmentShape = shape({
+export const videoAttachment = shape({
 	id,
 	type: oneOf(['video']).isRequired,
 	video: video.isRequired
 })
 
-export const audioAttachmentShape = shape({
+const audioAttachment = shape({
 	id,
 	type: oneOf(['audio']).isRequired,
 	audio: audio.isRequired
 })
 
-export const linkAttachmentShape = shape({
+const linkAttachment = shape({
 	id,
 	type: oneOf(['link']).isRequired,
 	link: postLinkBlock.isRequired
@@ -333,10 +333,10 @@ export const fileAttachment = shape({
 })
 
 export const postAttachment = oneOfType([
-	pictureAttachmentShape,
-	videoAttachmentShape,
-	audioAttachmentShape,
-	linkAttachmentShape,
+	pictureAttachment,
+	videoAttachment,
+	audioAttachment,
+	linkAttachment,
 	fileAttachment
 ])
 

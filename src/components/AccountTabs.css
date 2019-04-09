@@ -51,7 +51,7 @@
 	height  : calc(var(--unit) * 3);
 	align-items : center;
 
-	color : var(--gray-color-darkest);
+	color : var(--gray-color-600);
 
 	padding-top   : var(--account-tabs-active-tab-marker-height);
 	border-bottom : var(--account-tabs-active-tab-marker-height) solid transparent;

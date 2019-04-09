@@ -1,24 +1,38 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import { pictureAttachmentShape } from '../PropTypes'
+import { pictureAttachment } from '../PropTypes'
 
 import Picture from './Picture'
 
+import PostAttachment from './PostAttachment'
+
 import './PostPicture.css'
 
-export default function PostPicture({ onClick, children: { picture } }) {
+export default function PostPicture({
+	attachment,
+	saveBandwidth,
+	maxSize,
+	spoilerLabel,
+	onClick
+}) {
 	return (
-		<Picture
-			picture={picture}
+		<PostAttachment
+			attachment={attachment}
+			saveBandwidth={saveBandwidth}
+			maxSize={attachmentThumbnailSize}
+			spoilerLabel={spoilerLabel}
 			onClick={onClick}
 			className="post__picture"/>
 	)
 }
 
 PostPicture.propTypes = {
+	attachment: pictureAttachment.isRequired,
 	onClick: PropTypes.func,
-	children: pictureAttachmentShape.isRequired
+	saveBandwidth: PropTypes.bool,
+	maxSize: PropTypes.number,
+	spoilerLabel: PropTypes.string
 }
 
 export const EXAMPLE = {

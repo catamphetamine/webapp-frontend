@@ -1,19 +1,16 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
-import { FadeInOut, ActivityIndicator } from 'react-responsive-ui'
-
-import Picture, {
-	TRANSPARENT_PIXEL,
-	getAspectRatio as getPictureAspectRatio
-} from './Picture'
 
 import {
-	VideoDuration,
-	getUrl as getVideoUrl,
-	getMaxSize as getVideoMaxSize,
-	getAspectRatio as getVideoAspectRatio
-} from './Video'
+	TRANSPARENT_PIXEL,
+	// getAspectRatio as getPictureAspectRatio
+} from './Picture'
+
+// import {
+// 	getMaxSize as getVideoMaxSize,
+// 	getAspectRatio as getVideoAspectRatio
+// } from './Video'
 
 import PostPicture, {
 	EXAMPLE as PICTURE_EXAMPLE
@@ -39,8 +36,7 @@ import PostFile, {
 	EXAMPLE_3 as FILE_EXAMPLE_3
 } from './PostFile'
 
-import { getViewportWidth } from './Slideshow'
-import SlideshowPicture from './Slideshow.Picture'
+import PostAttachment from './PostAttachment'
 
 import {
 	postAttachment
@@ -112,31 +108,19 @@ export default function PostAttachments({
 
 	return (
 		<div className="post__attachments">
-			{titlePictureOrVideo && titlePictureOrVideo.type === 'picture' && (
-				openSlideshow
-				?
-				<button
-					type="button"
-					onClick={createOnOpenSlideshow(0)}
-					className="rrui__button-reset">
-					<PostPicture>
-						{titlePictureOrVideo}
-					</PostPicture>
-				</button>
-				:
-				<a
-					target="_blank"
-					href={titlePictureOrVideo.url}>
-					<PostPicture>
-						{titlePictureOrVideo}
-					</PostPicture>
-				</a>
-			)}
+			{titlePictureOrVideo && titlePictureOrVideo.type === 'picture' &&
+				<PostPicture
+					attachment={titlePictureOrVideo}
+					saveBandwidth={saveBandwidth}
+					spoilerLabel={spoilerLabel}
+					onClick={openSlideshow ? createOnOpenSlideshow(0) : undefined}/>
+			}
 			{titlePictureOrVideo && titlePictureOrVideo.type === 'video' &&
 				<PostVideo
-					onClick={openSlideshow ? createOnOpenSlideshow(0) : undefined}>
-					{titlePictureOrVideo}
-				</PostVideo>
+					attachment={titlePictureOrVideo}
+					saveBandwidth={saveBandwidth}
+					spoilerLabel={spoilerLabel}
+					onClick={openSlideshow ? createOnOpenSlideshow(0) : undefined}/>
 			}
 			{picturesAndVideos.length > 0 &&
 				<ul className="post__attachment-thumbnails">
@@ -157,17 +141,13 @@ export default function PostAttachments({
 									height={0}
 									alt={pictureOrVideo.title}
 									style={POSITION_ABSOLUTE}/>
-								<AttachmentClickable
+								<PostAttachment
 									attachment={pictureOrVideo}
+									saveBandwidth={saveBandwidth}
+									maxSize={attachmentThumbnailSize}
 									spoilerLabel={spoilerLabel}
-									onClick={openSlideshow ? createOnOpenSlideshow(i + (titlePictureOrVideo ? 1 : 0)) : undefined}>
-									<AttachmentThumbnail
-										attachment={pictureOrVideo}
-										saveBandwidth={saveBandwidth}
-										spoilerLabel={spoilerLabel}
-										maxSize={attachmentThumbnailSize}
-										moreAttachmentsCount={i === picturesAndVideos.length - 1 ? picturesAndVideosMoreCount : undefined}/>
-								</AttachmentClickable>
+									onClick={openSlideshow ? createOnOpenSlideshow(i + (titlePictureOrVideo ? 1 : 0)) : undefined}
+									moreAttachmentsCount={i === picturesAndVideos.length - 1 ? picturesAndVideosMoreCount : undefined}/>
 							</li>
 						)
 					})}
@@ -343,19 +323,6 @@ const POSITION_ABSOLUTE = {
 // 	}
 // }
 
-function getAttachmentUrl(attachment) {
-	switch (attachment.type) {
-		case 'picture':
-			return attachment.picture.url
-		case 'video':
-			return getVideoUrl(attachment.video)
-		default:
-			console.error(`Unknown attachment type: ${attachment.type}`)
-			console.log(attachment)
-			return
-	}
-}
-
 // function getAttachmentMaxHeight(attachment) {
 // 	switch (attachment.type) {
 // 		case 'picture':
@@ -430,60 +397,6 @@ export function sortPostAttachments(attachments) {
 	return sortByThumbnailHeightDescending(attachments)
 }
 
-const BLUR_FACTOR = 0.1
-
-function AttachmentThumbnail({
-	attachment,
-	isRevealed,
-	maxSize,
-	saveBandwidth,
-	spoilerLabel,
-	moreAttachmentsCount
-}) {
-	const picture = attachment.type === 'video' ? attachment.video.picture : attachment.picture
-	const width = picture.sizes ? picture.sizes[0].width : picture.width
-	const height = picture.sizes ? picture.sizes[0].height : picture.height
-	return (
-		<React.Fragment>
-			<Picture
-				preview
-				picture={picture}
-				width={width}
-				height={height}
-				saveBandwidth={saveBandwidth}
-				blur={attachment.spoiler && !isRevealed ? Math.min(width, height) * BLUR_FACTOR : undefined}
-				className={classNames('post__attachment-thumbnail__picture', {
-					// 'post__attachment-thumbnail__picture--spoiler': attachment.spoiler && !isRevealed
-				})}/>
-			{attachment.spoiler && !isRevealed && spoilerLabel &&
-				<AttachmentSpoilerBar width={width} height={height}>
-					{spoilerLabel}
-				</AttachmentSpoilerBar>
-			}
-			{attachment.type === 'picture' && attachment.picture.type === 'image/gif' &&
-				<VideoDuration>gif</VideoDuration>
-			}
-			{attachment.type === 'video' &&
-				<VideoDuration duration={attachment.video.duration}/>
-			}
-			{moreAttachmentsCount > 0 &&
-				<div className="post__attachment-thumbnail__more-count">
-					+{moreAttachmentsCount + 1}
-				</div>
-			}
-		</React.Fragment>
-	)
-}
-
-AttachmentThumbnail.propTypes = {
-	attachment: postAttachment.isRequired,
-	isRevealed: PropTypes.bool,
-	maxSize: PropTypes.number.isRequired,
-	saveBandwidth: PropTypes.bool,
-	spoilerLabel: PropTypes.string,
-	moreAttachmentsCount: PropTypes.number
-}
-
 const TEST_ATTACHMENTS = [
 	{
 		id: 1,
@@ -531,155 +444,3 @@ const TEST_ATTACHMENTS = [
 		link: LINK_EXAMPLE_2
 	}
 ]
-
-class AttachmentButton extends React.Component {
-	static propTypes = {
-		attachment: PropTypes.object.isRequired,
-		onClick: PropTypes.func.isRequired,
-		title: PropTypes.string,
-		className: PropTypes.string,
-		children: PropTypes.node.isRequired
-	}
-
-	state = {
-		isLoading: false
-	}
-
-	constructor() {
-		super()
-		this.onClick = this.onClick.bind(this)
-	}
-
-	async onClick(event) {
-		const {
-			attachment,
-			onClick
-		} = this.props
-
-		if (attachment.type === 'picture') {
-			const picture = attachment.picture
-			// Preload the picture.
-			this.setState({
-				isLoading: true
-			})
-			await SlideshowPicture.preload(attachment.picture, getViewportWidth())
-			// For testing/styling.
-			// await new Promise(_ => setTimeout(_, 30000000))
-			this.setState({
-				isLoading: false
-			})
-		}
-		onClick({
-			preventDefault() {}
-		})
-	}
-
-	render() {
-		const {
-			attachment,
-			title,
-			className,
-			children
-		} = this.props
-		const {
-			isLoading
-		} = this.state
-		return (
-			<button
-				type="button"
-				title={title}
-				onClick={this.onClick}
-				className={classNames('rrui__button-reset', className)}>
-				{isLoading &&
-					<FadeInOut show fadeInInitially fadeInDuration={3000} fadeOutDuration={0}>
-						<div className="post__attachment-thumbnail__loading">
-							<ActivityIndicator className="post__attachment-thumbnail__loading-indicator"/>
-						</div>
-					</FadeInOut>
-				}
-				{children}
-			</button>
-		)
-	}
-}
-
-class AttachmentClickable extends React.Component {
-	static propTypes = {
-		attachment: PropTypes.object.isRequired,
-		onClick: PropTypes.func,
-		spoilerLabel: PropTypes.string,
-		children: PropTypes.node.isRequired
-	}
-	state = {
-		isRevealed: this.props.attachment.spoiler ? false : true
-	}
-	onClick = (event) => {
-		const {
-			attachment,
-			onClick
-		} = this.props
-		if (attachment.spoiler) {
-			this.setState({
-				isRevealed: true
-			})
-		}
-		if (onClick) {
-			onClick(event)
-		}
-	}
-	render() {
-		const {
-			onClick,
-			attachment,
-			spoilerLabel,
-			children
-		} = this.props
-		const {
-			isRevealed
-		} = this.state
-		const props = {
-			title: isRevealed ? attachment.title : spoilerLabel,
-			onClick: this.onClick,
-			className: 'post__attachment-thumbnail__clickable'
-		}
-		let component
-		if (onClick) {
-			component = AttachmentButton
-			props.attachment = attachment
-		} else {
-			component = 'a'
-			props.target = '_blank'
-			props.href = getAttachmentUrl(attachment)
-		}
-		return React.createElement(
-			component,
-			props,
-			React.cloneElement(children, { isRevealed })
-		)
-	}
-}
-
-function AttachmentSpoilerBar({ width, height, children: spoilerLabel, ...rest }) {
-	let fontSize = Math.floor(width / spoilerLabel.length)
-	if (fontSize > height) {
-		if (height > 20) {
-			fontSize = 16
-		} else {
-			return null
-		}
-	}
-	return (
-		<div
-			{...rest}
-			style={{ fontSize: fontSize + 'px' }}
-			className="post__spoiler-bar post__attachment-thumbnail__spoiler-bar">
-			{spoilerLabel}
-		</div>
-	)
-}
-
-AttachmentSpoilerBar.propTypes = {
-	width: PropTypes.number.isRequired,
-	height: PropTypes.number.isRequired,
-	children: PropTypes.string.isRequired
-}

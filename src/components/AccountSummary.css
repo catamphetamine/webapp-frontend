@@ -27,7 +27,7 @@
 
 .account-summary__whereabouts
 {
-	color : var(--gray-color-darkest);
+	color : var(--gray-color-600);
 }
 
 .account-summary__links
@@ -65,7 +65,7 @@
 	align-items : center;
 
 	margin-top : calc(var(--unit) * 1);
-	color : var(--gray-color-darkest);
+	color : var(--gray-color-600);
 }
 
 .account-summary__last-seen-icon
@@ -76,6 +76,6 @@
 	width  : 1em;
 	height : 1em;
 
-	fill : var(--gray-color-darkest);
+	fill : var(--gray-color-600);
 }
 */
