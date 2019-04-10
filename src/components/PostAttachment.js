@@ -5,7 +5,7 @@ import { FadeInOut, ActivityIndicator } from 'react-responsive-ui'
 
 import { getViewportWidth } from './Slideshow'
 import SlideshowPicture from './Slideshow.Picture'
-
+import ButtonOrLink from './ButtonOrLink'
 import Picture from './Picture'
 
 import {
@@ -17,6 +17,8 @@ import {
 	pictureAttachment,
 	videoAttachment
 } from '../PropTypes'
+
+import './PostAttachment.css'
 
 export default class PostAttachment extends React.Component {
 	static propTypes = {
@@ -100,21 +102,6 @@ class AttachmentButton extends React.Component {
 		this.onClick = this.onClick.bind(this)
 	}
 
-	onKeyDown = (event) => {
-		switch (event.keyCode) {
-			// Click on Spacebar.
-			case 32:
-				event.preventDefault()
-				return this.onClick({
-					// Simulate `event` argument.
-					preventDefault() {
-						this.defaultPrevented = true
-					},
-					stopPropagation() {}
-				})
-		}
-	}
-
 	async onClick(event) {
 		const {
 			attachment,
@@ -164,11 +151,9 @@ class AttachmentButton extends React.Component {
 		// 	className={classNames('rrui__button-reset', className)}>
 
 		return (
-			<a
-				target="_blank"
-				href={getAttachmentUrl(attachment)}
+			<ButtonOrLink
+				url={getAttachmentUrl(attachment)}
 				title={title}
-				onKeyDown={this.onKeyDown}
 				onClick={this.onClick}
 				className={className}>
 				{isLoading &&
@@ -179,7 +164,7 @@ class AttachmentButton extends React.Component {
 					</FadeInOut>
 				}
 				{children}
-			</a>
+			</ButtonOrLink>
 		)
 	}
 }

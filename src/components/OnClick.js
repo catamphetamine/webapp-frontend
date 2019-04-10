@@ -23,8 +23,6 @@ export default class OnClick extends React.Component {
 
 	state = {}
 
-	shouldOpenLink = false
-
 	container = React.createRef()
 
 	filter(element) {
@@ -38,12 +36,7 @@ export default class OnClick extends React.Component {
 		return true
 	}
 
-	onDragStart = (event) => {
-		event.preventDefault()
-	}
-
 	onTouchStart = (event) => {
-		const { filter } = this.props
 		// Ignore multitouch.
 		if (event.touches.length > 1) {
 			// Reset.
@@ -70,7 +63,7 @@ export default class OnClick extends React.Component {
 	}
 
 	onTouchMove = (event) => {
-		if (this.isPanning) {
+		if (this.isClickInProgress) {
 			this.onPan(
 				event.changedTouches[0].clientX,
 				event.changedTouches[0].clientY
@@ -78,25 +71,29 @@ export default class OnClick extends React.Component {
 		}
 	}
 
-	onMouseDown = (event) => {
-		const { filter, link } = this.props
+	onPointerDown = (event) => {
+		const { link } = this.props
 		switch (event.button) {
-			// Left
+			// Left mouse button.
 			case 0:
-				if (link && event.ctrlKey || event.cmdKey) {
-					this.shouldOpenLink = true
+				if (link && (event.ctrlKey || event.cmdKey)) {
+					this.emulateLinkClick = true
 				}
 				break
-			// Middle
+			// Middle mouse button.
 			case 1:
 				if (link) {
-					this.shouldOpenLink = true
+					// `.preventDefault()` to prevent the web browser
+					// from showing the "all-scroll" cursor.
+					event.preventDefault()
+					this.emulateLinkClick = true
 					break
 				}
 				return this.onPanCancel()
-			// Right
+			// Right mouse button.
 			case 2:
 			default:
+				// Cancel panning when two mouse buttons are clicked simultaneously.
 				return this.onPanCancel()
 		}
 		if (!this.filter(event.target)) {
@@ -108,8 +105,8 @@ export default class OnClick extends React.Component {
 		)
 	}
 
-	onMouseUp = () => {
-		if (this.isPanning) {
+	onPointerUp = () => {
+		if (this.isClickInProgress) {
 			this.onPanEnd(
 				event.clientX,
 				event.clientY
@@ -117,8 +114,8 @@ export default class OnClick extends React.Component {
 		}
 	}
 
-	onMouseMove = (event) => {
-		if (this.isPanning) {
+	onPointerMove = (event) => {
+		if (this.isClickInProgress) {
 			this.onPan(
 				event.clientX,
 				event.clientY
@@ -126,7 +123,13 @@ export default class OnClick extends React.Component {
 		}
 	}
 
-	onMouseLeave = () => {
+	// https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/pointerout_event
+	// The pointerout event is fired for several reasons including:
+	// * pointing device is moved out of the hit test boundaries of an element (`pointerleave`);
+	// * firing the pointerup event for a device that does not support hover (see `pointerup`);
+	// * after firing the pointercancel event (see `pointercancel`);
+	// * when a pen stylus leaves the hover range detectable by the digitizer.
+	onPointerOut = () => {
 		this.onPanCancel()
 	}
 
@@ -138,50 +141,53 @@ export default class OnClick extends React.Component {
 	onClickStop() {
 		this.isClickInProgress = false
 		this.setState({ isClickInProgress: false })
+		this.emulateLinkClick = undefined
 	}
 
 	onPanStart(x, y) {
 		this.onClickStart()
-		this.isPanning = true
 		this.panOriginX = x
 		this.panOriginY = y
 	}
 
-	onPanCancel() {
-		if (this.isPanning) {
-			this.isPanning = false
-		}
-		this.shouldOpenLink = false
+	onPanStop() {
 		this.onClickStop()
+		this.panOriginX = undefined
+		this.panOriginY = undefined
+	}
+
+	onPanCancel() {
+		this.onPanStop()
 	}
 
 	onPan(x, y) {
 		if (this.isClickInProgress) {
 			if (this.isOverTheThreshold(x, y)) {
-				this.onClickStop()
+				this.onPanStop()
 			}
 		}
 	}
 
 	onPanEnd(x, y) {
 		const { onClick, link } = this.props
-		this.isPanning = false
 		if (this.isClickInProgress) {
-			this.onClickStop()
-			if (onClick && !this.shouldOpenLink) {
-				let defaultPrevented = false
-				onClick({
-					preventDefault: () => defaultPrevented = true
-				})
-				if (defaultPrevented) {
-					return
-				}
+			// Simulate `event` argument.
+			const event = {
+				preventDefault() {
+					this.defaultPrevented = true
+				},
+				stopPropagation() {}
+			}
+			if (onClick && !this.emulateLinkClick) {
+				onClick(event)
 			}
 			if (link) {
-				openLinkInNewTab(link)
+				if (!event.defaultPrevented) {
+					openLinkInNewTab(link)
+				}
 			}
 		}
-		this.shouldOpenLink = false
+		this.onPanStop()
 	}
 
 	isOverTheThreshold(x, y) {
@@ -216,19 +222,27 @@ export default class OnClick extends React.Component {
 			isClickInProgress
 		} = this.state
 
+		// Safari doesn't support pointer events.
+		// https://caniuse.com/#feat=pointer
+		// https://webkit.org/status/#?search=pointer%20events
+		// onPointerDown={this.onPointerDown}
+		// onPointerUp={this.onPointerUp}
+		// onPointerMove={this.onPointerMove}
+		// onPointerOut={this.onPointerOut}
+
 		return (
 			<div
 				{...rest}
 				ref={this.container}
-				onDragStart={this.onDragStart}
+				onDragStart={this.onPointerOut}
 				onTouchStart={this.onTouchStart}
 				onTouchEnd={this.onTouchEnd}
 				onTouchCancel={this.onTouchCancel}
 				onTouchMove={this.onTouchMove}
-				onMouseDown={this.onMouseDown}
-				onMouseUp={this.onMouseUp}
-				onMouseMove={this.onMouseMove}
-				onMouseLeave={this.onMouseLeave}
+				onMouseDown={this.onPointerDown}
+				onMouseUp={this.onPointerUp}
+				onMouseMove={this.onPointerMove}
+				onMouseLeave={this.onPointerOut}
 				onClick={this.onClick}
 				className={classNames('on-click', className, isClickInProgress && onClickClassName)}>
 				{children}

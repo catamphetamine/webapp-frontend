@@ -10,6 +10,7 @@ import Picture, { scaleDownSize } from './Picture'
 import VideoPlayIcon from './VideoPlayIcon'
 import HtmlVideo from './HtmlVideo'
 import YouTubeVideo from './YouTubeVideo'
+import ButtonOrLink from './ButtonOrLink'
 
 import './Video.css'
 
@@ -229,8 +230,6 @@ export default class Video extends React.Component {
 			event.preventDefault()
 			this.showVideo()
 		}
-		// Prevent hyperlink click.
-		event.preventDefault()
 	}
 
 	onKeyDown = (event) => {
@@ -323,21 +322,6 @@ export default class Video extends React.Component {
 					event.preventDefault()
 				}
 				break
-		}
-	}
-
-	onPreviewKeyDown = (event) => {
-		switch (event.keyCode) {
-			// Click on Spacebar.
-			case 32:
-				event.preventDefault()
-				return this.onClick({
-					// Simulate `event` argument.
-					preventDefault() {
-						this.defaultPrevented = true
-					},
-					stopPropagation() {}
-				})
 		}
 	}
 
@@ -449,18 +433,16 @@ export default class Video extends React.Component {
 		if (showPreview) {
 			// Percentage `padding-bottom` is set on the `<button/>` to enforce aspect ratio.
 			return (
-				<a
+				<ButtonOrLink
 					ref={this.button}
-					target="_blank"
-					href={getUrl(video)}
-					aria-label={this.props['aria-label']}
-					onKeyDown={this.onPreviewKeyDown}
+					url={getUrl(video)}
 					onClick={this.onClick}
+					aria-label={this.props['aria-label']}
 					tabIndex={tabIndex}
 					style={_style}
 					className={classNames('rrui__button-reset', 'rrui__video__button', _className)}>
 					{this.renderPreview()}
-				</a>
+				</ButtonOrLink>
 			)
 		}
 

@@ -628,7 +628,7 @@ class Slideshow extends React.PureComponent {
 		}
 	}
 
-	onMouseDown = (event) => {
+	onPointerDown = (event) => {
 		switch (event.button) {
 			// Left
 			case 0:
@@ -638,7 +638,7 @@ class Slideshow extends React.PureComponent {
 			// Right
 			case 2:
 			default:
-				return this.onMouseUp()
+				return this.onPointerUp()
 		}
 		if (isButton(event.target)) {
 			return
@@ -649,13 +649,13 @@ class Slideshow extends React.PureComponent {
 		)
 	}
 
-	onMouseUp = () => {
+	onPointerUp = () => {
 		if (this.isPanning) {
 			this.onPanEnd()
 		}
 	}
 
-	onMouseMove = (event) => {
+	onPointerMove = (event) => {
 		if (this.isPanning) {
 			this.onPan(
 				event.clientX,
@@ -664,8 +664,14 @@ class Slideshow extends React.PureComponent {
 		}
 	}
 
-	onMouseLeave = () => {
-		// `onMouseLeave` is called immediately
+	// https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/pointerout_event
+	// The pointerout event is fired for several reasons including:
+	// * pointing device is moved out of the hit test boundaries of an element (`pointerleave`);
+	// * firing the pointerup event for a device that does not support hover (see `pointerup`);
+	// * after firing the pointercancel event (see `pointercancel`);
+	// * when a pen stylus leaves the hover range detectable by the digitizer.
+	onPointerOut = () => {
+		// `onPointerOut` is called immediately
 		// when starting to pan on touch devices.
 		if (!this.isTouchDevice) {
 			if (this.isPanning) {
@@ -957,6 +963,14 @@ class Slideshow extends React.PureComponent {
 		// `react-focus-lock` doesn't focus `<video/>` when cycling the Tab key.
 		// https://github.com/theKashey/react-focus-lock/issues/61
 
+		// Safari doesn't support pointer events.
+		// https://caniuse.com/#feat=pointer
+		// https://webkit.org/status/#?search=pointer%20events
+		// onPointerDown={this.onPointerDown}
+		// onPointerUp={this.onPointerUp}
+		// onPointerMove={this.onPointerMove}
+		// onPointerOut={this.onPointerOut}
+
 		// `tabIndex={ -1 }` makes the `<div/>` focusable.
 		return (
 			<FocusLock
@@ -979,11 +993,10 @@ class Slideshow extends React.PureComponent {
 				onTouchEnd={this.onTouchEnd}
 				onTouchCancel={this.onTouchCancel}
 				onTouchMove={this.onTouchMove}
-				onMouseDown={this.onMouseDown}
-				onMouseUp={this.onMouseUp}
-				onMouseMove={this.onMouseMove}
-				onPointerOut={this.onMouseLeave}
-				onPointerCancel={this.onMouseLeave}
+				onMouseDown={this.onPointerDown}
+				onMouseUp={this.onPointerUp}
+				onMouseMove={this.onPointerMove}
+				onMouseLeave={this.onPointerOut}
 				onClick={this.onBackgroundClick}
 				onWheel={this.onWheel}>
 				<div style={{ position: 'relative', width: '100%', height: '100%' }}>

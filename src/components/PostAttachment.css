@@ -1,0 +1,80 @@
+@import "../styles/common";
+
+.post__attachment-thumbnail__clickable {
+	display: block;
+	/* Material Design Card elevation shadow. */
+	/* https://codepen.io/sdthornton/pen/wBZdXq */
+	transition: box-shadow 160ms cubic-bezier(.25,.8,.25,1);
+	&:hover {
+		box-shadow: var(--post-attachment-hover-shadow);
+	}
+	/* Show :focused state for `<button/>`. */
+	/* Outline is not shown on `<a/>` too for some reason. */
+	&:focus {
+		.post__attachment-thumbnail__picture {
+			--picture-border-color: var(--base-color-700);
+		}
+	}
+}
+
+/* Blur radius depends on the actual image dimensions. */
+/*
+.post__attachment-thumbnail__picture--spoiler {
+	.rrui__picture__image {
+		filter: blur(14px);
+	}
+}
+*/
+
+.post__attachment-thumbnail__loading {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	overflow: hidden;
+	background-color: rgba(0, 0, 0, 0.2);
+	z-index: 1;
+}
+
+.post__attachment-thumbnail__loading-indicator {
+	width  : calc(var(--unit) * 2);
+	height : calc(var(--unit) * 2);
+	color  : var(--white-color);
+	/* <ActivityIndicator/> uses `em`s by default. */
+	font-size : 12px;
+}
+
+.post__attachment-thumbnail__more-count {
+	position : absolute;
+	top      : 0;
+	left     : 0;
+	width    : 100%;
+	height   : 100%;
+
+	display         : flex;
+	align-items     : center;
+	justify-content : center;
+
+	color            : var(--white-color);
+	background-color : rgba(0,0,0,0.4);
+	opacity          : 0.8;
+
+	overflow : hidden;
+	pointer-events : none;
+
+	font-size : 5rem;
+
+	@mixin xxs {
+		font-size : 3rem;
+	}
+
+	@mixin xs-s {
+		font-size : 4rem;
+	}
+
+	@mixin m {
+		font-size : 5rem;
+	}
+}
