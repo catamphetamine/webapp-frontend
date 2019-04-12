@@ -34,6 +34,7 @@ export default function expandStandaloneAttachmentLinks(post) {
 						fit: 'height'
 					}
 
+					post.attachments = post.attachments || []
 					post.attachments.push({
 						id: attachmentId,
 						...block.attachment
@@ -77,9 +78,11 @@ export default function expandStandaloneAttachmentLinks(post) {
 
 function getNextAttachmentId(attachments) {
 	let maxId = 0
-	for (const attachment of attachments) {
-		if (attachment.id) {
-			maxId = Math.max(maxId, attachment.id)
+	if (attachments) {
+		for (const attachment of attachments) {
+			if (attachment.id) {
+				maxId = Math.max(maxId, attachment.id)
+			}
 		}
 	}
 	return maxId + 1

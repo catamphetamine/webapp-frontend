@@ -40,7 +40,7 @@ export default function getPostText(post, options = {}) {
 		}
 	}
 	// If there're any attachments then fall back to attachment text.
-	if (post.attachments.length > 0 && !options.ignoreAttachments) {
+	if (post.attachments && !options.ignoreAttachments) {
 		for (const attachment of post.attachments) {
 			if (getAttachmentTitle(attachment)) {
 				return getAttachmentTitle(attachment)

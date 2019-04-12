@@ -6,8 +6,7 @@ import expectToEqual from '../expectToEqual'
 function getPostPreviewTest(post, options, expected) {
 	if (Array.isArray(post)) {
 		post = {
-			content: post,
-			attachments: []
+			content: post
 		}
 	}
 	if (options.fitFactor === undefined) {

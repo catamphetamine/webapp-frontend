@@ -23,8 +23,7 @@ describe('expandStandaloneAttachmentLinks', () => {
 						}
 					}
 				]
-			],
-			attachments: []
+			]
 		}
 		expandStandaloneAttachmentLinks(post)
 		expectToEqual(
@@ -71,8 +70,7 @@ describe('expandStandaloneAttachmentLinks', () => {
 						attachment: {}
 					}
 				]
-			],
-			attachments: []
+			]
 		}
 		expandStandaloneAttachmentLinks(post)
 		expectToEqual(
@@ -111,8 +109,7 @@ describe('expandStandaloneAttachmentLinks', () => {
 						}
 					}
 				]
-			],
-			attachments: []
+			]
 		}
 		expandStandaloneAttachmentLinks(post)
 		expectToEqual(
@@ -201,8 +198,7 @@ describe('expandStandaloneAttachmentLinks', () => {
 						attachment: {}
 					}
 				]
-			],
-			attachments: []
+			]
 		}
 		expandStandaloneAttachmentLinks(post)
 		expectToEqual(
@@ -216,8 +212,7 @@ describe('expandStandaloneAttachmentLinks', () => {
 							attachment: {}
 						}
 					]
-				],
-				attachments: []
+				]
 			}
 		)
 	})
@@ -225,7 +220,6 @@ describe('expandStandaloneAttachmentLinks', () => {
 	it('should expand standalone attachment links in a complex comment', () => {
 		const post = {
 			"id": 243005191,
-			"inReplyTo": [],
 			"attachments": [
 				{
 					"type": "picture",
@@ -436,7 +430,6 @@ describe('expandStandaloneAttachmentLinks', () => {
 			post,
 			{
 				"id": 243005191,
-				"inReplyTo": [],
 				"attachments": [
 					{
 						"type": "picture",
