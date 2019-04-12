@@ -228,6 +228,7 @@ const SERVICES = {
 			if (matchThread) {
 				return `/${matchThread[1]}/${matchThread[2]}`
 			}
+			return trimTrailingSlash(url.pathname)
 		}
 	},
 	'4chan.org': {
@@ -241,6 +242,7 @@ const SERVICES = {
 			if (matchThread) {
 				return `/${matchThread[1]}/${matchThread[2]}`
 			}
+			return trimTrailingSlash(url.pathname)
 		}
 	}
 }
