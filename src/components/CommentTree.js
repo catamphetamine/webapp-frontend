@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import classNames from 'classnames'
 
 import Post from './Post'
 import { RepliesCountBadge } from './Post.badges'
@@ -12,6 +13,7 @@ import './CommentTree.css'
 
 export default class CommentTree extends React.PureComponent {
 	static propTypes = {
+		flat: PropTypes.bool,
 		comment: post.isRequired,
 		component: PropTypes.func.isRequired
 	}
@@ -64,6 +66,7 @@ export default class CommentTree extends React.PureComponent {
 
 	render() {
 		const {
+			flat,
 			comment,
 			parentComment,
 			component: Component
@@ -74,35 +77,46 @@ export default class CommentTree extends React.PureComponent {
 		// Expand replies without left padding if this is the only reply
 		// for the comment and the comment is not a root-level one
 		// and it's the only reply for the comment's parent comment.
-		const expandRepliesWithoutPadding = isDialogueChain(comment, parentComment)
+		const _isMiddleDialogueChainLink = isMiddleDialogueChainLink(comment, parentComment)
 		// Automatically expand dialogue comment chains.
-		if (expandRepliesWithoutPadding) {
+		if (_isMiddleDialogueChainLink) {
 			showReplies = true
 		}
 		return (
-			<React.Fragment>
+			<div className={classNames('comment-tree', {
+				'comment-tree--nested': parentComment && !flat
+			})}>
+				{parentComment && !flat &&
+					<div className="comment-tree__branch-marker"/>
+				}
+				{parentComment && !flat &&
+					<div className="comment-tree__branch-line"/>
+				}
 				<Component
 					{...this.props}
 					postRef={this.post}
 					showingReplies={showReplies}
 					onToggleShowReplies={comment.replies ? this.onToggleShowReplies : undefined}
 					toggleShowRepliesButtonRef={this.toggleShowRepliesButton}/>
-				{showReplies && expandRepliesWithoutPadding &&
-					<div className="comment-tree__dialogue-chain-marker"/>
+				{showReplies && _isMiddleDialogueChainLink && comment.replies &&
+					<div className="comment-tree__dialogue-chain-marker-wrapper">
+						<div className="comment-tree__dialogue-chain-marker"/>
+					</div>
 				}
-				{showReplies && expandRepliesWithoutPadding &&
+				{showReplies && comment.replies && _isMiddleDialogueChainLink &&
 					<CommentTree
 						{...this.props}
+						flat
 						comment={removeLeadingPostLink(comment.replies[0], comment)}
 						parentComment={comment}/>
 				}
-				{showReplies && !expandRepliesWithoutPadding &&
-					<div className="comment-tree">
+				{showReplies && !_isMiddleDialogueChainLink &&
+					<div className="comment-tree__replies">
 						<button
 							type="button"
 							tabIndex={-1}
 							onClick={this.onBranchToggleClick}
-							className="rrui__button-reset comment-tree__branch"/>
+							className="rrui__button-reset comment-tree__branch-toggler"/>
 						{comment.replies.map((reply) => (
 							<CommentTree
 								{...this.props}
@@ -112,12 +126,12 @@ export default class CommentTree extends React.PureComponent {
 						))}
 					</div>
 				}
-			</React.Fragment>
+			</div>
 		)
 	}
 }
 
-export function isDialogueChain(comment, parentComment) {
+export function isMiddleDialogueChainLink(comment, parentComment) {
 	return comment.replies && comment.replies.length === 1 &&
 			parentComment && parentComment.replies.length === 1
 }

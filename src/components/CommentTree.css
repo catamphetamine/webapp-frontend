@@ -2,33 +2,88 @@
 	--comment-tree-padding: var(--content-section-horizontal-padding);
 	--comment-tree-line-thickness: 0.05em;
 	--comment-tree-line-color: var(--gray-color-200);
+	--comment-tree-branch-color: var(--gray-color-300);
+	--comment-tree-branch-toggler-hover-background-color: var(--gray-color-100);
+	--comment-tree-branch-toggler-hover-line-color: var(--base-color-700);
+	/* Approximate offset top so that it points to the first line of text in a comment. */
+	--comment-tree-branch-offset-top: calc(var(--content-section-vertical-padding) + 1.6em);
 	position: relative;
-	padding-left: var(--comment-tree-padding);
 }
 
-.comment-tree__branch {
+.comment-tree--nested {
+	margin-left: var(--comment-tree-padding);
+}
+
+.comment-tree__replies {
+	position: relative;
+}
+
+.comment-tree__branch-line {
+	position: absolute;
+	left: calc(-1 * var(--comment-tree-padding));
+	height: 100%;
+	border-left: var(--comment-tree-line-thickness) solid var(--comment-tree-line-color);
+	pointer-events: none;
+}
+
+.comment-tree:last-child > .comment-tree__branch-line {
+	height: var(--comment-tree-branch-offset-top);
+}
+
+.comment-tree__branch-toggler {
 	position: absolute;
 	left: 0;
 	top: 0;
 	width: var(--comment-tree-padding);
 	height: 100%;
-	border-left: var(--comment-tree-line-thickness) solid var(--comment-tree-line-color);
+	/*border-left: var(--comment-tree-line-thickness) solid var(--comment-tree-line-color);*/
 	box-sizing: border-box;
+	cursor: pointer;
 	&:hover {
-		background-color: var(--gray-color-100);
-		cursor: pointer;
-		border-left-color: var(--base-color-700);
+		background-color: var(--comment-tree-branch-toggler-hover-background-color);
+		& ~ .comment-tree {
+			/* Highlights branch lines for the immediate child comment tree
+			   and for all nested comment trees. */
+			.comment-tree__branch-toggler {
+				background-color: var(--comment-tree-branch-toggler-hover-background-color);
+			}
+			.comment-tree__branch-line {
+				border-left-color: var(--comment-tree-branch-toggler-hover-line-color);
+			}
+			.comment-tree__dialogue-chain-marker-wrapper .comment-tree__dialogue-chain-marker {
+				border-color: var(--comment-tree-branch-toggler-hover-line-color);
+			}
+			.comment-tree__branch-marker {
+				background-color: var(--comment-tree-branch-toggler-hover-line-color);
+			}
+		}
 	}
 }
 
-.comment-tree__dialogue-chain-marker {
+.comment-tree__branch-marker {
 	position: absolute;
-	left: calc(var(--comment-tree-padding) / 2);
-	width: calc(var(--comment-tree-padding) / 2);
-	height: var(--comment-tree-padding);
-	margin-top: calc(-1 * var(--comment-tree-padding) / 2);
-	border: var(--comment-tree-line-thickness) solid var(--comment-tree-line-color);
-	border-right: none;
-	box-sizing: border-box;
+	left: calc(-1 * var(--comment-tree-padding));
+	width: var(--comment-tree-padding);
+	height: var(--comment-tree-line-thickness);
+	margin-top: var(--comment-tree-branch-offset-top);
+	background-color: var(--comment-tree-branch-color);
 	pointer-events: none;
+}
+
+.comment-tree__dialogue-chain-marker-wrapper {
+	position: absolute;
+	left: calc(-1 * var(--comment-tree-padding));
+	width: var(--comment-tree-padding);
+	height: calc(var(--comment-tree-padding) * 2);
+	margin-top: calc(-1 * var(--comment-tree-padding));
+	overflow: hidden;
+	pointer-events: none;
+}
+
+.comment-tree__dialogue-chain-marker {
+	width: 200%;
+	height: 100%;
+	border: var(--comment-tree-line-thickness) solid var(--comment-tree-branch-color);
+	border-left-color: var(--comment-tree-line-color);
+	box-sizing: border-box;
 }
