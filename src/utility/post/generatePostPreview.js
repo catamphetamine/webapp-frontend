@@ -408,8 +408,8 @@ function countCharacters(content, mode) {
 		}
 		return content.length
 	} else if (content.content) {
-		if (content.type === 'post-link' && content.quote) {
-			return countCharacters(content.quote, mode)
+		if (content.type === 'post-link' && (content.quote || content.quotes)) {
+			return countCharacters(content.quote || content.quotes, mode)
 		} else {
 			return countCharacters(content.content, mode)
 		}

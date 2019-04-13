@@ -33,7 +33,7 @@ function _combineQuotes(content) {
 					// `kohlchan.net` and `8ch.net` have regular (green) quotes
 					// and "inverse" (red) quotes.
 					// Can only combine quotes of same "kind".
-					if (quote.kind && quote.kind !== content[i].kind) {
+					if (quote.kind !== content[i].kind) {
 						canCombineQuotes = false
 						return
 					}
