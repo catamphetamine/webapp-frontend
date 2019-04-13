@@ -7,7 +7,7 @@ import AccountPicture from './AccountPicture'
 import PostInlineContent from './PostInlineContent'
 import PostDate from './PostDate'
 import { accountLink } from './AccountLink'
-import { postShape, postBadge } from '../PropTypes'
+import { post, postBadge } from '../PropTypes'
 
 import EllipsisIcon from '../../assets/images/icons/ellipsis.svg'
 import LeftArrowIcon from '../../assets/images/icons/left-arrow-minimal.svg'
@@ -35,7 +35,6 @@ export default class PostHeader extends React.PureComponent {
 	render() {
 		const {
 			post,
-			thread,
 			url,
 			locale,
 			header: Header,
@@ -50,7 +49,7 @@ export default class PostHeader extends React.PureComponent {
 		} = this.props
 
 		if (badges) {
-			badges = badges.filter(({ condition }) => condition(post, thread))
+			badges = badges.filter(({ condition }) => condition(post))
 		}
 
 		const hasBadges = badges && badges.length > 0
@@ -178,8 +177,7 @@ export default class PostHeader extends React.PureComponent {
 }
 
 PostHeader.propTypes = {
-	post: postShape.isRequired,
-	thread: PropTypes.object,
+	post: post.isRequired,
 	badges: PropTypes.arrayOf(postBadge),
 	url: PropTypes.string,
 	locale: PropTypes.string,

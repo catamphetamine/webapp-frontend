@@ -6,7 +6,7 @@ import classNames from 'classnames'
 
 import {
 	accountShapeProfile,
-	postShape
+	post
 } from '../PropTypes'
 
 import {
@@ -59,7 +59,7 @@ export default class Profile extends React.Component
 {
 	static propTypes = {
 		account: accountShapeProfile,
-		posts: PropTypes.arrayOf(postShape),
+		posts: PropTypes.arrayOf(post),
 		openSlideshow: PropTypes.func.isRequired
 	}
 

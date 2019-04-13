@@ -1,9 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-// import { connect } from 'react-redux'
 import classNames from 'classnames'
 
-import { postShape, postBadge } from '../PropTypes'
+import { post, postBadge, postMessages } from '../PropTypes'
 
 import Slideshow from './Slideshow'
 import PostHeader from './PostHeader'
@@ -16,27 +15,14 @@ import loadTwitterLinks from '../utility/post/loadTwitterLinks'
 import expandStandaloneAttachmentLinks from '../utility/post/expandStandaloneAttachmentLinks'
 import generatePostPreview from '../utility/post/generatePostPreview'
 
-// import { openSlideshow } from '../redux/slideshow'
-
 import './Post.css'
 
-// Passing `openSlideshow` as an explicit property instead
-// to avoid having a lot of `@connect()`s executing on pages
-// with a lot of posts (for example, `chanchan` imageboard client).
-// @connect(() => ({}), {
-// 	openSlideshow
-// })
 export default class Post extends React.PureComponent {
 	static propTypes = {
-		post: postShape.isRequired,
-		thread: PropTypes.object,
+		post: post.isRequired,
 		header: PropTypes.func,
 		headerBadges: PropTypes.arrayOf(postBadge),
 		footerBadges: PropTypes.arrayOf(postBadge),
-		replies: PropTypes.arrayOf(oneOfType([
-			PropTypes.string,
-			PropTypes.number
-		])),
 		compact: PropTypes.bool,
 		expandFirstPictureOrVideo: PropTypes.bool,
 		saveBandwidth: PropTypes.bool,
@@ -53,16 +39,17 @@ export default class Post extends React.PureComponent {
 		url: PropTypes.string,
 		locale: PropTypes.string,
 		onMoreActions: PropTypes.func,
-		moreActionsLabel: PropTypes.string,
-		readMoreLabel: PropTypes.string,
-		spoilerLabel: PropTypes.string,
-		replyLabel: PropTypes.string,
+		messages: postMessages.isRequired,
 		className: PropTypes.string
 	}
 
 	state = {
 		showPreview: true
 	}
+
+	node = React.createRef()
+
+	getNode = () => this.node.current
 
 	expandContent = () => this.setState({ showPreview: false })
 
@@ -134,11 +121,9 @@ export default class Post extends React.PureComponent {
 	render() {
 		const {
 			post,
-			thread,
 			header,
 			headerBadges,
 			footerBadges,
-			replies,
 			compact,
 			url,
 			locale,
@@ -151,10 +136,7 @@ export default class Post extends React.PureComponent {
 			onReply,
 			onVote,
 			onMoreActions,
-			moreActionsLabel,
-			readMoreLabel,
-			replyLabel,
-			spoilerLabel,
+			messages,
 			className
 		} = this.props
 
@@ -164,23 +146,24 @@ export default class Post extends React.PureComponent {
 		const postContent = showPreview && post.contentPreview ? post.contentPreview : post.content
 
 		return (
-			<article className={classNames(className, 'post', {
-				'post--titled': post.title,
-				'post--starts-with-text': post.content && (typeof post.content === 'string' || typeof post.content[0] === 'string' || Array.isArray(post.content[0])),
-				'post--anonymous': !post.account,
-				'post--empty': !post.content,
-				'post--compact': compact
-			})}>
+			<article
+				ref={this.node}
+				className={classNames(className, 'post', {
+					'post--titled': post.title,
+					'post--starts-with-text': post.content && (typeof post.content === 'string' || typeof post.content[0] === 'string' || Array.isArray(post.content[0])),
+					'post--anonymous': !post.account,
+					'post--empty': !post.content,
+					'post--compact': compact
+				})}>
 				<PostHeader
 					post={post}
-					thread={thread}
 					url={url}
 					locale={locale}
 					header={header}
 					badges={headerBadges}
 					onMoreActions={onMoreActions}
-					moreActionsLabel={moreActionsLabel}
-					replyLabel={replyLabel}
+					moreActionsLabel={messages.moreActions}
+					replyLabel={messages.reply}
 					onReply={onReply}
 					onVote={onVote}/>
 				{postContent &&
@@ -190,11 +173,11 @@ export default class Post extends React.PureComponent {
 								key={i}
 								url={url}
 								onReadMore={this.expandContent}
-								readMoreLabel={readMoreLabel}
+								readMoreLabel={messages.readMore}
 								attachments={attachments}
 								attachmentThumbnailSize={attachmentThumbnailSize}
 								saveBandwidth={saveBandwidth}
-								spoilerLabel={spoilerLabel}
+								spoilerLabel={messages.spoiler}
 								openSlideshow={openSlideshow}
 								serviceIcons={serviceIcons}>
 								{content}
@@ -207,14 +190,15 @@ export default class Post extends React.PureComponent {
 					saveBandwidth={saveBandwidth}
 					maxAttachmentThumbnails={maxAttachmentThumbnails}
 					attachmentThumbnailSize={attachmentThumbnailSize}
-					spoilerLabel={spoilerLabel}
+					spoilerLabel={messages.spoiler}
 					openSlideshow={openSlideshow && this.openSlideshowForAttachments}>
 					{this.getNonEmbeddedAttachments()}
 				</PostAttachments>
 				<PostFooter
 					post={post}
 					badges={footerBadges}
-					locale={locale}/>
+					locale={locale}
+					messages={messages}/>
 			</article>
 		);
 	}

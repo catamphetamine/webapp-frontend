@@ -11,7 +11,7 @@ export default class OnClick extends React.Component {
 	static propTypes = {
 		panOffsetThreshold: PropTypes.number.isRequired,
 		onClick: PropTypes.func.isRequired,
-		link: PropTypes.string,
+		url: PropTypes.string,
 		filter: PropTypes.func,
 		onClickClassName: PropTypes.string,
 		className: PropTypes.string
@@ -72,17 +72,17 @@ export default class OnClick extends React.Component {
 	}
 
 	onPointerDown = (event) => {
-		const { link } = this.props
+		const { url } = this.props
 		switch (event.button) {
 			// Left mouse button.
 			case 0:
-				if (link && (event.ctrlKey || event.cmdKey)) {
+				if (url && (event.ctrlKey || event.cmdKey)) {
 					this.emulateLinkClick = true
 				}
 				break
 			// Middle mouse button.
 			case 1:
-				if (link) {
+				if (url) {
 					// `.preventDefault()` to prevent the web browser
 					// from showing the "all-scroll" cursor.
 					event.preventDefault()
@@ -169,7 +169,7 @@ export default class OnClick extends React.Component {
 	}
 
 	onPanEnd(x, y) {
-		const { onClick, link } = this.props
+		const { onClick, url } = this.props
 		if (this.isClickInProgress) {
 			// Simulate `event` argument.
 			const event = {
@@ -181,9 +181,9 @@ export default class OnClick extends React.Component {
 			if (onClick && !this.emulateLinkClick) {
 				onClick(event)
 			}
-			if (link) {
+			if (url) {
 				if (!event.defaultPrevented) {
-					openLinkInNewTab(link)
+					openLinkInNewTab(url)
 				}
 			}
 		}
@@ -213,7 +213,7 @@ export default class OnClick extends React.Component {
 			// rest
 			panOffsetThreshold,
 			onClick,
-			link,
+			url,
 			filter,
 			...rest
 		} = this.props

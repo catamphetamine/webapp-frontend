@@ -1,0 +1,34 @@
+.comment-tree {
+	--comment-tree-padding: var(--content-section-horizontal-padding);
+	--comment-tree-line-thickness: 0.05em;
+	--comment-tree-line-color: var(--gray-color-200);
+	position: relative;
+	padding-left: var(--comment-tree-padding);
+}
+
+.comment-tree__branch {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: var(--comment-tree-padding);
+	height: 100%;
+	border-left: var(--comment-tree-line-thickness) solid var(--comment-tree-line-color);
+	box-sizing: border-box;
+	&:hover {
+		background-color: var(--gray-color-100);
+		cursor: pointer;
+		border-left-color: var(--base-color-700);
+	}
+}
+
+.comment-tree__dialogue-chain-marker {
+	position: absolute;
+	left: calc(var(--comment-tree-padding) / 2);
+	width: calc(var(--comment-tree-padding) / 2);
+	height: var(--comment-tree-padding);
+	margin-top: calc(-1 * var(--comment-tree-padding) / 2);
+	border: var(--comment-tree-line-thickness) solid var(--comment-tree-line-color);
+	border-right: none;
+	box-sizing: border-box;
+	pointer-events: none;
+}
