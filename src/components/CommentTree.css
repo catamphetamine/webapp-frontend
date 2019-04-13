@@ -70,20 +70,15 @@
 	pointer-events: none;
 }
 
-.comment-tree__dialogue-chain-marker-wrapper {
+.comment-tree__dialogue-chain-marker {
 	position: absolute;
 	left: calc(-1 * var(--comment-tree-padding));
 	width: var(--comment-tree-padding);
 	height: calc(var(--comment-tree-padding) * 2);
 	margin-top: calc(-1 * var(--comment-tree-padding));
-	overflow: hidden;
-	pointer-events: none;
-}
-
-.comment-tree__dialogue-chain-marker {
-	width: 200%;
-	height: 100%;
 	border: var(--comment-tree-line-thickness) solid var(--comment-tree-branch-color);
 	border-left-color: var(--comment-tree-line-color);
+	border-right: none;
 	box-sizing: border-box;
+	pointer-events: none;
 }

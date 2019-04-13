@@ -102,9 +102,7 @@ export default class CommentTree extends React.PureComponent {
 					onToggleShowReplies={comment.replies ? this.onToggleShowReplies : undefined}
 					toggleShowRepliesButtonRef={this.toggleShowRepliesButton}/>
 				{showReplies && _isMiddleDialogueChainLink && comment.replies &&
-					<div className="comment-tree__dialogue-chain-marker-wrapper">
-						<div className="comment-tree__dialogue-chain-marker"/>
-					</div>
+					<div className="comment-tree__dialogue-chain-marker"/>
 				}
 				{showReplies && comment.replies && _isMiddleDialogueChainLink &&
 					<CommentTree
