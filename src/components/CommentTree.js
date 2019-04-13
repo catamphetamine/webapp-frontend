@@ -120,6 +120,7 @@ export default class CommentTree extends React.PureComponent {
 						{comment.replies.map((reply) => (
 							<CommentTree
 								{...this.props}
+								flat={false}
 								key={reply.id}
 								comment={removeLeadingPostLink(reply, comment)}
 								parentComment={comment}/>
