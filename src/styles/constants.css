@@ -54,7 +54,7 @@
 	--critical-color-800 : #A20013;
 	--critical-color-900 : #77000E;
 
-	--background-color : #eaeaea;
+	--background-color-empty : #eaeaea;
 	--content-section-divider-color : #e3e4e8;
 	--content-section-shadow : 0 1px 0 0 #d7d8db, 0 0 0 1px var(--content-section-divider-color);
 
@@ -91,7 +91,7 @@
 
 	--footer-menu-height : calc(var(--unit) * 3);
 
-	--picture-background-color: var(--background-color);
+	--picture-background-color: var(--background-color-empty);
 	--picture-border-color: rgba(0, 0, 0, 0.5);
 	--picture-border-width: 1px;
 
