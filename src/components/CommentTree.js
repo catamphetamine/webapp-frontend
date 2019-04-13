@@ -69,7 +69,8 @@ export default class CommentTree extends React.PureComponent {
 			flat,
 			comment,
 			parentComment,
-			component: Component
+			component: Component,
+			...rest
 		} = this.props
 		let {
 			showReplies
@@ -93,7 +94,9 @@ export default class CommentTree extends React.PureComponent {
 					<div className="comment-tree__branch-line"/>
 				}
 				<Component
-					{...this.props}
+					{...rest}
+					comment={comment}
+					parentComment={parentComment}
 					postRef={this.post}
 					showingReplies={showReplies}
 					onToggleShowReplies={comment.replies ? this.onToggleShowReplies : undefined}
@@ -105,10 +108,11 @@ export default class CommentTree extends React.PureComponent {
 				}
 				{showReplies && comment.replies && _isMiddleDialogueChainLink &&
 					<CommentTree
-						{...this.props}
+						{...rest}
 						flat
 						comment={removeLeadingPostLink(comment.replies[0], comment)}
-						parentComment={comment}/>
+						parentComment={comment}
+						component={Component}/>
 				}
 				{showReplies && !_isMiddleDialogueChainLink &&
 					<div className="comment-tree__replies">
@@ -119,11 +123,11 @@ export default class CommentTree extends React.PureComponent {
 							className="rrui__button-reset comment-tree__branch-toggler"/>
 						{comment.replies.map((reply) => (
 							<CommentTree
-								{...this.props}
-								flat={false}
+								{...rest}
 								key={reply.id}
 								comment={removeLeadingPostLink(reply, comment)}
-								parentComment={comment}/>
+								parentComment={comment}
+								component={Component}/>
 						))}
 					</div>
 				}
