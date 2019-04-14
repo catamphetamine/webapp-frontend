@@ -113,7 +113,13 @@ export default class CommentTree extends React.PureComponent {
 						component={Component}/>
 				}
 				{showReplies && !_isMiddleDialogueChainLink &&
-					<div className="comment-tree__replies">
+					<div className={classNames('comment-tree__replies', {
+						// If comments don't have any side padding
+						// then the root replies branch line would be ineligible
+						// because it would be drawn at the very screen edge.
+						// This CSS class can be used for styling such special case.
+						'comment-tree__replies--root': !parentComment
+					})}>
 						<button
 							type="button"
 							tabIndex={-1}

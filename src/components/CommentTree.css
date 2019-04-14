@@ -2,11 +2,12 @@
 
 .comment-tree {
 	--comment-tree-padding: var(--content-section-horizontal-padding);
-	--comment-tree-line-thickness: 0.05em;
+	--comment-tree-line-thickness: 1px;
 	--comment-tree-line-color: var(--gray-color-200);
 	--comment-tree-branch-color: var(--gray-color-300);
 	--comment-tree-branch-toggler-hover-background-color: var(--gray-color-100);
 	--comment-tree-branch-toggler-hover-line-color: var(--base-color-700);
+	--comment-tree-root-level-replies-branch-width-factor: 1;
 	/* Approximate offset top so that it points to the first line of text in a comment. */
 	--comment-tree-branch-post-content-offset-top: 1.6em;
 	--comment-tree-branch-offset-top: calc(var(--content-section-vertical-padding) + var(--comment-tree-branch-post-content-offset-top));
@@ -22,6 +23,24 @@
 
 .comment-tree__replies {
 	position: relative;
+}
+
+/*
+If comments don't have any side padding
+then the root replies branch line would be ineligible
+because it would be drawn at the very screen edge.
+This CSS class can be used for styling such special case.
+*/
+.comment-tree__replies--root {
+	> .comment-tree {
+		> .comment-tree__branch-line,
+		> .comment-tree__branch-marker {
+			left: calc(-1 * var(--comment-tree-padding) * var(--comment-tree-root-level-replies-branch-width-factor));
+		}
+		> .comment-tree__branch-marker {
+			width: calc(var(--comment-tree-padding) * var(--comment-tree-root-level-replies-branch-width-factor));
+		}
+	}
 }
 
 .comment-tree__branch-line {
