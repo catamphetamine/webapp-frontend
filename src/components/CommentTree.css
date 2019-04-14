@@ -1,3 +1,5 @@
+@import "../styles/common";
+
 .comment-tree {
 	--comment-tree-padding: var(--content-section-horizontal-padding);
 	--comment-tree-line-thickness: 0.05em;
@@ -6,7 +8,11 @@
 	--comment-tree-branch-toggler-hover-background-color: var(--gray-color-100);
 	--comment-tree-branch-toggler-hover-line-color: var(--base-color-700);
 	/* Approximate offset top so that it points to the first line of text in a comment. */
-	--comment-tree-branch-offset-top: calc(var(--content-section-vertical-padding) + 1.6em);
+	--comment-tree-branch-post-content-offset-top: 1.6em;
+	--comment-tree-branch-offset-top: calc(var(--content-section-vertical-padding) + var(--comment-tree-branch-post-content-offset-top));
+	@mixin upto-xs {
+		--comment-tree-branch-post-content-offset-top: 1.9em;
+	}
 	position: relative;
 }
 
