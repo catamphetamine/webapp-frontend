@@ -25,26 +25,20 @@ body
 
 /* `html` is required in order for `rem`s to work. */
 /* Also doesn't work without `body` for some weird reason. */
-html, body
-{
+html, body {
 	font-family : var(--font-family);
-
 	@mixin xxs {
 		font-size : var(--font-size-xxs);
 	}
-
 	@mixin xs {
 		font-size : var(--font-size-xs);
 	}
-
 	@mixin s {
 		font-size : var(--font-size-s);
 	}
-
 	@mixin m {
 		font-size : var(--font-size-m);
 	}
-
 	@mixin l-plus {
 		font-size : var(--font-size-m);
 	}
@@ -102,4 +96,11 @@ p
 ::selection {
 	color: var(--white-color);
 	background-color: var(--base-color-600);
+}
+
+/* Safari `<input type="search"/>` fix test. */
+/* https://stackoverflow.com/questions/34802552/safari-input-type-search-reset-normalize */
+/* Remove this if this works and when the fix is released in `react-responsive-ui`. */
+.rrui__input-field {
+	-webkit-appearance : none;
 }

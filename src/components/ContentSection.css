@@ -1,7 +1,6 @@
 @import "../styles/common";
 
-:root
-{
+:root {
 	--content-section-margin : calc(var(--unit) * 1);
 
 	/*
@@ -18,6 +17,7 @@
 		--content-section-margin : calc(var(--unit) * 1);
 		--content-section-horizontal-padding : calc(var(--unit) * 1);
 		--content-section-vertical-padding : calc(var(--unit) * 1);
+
 		/*--background-section-vertical-margin : calc(var(--unit) * 2);*/
 	}
 }
