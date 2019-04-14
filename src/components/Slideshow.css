@@ -1,64 +1,56 @@
 @import "../styles/common";
 
-:root
-{
-	--slideshow-button-size-medium : calc(var(--unit) * 3);
-	--slideshow-button-size-big    : calc(var(--unit) * 3.5);
-
-	--slideshow-button-margin-small : calc(var(--unit) / 2);
-	--slideshow-button-margin       : var(--unit);
+:root {
+	--slideshow-button-size: calc(var(--unit) * 3);
+	--slideshow-button-margin: var(--unit);
+	@mixin xxs {
+		--slideshow-button-margin: calc(var(--unit) / 2);
+	}
+	@mixin l-plus {
+		--slideshow-button-size: calc(var(--unit) * 3.5);
+	}
 }
 
-.rrui__slideshow
-{
+.rrui__slideshow {
 	/* Slideshow is focused upon opening. */
-	outline : none;
-
+	outline: none;
 	/* Only allows single-finger vertical panning gestures. */
 	/* (disable all other touch gestures). */
 	/* Don't know what exactly does it do. */
 	/* Just copy-pasted it from Instagram. */
-	touch-action : pan-y;
+	touch-action: pan-y;
 }
 
-.rrui__slideshow--fullscreen
-{
-	position : fixed;
-	left     : 0;
-	right    : 0;
-	top      : 0;
-	bottom   : 0;
+.rrui__slideshow--fullscreen {
+	position: fixed;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
 }
 
-.rrui__slideshow__slides
-{
-	display : flex;
-	align-items : center;
-	justify-content : flex-start;
-
-	width : 100%;
-	height : 100%;
-
-	list-style : none;
-	padding : 0;
-	margin : 0;
-
+.rrui__slideshow__slides {
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	width: 100%;
+	height: 100%;
+	list-style: none;
+	padding: 0;
+	margin: 0;
 	/* For touch paging. */
-	transition-property : transform;
+	transition-property: transform;
 }
 
-.rrui__slideshow__slide
-{
-	flex : 0 0 100%;
-	height : 100%;
-
+.rrui__slideshow__slide {
+	flex: 0 0 100%;
+	height: 100%;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 }
 
-.rrui__slideshow__video
-{
+.rrui__slideshow__video {
 	width: 100%;
 	height: 100%;
 	background-color: black;
@@ -70,103 +62,85 @@
 }
 
 .rrui__slideshow__video .rrui__picture,
-.rrui__slideshow__picture
-{
-	width  : 100%;
-	height : 100%;
+.rrui__slideshow__picture {
+	width: 100%;
+	height: 100%;
 }
 
-.rrui__slideshow__slides--dragging
-{
+/* Show a border around the current slide
+   So that it can be discerned from the next/previous slides. */
+.rrui__slideshow__slide--current {
+	/* Elevating the current slide using `z-index`
+	   so that its `box-shadow` is visible. */
+	position: relative;
+	z-index: 1;
+	.rrui__slideshow__video .rrui__picture,
+	.rrui__slideshow__picture {
+		box-shadow: 0 0 0 1px var(--picture-border-color);
+	}
+}
+
+
+.rrui__slideshow__slides--dragging {
 	transition-duration: 0s;
 	transform: translateX(-600px);
 }
 
-.rrui__slideshow__slides--released
-{
+.rrui__slideshow__slides--released {
 	transition-duration: 0.01234s;
 	transform: translateX(-789px);
 }
 
-.rrui__slideshow__picture .rrui__picture__image
-{
-	cursor : pointer;
+.rrui__slideshow__picture .rrui__picture__image {
+	cursor: pointer;
 }
 
-.rrui__slideshow--panning .rrui__slideshow__slide
-{
-	cursor : grabbing;
+.rrui__slideshow--panning .rrui__slideshow__slide {
+	cursor: grabbing;
 }
 
-.rrui__slideshow__slide .rrui__picture__loading
-{
-	color : var(--white-color);
+.rrui__slideshow__slide .rrui__picture__loading {
+	color: var(--white-color);
 }
 
-.rrui__slideshow__actions-top-right
-{
-	position : absolute;
-	top    : var(--slideshow-button-margin);
-	right  : var(--slideshow-button-margin);
-
-	margin : 0;
-	padding : 0;
-	list-style : none;
-	line-height : 0;
-
-	display : flex;
-
-	@mixin xxs
-	{
-		top    : var(--slideshow-button-margin-small);
-		right  : var(--slideshow-button-margin-small);
-	}
+.rrui__slideshow__actions {
+	position: absolute;
+	top: var(--slideshow-button-margin);
+	right: 0;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	line-height: 0;
+	display: flex;
 }
 
-.rrui__slideshow__controls-center
-{
-	position : absolute;
-	left   : 50%;
-
-	transform : translateX(-50%);
-
-	display : inline-block;
-
-	padding : 0;
-	margin  : 0;
+.rrui__slideshow__controls-center {
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+	display: inline-block;
+	padding: 0;
+	margin: 0;
 }
 
-.rrui__slideshow__controls-top
-{
-	top : var(--slideshow-button-margin);
-
-	@mixin xxs
-	{
-		top : var(--slideshow-button-margin-small);
-	}
+.rrui__slideshow__controls-top {
+	top: var(--slideshow-button-margin);
 }
 
-.rrui__slideshow__controls-bottom
-{
-	bottom : var(--slideshow-button-margin);
-
-	@mixin xxs
-	{
-		bottom : var(--slideshow-button-margin-small);
-	}
+.rrui__slideshow__controls-bottom {
+	bottom: var(--slideshow-button-margin);
 }
 
-.rrui__slideshow__action
-{
-	display  : block;
-	position : relative;
+.rrui__slideshow__action {
+	display: block;
+	position: relative;
 
-	width  : var(--slideshow-button-size-medium);
-	height : var(--slideshow-button-size-medium);
+	width: var(--slideshow-button-size);
+	height: var(--slideshow-button-size);
 
-	border-radius : 50%;
-	background-color : rgba(0,0,0,0.7);
-	color : var(--white-color);
+	border-radius: 50%;
+	background-color: rgba(0,0,0,0.7);
+	color: var(--white-color);
 
 	outline: none;
 
@@ -181,114 +155,76 @@
 		background-color: var(--base-color-500);
 		/*box-shadow: 0 0 0 1px var(--white-color-500);*/
 	}
-
-	@mixin l-plus {
-		width  : var(--slideshow-button-size-big);
-		height : var(--slideshow-button-size-big);
-	}
 }
 
-.rrui__slideshow__actions-top-right .rrui__slideshow__action
-{
-	margin-left : var(--slideshow-button-margin);
-
-	@mixin xxs
-	{
-		margin-left : var(--slideshow-button-margin-small);
-	}
+.rrui__slideshow__actions .rrui__slideshow__action {
+	margin-left: var(--slideshow-button-margin);
 }
 
 .rrui__slideshow__action-item {
 	line-height: 0;
 	margin-right: var(--slideshow-button-margin);
-	@mixin xxs {
-		margin-right: var(--slideshow-button-margin-small);
-	}
-}
-
-.rrui__slideshow__action-item:last-child {
-	margin-right: 0;
 }
 
 .rrui__slideshow__action:first-child,
-.rrui__slideshow__action-group:first-child
-{
-	margin-left : 0;
+.rrui__slideshow__action-group:first-child {
+	margin-left: 0;
 }
 
 .rrui__slideshow__action:active {
-	background-color : var(--base-color-500);
+	background-color: var(--base-color-500);
 }
 
-.rrui__slideshow__action-icon
-{
-	position : absolute;
-	top      : 25%;
-	left     : 25%;
-	width    : 50%;
+.rrui__slideshow__action-icon {
+	position: absolute;
+	top: 25%;
+	left: 25%;
+	width: 50%;
 }
 
-.rrui__slideshow__action-icon--download
-{
-	transform : scale(1.25);
+.rrui__slideshow__action-icon--download {
+	transform: scale(1.25);
 }
 
-.rrui__slideshow__action-group
-{
+.rrui__slideshow__action-group {
 	display: flex;
 }
 
-.rrui__slideshow__action-group .rrui__slideshow__action
-{
+.rrui__slideshow__action-group .rrui__slideshow__action {
 	margin: 0;
 	border-radius: 0;
-
-	&:first-child
-	{
-		border-top-left-radius    : 50%;
-		border-bottom-left-radius : 50%;
+	&:first-child {
+		border-top-left-radius: 50%;
+		border-bottom-left-radius: 50%;
 	}
-
-	&:last-child
-	{
-		border-top-right-radius    : 50%;
-		border-bottom-right-radius : 50%;
+	&:last-child {
+		border-top-right-radius: 50%;
+		border-bottom-right-radius: 50%;
 	}
 }
 
 .rrui__slideshow__previous,
-.rrui__slideshow__next
-{
-	position  : absolute;
-	top       : 50%;
-	margin-left  : var(--slideshow-button-margin);
-	margin-right : var(--slideshow-button-margin);
-	transform : translateY(-50%);
-
-	@mixin xxs
-	{
-		margin-left  : var(--slideshow-button-margin-small);
-		margin-right : var(--slideshow-button-margin-small);
-	}
+.rrui__slideshow__next {
+	position: absolute;
+	top: 50%;
+	margin-left: var(--slideshow-button-margin);
+	margin-right: var(--slideshow-button-margin);
+	transform: translateY(-50%);
 }
 
-.rrui__slideshow__previous
-{
-	left : 0;
+.rrui__slideshow__previous {
+	left: 0;
 }
 
-.rrui__slideshow__next
-{
-	right : 0;
+.rrui__slideshow__next {
+	right: 0;
 }
 
-.rrui__slideshow__progress
-{
+.rrui__slideshow__progress {
 	pointer-events: none;
 }
 
-.rrui__slideshow__progress-counter
-{
+.rrui__slideshow__progress-counter {
 	display: flex;
 	align-items: center;
 	height: 2em;
@@ -299,26 +235,22 @@
 	color: var(--white-color);
 }
 
-.rrui__slideshow__progress-counter-current
-{
+.rrui__slideshow__progress-counter-current {
 	opacity: 0.75;
 }
 
-.rrui__slideshow__progress-counter-divider
-{
+.rrui__slideshow__progress-counter-divider {
 	margin-left: 0.35em;
 	margin-right: 0.35em;
 	opacity: 0.25;
 	transform: scale(1.4);
 }
 
-.rrui__slideshow__progress-counter-total
-{
+.rrui__slideshow__progress-counter-total {
 	opacity: 0.35;
 }
 
-.rrui__slideshow__progress-dots
-{
+.rrui__slideshow__progress-dots {
 	display: flex;
 	margin: 0;
 	margin-bottom: calc(var(--unit) / 2);
@@ -327,15 +259,14 @@
 	opacity: 0.8;
 }
 
-.rrui__slideshow__progress-dot
-{
+.rrui__slideshow__progress-dot {
 	width: calc(var(--unit) / 2);
 	height: calc(var(--unit) / 2);
 	margin-left: calc(var(--unit) / 4);
 	margin-right: calc(var(--unit) / 4);
 	border-radius: 50%;
-	background-color: rgba(255, 255, 255, 0.4);
-	box-shadow: 0 0 2px var(--black-color);
+	background-color: rgba(255, 255, 255, 0.7);
+	box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5);
 }
 
 .rrui__slideshow__progress-dot--selected {
@@ -349,4 +280,12 @@
 .rrui__slideshow__video {
 	/* A border around a video in a fullscreen slideshow disturbs the immersion. */
 	--rrui-video-focus-border-color: transparent;
+}
+
+.rrui__slideshow--hide-controls {
+	.rrui__slideshow__actions,
+	.rrui__slideshow__next,
+	.rrui__slideshow__previous {
+		display: none;
+	}
 }

@@ -8,6 +8,8 @@ import FocusLock from 'react-focus-lock'
 import { disableBodyScroll, enableBodyScroll, clearAllBodyScrollLocks } from '../utility/body-scroll-lock'
 import { isClickable, requestFullScreen, exitFullScreen, onFullScreenChange } from '../utility/dom'
 
+import { isTouchDevice } from './DeviceInfo'
+
 import PicturePlugin from './Slideshow.Picture'
 import VideoPlugin from './Slideshow.Video'
 
@@ -177,6 +179,10 @@ class Slideshow extends React.PureComponent {
 		}
 	}
 
+	resetTapEvent = () => {
+		this.isTapEvent = undefined
+	}
+
 	// Only execute `fn` if the component is still mounted.
 	// Can be used for `setTimeout()` and `Promise`s.
 	ifStillMounted = (fn) => (...args) => this._isMounted && fn.apply(this, args)
@@ -218,6 +224,29 @@ class Slideshow extends React.PureComponent {
 	shouldPreloadNextSlide() {
 		const { i } = this.props
 		return this.didScrollThroughSlides || i === 0
+	}
+
+	showPreviousNextSlides() {
+		const { children: slides } = this.props
+		const { i } = this.state
+		let { slidesShown } = this.state
+		// Show previous slide.
+		if (i > 0) {
+			if (!slidesShown[i - 1]) {
+				slidesShown = slidesShown.slice()
+				slidesShown[i - 1] = true
+			}
+		}
+		// Show next slide.
+		if (i < slides.length - 1) {
+			if (!slidesShown[i + 1]) {
+				slidesShown = slidesShown.slice()
+				slidesShown[i + 1] = true
+			}
+		}
+		this.setState({
+			slidesShown
+		})
 	}
 
 	showSlide(i) {
@@ -415,6 +444,11 @@ class Slideshow extends React.PureComponent {
 		return this.getPluginForSlide().getAspectRatio(this.getCurrentSlide())
 	}
 
+	isTouchDevice() {
+		// `this._isTouchDevice` is a fallback in case `<DeviceInfo/>` is not used.
+		return isTouchDevice || this._isTouchDevice
+	}
+
 	onBackgroundClick = (event) => {
 		const { closeOnOverlayClick } = this.props
 		// A "click" event is emitted on mouse up
@@ -474,6 +508,12 @@ class Slideshow extends React.PureComponent {
 		// (because clicked inside the slide bounds, not outside it)
 		event.stopPropagation()
 
+		// Don't show the next slide on tap.
+		// (show slide controls instead)
+		if (this.isTapEvent) {
+			return this.toggleShowControls()
+		}
+
 		// Change the current slide to next or previous one.
 		if (this.getPluginForSlide().changeSlideOnClick !== false) {
 			this.showNext()
@@ -483,6 +523,13 @@ class Slideshow extends React.PureComponent {
 			// 	this.showNext()
 			// }
 		}
+	}
+
+	toggleShowControls() {
+		const { showControls } = this.state
+		this.setState({
+			showControls: !showControls
+		})
 	}
 
 	close = () => {
@@ -594,7 +641,7 @@ class Slideshow extends React.PureComponent {
 	}
 
 	onTouchStart = (event) => {
-		this.isTouchDevice = true
+		this._isTouchDevice = true
 		// Ignore multitouch.
 		if (event.touches.length > 1) {
 			// Reset.
@@ -610,6 +657,8 @@ class Slideshow extends React.PureComponent {
 	}
 
 	onTouchEnd = (event) => {
+		this.isTapEvent = true
+		this.tapEventTimeout = setTimeout(this.resetTapEvent, 30)
 		this.onTouchCancel()
 	}
 
@@ -673,7 +722,7 @@ class Slideshow extends React.PureComponent {
 	onPointerOut = () => {
 		// `onPointerOut` is called immediately
 		// when starting to pan on touch devices.
-		if (!this.isTouchDevice) {
+		if (!this.isTouchDevice()) {
 			if (this.isPanning) {
 				this.onPanEnd()
 			}
@@ -701,7 +750,6 @@ class Slideshow extends React.PureComponent {
 	onPanEnd() {
 		const {
 			inline,
-			overlayOpacity,
 			slideInDuration,
 			minSlideInDuration
 		} = this.props
@@ -731,7 +779,7 @@ class Slideshow extends React.PureComponent {
 			this.updateSlidePosition()
 			if (!inline) {
 				this.updateOverlayTransitionDuration()
-				this.updateOverlayOpacity(overlayOpacity)
+				this.updateOverlayOpacity()
 			}
 			// Transition the slide back to it's original position.
 			this.transitionOngoing = true
@@ -772,6 +820,13 @@ class Slideshow extends React.PureComponent {
 			this.panDirection = isPanningX ? 'horizontal' : 'vertical'
 		}
 
+		// The user intended to swipe left/right through slides
+		// which means the slideshow should start preloading and showing
+		// previous/next slides (if it's not showing them already).
+		if (this.panDirection === 'horizontal') {
+			this.showPreviousNextSlides()
+		}
+
 		if (this.panDirection === 'horizontal') {
 			this.panOffsetX = positionX - this.panOriginX
 		} else {
@@ -799,7 +854,7 @@ class Slideshow extends React.PureComponent {
 				if ((this.isFirst() && this.panOffsetX > 0) ||
 					(this.isLast() && this.panOffsetX < 0)) {
 					this.updateOverlayOpacity(
-						overlayOpacity * (1 - (Math.abs(this.panOffsetX) / (this.getSlideshowWidth() / 2)))
+						overlayOpacity * (1 - (Math.abs(this.panOffsetX) / this.getSlideshowWidth()))
 					)
 				}
 			} else {
@@ -859,7 +914,11 @@ class Slideshow extends React.PureComponent {
 	}
 
 	updateSlideTransitionDuration() {
-		this.slides.current.style.transitionDuration = `${this.transitionDuration}ms`
+		this.slides.current.style.transitionDuration = this.getSlideTransitionDuration()
+	}
+
+	getSlideTransitionDuration() {
+		return `${this.transitionDuration}ms`
 	}
 
 	updateSlidePosition() {
@@ -867,7 +926,11 @@ class Slideshow extends React.PureComponent {
 	}
 
 	updateOverlayTransitionDuration() {
-		this.container.current.style.transitionDuration = `${this.transitionDuration}ms`
+		this.container.current.style.transitionDuration = this.getOverlayTransitionDuration()
+	}
+
+	getOverlayTransitionDuration() {
+		return`${this.transitionDuration}ms`
 	}
 
 	updateOverlayOpacity(opacity = this.props.overlayOpacity) {
@@ -915,7 +978,7 @@ class Slideshow extends React.PureComponent {
 		return inline
 	}
 
-	shouldShowScaleButton() {
+	shouldShowScaleButtons() {
 		const { inline } = this.props
 		return !inline && this.isFullScreenSlide(true) === false
 	}
@@ -957,7 +1020,8 @@ class Slideshow extends React.PureComponent {
 		const {
 			i,
 			slidesShown,
-			expandedSlideIndex
+			expandedSlideIndex,
+			showControls
 		} = this.state
 
 		// `react-focus-lock` doesn't focus `<video/>` when cycling the Tab key.
@@ -981,11 +1045,19 @@ class Slideshow extends React.PureComponent {
 				tabIndex={-1}
 				style={inline ? undefined : {
 					paddingRight: this.containerPaddingRight,
+					transitionDuration: this.getOverlayTransitionDuration(),
+					// `this.props.overlayOpacity` is the default overlay opacity
+					// and doesn't reflect the current overlay opacity.
+					// Overlay opacity only changes when user swipes up/down
+					// or left on the first slide or right on the last slide,
+					// and slides get re-rendered only on `this.setState()`
+					// which doesn't interfere with the opacity change.
 					backgroundColor: this.getOverlayBackgroundColor(overlayOpacity)
 				}}
 				className={classNames('rrui__slideshow', {
 					'rrui__slideshow--fullscreen': !inline,
-					'rrui__slideshow--panning': this.isActuallyPanning
+					'rrui__slideshow--panning': this.isActuallyPanning,
+					'rrui__slideshow--hide-controls': this.isTouchDevice() && !showControls
 				})}
 				onKeyDown={this.onKeyDown}
 				onDragStart={this.onDragStart}
@@ -1008,7 +1080,7 @@ class Slideshow extends React.PureComponent {
 							// Otherwise that "Composite Layers" operation would take about
 							// 30ms a couple of times sequentially causing a visual lag.
 							willChange: 'transform',
-							transitionDuration: this.transitionDuration,
+							transitionDuration: this.getSlideTransitionDuration(),
 							transform: this.slides.current ? this.getTransform() : undefined,
 							opacity: this.slides.current ? 1 : 0
 						}}
@@ -1016,14 +1088,16 @@ class Slideshow extends React.PureComponent {
 						{slides.map((slide, j) => (
 							<li
 								key={j}
-								className="rrui__slideshow__slide">
+								className={classNames('rrui__slideshow__slide', {
+									'rrui__slideshow__slide--current': i === j
+								})}>
 								{slidesShown[j] && this.renderSlide(slide, j, expandedSlideIndex === j)}
 							</li>
 						))}
 					</ul>
 
-					<ul className="rrui__slideshow__actions-top-right">
-						{this.shouldShowScaleButton() &&
+					<ul className="rrui__slideshow__actions">
+						{this.shouldShowScaleButtons() &&
 							<li className={classNames('rrui__slideshow__action-item', {
 								'rrui__slideshow__action-group': showScaleButtons
 							})}>
@@ -1126,7 +1200,7 @@ class Slideshow extends React.PureComponent {
 							type="button"
 							title={messages.actions.next}
 							onClick={this.onShowNext}
-							className="rrui__button-reset rrui__slideshow__action rrui__slideshow__next">
+							className="rrui__button-reset rrui__slideshow__action rrui__slideshow__action rrui__slideshow__next">
 							<RightArrow className="rrui__slideshow__action-icon"/>
 						</button>
 					}

@@ -17,6 +17,7 @@ import '../components/TimeAgo.en'
 import Snackbar from '../components/Snackbar'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
+import DeviceInfo from '../components/DeviceInfo'
 import Slideshow from '../components/Slideshow'
 
 import { closeSlideshow } from '../redux/slideshow'
@@ -62,6 +63,9 @@ export default class App extends Component
 
 				{/* Pop-up messages */}
 				<Snackbar/>
+
+				{/* Detects touch device. */}
+				<DeviceInfo/>
 
 				{/* Picture Slideshow */}
 				{slideshowPictures &&
