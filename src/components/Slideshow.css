@@ -74,12 +74,16 @@
 	   so that its `box-shadow` is visible. */
 	position: relative;
 	z-index: 1;
-	.rrui__slideshow__video,
+	/* Using `box-shadow` here instead of `border`
+	   so that the border is not visible for the current slide
+	   but only when swiping from the current slide to its siblings. */
 	.rrui__slideshow__picture {
 		box-shadow: 0 0 0 1px var(--picture-border-color);
 	}
+	.rrui__slideshow__video {
+		--rrui-video-focus-border-color: var(--picture-border-color);
+	}
 }
-
 
 .rrui__slideshow__slides--dragging {
 	transition-duration: 0s;
@@ -294,11 +298,6 @@
 
 .rrui__slideshow__video .rrui__video__play-icon {
 	--rrui-video-play-icon-size: 20%;
-}
-
-.rrui__slideshow__video {
-	/* A border around a video in a fullscreen slideshow disturbs the immersion. */
-	--rrui-video-focus-border-color: transparent;
 }
 
 .rrui__slideshow--small-screen:not(.rrui__slideshow--show-controls) {

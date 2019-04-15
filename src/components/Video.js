@@ -427,6 +427,7 @@ export default class Video extends React.Component {
 
 		const _style = style ? { ...style, ...this.getContainerStyle() } : this.getContainerStyle()
 		const _className = classNames(className, 'rrui__video', {
+			'rrui__video--preview': showPreview,
 			'rrui__video--aspect-ratio': fit === 'width'
 		})
 
