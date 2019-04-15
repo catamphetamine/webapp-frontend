@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { getAspectRatio } from './Picture'
-import Video, { getMaxSize } from './Video'
+import Video, { getMaxSize, getUrl } from './Video'
 
 export default {
 	minInitialScale: 0.5,
@@ -19,6 +19,34 @@ export default {
 	// isScaleDownAllowed(slide) {
 	// 	return false
 	// },
+	capturesArrowKeys(slide) {
+		return true
+	},
+	hasSwipingIssues(slide) {
+		switch (slide.provider) {
+			// iOS Safari has a bug when YouTube video is played in fullscreen slideshow:
+			// touch scroll goes through it and it doesn't respond to swiping.
+			// I guess Vimeo could have the same bug (didn't test).
+			// On desktop mouse users are unable to swipe the video <iframe/> too.
+			case 'YouTube':
+			case 'Vimeo':
+				return true
+			default:
+				return false
+		}
+	},
+	hasCloseButtonClickingIssues(slide) {
+		switch (slide.provider) {
+			// Even though slideshow actions are shown above a YouTube video <iframe/>
+			// clicks are being captured by that video <iframe/> for some reason.
+			// I guess Vimeo could have the same bug (didn't test).
+			case 'YouTube':
+			case 'Vimeo':
+				return true
+			default:
+				return false
+		}
+	},
 	onKeyDown(event, slide, ref) {
 		const video = ref.current
 		switch (event.keyCode) {
@@ -60,20 +88,26 @@ export default {
 		}
 		return
 	},
-	canDownload(slide) {
-		switch (slide.provider) {
-			case undefined:
-				return true
-			default:
-				return false
-		}
+	canOpenExternalLink(slide) {
+		return true
 	},
-	getDownloadLink(slide) {
-		switch (slide.provider) {
-			case undefined:
-				return slide.url
-		}
+	getExternalLink(slide) {
+		return getUrl(slide)
 	},
+	// canDownload(slide) {
+	// 	switch (slide.provider) {
+	// 		case undefined:
+	// 			return true
+	// 		default:
+	// 			return false
+	// 	}
+	// },
+	// getDownloadLink(slide) {
+	// 	switch (slide.provider) {
+	// 		case undefined:
+	// 			return slide.url
+	// 	}
+	// },
 	canRender(slide) {
 		return slide.picture !== undefined
 	},

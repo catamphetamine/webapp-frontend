@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import { FadeInOut, ActivityIndicator } from 'react-responsive-ui'
 
-import { getViewportWidth } from './Slideshow'
+import { getViewportWidth } from '../utility/dom'
 import SlideshowPicture from './Slideshow.Picture'
 import ButtonOrLink from './ButtonOrLink'
 import Picture from './Picture'

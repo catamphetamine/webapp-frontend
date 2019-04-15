@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+	<path fill="none" stroke="currentColor" stroke-width="6.5" d="M87.72,43.31V84.77a12,12,0,0,1-12,12H15.26a12,12,0,0,1-12-12V24.31a12,12,0,0,1,12-12H56.72" transform="translate(-0.01)"/>
+	<line stroke="currentColor" stroke-width="6.5" x1="96.81" y1="0.07" x2="96.81" y2="32.92"/>
+	<line stroke="currentColor" stroke-width="6.5" x1="99.99" y1="3.25" x2="67.15" y2="3.25"/>
+	<line stroke="currentColor" stroke-width="6.5" x1="48.48" y1="51.61" x2="93.84" y2="6.25"/>
+</svg>

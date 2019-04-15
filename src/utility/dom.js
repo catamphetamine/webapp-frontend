@@ -46,3 +46,15 @@ export function onFullScreenChange(handler) {
 		document.removeEventListener('fullscreenchange', handler)
 	}
 }
+
+export function getViewportWidth() {
+	return document.documentElement.clientWidth
+}
+
+export function getViewportHeight() {
+	return document.documentElement.clientHeight
+}
+
+export function getScrollBarWidth() {
+	return window.innerWidth - document.documentElement.clientWidth
+}

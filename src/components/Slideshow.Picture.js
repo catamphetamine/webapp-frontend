@@ -22,10 +22,10 @@ export default {
 	// isScaleDownAllowed(slide) {
 	// 	return isVector(slide)
 	// },
-	canDownload(slide) {
+	canOpenExternalLink(slide) {
 		return true
 	},
-	getDownloadLink(slide) {
+	getExternalLink(slide) {
 		return slide.url
 	},
 	getOtherActions(slide) {
@@ -45,6 +45,7 @@ export default {
 		ref,
 		slide,
 		onClick,
+		tabIndex,
 		maxWidth,
 		maxHeight,
 		style
@@ -56,6 +57,7 @@ export default {
 				ref={ref}
 				picture={slide}
 				onClick={onClick}
+				tabIndex={tabIndex}
 				showLoadingIndicator
 				fit="scale-down"
 				maxWidth={maxWidth}

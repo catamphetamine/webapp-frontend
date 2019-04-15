@@ -5,21 +5,40 @@ import throttle from 'lodash/throttle'
 import FocusLock from 'react-focus-lock'
 
 // `body-scroll-lock` has been modified a bit, see the info in the header of the file.
-import { disableBodyScroll, enableBodyScroll, clearAllBodyScrollLocks } from '../utility/body-scroll-lock'
-import { isClickable, requestFullScreen, exitFullScreen, onFullScreenChange } from '../utility/dom'
+import {
+	disableBodyScroll,
+	enableBodyScroll,
+	clearAllBodyScrollLocks
+} from '../utility/body-scroll-lock'
 
-import { isTouchDevice } from './DeviceInfo'
+import {
+	isClickable,
+	requestFullScreen,
+	exitFullScreen,
+	onFullScreenChange,
+	getViewportWidth,
+	getViewportHeight,
+	getScrollBarWidth
+} from '../utility/dom'
+
+import {
+	isTouchDevice,
+	isMediumScreenOrLarger
+} from './DeviceInfo'
 
 import PicturePlugin from './Slideshow.Picture'
 import VideoPlugin from './Slideshow.Video'
 
-import Download from '../../assets/images/icons/download-cloud.svg'
-import Close from '../../assets/images/icons/close.svg'
+// import Download from '../../assets/images/icons/download-cloud.svg'
+import ExternalIcon from '../../assets/images/icons/external.svg'
 import LeftArrow from '../../assets/images/icons/left-arrow-minimal.svg'
 import RightArrow from '../../assets/images/icons/right-arrow-minimal.svg'
 import ScaleFrame from '../../assets/images/icons/scale-frame.svg'
 import Plus from '../../assets/images/icons/plus.svg'
 import Minus from '../../assets/images/icons/minus.svg'
+import Close from '../../assets/images/icons/close.svg'
+import CloseCounterform from '../../assets/images/icons/close-counterform.svg'
+import EllipsisVerticalCounterform from '../../assets/images/icons/ellipsis-vertical-counterform.svg'
 
 import './Slideshow.css'
 
@@ -61,8 +80,8 @@ class Slideshow extends React.PureComponent {
 			getMaxSize: PropTypes.func.isRequired,
 			getAspectRatio: PropTypes.func.isRequired,
 			isScaleDownAllowed: PropTypes.func.isRequired,
-			canDownload: PropTypes.func,
-			getDownloadLink: PropTypes.func,
+			canOpenExternalLink: PropTypes.func,
+			getExternalLink: PropTypes.func,
 			canRender: PropTypes.func.isRequired,
 			render: PropTypes.func.isRequired,
 			// showCloseButtonForSingleSlide: PropTypes.bool
@@ -87,7 +106,7 @@ class Slideshow extends React.PureComponent {
 		minScaledSlideRatio: 0.1,
 		mouseWheelScaleFactor: 0.33,
 		// minInitialScale: 0.5,
-		fullScreenFitPrecisionFactor: 0.85,
+		fullScreenFitPrecisionFactor: 0.875,
 		plugins: PLUGINS
 	}
 
@@ -95,7 +114,7 @@ class Slideshow extends React.PureComponent {
 
 	container = React.createRef()
 	slides = React.createRef()
-	currentSlide = React.createRef()
+	currentSlideRef = React.createRef()
 	previousButton = React.createRef()
 	nextButton = React.createRef()
 	closeButton = React.createRef()
@@ -249,7 +268,7 @@ class Slideshow extends React.PureComponent {
 		})
 	}
 
-	showSlide(i) {
+	showSlide = (i) => {
 		if (i === this.state.i) {
 			return
 		}
@@ -285,30 +304,31 @@ class Slideshow extends React.PureComponent {
 	}
 
 	focus = (direction = 'next') => {
-		if (this.currentSlide.current.focus) {
-			if (this.currentSlide.current.focus() !== false) {
+		if (this.currentSlideRef.current.focus) {
+			if (this.currentSlideRef.current.focus() !== false) {
 				return
 			}
 		}
-		if (direction === 'next' && this.nextButton.current) {
-			this.nextButton.current.focus()
-		} else if (direction === 'previous' && this.previousButton.current) {
-			this.previousButton.current.focus()
-		} else if (direction === 'previous' && this.nextButton.current) {
-			this.nextButton.current.focus()
-		} else if (this.closeButton.current) {
-			// Close button is not rendered in inline mode, for example.
-			this.closeButton.current.focus()
-		} else {
-			this.container.current.focus()
+		if (!isTouchDevice()) {
+			if (direction === 'next' && this.nextButton.current) {
+				return this.nextButton.current.focus()
+			} else if (direction === 'previous' && this.previousButton.current) {
+				return this.previousButton.current.focus()
+			} else if (direction === 'previous' && this.nextButton.current) {
+				return this.nextButton.current.focus()
+			} else if (this.closeButton.current) {
+				// Close button is not rendered in inline mode, for example.
+				return this.closeButton.current.focus()
+			}
 		}
+		return this.container.current.focus()
 	}
 
 	scaleUp = (event, factor = 1) => {
 		this.setState(({ scale }, { scaleStep }) => ({
 			scale: Math.min(
 				scale * (1 + scaleStep * factor),
-				this.getFullScreenScale()
+				this.getFullScreenScale() * this.getFullScreenScaleAdjustmentFactor()
 			)
 		}))
 	}
@@ -334,7 +354,7 @@ class Slideshow extends React.PureComponent {
 	scaleToggle = () => {
 		this.setState(({ scale }) => ({
 			// Compensates math precision (is supposed to).
-			scale: scale > 0.99 && scale < 1.01 ? this.getFullScreenScale() : 1
+			scale: scale > 0.99 && scale < 1.01 ? this.getFullScreenScale() * this.getFullScreenScaleAdjustmentFactor() : 1
 		}))
 	}
 
@@ -359,7 +379,7 @@ class Slideshow extends React.PureComponent {
 		return Math.min(fullScreenWidthScale, fullScreenHeightScale)
 	}
 
-	isFullScreenSlide = (precise) => {
+	isMaxSizeSlide = (precise = true) => {
 		const { fullScreenFitPrecisionFactor } = this.props
 		// No definite answer (`true` or `false`) could be
 		// given until slideshow dimensions are known.
@@ -368,11 +388,11 @@ class Slideshow extends React.PureComponent {
 		}
 		const fitFactor = precise ? 1 : fullScreenFitPrecisionFactor
 		const maxSize = this.getSlideMaxSize()
-		return maxSize.width >= this.getSlideshowWidth() * fitFactor ||
-			maxSize.height >= this.getSlideshowHeight() * fitFactor
+		return maxSize.width >= this.getSlideshowWidth() * this.getFullScreenScaleAdjustmentFactor() * fitFactor ||
+			maxSize.height >= this.getSlideshowHeight() * this.getFullScreenScaleAdjustmentFactor() * fitFactor
 	}
 
-	onDownload = (event) => {
+	onOpenExternalLink = (event) => {
 		// this.onActionClick()
 		const downloadInfo = this.getPluginForSlide().download(this.getCurrentSlide())
 		if (downloadInfo) {
@@ -395,6 +415,16 @@ class Slideshow extends React.PureComponent {
 		// const slideRatio = Math.min(slideWidthRatio, slideHeightRatio)
 		const slideRatio = (slideWidthRatio + slideHeightRatio) / 2
 		return minScaledSlideRatio / slideRatio
+	}
+
+	getFullScreenScaleAdjustmentFactor(slide = this.getCurrentSlide()) {
+		if (this.shouldShowCloseButton()) {
+			if (this.getPluginForSlide(slide).hasCloseButtonClickingIssues &&
+				this.getPluginForSlide(slide).hasCloseButtonClickingIssues(slide)) {
+				return 0.9
+			}
+		}
+		return 1
 	}
 
 	getCurrentSlide() {
@@ -442,11 +472,6 @@ class Slideshow extends React.PureComponent {
 
 	getSlideAspectRatio() {
 		return this.getPluginForSlide().getAspectRatio(this.getCurrentSlide())
-	}
-
-	isTouchDevice() {
-		// `this._isTouchDevice` is a fallback in case `<DeviceInfo/>` is not used.
-		return isTouchDevice || this._isTouchDevice
 	}
 
 	onBackgroundClick = (event) => {
@@ -508,14 +533,8 @@ class Slideshow extends React.PureComponent {
 		// (because clicked inside the slide bounds, not outside it)
 		event.stopPropagation()
 
-		// Don't show the next slide on tap.
-		// (show slide controls instead)
-		if (this.isTapEvent) {
-			return this.toggleShowControls()
-		}
-
 		// Change the current slide to next or previous one.
-		if (this.getPluginForSlide().changeSlideOnClick !== false) {
+		if (this.shouldShowNextSlideOnClick()) {
 			this.showNext()
 			// if (x < previousNextClickRatio) {
 			// 	this.showPrevious()
@@ -525,7 +544,60 @@ class Slideshow extends React.PureComponent {
 		}
 	}
 
-	toggleShowControls() {
+	shouldShowNextSlideOnClick() {
+		return this.getPluginForSlide().changeSlideOnClick !== false
+	}
+
+	shouldShowPreviousNextButtons() {
+		// // Don't show "Previous"/"Next" buttons.
+		// // Because on touch devices the user is supposed to be able to swipe through slides
+		// // and on desktop advanced users perhaps will guess to swipe slides too using a mouse.
+		// // Picture slides transition to the next slide upon click.
+		// // Also slide dots are clickable buttons
+		// // (as a backup for those who won't guess to swipe with a mouse).
+		// // It's a known bug that in iOS Safari it doesn't respond to swiping YouTube video.
+		// // For such cases small screens show the single "Show controls" button.
+		// return false
+		// On touch devices users can just swipe, except when they can't.
+		if (isTouchDevice()) {
+			// It's a known bug that in iOS Safari it doesn't respond to swiping YouTube video.
+			if (this.getPluginForSlide().hasSwipingIssues &&
+				this.getPluginForSlide().hasSwipingIssues(this.getCurrentSlide())) {
+				// Show the "Close" button because the user may not be able to swipe-close the slide.
+			} else {
+				// Normally a touch device user should swipe left/right to view previous/next slide.
+				return false
+			}
+		}
+		// For pictures the user can just click through them.
+		if (this.shouldShowNextSlideOnClick()) {
+			return false
+		}
+		// Commented the following code block because it's `return true` after it anyway.
+		// // Users may not always have a keyboard (for example, TV users).
+		// // But those users who only have a keyboard ("accessibility")
+		// // should be able to switch slides using just the keyboard
+		// // and they'll be able to by focusing on the previous/next buttons via the "Tab" key.
+		// // Though keyboard-only users can also use "Page Up"/"Page Down" keys.
+		// // (but that's not an intuitively obvious feature).
+		// if (this.getPluginForSlide().capturesArrowKeys) {
+		// 	if (this.getPluginForSlide().capturesArrowKeys(this.getCurrentSlide())) {
+		// 		return true
+		// 	}
+		// }
+		// Show the "Previous"/"Next" buttons.
+		return true
+	}
+
+	hasHidableControls() {
+		return this.shouldShowScaleButtons() ||
+			// this.shouldShowCloseButton() ||
+			// this.shouldShowPreviousNextButtons() ||
+			this.shouldShowOpenExternalLinkButton() ||
+			this.getOtherActions().length > 0
+	}
+
+	toggleShowControls = () => {
 		const { showControls } = this.state
 		this.setState({
 			showControls: !showControls
@@ -547,7 +619,7 @@ class Slideshow extends React.PureComponent {
 		}
 	}
 
-	showNext() {
+	showNext = () => {
 		const { i } = this.state
 		if (this.isLast()) {
 			this.close()
@@ -584,7 +656,7 @@ class Slideshow extends React.PureComponent {
 
 	onKeyDown = (event) => {
 		if (this.getPluginForSlide().onKeyDown) {
-			this.getPluginForSlide().onKeyDown(event, this.getCurrentSlide(), this.currentSlide)
+			this.getPluginForSlide().onKeyDown(event, this.getCurrentSlide(), this.currentSlideRef)
 		}
 		if (event.defaultPrevented) {
 			return
@@ -641,7 +713,7 @@ class Slideshow extends React.PureComponent {
 	}
 
 	onTouchStart = (event) => {
-		this._isTouchDevice = true
+		this.isTouchDevice = true
 		// Ignore multitouch.
 		if (event.touches.length > 1) {
 			// Reset.
@@ -722,7 +794,7 @@ class Slideshow extends React.PureComponent {
 	onPointerOut = () => {
 		// `onPointerOut` is called immediately
 		// when starting to pan on touch devices.
-		if (!this.isTouchDevice()) {
+		if (!this.isTouchDevice) {
 			if (this.isPanning) {
 				this.onPanEnd()
 			}
@@ -980,23 +1052,51 @@ class Slideshow extends React.PureComponent {
 
 	shouldShowScaleButtons() {
 		const { inline } = this.props
-		return !inline && this.isFullScreenSlide(true) === false
+		return !inline && this.isMaxSizeSlide(false) === false
 	}
 
-	shouldShowDownloadButton() {
-		if (this.getPluginForSlide().canDownload) {
-			return this.getPluginForSlide().canDownload(this.getCurrentSlide())
+	shouldShowOpenExternalLinkButton() {
+		if (this.getPluginForSlide().canOpenExternalLink) {
+			return this.getPluginForSlide().canOpenExternalLink(this.getCurrentSlide())
 		}
 	}
 
 	shouldShowCloseButton() {
-		const { inline, children: slides } = this.props
+		const {
+			inline,
+			children: slides
+		} = this.props
+		// const {
+		// 	showControls
+		// } = this.state
 		if (inline) {
 			return false
 		}
-		// if (slides.length === 1 && !this.getPluginForSlide().showCloseButtonForSingleSlide) {
+		// If it's a single slide that closes on click then don't show the close button.
+		if (slides.length === 1 && this.shouldShowNextSlideOnClick()) {
+			return false
+		}
+		// // Don't show the "Close" button on small screens on touch devices.
+		// // Because on touch devices the user is supposed to be able to
+		// // swipe a slide vertically to close it.
+		// if (this.isSmallScreen() && isTouchDevice()) {
+		// 	// It's a known bug that in iOS Safari it doesn't respond to swiping YouTube video.
+		// 	// For such cases the slideshow should show the "Close" button.
+		// 	if (this.getPluginForSlide().hasSwipingIssues &&
+		// 		this.getPluginForSlide().hasSwipingIssues(this.getCurrentSlide())) {
+		// 		// Show the "Close" button because the user may not be able to swipe-close the slide.
+		// 	} else {
+		// 		return false
+		// 	}
+		// }
+		// // On desktops don't show the "Close" button
+		// // because the user can swipe vertically to close,
+		// // or they can click the overlay,
+		// // or they can click through the rest of the slides.
+		// if (this.isSmallScreen() && !isTouchDevice()) {
 		// 	return false
 		// }
+		// Show the "Close" button.
 		return true
 	}
 
@@ -1006,6 +1106,17 @@ class Slideshow extends React.PureComponent {
 			return plugin.getOtherActions(this.getCurrentSlide())
 		}
 		return []
+	}
+
+	isSmallScreen() {
+		return !isMediumScreenOrLarger()
+	}
+
+	shouldHideControls() {
+		// On "large" screens (FullHD and larger) control buttons are large too.
+		// On "medium" screens control buttons are small.
+		// Therefore, control buttons fit for both "medium" and "large" screens.
+		return this.isSmallScreen()
 	}
 
 	render() {
@@ -1057,7 +1168,8 @@ class Slideshow extends React.PureComponent {
 				className={classNames('rrui__slideshow', {
 					'rrui__slideshow--fullscreen': !inline,
 					'rrui__slideshow--panning': this.isActuallyPanning,
-					'rrui__slideshow--hide-controls': this.isTouchDevice() && !showControls
+					'rrui__slideshow--small-screen': this.shouldHideControls(),
+					'rrui__slideshow--show-controls': showControls
 				})}
 				onKeyDown={this.onKeyDown}
 				onDragStart={this.onDragStart}
@@ -1129,19 +1241,32 @@ class Slideshow extends React.PureComponent {
 							</li>
 						}
 
-						{this.shouldShowDownloadButton() &&
+						{this.shouldShowOpenExternalLinkButton() &&
+							<li className="rrui__slideshow__action-item">
+								<a
+									target="_blank"
+									title={messages.actions.openExternalLink}
+									onKeyDown={clickTheLinkOnSpacebar}
+									href={this.getPluginForSlide().getExternalLink(this.getCurrentSlide())}
+									className="rrui__slideshow__action rrui__slideshow__action--link">
+									<ExternalIcon className="rrui__slideshow__action-icon"/>
+								</a>
+							</li>
+						}
+
+						{/*this.shouldShowDownloadButton() &&
 							<li className="rrui__slideshow__action-item">
 								<a
 									download
 									target="_blank"
 									title={messages.actions.download}
 									onKeyDown={clickTheLinkOnSpacebar}
-									href={this.getPluginForSlide().getDownloadLink(this.getCurrentSlide())}
+									href={this.getPluginForSlide().getDownloadUrl(this.getCurrentSlide())}
 									className="rrui__slideshow__action rrui__slideshow__action--link">
-									<Download className="rrui__slideshow__action-icon rrui__slideshow__action-icon--download"/>
+									<Download className="rrui__slideshow__action-icon"/>
 								</a>
 							</li>
-						}
+						*/}
 
 						{this.getOtherActions().map(({ name, icon: Icon, link, action }) => {
 							const icon = <Icon className={`rrui__slideshow__action-icon rrui__slideshow__action-icon--${name}`}/>
@@ -1169,21 +1294,42 @@ class Slideshow extends React.PureComponent {
 							)
 						})}
 
+						{/* "Show/Hide controls" */}
+						{/* Is visible only on small screens. */}
+						{this.shouldHideControls() && !showControls && this.hasHidableControls() &&
+							<li className="rrui__slideshow__action-item rrui__slideshow__action-item--toggle-controls">
+								<button
+									type="button"
+									title={showControls ? messages.actions.hideControls : messages.actions.showControls}
+									onClick={this.toggleShowControls}
+									className={classNames('rrui__button-reset', 'rrui__slideshow__action', {
+										'rrui__slideshow__action--toggled': showControls
+									})}>
+									<EllipsisVerticalCounterform className="rrui__slideshow__action-icon"/>
+								</button>
+							</li>
+						}
+
 						{this.shouldShowCloseButton() &&
-							<li className="rrui__slideshow__action-item">
+							<li className="rrui__slideshow__action-item rrui__slideshow__action-item--close">
 								<button
 									ref={this.closeButton}
 									type="button"
 									title={messages.actions.close}
 									onClick={this.close}
 									className="rrui__button-reset rrui__slideshow__action">
-									<Close className="rrui__slideshow__action-icon"/>
+									{!(this.shouldHideControls() && !showControls) &&
+										<Close className="rrui__slideshow__action-icon"/>
+									}
+									{this.shouldHideControls() && !showControls &&
+										<CloseCounterform className="rrui__slideshow__action-icon"/>
+									}
 								</button>
 							</li>
 						}
 					</ul>
 
-					{slides.length > 1 && i > 0 &&
+					{slides.length > 1 && i > 0 && this.shouldShowPreviousNextButtons() &&
 						<button
 							ref={this.previousButton}
 							type="button"
@@ -1194,7 +1340,7 @@ class Slideshow extends React.PureComponent {
 						</button>
 					}
 
-					{slides.length > 1 && i < slides.length - 1 &&
+					{slides.length > 1 && i < slides.length - 1 && this.shouldShowPreviousNextButtons() &&
 						<button
 							ref={this.nextButton}
 							type="button"
@@ -1207,7 +1353,11 @@ class Slideshow extends React.PureComponent {
 
 					{slides.length > 1 &&
 						<div className="rrui__slideshow__progress rrui__slideshow__controls-center rrui__slideshow__controls-bottom">
-							<SlideshowProgress i={i} count={slides.length}/>
+							<SlideshowProgress
+								i={i}
+								count={slides.length}
+								onShowSlide={this.showSlide}
+								onShowNextSlide={this.showNext}/>
 						</div>
 					}
 				</div>
@@ -1221,14 +1371,14 @@ class Slideshow extends React.PureComponent {
 		const isShown = j === i
 
 		return this.getPluginForSlide(slide).render({
-			ref: isShown ? this.currentSlide : undefined,
-			tabIndex: isShown ? undefined : -1,
+			ref: isShown ? this.currentSlideRef : undefined,
+			tabIndex: isShown ? 0 : -1,
 			slide,
 			isShown,
 			wasExpanded,
 			onClick: this.onSlideClick,
-			maxWidth: this.getSlideshowWidth(),
-			maxHeight: this.getSlideshowHeight(),
+			maxWidth: this.getSlideshowWidth() * this.getFullScreenScaleAdjustmentFactor(),
+			maxHeight: this.getSlideshowHeight() * this.getFullScreenScaleAdjustmentFactor(),
 			style: isShown ? this.getScaleStyle() : undefined
 			// shouldUpscaleSmallSlides: this.shouldUpscaleSmallSlides()
 		})
@@ -1243,10 +1393,14 @@ class Slideshow extends React.PureComponent {
 SlideshowWrapper.propTypes = Slideshow.propTypes
 SlideshowWrapper.defaultProps = Slideshow.defaultProps
 
-function SlideshowProgress({ i, count, maxCountForDots }) {
+function SlideshowProgress({ i, count, maxCountForDots, onShowSlide, onShowNextSlide }) {
 	if (count > maxCountForDots) {
 		return (
-			<div className="rrui__slideshow__progress-counter">
+			<button
+				type="button"
+				onClick={onShowNextSlide}
+				tabIndex={-1}
+				className="rrui__button-reset rrui__slideshow__progress-counter">
 				<div className="rrui__slideshow__progress-counter-current">
 					{i + 1}
 				</div>
@@ -1256,15 +1410,22 @@ function SlideshowProgress({ i, count, maxCountForDots }) {
 				<div className="rrui__slideshow__progress-counter-total">
 					{count}
 				</div>
-			</div>
+			</button>
 		)
 	}
 	return (
 		<ul className="rrui__slideshow__progress-dots">
 			{createRange(count).map((_, j) => (
-				<li key={j} className={classNames('rrui__slideshow__progress-dot', {
-					'rrui__slideshow__progress-dot--selected': j === i
-				})}/>
+				<li key={j}>
+					<button
+						type="button"
+						onClick={() => onShowSlide(j)}
+						tabIndex={-1}
+						className={classNames('rrui__button-reset', 'rrui__slideshow__progress-dot', {
+							'rrui__slideshow__progress-dot--selected': j === i
+						})}>
+					</button>
+				</li>
 			))}
 		</ul>
 	)
@@ -1273,7 +1434,9 @@ function SlideshowProgress({ i, count, maxCountForDots }) {
 SlideshowProgress.propTypes = {
 	i: PropTypes.number.isRequired,
 	count: PropTypes.number.isRequired,
-	maxCountForDots: PropTypes.number.isRequired
+	maxCountForDots: PropTypes.number.isRequired,
+	onShowSlide: PropTypes.func,
+	onShowNextSlide: PropTypes.func
 }
 
 SlideshowProgress.defaultProps = {
@@ -1288,7 +1451,7 @@ function isButton(element) {
 	if (element.classList && element.classList.contains('rrui__slideshow__action')) {
 		return true
 	}
-	// `<button/>` tag name didn't work on "Download" link
+	// `<button/>` tag name didn't work on "Open external link" hyperlink
 	// and also did reset dragging on Video slides (which are buttons).
 	// if (element.tagName === 'BUTTON') {
 	// 	return true
@@ -1305,18 +1468,6 @@ function createRange(N) {
 		range[i - 1] = i
 	}
 	return range
-}
-
-function getScrollBarWidth() {
-	return window.innerWidth - document.documentElement.clientWidth
-}
-
-export function getViewportWidth() {
-	return document.documentElement.clientWidth
-}
-
-function getViewportHeight() {
-	return document.documentElement.clientHeight
 }
 
 function clickTheLinkOnSpacebar(event) {
