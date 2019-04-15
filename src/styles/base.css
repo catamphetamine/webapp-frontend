@@ -97,10 +97,3 @@ p
 	color: var(--white-color);
 	background-color: var(--base-color-600);
 }
-
-/* Safari `<input type="search"/>` fix test. */
-/* https://stackoverflow.com/questions/34802552/safari-input-type-search-reset-normalize */
-/* Remove this if this works and when the fix is released in `react-responsive-ui`. */
-.rrui__input-field {
-	-webkit-appearance : none;
-}
