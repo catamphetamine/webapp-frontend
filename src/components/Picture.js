@@ -146,10 +146,22 @@ export default class Picture extends PureComponent
 		window.interactiveResize.remove(this.refreshSize)
 	}
 
-	componentDidUpdate(prevProps) {
+	componentDidUpdate(prevProps, prevState) {
 		const { picture } = this.props
 		if (prevProps.picture !== picture) {
 			this.refreshSize(true)
+		}
+		if (document.activeElement === this.container.current && this.image.current &&
+			!shouldShowImage(prevProps, prevState) && shouldShowImage(this.props, this.state)) {
+			this.image.current.focus()
+		}
+	}
+
+	focus = () => {
+		if (this.picture.current) {
+			this.picture.current.focus()
+		} else {
+			this.container.current.focus()
 		}
 	}
 
@@ -250,6 +262,7 @@ export default class Picture extends PureComponent
 			showLoadingIndicator,
 			// fadeInDuration,
 			blur,
+			tabIndex,
 			style,
 			className,
 			children,
@@ -284,10 +297,12 @@ export default class Picture extends PureComponent
 		// }
 
 		const showImagePlaceholder = showLoadingPlaceholder && !initialImageLoaded
+		const showImage = shouldShowImage(this.props, this.state)
 
 		return (
 			<div
 				ref={this.container}
+				tabIndex={showImage ? undefined : tabIndex}
 				style={style ? { ...style, ...this.getContainerStyle() } : this.getContainerStyle()}
 				className={classNames(className, 'rrui__picture', {
 					'rrui__picture--repeat-x': fit === 'repeat-x',
@@ -321,9 +336,10 @@ export default class Picture extends PureComponent
 					</FadeInOut>
 				*/}
 
-				{ !(showLoadingPlaceholder && !initialImageLoaded) && fit !== 'repeat-x' &&
+				{ showImage &&
 					<img
 						ref={ this.picture }
+						tabIndex={tabIndex}
 						src={ typeof window === 'undefined' ? TRANSPARENT_PIXEL : (this.getUrl() || TRANSPARENT_PIXEL) }
 						style={ blur ? addBlur(getImageStyle(fit), blur) : getImageStyle(fit) }
 						className="rrui__picture__image"/>
@@ -695,4 +711,15 @@ function addBlur(style, radius) {
 		marginLeft: `-${radius}px`,
 		marginTop: `-${radius}px`
 	}
+}
+
+function shouldShowImage(props, state) {
+	const {
+		showLoadingPlaceholder,
+		fit
+	} = props
+	const {
+		initialImageLoaded
+	} = state
+	return !(showLoadingPlaceholder && !initialImageLoaded) && fit !== 'repeat-x'
 }

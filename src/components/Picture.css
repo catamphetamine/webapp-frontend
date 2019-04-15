@@ -38,6 +38,8 @@
 
 .rrui__picture__image {
 	display: block;
+	/* Remove `:focus` outline. */
+	outline: none;
 }
 
 .rrui__picture__loading-container
