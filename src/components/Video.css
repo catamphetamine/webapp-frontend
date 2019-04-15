@@ -37,7 +37,7 @@ and that's how the embedded video's aspect ratio is set.
 }
 
 .rrui__video:focus {
-	--picture-border-color: var(--base-color-700);
+	--picture-border-color: var(--rrui-video-focus-border-color);
 	.rrui__video__play-icon-border,
 	.rrui__video__play-icon-triangle {
 		fill: var(--base-color-400);
