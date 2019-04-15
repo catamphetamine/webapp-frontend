@@ -19,10 +19,10 @@ export default {
 	// isScaleDownAllowed(slide) {
 	// 	return false
 	// },
-	capturesArrowKeys(slide) {
-		return true
-	},
-	hasSwipingIssues(slide) {
+	// capturesArrowKeys(slide) {
+	// 	return true
+	// },
+	canSwipe(slide) {
 		switch (slide.provider) {
 			// iOS Safari has a bug when YouTube video is played in fullscreen slideshow:
 			// touch scroll goes through it and it doesn't respond to swiping.
@@ -30,23 +30,24 @@ export default {
 			// On desktop mouse users are unable to swipe the video <iframe/> too.
 			case 'YouTube':
 			case 'Vimeo':
-				return true
-			default:
 				return false
+			default:
+				return true
 		}
 	},
-	hasCloseButtonClickingIssues(slide) {
-		switch (slide.provider) {
-			// Even though slideshow actions are shown above a YouTube video <iframe/>
-			// clicks are being captured by that video <iframe/> for some reason.
-			// I guess Vimeo could have the same bug (didn't test).
-			case 'YouTube':
-			case 'Vimeo':
-				return true
-			default:
-				return false
-		}
-	},
+	// hasCloseButtonClickingIssues(slide) {
+	// 	switch (slide.provider) {
+	// 		// (Experienced both in iOS Safari and in desktop Chrome)
+	// 		// Even though slideshow actions are shown above a YouTube video <iframe/>
+	// 		// clicks are being captured by that video <iframe/> for some reason.
+	// 		// I guess Vimeo could have the same bug (didn't test).
+	// 		case 'YouTube':
+	// 		case 'Vimeo':
+	// 			return true
+	// 		default:
+	// 			return false
+	// 	}
+	// },
 	onKeyDown(event, slide, ref) {
 		const video = ref.current
 		switch (event.keyCode) {

@@ -79,9 +79,17 @@ class Slideshow extends React.PureComponent {
 		plugins: PropTypes.arrayOf(PropTypes.shape({
 			getMaxSize: PropTypes.func.isRequired,
 			getAspectRatio: PropTypes.func.isRequired,
-			isScaleDownAllowed: PropTypes.func.isRequired,
+			getOtherActions: PropTypes.func,
+			preload: PropTypes.func,
+			minInitialScale: PropTypes.number,
+			changeSlideOnClick: PropTypes.bool,
+			// isScaleDownAllowed: PropTypes.func.isRequired,
 			canOpenExternalLink: PropTypes.func,
 			getExternalLink: PropTypes.func,
+			canSwipe: PropTypes.func,
+			// hasCloseButtonClickingIssues: PropTypes.func,
+			// capturesArrowKeys: PropTypes.func,
+			onKeyDown: PropTypes.func,
 			canRender: PropTypes.func.isRequired,
 			render: PropTypes.func.isRequired,
 			// showCloseButtonForSingleSlide: PropTypes.bool
@@ -328,7 +336,7 @@ class Slideshow extends React.PureComponent {
 		this.setState(({ scale }, { scaleStep }) => ({
 			scale: Math.min(
 				scale * (1 + scaleStep * factor),
-				this.getFullScreenScale() * this.getFullScreenScaleAdjustmentFactor()
+				this.getFullScreenScale()
 			)
 		}))
 	}
@@ -354,7 +362,7 @@ class Slideshow extends React.PureComponent {
 	scaleToggle = () => {
 		this.setState(({ scale }) => ({
 			// Compensates math precision (is supposed to).
-			scale: scale > 0.99 && scale < 1.01 ? this.getFullScreenScale() * this.getFullScreenScaleAdjustmentFactor() : 1
+			scale: scale > 0.99 && scale < 1.01 ? this.getFullScreenScale() : 1
 		}))
 	}
 
@@ -388,8 +396,8 @@ class Slideshow extends React.PureComponent {
 		}
 		const fitFactor = precise ? 1 : fullScreenFitPrecisionFactor
 		const maxSize = this.getSlideMaxSize()
-		return maxSize.width >= this.getSlideshowWidth() * this.getFullScreenScaleAdjustmentFactor() * fitFactor ||
-			maxSize.height >= this.getSlideshowHeight() * this.getFullScreenScaleAdjustmentFactor() * fitFactor
+		return maxSize.width >= this.getSlideshowWidth() * fitFactor ||
+			maxSize.height >= this.getSlideshowHeight() * fitFactor
 	}
 
 	onOpenExternalLink = (event) => {
@@ -404,11 +412,11 @@ class Slideshow extends React.PureComponent {
 	// (for non-vector images)
 	getMinScaleForCurrentSlide(scale) {
 		const { minScaledSlideRatio } = this.props
-		if (this.getPluginForSlide().isScaleDownAllowed) {
-			if (!this.getPluginForSlide().isScaleDownAllowed(this.getCurrentSlide())) {
-				return 1
-			}
-		}
+		// if (this.getPluginForSlide().isScaleDownAllowed) {
+		// 	if (!this.getPluginForSlide().isScaleDownAllowed(this.getCurrentSlide())) {
+		// 		return 1
+		// 	}
+		// }
 		const slideWidthRatio = this.getSlideWidth() / this.getSlideshowWidth()
 		const slideHeightRatio = this.getSlideHeight() / this.getSlideshowHeight()
 		// Averaged ratio turned out to work better than "min" ratio.
@@ -417,15 +425,22 @@ class Slideshow extends React.PureComponent {
 		return minScaledSlideRatio / slideRatio
 	}
 
-	getFullScreenScaleAdjustmentFactor(slide = this.getCurrentSlide()) {
-		if (this.shouldShowCloseButton()) {
-			if (this.getPluginForSlide(slide).hasCloseButtonClickingIssues &&
-				this.getPluginForSlide(slide).hasCloseButtonClickingIssues(slide)) {
-				return 0.9
-			}
-		}
-		return 1
-	}
+	// getFullScreenScaleAdjustmentFactor(slide = this.getCurrentSlide()) {
+	// 	if (this.shouldShowCloseButton()) {
+	// 		if (this.getPluginForSlide(slide).hasCloseButtonClickingIssues &&
+	// 			this.getPluginForSlide(slide).hasCloseButtonClickingIssues(slide)) {
+	// 			// `this.closeButton.current` is not available while at slideshow initialization time.
+	// 			// const closeButtonRect = this.closeButton.current.getBoundingClientRect()
+	// 			// return 1 - 2 * (closeButtonRect.top + closeButtonRect.height) / this.getSlideshowHeight()
+	// 			if (this.isSmallScreen()) {
+	// 				return 0.9
+	// 			} else {
+	// 				return 0.95
+	// 			}
+	// 		}
+	// 	}
+	// 	return 1
+	// }
 
 	getCurrentSlide() {
 		const { i } = this.state
@@ -561,9 +576,10 @@ class Slideshow extends React.PureComponent {
 		// On touch devices users can just swipe, except when they can't.
 		if (isTouchDevice()) {
 			// It's a known bug that in iOS Safari it doesn't respond to swiping YouTube video.
-			if (this.getPluginForSlide().hasSwipingIssues &&
-				this.getPluginForSlide().hasSwipingIssues(this.getCurrentSlide())) {
-				// Show the "Close" button because the user may not be able to swipe-close the slide.
+			if (this.getPluginForSlide().canSwipe &&
+				!this.getPluginForSlide().canSwipe(this.getCurrentSlide())) {
+				// Show "Previous"/"Next" buttons because the user may not be
+				// able to swipe to the next/previous slide.
 			} else {
 				// Normally a touch device user should swipe left/right to view previous/next slide.
 				return false
@@ -1082,8 +1098,8 @@ class Slideshow extends React.PureComponent {
 		// if (this.isSmallScreen() && isTouchDevice()) {
 		// 	// It's a known bug that in iOS Safari it doesn't respond to swiping YouTube video.
 		// 	// For such cases the slideshow should show the "Close" button.
-		// 	if (this.getPluginForSlide().hasSwipingIssues &&
-		// 		this.getPluginForSlide().hasSwipingIssues(this.getCurrentSlide())) {
+		// 	if (this.getPluginForSlide().canSwipe &&
+		// 		!this.getPluginForSlide().canSwipe(this.getCurrentSlide())) {
 		// 		// Show the "Close" button because the user may not be able to swipe-close the slide.
 		// 	} else {
 		// 		return false
@@ -1377,8 +1393,8 @@ class Slideshow extends React.PureComponent {
 			isShown,
 			wasExpanded,
 			onClick: this.onSlideClick,
-			maxWidth: this.getSlideshowWidth() * this.getFullScreenScaleAdjustmentFactor(),
-			maxHeight: this.getSlideshowHeight() * this.getFullScreenScaleAdjustmentFactor(),
+			maxWidth: this.getSlideshowWidth(),
+			maxHeight: this.getSlideshowHeight(),
 			style: isShown ? this.getScaleStyle() : undefined
 			// shouldUpscaleSmallSlides: this.shouldUpscaleSmallSlides()
 		})
