@@ -27,12 +27,10 @@ async function parseTwitterLink(link, options) {
 	if (tweet) {
 		link.attachment = {
 			type: 'social',
-			provider: 'Twitter',
-			text: tweet.text,
-			date: tweet.date
+			social: tweet
 		}
-		if (tweet.text) {
-			link.content = `${tweet.authorName} (@${tweet.authorId}): ${tweet.text}`
+		if (tweet.content) {
+			link.content = `${tweet.author.name} (@${tweet.author.id}): ${tweet.content}`
 		}
 		return true
 	}

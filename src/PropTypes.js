@@ -245,6 +245,20 @@ export const postPostLinkShape = shape({
 	content: postInlineContent
 })
 
+const social = shape({
+	provider: string.isRequired,
+	url: string,
+	content: string,
+	date: date,
+	author: shape({
+		name: string,
+		id: oneOfType([string, number]),
+		url: string,
+		picture
+	}).isRequired,
+	attachments: arrayOf(postAttachment)
+})
+
 export const postQuote = shape({
 	type: oneOf(['quote']).isRequired,
 	content: postInlineContent.isRequired,
@@ -315,6 +329,11 @@ const audioAttachment = shape({
 	audio: audio.isRequired
 })
 
+export const socialAttachment = shape({
+	type: oneOf(['social']).isRequired,
+	social: social.isRequired
+})
+
 const linkAttachment = shape({
 	id,
 	type: oneOf(['link']).isRequired,
@@ -339,6 +358,7 @@ export const postAttachment = oneOfType([
 	pictureAttachment,
 	videoAttachment,
 	audioAttachment,
+	socialAttachment,
 	linkAttachment,
 	fileAttachment
 ])

@@ -17,7 +17,7 @@ let counter = 1
  * `{ url, html, author_url, author_name }`.
  * @param  {string} id
  * @param  {object} options — `{ messages }`
- * @return {object} [result] `{ url, text, authorName, authorId, authorUrl }`.
+ * @return {object} [result] `{ url, content, authorName, authorId, authorUrl }`.
  */
 export default async function getTweet(id, options) {
 	if (counter === Number.MAX_SAFE_INTEGER) {
@@ -40,12 +40,15 @@ export function parseTweet(json, options) {
 		return
 	}
 	return {
+		provider: 'Twitter',
 		url: json.url,
-		text,
+		content: text,
 		date: parseTweetDate(json.html),
-		authorName: json.author_name,
-		authorId: json.author_url.slice(json.author_url.lastIndexOf('/') + 1),
-		authorUrl: json.author_url
+		author: {
+			name: json.author_name,
+			id: json.author_url.slice(json.author_url.lastIndexOf('/') + 1),
+			url: json.author_url
+		}
 	}
 }
 

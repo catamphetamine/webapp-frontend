@@ -3,6 +3,8 @@
 
 import fetchJsonp from 'fetch-jsonp'
 
+import getMimeType from './getMimeType'
+
 let counter = 1
 /**
  * Returns tweet data.
@@ -17,7 +19,7 @@ let counter = 1
  * so it's much simpler to use. It returns an object of shape:
  * `{ url, html, author_url, author_name }`.
  * @param  {string} id
- * @return {object} [result] `{ url, text, authorName, authorId, authorUrl }`.
+ * @return {object} [result] `{ url, content, authorName, authorId, authorUrl }`.
  */
 export default async function getTweet(id) {
 	if (counter === Number.MAX_SAFE_INTEGER) {
@@ -36,15 +38,24 @@ export default async function getTweet(id) {
 
 export function parseInstagramPost(json) {
 	return {
+		provider: 'Instagram',
 		url: parseUrl(json.html),
-		text: json.title,
+		content: json.title,
 		date: parseDate(json.html),
-		authorName: parseAuthorName(json.html, json.author_name),
-		authorId: json.author_name,
-		authorUrl: json.author_url,
-		pictureWidth: json.thumbnail_width,
-		pictureHeight: json.thumbnail_height,
-		pictureUrl: json.thumbnail_url
+		author: {
+			name: parseAuthorName(json.html, json.author_name),
+			id: json.author_name,
+			url: json.author_url
+		},
+		attachments: [{
+			type: 'picture',
+			picture: {
+				type: getMimeType(json.thumbnail_url),
+				width: json.thumbnail_width,
+				height: json.thumbnail_height,
+				url: json.thumbnail_url
+			}
+		}]
 	}
 }
 
