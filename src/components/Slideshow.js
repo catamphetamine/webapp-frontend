@@ -32,7 +32,9 @@ import VideoPlugin from './Slideshow.Video'
 // import Download from '../../assets/images/icons/download-cloud.svg'
 import ExternalIcon from '../../assets/images/icons/external.svg'
 import LeftArrow from '../../assets/images/icons/left-arrow-minimal.svg'
+import LeftArrowCounterform from '../../assets/images/icons/left-arrow-minimal-counterform.svg'
 import RightArrow from '../../assets/images/icons/right-arrow-minimal.svg'
+import RightArrowCounterform from '../../assets/images/icons/right-arrow-minimal-counterform.svg'
 import ScaleFrame from '../../assets/images/icons/scale-frame.svg'
 import Plus from '../../assets/images/icons/plus.svg'
 import Minus from '../../assets/images/icons/minus.svg'
@@ -585,10 +587,10 @@ class Slideshow extends React.PureComponent {
 				return false
 			}
 		}
-		// For pictures the user can just click through them.
-		if (this.shouldShowNextSlideOnClick()) {
-			return false
-		}
+		// // For pictures the user can just click through them.
+		// if (this.shouldShowNextSlideOnClick()) {
+		// 	return false
+		// }
 		// Commented the following code block because it's `return true` after it anyway.
 		// // Users may not always have a keyboard (for example, TV users).
 		// // But those users who only have a keyboard ("accessibility")
@@ -1183,9 +1185,7 @@ class Slideshow extends React.PureComponent {
 				}}
 				className={classNames('rrui__slideshow', {
 					'rrui__slideshow--fullscreen': !inline,
-					'rrui__slideshow--panning': this.isActuallyPanning,
-					'rrui__slideshow--small-screen': this.shouldHideControls(),
-					'rrui__slideshow--show-controls': showControls
+					'rrui__slideshow--panning': this.isActuallyPanning
 				})}
 				onKeyDown={this.onKeyDown}
 				onDragStart={this.onDragStart}
@@ -1333,13 +1333,8 @@ class Slideshow extends React.PureComponent {
 									type="button"
 									title={messages.actions.close}
 									onClick={this.close}
-									className="rrui__button-reset rrui__slideshow__action">
-									{!(this.shouldHideControls() && !showControls) &&
-										<Close className="rrui__slideshow__action-icon"/>
-									}
-									{this.shouldHideControls() && !showControls &&
-										<CloseCounterform className="rrui__slideshow__action-icon"/>
-									}
+									className="rrui__button-reset rrui__slideshow__action rrui__slideshow__action--counterform">
+									<CloseCounterform className="rrui__slideshow__action-icon"/>
 								</button>
 							</li>
 						}
@@ -1351,8 +1346,8 @@ class Slideshow extends React.PureComponent {
 							type="button"
 							title={messages.actions.previous}
 							onClick={this.onShowPrevious}
-							className="rrui__button-reset rrui__slideshow__action rrui__slideshow__previous">
-							<LeftArrow className="rrui__slideshow__action-icon"/>
+							className="rrui__button-reset rrui__slideshow__action rrui__slideshow__action--counterform rrui__slideshow__previous">
+							<LeftArrowCounterform className="rrui__slideshow__action-icon"/>
 						</button>
 					}
 
@@ -1362,8 +1357,8 @@ class Slideshow extends React.PureComponent {
 							type="button"
 							title={messages.actions.next}
 							onClick={this.onShowNext}
-							className="rrui__button-reset rrui__slideshow__action rrui__slideshow__action rrui__slideshow__next">
-							<RightArrow className="rrui__slideshow__action-icon"/>
+							className="rrui__button-reset rrui__slideshow__action rrui__slideshow__action rrui__slideshow__action--counterform rrui__slideshow__next">
+							<RightArrowCounterform className="rrui__slideshow__action-icon"/>
 						</button>
 					}
 
