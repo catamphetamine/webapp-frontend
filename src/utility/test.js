@@ -1,4 +1,5 @@
 import './getMimeType.test'
+import './getSocialText.test'
 import './getTweet.test'
 import './getTweetText.test'
 // Instagram doesn't allow CORS on their oEmbed API.
