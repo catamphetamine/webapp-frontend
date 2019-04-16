@@ -559,4 +559,51 @@ describe('getPostText', () => {
 			''
 		)
 	})
+
+	it('should get post text when social attachments are present', () => {
+		getPostTextTest(
+			{
+				content: [
+					[
+						'Abc'
+					],
+					{
+						type: 'attachment',
+						attachmentId: 1
+					}
+				],
+				attachments: [{
+					id: 1,
+					type: 'social',
+					social: {
+						provider: 'Instagram',
+						content: 'My favorite cat from tonight\'s episode- a true winner. #newgirl',
+						url: 'https://www.instagram.com/p/V8UMy0LjpX/',
+						author: {
+							name: 'Zooey Deschanel',
+							id: 'zooeydeschanel',
+							url: 'https://www.instagram.com/zooeydeschanel'
+						},
+						date: new Date('2013-02-20T06:17:14+00:00'),
+						attachments: [{
+							type: 'picture',
+							picture: {
+								type: 'image/jpeg',
+								width: 612,
+								height: 612,
+								url: 'https://scontent-arn2-1.cdninstagram.com/vp/fe285833a2d6da37c81165bc7e03f8d8/5D3E22F2/t51.2885-15/e15/11262720_891453137565191_1495973619_n.jpg?_nc_ht=scontent-arn2-1.cdninstagram.com'
+							}
+						}]
+					}
+				}]
+			},
+			{
+				messages: {
+					picture: 'Picture',
+					video: 'Video'
+				}
+			},
+			'Abc\n\nZooey Deschanel (@zooeydeschanel): My favorite cat from tonight\'s episode- a true winner. #newgirl'
+		)
+	})
 })
