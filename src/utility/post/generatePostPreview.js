@@ -9,6 +9,7 @@ const NEW_PARAGRAPH_COST = 40
 const EMBEDDED_ATTACHMENT_COST = 100
 const EMBEDDED_PICTURE_COST = 200
 const EMBEDDED_VIDEO_COST = 200
+const EMBEDDED_AUDIO_COST = 100
 
 // If the total content length doesn't exceed
 // `(1 + FIT_FACTOR) * limit` then preview is not neccessary.
@@ -478,6 +479,26 @@ function getAttachmentCharacterPoints(attachment) {
 			return EMBEDDED_PICTURE_COST
 		case 'video':
 			return EMBEDDED_VIDEO_COST
+		case 'audio':
+			return EMBEDDED_AUDIO_COST
+		case 'social':
+			const social = attachment.social
+			let points = EMBEDDED_ATTACHMENT_COST
+			if (social.author.id) {
+				points += countCharacters(social.author.id, 'points')
+			}
+			if (social.author.name) {
+				points += countCharacters(social.author.name, 'points')
+			}
+			if (social.content) {
+				points += countCharacters(social.content, 'points')
+			}
+			if (social.attachments) {
+				for (const attachment of social.attachments) {
+					points += getAttachmentCharacterPoints(attachment)
+				}
+			}
+			return points
 		default:
 			return EMBEDDED_ATTACHMENT_COST
 	}

@@ -104,6 +104,14 @@ function shouldExpandAttachment(attachment) {
 		case 'video':
 		case 'picture':
 			return true
+		case 'social':
+			switch (attachment.social.provider) {
+				case 'Instagram':
+				case 'Twitter':
+					return true
+				default:
+					return false
+			}
 		default:
 			return false
 	}
