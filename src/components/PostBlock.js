@@ -9,6 +9,7 @@ import PostQuote from './PostQuote'
 import PostPicture from './PostPicture'
 import PostVideo from './PostVideo'
 import PostAudio from './PostAudio'
+import PostSocial from './PostSocial'
 import PostReadMore from './PostReadMore'
 
 import PostInlineContent from './PostInlineContent'
@@ -25,6 +26,7 @@ export default function PostBlock({
 	serviceIcons,
 	saveBandwidth,
 	spoilerLabel,
+	locale,
 	children: content
 }) {
 	if (Array.isArray(content) || typeof content === 'string') {
@@ -118,6 +120,8 @@ export default function PostBlock({
 				)
 			case 'audio':
 				return <PostAudio>{attachment}</PostAudio>
+			case 'social':
+				return <PostSocial locale={locale} social={attachment.social}/>
 			default:
 				console.error(`Unknown embedded attachment type: "${attachment.type}"\n`, attachment)
 				return null
@@ -149,5 +153,6 @@ PostBlock.propTypes = {
 	serviceIcons: PropTypes.objectOf(PropTypes.func),
 	saveBandwidth: PropTypes.bool,
 	spoilerLabel: PropTypes.string,
+	locale: PropTypes.string,
 	children: postBlock.isRequired
 }

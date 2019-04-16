@@ -180,7 +180,8 @@ export default class Post extends React.PureComponent {
 								saveBandwidth={saveBandwidth}
 								spoilerLabel={messages.spoiler}
 								openSlideshow={openSlideshow}
-								serviceIcons={serviceIcons}>
+								serviceIcons={serviceIcons}
+								locale={locale}>
 								{content}
 							</PostBlock>
 						))}

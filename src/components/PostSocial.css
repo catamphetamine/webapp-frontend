@@ -1,0 +1,68 @@
+.post__social {
+	/* Units don't scale on small screens, so using `em`s instead. */
+	/*--user-picture-size: calc(var(--unit) * 3);*/
+	--user-picture-size: 2em;
+
+	margin-top: var(--post-content-vertical-spacing);
+}
+
+.post__social__header {
+	display: flex;
+	align-items: center;
+}
+
+.post__social__user-picture {
+	width: var(--user-picture-size);
+	height: var(--user-picture-size);
+	margin-right: 0.4em;
+}
+
+.post__social__provider-logo {
+	width: 1em;
+	height: 1em;
+	margin-right: 0.25em;
+}
+
+.post__social__author-name {
+	padding-bottom: 0.15em;
+}
+
+.post__social__author-name-and-id {
+	display: flex;
+	flex-direction: column;
+}
+
+.post__social__author-name-inner {
+	display: flex;
+	align-items: center;
+}
+
+.post__social__author-id {
+	font-size: 85%;
+	color: var(--gray-color-600);
+	/*
+	&:hover {
+		color: var(--gray-color-700);
+	}
+	*/
+}
+
+.post__social__author-id-element:before {
+	content: '@';
+	position: relative;
+	top: -0.1em;
+}
+
+.post__social__content {
+	margin: 0;
+	margin-top: 0.25em;
+	line-height: var(--line-height);
+}
+
+.post__social__content-link--text-color {
+	color: inherit;
+}
+
+/*.post__social__content-link--block {
+	display: block;
+}*/
