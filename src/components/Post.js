@@ -16,6 +16,7 @@ import expandStandaloneAttachmentLinks from '../utility/post/expandStandaloneAtt
 import generatePostPreview from '../utility/post/generatePostPreview'
 
 import './Post.css'
+import './PostQuoteBlock.css'
 
 export default class Post extends React.PureComponent {
 	static propTypes = {
