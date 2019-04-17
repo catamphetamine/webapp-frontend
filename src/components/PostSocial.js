@@ -75,13 +75,16 @@ export default function PostSocial({
 				<blockquote
 					cite={social.url || social.author.url || social.author.name || social.author.id}
 					className="post__social__content">
-					{/* `<Link/>` is placed inside `<blockquote/>`
+					{/* `<Link/>` is placed inside `<blockquote/>` and `<p/>`
 					    because `<a/>` can't contain block-level DOM elements.
 					    `<blockquote/>` can be replaced with inline-level `<q/>`
+					    (and `<p/>` can be removed while setting `line-height` on `<q/>`)
 					    if required to be clickable as a whole. */}
-					<Link to={social.url}>
-						{social.content}
-					</Link>
+					<p>
+						<Link to={social.url}>
+							{social.content}
+						</Link>
+					</p>
 				</blockquote>
 			}
 			{social.attachments &&

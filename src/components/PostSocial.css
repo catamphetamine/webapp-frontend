@@ -56,7 +56,10 @@
 .post__social__content {
 	margin: 0;
 	margin-top: 0.25em;
-	line-height: var(--line-height);
+	/*line-height: var(--line-height);*/
+	p {
+		margin: 0;
+	}
 }
 
 .post__social__content-link--text-color {
