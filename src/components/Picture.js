@@ -235,23 +235,36 @@ export default class Picture extends PureComponent
 
 	calculateBlurRadius(blurFactor) {
 		const {
+			picture,
 			width,
 			height,
 			maxWidth,
 			maxHeight
 		} = this.props
+		let w
+		let h
 		if (width || height) {
-			return Math.min(width || height, height || width) * blurFactor
+			w = width
+			h = height
+		} else if (maxWidth || maxHeight) {
+			w = maxWidth
+			h = maxHeight
+			const scale = maxWidth ? picture.width / maxWidth : picture.height / maxHeight
+			if (scale < 1) {
+				if (w) {
+					w *= scale
+				}
+				if (h) {
+					h *= scale
+				}
+			}
+		} else if (this.picture.current) {
+			w = this.picture.current.offsetWidth
+			h = this.picture.current.offsetHeight
+		} else {
+			return 0
 		}
-		if (maxWidth || maxHeight) {
-			return Math.min(maxWidth || maxHeight, maxHeight || maxWidth) * blurFactor
-		}
-		if (this.picture.current) {
-			const width = this.picture.current.offsetWidth
-			const height = this.picture.current.offsetHeight
-			return Math.min(width, height) * blurFactor
-		}
-		return 0
+		return Math.round(Math.min(w || h, h || w) * blurFactor)
 	}
 
 	render() {
