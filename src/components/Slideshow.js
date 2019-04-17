@@ -911,8 +911,9 @@ class Slideshow extends React.PureComponent {
 		// The user intended to swipe left/right through slides
 		// which means the slideshow should start preloading and showing
 		// previous/next slides (if it's not showing them already).
-		if (this.panDirection === 'horizontal') {
+		if (this.panDirection === 'horizontal' && !this.didScrollThroughSlides) {
 			this.showPreviousNextSlides()
+			this.didScrollThroughSlides = true
 		}
 
 		if (this.panDirection === 'horizontal') {
