@@ -36,7 +36,9 @@ import PostFile, {
 	EXAMPLE_3 as FILE_EXAMPLE_3
 } from './PostFile'
 
-import PostAttachment from './PostAttachment'
+import PostAttachment, {
+	getStyleForMaxSize
+} from './PostAttachment'
 
 import {
 	postAttachment
@@ -133,9 +135,11 @@ export default function PostAttachments({
 			{picturesAndVideos.length > 0 &&
 				<ul className="post__attachment-thumbnails">
 					{picturesAndVideos.map((pictureOrVideo, i) => {
+						const exactSize = true
 						return (
 							<li
 								key={`picture-or-video-${i}`}
+								style={exactSize ? undefined : getStyleForMaxSize(pictureOrVideo, attachmentThumbnailSize)}
 								className={classNames('post__attachment-thumbnail', {
 									'post__attachment-thumbnail--transparent': pictureOrVideo.type === 'picture' && pictureOrVideo.picture.transparent
 								})}>
@@ -153,7 +157,7 @@ export default function PostAttachments({
 									attachment={pictureOrVideo}
 									saveBandwidth={saveBandwidth}
 									maxSize={attachmentThumbnailSize}
-									exactSize
+									exactSize={exactSize}
 									spoilerLabel={spoilerLabel}
 									onClick={openSlideshow ? createOnOpenSlideshow(i + (titlePictureOrVideo ? 1 : 0)) : undefined}
 									moreAttachmentsCount={i === picturesAndVideos.length - 1 ? picturesAndVideosMoreCount : undefined}/>

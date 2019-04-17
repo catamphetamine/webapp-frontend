@@ -73,7 +73,7 @@ export default class PostAttachment extends React.Component {
 				attachment={attachment}
 				title={isRevealed ? attachment.title : spoilerLabel}
 				onClick={this.onClick}
-				style={!exactSize && maxSize ? { width: '100%', maxWidth: getMaxWidth(attachment, maxSize) + 'px' } : undefined}
+				style={!exactSize && maxSize ? getStyleForMaxSize(attachment, maxSize) : undefined}
 				className={classNames('post__attachment-thumbnail__clickable', className)}>
 				<AttachmentThumbnail
 					attachment={attachment}
@@ -295,4 +295,11 @@ function getMaxWidth(attachment, maxSize) {
 	const size = attachment.type === 'video' ? attachment.video : attachment.picture
 	const aspectRatio = getAspectRatio(picture)
 	return aspectRatio >= 1 ? Math.min(maxSize, size.width) : Math.min(maxSize, size.height) / aspectRatio
+}
+
+export function getStyleForMaxSize(attachment, maxSize) {
+	return {
+		width: '100%',
+		maxWidth: getMaxWidth(attachment, maxSize) + 'px'
+	}
 }
