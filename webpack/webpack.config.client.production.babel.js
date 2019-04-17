@@ -3,8 +3,8 @@ import webpack from 'webpack'
 import CleanPlugin from 'clean-webpack-plugin'
 import Visualizer from 'webpack-visualizer-plugin'
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer'
-import OptimizeCSSAssetsPlugin from 'optimize-css-assets-webpack-plugin';
-import UglifyJsPlugin from 'uglifyjs-webpack-plugin';
+import OptimizeCSSAssetsPlugin from 'optimize-css-assets-webpack-plugin'
+import TerserPlugin from 'terser-webpack-plugin'
 
 import { clientConfiguration } from 'universal-webpack'
 import settings from './universal-webpack-settings'
@@ -25,10 +25,10 @@ export function createConfig(baseConfiguration, settings) {
   // https://github.com/webpack-contrib/mini-css-extract-plugin#minimizing-for-production
   configuration.optimization = {
     minimizer: [
-      new UglifyJsPlugin({
+      new TerserPlugin({
         cache: true,
         parallel: true,
-        sourceMap: true // set to true if you want JS source maps
+        sourceMap: true
       }),
       new OptimizeCSSAssetsPlugin({})
     ]
