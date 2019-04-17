@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import Video, { getUrl } from './Video'
+import Video, { getUrl, getMaxSize, getAspectRatio } from './Video'
 import { videoAttachment } from '../PropTypes'
 
 import './PostVideo.css'
@@ -10,7 +10,7 @@ export default function PostVideo({
 	attachment: {
 		video
 	},
-	maxHeight,
+	maxSize,
 	saveBandwidth,
 	spoilerLabel,
 	onClick
@@ -20,7 +20,7 @@ export default function PostVideo({
 		<section className="post__video">
 			<Video
 				video={video}
-				maxHeight={maxHeight}
+				maxWidth={maxSize ? getMaxWidth(video, maxSize) : undefined}
 				saveBandwidth={saveBandwidth}
 				spoilerLabel={spoilerLabel}
 				onClick={onClick}/>
@@ -42,9 +42,15 @@ export default function PostVideo({
 
 PostVideo.propTypes = {
 	attachment: videoAttachment.isRequired,
-	maxHeight: PropTypes.number,
+	maxSize: PropTypes.number,
 	saveBandwidth: PropTypes.bool,
 	spoilerLabel: PropTypes.string
+}
+
+function getMaxWidth(video, maxSize) {
+	const size = getMaxSize(video)
+	const aspectRatio = getAspectRatio(video)
+	return aspectRatio >= 1 ? Math.min(maxSize, size.width) : Math.min(maxSize, size.height) / aspectRatio
 }
 
 export const EXAMPLE = {

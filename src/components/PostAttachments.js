@@ -68,13 +68,21 @@ export default function PostAttachments({
 	// const videos = attachments.filter(_ => _.type === 'video')
 	let picturesAndVideos = attachments.filter(_ => _.type === 'picture' || _.type === 'video')
 
+	// Extract "title" picture or video.
 	let titlePictureOrVideo
 	if (expandFirstPictureOrVideo && picturesAndVideos.length > 0) {
 		titlePictureOrVideo = picturesAndVideos[0]
 		picturesAndVideos = picturesAndVideos.slice(1)
 	}
 
+	// Sort attachment thumbnails by height descending.
 	sortPostAttachments(picturesAndVideos)
+
+	// "All pictures and videos" used for the slideshow.
+	let slideshowPicturesAndVideos = picturesAndVideos
+	if (titlePictureOrVideo) {
+		slideshowPicturesAndVideos = [titlePictureOrVideo].concat(picturesAndVideos)
+	}
 
 	const audios = attachments.filter(_ => _.type === 'audio').map(_ => _.audio)
 	const links = attachments.filter(_ => _.type === 'link').map(_ => _.link)
@@ -102,7 +110,7 @@ export default function PostAttachments({
 	function createOnOpenSlideshow(i) {
 		return (event) => {
 			event.preventDefault()
-			openSlideshow(i)
+			openSlideshow(slideshowPicturesAndVideos, i)
 		}
 	}
 
@@ -145,6 +153,7 @@ export default function PostAttachments({
 									attachment={pictureOrVideo}
 									saveBandwidth={saveBandwidth}
 									maxSize={attachmentThumbnailSize}
+									exactSize
 									spoilerLabel={spoilerLabel}
 									onClick={openSlideshow ? createOnOpenSlideshow(i + (titlePictureOrVideo ? 1 : 0)) : undefined}
 									moreAttachmentsCount={i === picturesAndVideos.length - 1 ? picturesAndVideosMoreCount : undefined}/>
@@ -184,7 +193,7 @@ PostAttachments.propTypes = {
 }
 
 PostAttachments.defaultProps = {
-	expandFirstPictureOrVideo: true,
+	expandFirstPictureOrVideo: false,
 	saveBandwidth: false,
 	attachmentThumbnailSize: 160,
 	maxAttachmentThumbnails: 6
@@ -393,7 +402,7 @@ function sortByThumbnailHeightDescending(attachments) {
 	})
 }
 
-export function sortPostAttachments(attachments) {
+function sortPostAttachments(attachments) {
 	return sortByThumbnailHeightDescending(attachments)
 }
 

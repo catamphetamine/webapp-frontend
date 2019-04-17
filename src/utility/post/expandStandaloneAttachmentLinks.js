@@ -30,8 +30,7 @@ export default function expandStandaloneAttachmentLinks(post) {
 					const attachmentId = getNextAttachmentId(post.attachments)
 					const attachment = {
 						type: 'attachment',
-						attachmentId,
-						fit: 'height'
+						attachmentId
 					}
 
 					post.attachments = post.attachments || []

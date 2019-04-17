@@ -7,7 +7,7 @@ import { post, postBadge, postMessages } from '../PropTypes'
 import Slideshow from './Slideshow'
 import PostHeader from './PostHeader'
 import PostBlock from './PostBlock'
-import PostAttachments, { sortPostAttachments } from './PostAttachments'
+import PostAttachments from './PostAttachments'
 import PostFooter, { hasFooter } from './PostFooter'
 
 import loadYouTubeLinks from '../utility/post/loadYouTubeLinks'
@@ -74,14 +74,8 @@ export default class Post extends React.PureComponent {
 		return nonEmbeddedAttachments
 	}
 
-	openSlideshowForAttachments = (i) => {
-		const { post, openSlideshow } = this.props
-		const attachments = this.getNonEmbeddedAttachments()
-
-		let picturesAndVideos = attachments.filter(_ => _.type === 'picture' || _.type === 'video')
-		sortPostAttachments(picturesAndVideos)
-		picturesAndVideos = picturesAndVideos.map(_ => _.type === 'picture' ? _.picture : _.video)
-
+	openSlideshowForAttachments = (picturesAndVideos, i) => {
+		const { openSlideshow } = this.props
 		openSlideshow(picturesAndVideos, i)
 	}
 

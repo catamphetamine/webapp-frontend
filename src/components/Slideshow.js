@@ -609,8 +609,6 @@ class Slideshow extends React.PureComponent {
 
 	hasHidableControls() {
 		return this.shouldShowScaleButtons() ||
-			// this.shouldShowCloseButton() ||
-			// this.shouldShowPreviousNextButtons() ||
 			this.shouldShowOpenExternalLinkButton() ||
 			this.getOtherActions().length > 0
 	}
@@ -1130,6 +1128,11 @@ class Slideshow extends React.PureComponent {
 		return !isMediumScreenOrLarger()
 	}
 
+	showsControls() {
+		const { showControls } = this.state
+		return !(this.shouldHideControls() && !showControls)
+	}
+
 	shouldHideControls() {
 		// On "large" screens (FullHD and larger) control buttons are large too.
 		// On "medium" screens control buttons are small.
@@ -1225,7 +1228,7 @@ class Slideshow extends React.PureComponent {
 					</ul>
 
 					<ul className="rrui__slideshow__actions">
-						{this.shouldShowScaleButtons() &&
+						{this.showsControls() && this.shouldShowScaleButtons() &&
 							<li className={classNames('rrui__slideshow__action-item', {
 								'rrui__slideshow__action-group': showScaleButtons
 							})}>
@@ -1257,7 +1260,7 @@ class Slideshow extends React.PureComponent {
 							</li>
 						}
 
-						{this.shouldShowOpenExternalLinkButton() &&
+						{this.showsControls() && this.shouldShowOpenExternalLinkButton() &&
 							<li className="rrui__slideshow__action-item">
 								<a
 									target="_blank"
@@ -1270,7 +1273,7 @@ class Slideshow extends React.PureComponent {
 							</li>
 						}
 
-						{/*this.shouldShowDownloadButton() &&
+						{/*this.showsControls() && this.shouldShowDownloadButton() &&
 							<li className="rrui__slideshow__action-item">
 								<a
 									download
@@ -1284,7 +1287,7 @@ class Slideshow extends React.PureComponent {
 							</li>
 						*/}
 
-						{this.getOtherActions().map(({ name, icon: Icon, link, action }) => {
+						{this.showsControls() && this.getOtherActions().map(({ name, icon: Icon, link, action }) => {
 							const icon = <Icon className={`rrui__slideshow__action-icon rrui__slideshow__action-icon--${name}`}/>
 							return (
 								<li key={name} className="rrui__slideshow__action-item">
@@ -1312,13 +1315,13 @@ class Slideshow extends React.PureComponent {
 
 						{/* "Show/Hide controls" */}
 						{/* Is visible only on small screens. */}
-						{this.shouldHideControls() && !showControls && this.hasHidableControls() &&
+						{!this.showsControls() && this.hasHidableControls() &&
 							<li className="rrui__slideshow__action-item rrui__slideshow__action-item--toggle-controls">
 								<button
 									type="button"
 									title={showControls ? messages.actions.hideControls : messages.actions.showControls}
 									onClick={this.toggleShowControls}
-									className={classNames('rrui__button-reset', 'rrui__slideshow__action', {
+									className={classNames('rrui__button-reset', 'rrui__slideshow__action', 'rrui__slideshow__action--counterform', {
 										'rrui__slideshow__action--toggled': showControls
 									})}>
 									<EllipsisVerticalCounterform className="rrui__slideshow__action-icon"/>
@@ -1380,7 +1383,6 @@ class Slideshow extends React.PureComponent {
 	renderSlide(slide, j, wasExpanded) {
 		const { i, scale } = this.state
 		const isShown = j === i
-
 		return this.getPluginForSlide(slide).render({
 			ref: isShown ? this.currentSlideRef : undefined,
 			tabIndex: isShown ? 0 : -1,

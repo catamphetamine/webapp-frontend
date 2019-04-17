@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 import { pictureAttachment } from '../PropTypes'
 
-import Picture from './Picture'
+import { getAspectRatio } from './Picture'
 
 import PostAttachment from './PostAttachment'
 
@@ -16,11 +16,13 @@ export default function PostPicture({
 	spoilerLabel,
 	onClick
 }) {
+	const picture = attachment.picture
+	const aspectRatio = getAspectRatio(picture)
 	return (
 		<PostAttachment
 			attachment={attachment}
 			saveBandwidth={saveBandwidth}
-			maxSize={attachmentThumbnailSize}
+			maxSize={maxSize}
 			spoilerLabel={spoilerLabel}
 			onClick={onClick}
 			className="post__picture"/>

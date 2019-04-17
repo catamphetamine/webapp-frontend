@@ -36,6 +36,10 @@ export default class Picture extends PureComponent
 		maxWidth : PropTypes.number,
 		maxHeight: PropTypes.number,
 
+		// `<button/>` containers require width being set on them directly
+		// and won't work as `<button><div style="max-width: ...">...</div></button>`.
+		maxWidthWrapper : PropTypes.bool.isRequired,
+
 		width : PropTypes.number,
 		height : PropTypes.number,
 
@@ -95,7 +99,8 @@ export default class Picture extends PureComponent
 		showLoadingPlaceholder: false,
 		showLoadingIndicator: false,
 		saveBandwidth: false,
-		// fadeInDuration: 0
+		// fadeInDuration: 0,
+		maxWidthWrapper: true
 	}
 
 	state = {}
@@ -200,6 +205,10 @@ export default class Picture extends PureComponent
 					backgroundImage: `url(${ this.getUrl() || TRANSPARENT_PIXEL })`
 				}
 			case 'width':
+				return {
+					width: '100%',
+					paddingBottom: 100 / getAspectRatio(picture) + '%'
+				}
 			case 'exact-contain':
 				return {
 					paddingBottom: 100 / getAspectRatio(picture) + '%'
@@ -212,44 +221,65 @@ export default class Picture extends PureComponent
 			case 'contain':
 			case 'cover':
 			case 'scale-down':
-				let maxSize
-				if (maxWidth && maxHeight) {
-					maxSize = scaleDownSize(picture, maxWidth, maxHeight, fit)
-				} else if (fit === 'scale-down') {
-					maxSize = picture
-				}
-				if (maxSize) {
+				// `maxWidth` and `maxHeight` aren't required for these three `fit` values
+				// because CSS can handle it natively via `object-fit`.
+				if (maxWidth || maxHeight) {
+					const maxSize = getMaxFitSize(picture, maxWidth, maxHeight, fit)
 					return {
 						maxWidth: maxSize.width,
 						maxHeight: maxSize.height
 					}
 				}
-				return
 		}
+	}
+
+	calculateBlurRadius(blurFactor) {
+		const {
+			width,
+			height,
+			maxWidth,
+			maxHeight
+		} = this.props
+		if (width || height) {
+			return Math.min(width || height, height || width) * blurFactor
+		}
+		if (maxWidth || maxHeight) {
+			return Math.min(maxWidth || maxHeight, maxHeight || maxWidth) * blurFactor
+		}
+		if (this.picture.current) {
+			const width = this.picture.current.offsetWidth
+			const height = this.picture.current.offsetHeight
+			return Math.min(width, height) * blurFactor
+		}
+		return 0
 	}
 
 	render() {
 		const {
 			picture,
 			maxWidth,
-			maxHeight
+			maxHeight,
+			maxWidthWrapper
 		} = this.props
 		const fit = this.getFit()
 		switch (fit) {
 			case 'exact-contain':
-				// Setting `max-width: 100%` on the top-most container to make
+				// Setting `max-width` on the top-most container to make
 				// the whole thing downsize when the page width is not enough.
 				// Percentage `padding-bottom` is set on child element which sets aspect ratio.
 				// Setting `max-width` together with `padding-bottom` doesn't work:
 				// aspect ratio is not being inforced in that case.
 				// That's the reason the extra wrapper is introduced.
-				return (
-					<div style={{
-						maxWidth: (maxWidth || (maxHeight * getAspectRatio(picture))) + 'px'
-					}}>
-						{this.render_(fit)}
-					</div>
-				)
+				if (maxWidthWrapper) {
+					return (
+						<div style={{
+							maxWidth: (maxWidth ? Math.min(maxWidth, picture.width) : (Math.min(maxHeight, picture.height) * getAspectRatio(picture))) + 'px'
+						}}>
+							{this.render_(fit)}
+						</div>
+					)
+					return this.render_(fit)
+				}
 			default:
 				return this.render_(fit)
 		}
@@ -275,6 +305,7 @@ export default class Picture extends PureComponent
 			maxWidth,
 			maxHeight,
 			saveBandwidth,
+			maxWidthWrapper,
 			...rest
 		} = this.props
 
@@ -341,7 +372,7 @@ export default class Picture extends PureComponent
 						ref={ this.picture }
 						tabIndex={tabIndex}
 						src={ typeof window === 'undefined' ? TRANSPARENT_PIXEL : (this.getUrl() || TRANSPARENT_PIXEL) }
-						style={ blur ? addBlur(getImageStyle(fit), blur) : getImageStyle(fit) }
+						style={ blur ? addBlur(getImageStyle(fit), this.calculateBlurRadius(blur)) : getImageStyle(fit) }
 						className="rrui__picture__image"/>
 				}
 
@@ -678,25 +709,58 @@ function getHeight(picture, fit, containerWidth, containerHeight) {
 	}
 }
 
-export function scaleDownSize(size, maxWidth, maxHeight, fit) {
-	let widthFactor = size.width / maxWidth
-	let heightFactor = size.height / maxHeight
-	if (fit === 'cover' || fit === 'contain') {
-		const maxFactor = Math.max(widthFactor, heightFactor)
-		if (maxFactor < 1) {
-			const factorMultiplier = 1 / maxFactor
-			widthFactor *= factorMultiplier
-			heightFactor *= factorMultiplier
-		}
+export function getMaxFitSize(size, maxWidth, maxHeight, fit) {
+	let widthFactor
+	let heightFactor
+	if (maxWidth) {
+		widthFactor = size.width / maxWidth
 	}
-	const sizeFactor = Math.max(widthFactor, heightFactor)
-	if (sizeFactor > 1) {
+	if (maxHeight) {
+		heightFactor = size.height / maxHeight
+	}
+	const sizeFactor = getMaxFitSizeFactor(
+		widthFactor || heightFactor,
+		heightFactor || widthFactor,
+		fit
+	)
+	if (sizeFactor !== undefined) {
 		return {
-			width: size.width / sizeFactor,
-			height: size.height / sizeFactor
+			width: size.width * sizeFactor,
+			height: size.height * sizeFactor
 		}
 	}
 	return size
+}
+
+function getMaxFitSizeFactor(widthFactor, heightFactor, fit) {
+	// Works around Babel bug: Duplicate declaration "factor".
+	let factor
+	switch (fit) {
+		case 'scale-down':
+			factor = Math.max(widthFactor, heightFactor)
+			if (factor > 1) {
+				return 1 / factor
+			}
+			break
+		case 'contain':
+			factor = Math.max(widthFactor, heightFactor)
+			if (factor !== 1) {
+				return 1 / factor
+			}
+			break
+		case 'cover':
+			factor = Math.min(widthFactor, heightFactor)
+			if (factor !== 1) {
+				return 1 / factor
+			}
+			break
+		default:
+			factor = Math.max(widthFactor, heightFactor)
+			if (factor > 1) {
+				return 1 / factor
+			}
+			break
+	}
 }
 
 function addBlur(style, radius) {

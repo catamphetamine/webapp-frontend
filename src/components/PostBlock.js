@@ -94,26 +94,26 @@ export default function PostBlock({
 						attachment={attachment}
 						saveBandwidth={saveBandwidth}
 						spoilerLabel={spoilerLabel}
+						maxSize={attachmentThumbnailSize}
 						onClick={openSlideshow ?
 							(event) => {
 								event.preventDefault()
-								openSlideshow([attachment.picture])
+								openSlideshow([attachment])
 							} :
 							undefined
 						}/>
 				)
 			case 'video':
-				const maxHeight = attachment.video.height ? Math.min(attachment.video.height, attachmentThumbnailSize) : attachmentThumbnailSize
 				return (
 					<PostVideo
 						attachment={attachment}
 						saveBandwidth={saveBandwidth}
 						spoilerLabel={spoilerLabel}
-						maxHeight={content.fit === 'height' ? maxHeight : undefined}
+						maxSize={attachmentThumbnailSize}
 						onClick={openSlideshow ?
 							(event) => {
 								event.preventDefault()
-								openSlideshow([attachment.video])
+								openSlideshow([attachment])
 							} :
 							undefined
 						}/>
@@ -121,7 +121,14 @@ export default function PostBlock({
 			case 'audio':
 				return <PostAudio>{attachment}</PostAudio>
 			case 'social':
-				return <PostSocial locale={locale} social={attachment.social}/>
+				return (
+					<PostSocial
+						social={attachment.social}
+						locale={locale}
+						attachmentThumbnailSize={attachmentThumbnailSize}
+						saveBandwidth={saveBandwidth}
+						openSlideshow={openSlideshow}/>
+				)
 			default:
 				console.error(`Unknown embedded attachment type: "${attachment.type}"\n`, attachment)
 				return null

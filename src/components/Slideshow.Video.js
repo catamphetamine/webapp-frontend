@@ -8,13 +8,13 @@ export default {
 	changeSlideOnClick: false,
 	// showCloseButtonForSingleSlide: true,
 	getMaxSize(slide) {
-		return getMaxSize(slide)
+		return getMaxSize(slide.video)
 	},
 	getAspectRatio(slide) {
-		if (slide.aspectRatio) {
-			return slide.aspectRatio
+		if (slide.video.aspectRatio) {
+			return slide.video.aspectRatio
 		}
-		return getAspectRatio(slide.picture)
+		return getAspectRatio(slide.video.picture)
 	},
 	// isScaleDownAllowed(slide) {
 	// 	return false
@@ -23,7 +23,7 @@ export default {
 	// 	return true
 	// },
 	canSwipe(slide) {
-		switch (slide.provider) {
+		switch (slide.video.provider) {
 			// iOS Safari has a bug when YouTube video is played in fullscreen slideshow:
 			// touch scroll goes through it and it doesn't respond to swiping.
 			// I guess Vimeo could have the same bug (didn't test).
@@ -36,7 +36,7 @@ export default {
 		}
 	},
 	// hasCloseButtonClickingIssues(slide) {
-	// 	switch (slide.provider) {
+	// 	switch (slide.video.provider) {
 	// 		// (Experienced both in iOS Safari and in desktop Chrome)
 	// 		// Even though slideshow actions are shown above a YouTube video <iframe/>
 	// 		// clicks are being captured by that video <iframe/> for some reason.
@@ -93,10 +93,10 @@ export default {
 		return true
 	},
 	getExternalLink(slide) {
-		return getUrl(slide)
+		return getUrl(slide.video)
 	},
 	// canDownload(slide) {
-	// 	switch (slide.provider) {
+	// 	switch (slide.video.provider) {
 	// 		case undefined:
 	// 			return true
 	// 		default:
@@ -104,13 +104,13 @@ export default {
 	// 	}
 	// },
 	// getDownloadLink(slide) {
-	// 	switch (slide.provider) {
+	// 	switch (slide.video.provider) {
 	// 		case undefined:
-	// 			return slide.url
+	// 			return slide.video.url
 	// 	}
 	// },
 	canRender(slide) {
-		return slide.picture !== undefined
+		return slide.type === 'video'
 	},
 	render({
 		ref,
@@ -126,7 +126,7 @@ export default {
 		return (
 			<Video
 				ref={ref}
-				video={slide}
+				video={slide.video}
 				onClick={onClick}
 				autoPlay={wasExpanded ? true : false}
 				showPreview={wasExpanded ? false : true}

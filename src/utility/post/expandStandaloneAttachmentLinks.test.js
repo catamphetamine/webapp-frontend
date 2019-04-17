@@ -41,8 +41,7 @@ describe('expandStandaloneAttachmentLinks', () => {
 					],
 					{
 						type: 'attachment',
-						attachmentId: 1,
-						fit: 'height'
+						attachmentId: 1
 					}
 				],
 				attachments: [{
@@ -79,8 +78,7 @@ describe('expandStandaloneAttachmentLinks', () => {
 				content: [
 					{
 						type: 'attachment',
-						attachmentId: 1,
-						fit: 'height'
+						attachmentId: 1
 					},
 					[
 						'abc',
@@ -118,8 +116,7 @@ describe('expandStandaloneAttachmentLinks', () => {
 				content: [
 					{
 						type: 'attachment',
-						attachmentId: 1,
-						fit: 'height'
+						attachmentId: 1
 					}
 				],
 				attachments: [{
@@ -174,8 +171,7 @@ describe('expandStandaloneAttachmentLinks', () => {
 					],
 					{
 						type: 'attachment',
-						attachmentId: 2,
-						fit: 'height'
+						attachmentId: 2
 					}
 				],
 				attachments: [{
@@ -406,8 +402,7 @@ describe('expandStandaloneAttachmentLinks', () => {
 				],
 				{
 					"type": "attachment",
-					"attachmentId": 1,
-					"fit": "height"
+					"attachmentId": 1
 				},
 				[
 					{
@@ -417,8 +412,7 @@ describe('expandStandaloneAttachmentLinks', () => {
 				],
 				{
 					"type": "attachment",
-					"attachmentId": 2,
-					"fit": "height"
+					"attachmentId": 2
 				}
 			],
 			"commentsCount": 477
@@ -616,8 +610,7 @@ describe('expandStandaloneAttachmentLinks', () => {
 					],
 					{
 						"type": "attachment",
-						"attachmentId": 1,
-						"fit": "height"
+						"attachmentId": 1
 					},
 					[
 						{
@@ -627,8 +620,7 @@ describe('expandStandaloneAttachmentLinks', () => {
 					],
 					{
 						"type": "attachment",
-						"attachmentId": 2,
-						"fit": "height"
+						"attachmentId": 2
 					}
 				],
 				"commentsCount": 477

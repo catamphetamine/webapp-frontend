@@ -2,6 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 
+import PostAttachments from './PostAttachments'
+
 import { social } from '../PropTypes'
 
 import Instagram from '../../assets/images/icons/services/instagram.svg'
@@ -9,7 +11,13 @@ import Twitter from '../../assets/images/icons/services/twitter.svg'
 
 import './PostSocial.css'
 
-export default function PostSocial({ social, locale }) {
+export default function PostSocial({
+	social,
+	locale,
+	attachmentThumbnailSize,
+	saveBandwidth,
+	openSlideshow
+}) {
 	const ProviderLogo = getProviderLogoComponent(social.provider)
 	const authorId = (
 		<span className="post__social__author-id-element">
@@ -76,18 +84,24 @@ export default function PostSocial({ social, locale }) {
 					</Link>
 				</blockquote>
 			}
+			{social.attachments &&
+				<PostAttachments
+					attachmentThumbnailSize={attachmentThumbnailSize}
+					saveBandwidth={saveBandwidth}
+					openSlideshow={openSlideshow}>
+					{social.attachments}
+				</PostAttachments>
+			}
 		</article>
 	)
 }
 
 PostSocial.propTypes = {
 	social: social.isRequired,
-	// authorLink: PropTypes.bool.isRequired,
-	locale: PropTypes.string
-}
-
-PostSocial.defaultProps = {
-	// authorLink: false
+	locale: PropTypes.string,
+	attachmentThumbnailSize: PropTypes.number,
+	saveBandwidth: PropTypes.bool,
+	openSlideshow: PropTypes.func
 }
 
 function getProviderLogoComponent(provider) {

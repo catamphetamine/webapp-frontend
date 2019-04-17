@@ -6,7 +6,7 @@ import { video } from '../PropTypes'
 import { getEmbeddedVideoUrl, getVideoUrl } from '../utility/video'
 import { requestFullScreen, exitFullScreen, onFullScreenChange } from '../utility/dom'
 
-import Picture, { scaleDownSize } from './Picture'
+import Picture, { getMaxFitSize } from './Picture'
 import VideoPlayIcon from './VideoPlayIcon'
 import HtmlVideo from './HtmlVideo'
 import YouTubeVideo from './YouTubeVideo'
@@ -372,10 +372,7 @@ export default class Video extends React.Component {
 					paddingBottom: 100 / getAspectRatio(video) + '%'
 				}
 			case 'scale-down':
-				let maxSize = getMaxSize(video)
-				if (maxWidth && maxHeight) {
-					maxSize = scaleDownSize(maxSize, maxWidth, maxHeight, fit)
-				}
+				const maxSize = getMaxFitSize(getMaxSize(video), maxWidth, maxHeight, fit)
 				return {
 					maxWidth: maxSize.width,
 					maxHeight: maxSize.height
@@ -387,24 +384,28 @@ export default class Video extends React.Component {
 		const {
 			video,
 			maxWidth,
-			maxHeight
+			maxHeight,
+			maxWidthWrapper
 		} = this.props
 		const fit = this.getFit()
 		switch (fit) {
 			case 'exact-contain':
-				// Setting `max-width: 100%` on the top-most container to make
+				// Setting `max-width` on the top-most container to make
 				// the whole thing downsize when the page width is not enough.
 				// Percentage `padding-bottom` is set on child element which sets aspect ratio.
 				// Setting `max-width` together with `padding-bottom` doesn't work:
 				// aspect ratio is not being inforced in that case.
 				// That's the reason the extra wrapper is introduced.
-				return (
-					<div style={{
-						maxWidth: (maxWidth || (maxHeight * getAspectRatio(video))) + 'px'
-					}}>
-						{this.render_(fit)}
-					</div>
-				)
+				if (maxWidthWrapper) {
+					return (
+						<div style={{
+							maxWidth: (maxWidth || (maxHeight * getAspectRatio(video))) + 'px'
+						}}>
+							{this.render_(fit)}
+						</div>
+					)
+				}
+				return this.render_(fit)
 			default:
 				return this.render_(fit)
 		}
@@ -551,6 +552,9 @@ Video.propTypes = {
 	]).isRequired,
 	maxWidth: PropTypes.number,
 	maxHeight: PropTypes.number,
+	// `<button/>` containers require width being set on them directly
+	// and won't work as `<button><div style="max-width: ...">...</div></button>`.
+	maxWidthWrapper : PropTypes.bool.isRequired,
 	showPreview: PropTypes.bool.isRequired,
 	seekOnArrowKeys: PropTypes.bool.isRequired,
 	seekStep: PropTypes.number.isRequired,
@@ -572,7 +576,8 @@ Video.defaultProps = {
 	changeVolumeOnArrowKeys: true,
 	changeVolumeStep: 0.1,
 	autoPlay: false,
-	canPlay: true
+	canPlay: true,
+	maxWidthWrapper: true
 }
 
 export function getUrl(video) {

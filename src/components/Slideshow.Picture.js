@@ -14,32 +14,32 @@ import Search from '../../assets/images/icons/menu/search-outline.svg'
 
 export default {
 	getMaxSize(slide) {
-		return slide
+		return slide.picture
 	},
 	getAspectRatio(slide) {
-		return getAspectRatio(slide)
+		return getAspectRatio(slide.picture)
 	},
 	// isScaleDownAllowed(slide) {
-	// 	return isVector(slide)
+	// 	return isVector(slide.picture)
 	// },
 	canOpenExternalLink(slide) {
 		return true
 	},
 	getExternalLink(slide) {
-		return slide.url
+		return slide.picture.url
 	},
 	getOtherActions(slide) {
 		return [{
 			name: 'searchInGoogle',
 			icon: Search, // SearchInGoogleIcon
-			link: `https://images.google.com/searchbyimage?image_url=${slide.sizes[slide.sizes.length - 1].url}`
+			link: `https://images.google.com/searchbyimage?image_url=${slide.picture.url}`
 		}]
 	},
 	canRender(slide) {
-		return slide.sizes !== undefined
+		return slide.type === 'picture'
 	},
 	preload(slide, width) {
-		return preloadImage(getPreferredSize(slide, width).url)
+		return preloadImage(getPreferredSize(slide.picture, width).url)
 	},
 	render({
 		ref,
@@ -50,12 +50,10 @@ export default {
 		maxHeight,
 		style
 	}) {
-		// fit={shouldUpscaleSmallSlides ? 'contain' : 'scale-down'}
-		// onClick={onClickPrecise}
 		return (
 			<Picture
 				ref={ref}
-				picture={slide}
+				picture={slide.picture}
 				onClick={onClick}
 				tabIndex={tabIndex}
 				showLoadingIndicator
