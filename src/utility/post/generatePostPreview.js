@@ -11,6 +11,14 @@ const EMBEDDED_PICTURE_COST = 200
 const EMBEDDED_VIDEO_COST = 200
 const EMBEDDED_AUDIO_COST = 100
 
+// // Could somehow be used to compensate for long posts with short lines.
+// // Example:
+// // "Ratings:
+// //  8/10
+// //  9/10
+// //  ..."
+// const AVERAGE_LINE_CHARACTERS = 70
+
 // If the total content length doesn't exceed
 // `(1 + FIT_FACTOR) * limit` then preview is not neccessary.
 const FIT_FACTOR = 0.2
