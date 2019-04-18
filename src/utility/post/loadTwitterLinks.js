@@ -23,6 +23,10 @@ async function parseTwitterLink(link, options) {
 	if (link.attachment) {
 		return
 	}
+	const tweetId = getTweetId(link.url)
+	if (!tweetId) {
+		return
+	}
 	const tweet = await getTweet(getTweetId(link.url), options)
 	if (tweet) {
 		link.attachment = {
