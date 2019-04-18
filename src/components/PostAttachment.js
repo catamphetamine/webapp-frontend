@@ -29,6 +29,7 @@ export default class PostAttachment extends React.Component {
 		onClick: PropTypes.func,
 		spoilerLabel: PropTypes.string,
 		maxSize: PropTypes.number,
+		maxHeight: PropTypes.number,
 		exactSize: PropTypes.bool,
 		saveBandwidth: PropTypes.bool,
 		moreAttachmentsCount: PropTypes.number,
@@ -60,6 +61,7 @@ export default class PostAttachment extends React.Component {
 			attachment,
 			spoilerLabel,
 			maxSize,
+			maxHeight,
 			exactSize,
 			saveBandwidth,
 			moreAttachmentsCount,
@@ -73,7 +75,7 @@ export default class PostAttachment extends React.Component {
 				attachment={attachment}
 				title={isRevealed ? attachment.title : spoilerLabel}
 				onClick={this.onClick}
-				style={!exactSize && maxSize ? getStyleForMaxSize(attachment, maxSize) : undefined}
+				style={!exactSize && maxSize ? getStyleForMaxSize(attachment, maxSize, maxHeight) : undefined}
 				className={classNames('post__attachment-thumbnail__clickable', className)}>
 				<AttachmentThumbnail
 					attachment={attachment}
@@ -81,6 +83,7 @@ export default class PostAttachment extends React.Component {
 					spoilerLabel={spoilerLabel}
 					isRevealed={isRevealed}
 					maxSize={maxSize}
+					maxHeight={maxHeight}
 					exactSize={exactSize}
 					moreAttachmentsCount={moreAttachmentsCount}/>
 			</AttachmentButton>
@@ -213,6 +216,7 @@ function AttachmentThumbnail({
 	attachment,
 	isRevealed,
 	maxSize,
+	maxHeight,
 	exactSize,
 	saveBandwidth,
 	spoilerLabel,
@@ -224,12 +228,17 @@ function AttachmentThumbnail({
 	let height
 	if (exactSize) {
 		const aspectRatio = getAspectRatio(picture)
-		if (aspectRatio >= 1) {
-			width = maxSize
-			height = width / aspectRatio
-		} else {
-			height = maxSize
+		if (maxHeight) {
+			height = maxHeight
 			width = height * aspectRatio
+		} else {
+			if (aspectRatio >= 1) {
+				width = maxSize
+				height = width / aspectRatio
+			} else {
+				height = maxSize
+				width = height * aspectRatio
+			}
 		}
 	}
 	return (
@@ -270,7 +279,8 @@ function AttachmentThumbnail({
 AttachmentThumbnail.propTypes = {
 	attachment: postAttachment.isRequired,
 	isRevealed: PropTypes.bool,
-	maxSize: PropTypes.number.isRequired,
+	maxSize: PropTypes.number,
+	maxHeight: PropTypes.number,
 	exactSize: PropTypes.bool,
 	saveBandwidth: PropTypes.bool,
 	spoilerLabel: PropTypes.string,
@@ -290,16 +300,20 @@ function getAttachmentUrl(attachment) {
 	}
 }
 
-function getMaxWidth(attachment, maxSize) {
+function getMaxWidth(video, maxSize, maxHeight) {
 	const picture = attachment.type === 'video' ? attachment.video.picture : attachment.picture
 	const size = attachment.type === 'video' ? attachment.video : attachment.picture
 	const aspectRatio = getAspectRatio(picture)
-	return aspectRatio >= 1 ? Math.min(maxSize, size.width) : Math.min(maxSize, size.height) / aspectRatio
+	if (aspectRatio >= 1) {
+		return Math.min(maxSize || maxHeight * aspectRatio, size.width)
+	} else {
+		return Math.min(maxSize || maxHeight, size.height) / aspectRatio
+	}
 }
 
-export function getStyleForMaxSize(attachment, maxSize) {
+export function getStyleForMaxSize(attachment, maxSize, maxHeight) {
 	return {
 		width: '100%',
-		maxWidth: getMaxWidth(attachment, maxSize) + 'px'
+		maxWidth: getMaxWidth(attachment, maxSize, maxHeight) + 'px'
 	}
 }

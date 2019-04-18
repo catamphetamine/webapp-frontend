@@ -94,7 +94,7 @@ export default function PostBlock({
 						attachment={attachment}
 						saveBandwidth={saveBandwidth}
 						spoilerLabel={spoilerLabel}
-						maxSize={attachmentThumbnailSize}
+						maxHeight={attachmentThumbnailSize}
 						onClick={openSlideshow ?
 							(event) => {
 								event.preventDefault()
@@ -109,7 +109,7 @@ export default function PostBlock({
 						attachment={attachment}
 						saveBandwidth={saveBandwidth}
 						spoilerLabel={spoilerLabel}
-						maxSize={attachmentThumbnailSize}
+						maxHeight={attachmentThumbnailSize}
 						onClick={openSlideshow ?
 							(event) => {
 								event.preventDefault()

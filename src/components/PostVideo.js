@@ -11,6 +11,7 @@ export default function PostVideo({
 		video
 	},
 	maxSize,
+	maxHeight,
 	saveBandwidth,
 	spoilerLabel,
 	onClick
@@ -20,7 +21,7 @@ export default function PostVideo({
 		<section className="post__video">
 			<Video
 				video={video}
-				maxWidth={maxSize ? getMaxWidth(video, maxSize) : undefined}
+				maxWidth={maxSize || maxHeight ? getMaxWidth(video, maxSize, maxHeight) : undefined}
 				saveBandwidth={saveBandwidth}
 				spoilerLabel={spoilerLabel}
 				onClick={onClick}/>
@@ -43,14 +44,19 @@ export default function PostVideo({
 PostVideo.propTypes = {
 	attachment: videoAttachment.isRequired,
 	maxSize: PropTypes.number,
+	maxHeight: PropTypes.number,
 	saveBandwidth: PropTypes.bool,
 	spoilerLabel: PropTypes.string
 }
 
-function getMaxWidth(video, maxSize) {
+function getMaxWidth(video, maxSize, maxHeight) {
 	const size = getMaxSize(video)
 	const aspectRatio = getAspectRatio(video)
-	return aspectRatio >= 1 ? Math.min(maxSize, size.width) : Math.min(maxSize, size.height) / aspectRatio
+	if (aspectRatio >= 1) {
+		return Math.min(maxSize || maxHeight * aspectRatio, size.width)
+	} else {
+		return Math.min(maxSize || maxHeight, size.height) / aspectRatio
+	}
 }
 
 export const EXAMPLE = {
