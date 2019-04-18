@@ -734,18 +734,33 @@ class Slideshow extends React.PureComponent {
 
 	onTouchStart = (event) => {
 		this.isTouchDevice = true
-		// Ignore multitouch.
-		if (event.touches.length > 1) {
+		if (event.touches.length === 1) {
+			// Ignore button/link clicks.
+			if (isButton(event.target)) {
+				return
+			}
+			this.onPanStart(
+				event.changedTouches[0].clientX,
+				event.changedTouches[0].clientY
+			)
+		} else if (event.touches.length === 2) {
+			// Ignore multitouch when panning.
+			if (this.isPanning) {
+				this.onPanEnd()
+			}
+			this.onZoomStart(
+				event.changedTouches[0].identifier,
+				event.changedTouches[0].clientX,
+				event.changedTouches[0].clientY,
+				event.changedTouches[1].identifier,
+				event.changedTouches[1].clientX,
+				event.changedTouches[1].clientY
+			)
+		} else {
+			// Ignore multitouch.
 			// Reset.
-			return this.onTouchCancel()
+			this.onTouchCancel()
 		}
-		if (isButton(event.target)) {
-			return
-		}
-		this.onPanStart(
-			event.changedTouches[0].clientX,
-			event.changedTouches[0].clientY
-		)
 	}
 
 	onTouchEnd = (event) => {
@@ -757,6 +772,8 @@ class Slideshow extends React.PureComponent {
 	onTouchCancel = () => {
 		if (this.isPanning) {
 			this.onPanEnd()
+		} else if (this.isZooming) {
+			this.onZoomEnd()
 		}
 	}
 
@@ -766,6 +783,15 @@ class Slideshow extends React.PureComponent {
 				event.changedTouches[0].clientX,
 				event.changedTouches[0].clientY
 			)
+		} else if (this.isZooming) {
+			for (const touch of event.changedTouches) {
+				this.updateTouch(
+					touch.identifier,
+					touch.clientX,
+					touch.clientY
+				)
+			}
+			this.onZoom()
 		}
 	}
 
@@ -819,6 +845,52 @@ class Slideshow extends React.PureComponent {
 				this.onPanEnd()
 			}
 		}
+	}
+
+	onZoomStart(id1, x1, y1, id2, x2, y2) {
+		this.isZooming = true
+		this.scaleBeforeZoom = this.state.scale
+		this.zoomTouch1Id = id1
+		this.zoomTouch1X = x1
+		this.zoomTouch1Y = y1
+		this.zoomTouch2Id = id2
+		this.zoomTouch2X = x2
+		this.zoomTouch2Y = y2
+		const distanceX = Math.abs(this.zoomTouch1X - this.zoomTouch2X)
+		const distanceY = Math.abs(this.zoomTouch1Y - this.zoomTouch2Y)
+		this.zoomTouchStartDistance = Math.sqrt(distanceX * distanceX + distanceY * distanceY)
+	}
+
+	updateTouch(id, x, y) {
+		if (id === this.zoomTouch1Id) {
+			this.zoomTouch1X = x
+			this.zoomTouch1Y = y
+		} else if (id === this.zoomTouch2Id) {
+			this.zoomTouch2X = x
+			this.zoomTouch2Y = y
+		}
+	}
+
+	onZoom() {
+		const distanceX = Math.abs(this.zoomTouch1X - this.zoomTouch2X)
+		const distanceY = Math.abs(this.zoomTouch1Y - this.zoomTouch2Y)
+		const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY)
+		const scaleFactor = distance / this.zoomTouchStartDistance
+		const scale = this.scaleBeforeZoom * scaleFactor
+		this.setState({
+			scale: Math.max(
+				Math.min(scale, this.getFullScreenScale()),
+				this.getMinScaleForCurrentSlide(scale)
+			)
+		})
+	}
+
+	onZoomEnd() {
+		this.setState({
+			scale: this.scaleBeforeZoom
+		})
+		this.scaleBeforeZoom = undefined
+		this.isZooming = false
 	}
 
 	onPanStart(x, y) {

@@ -14,11 +14,11 @@
 .rrui__slideshow {
 	/* Slideshow is focused upon opening. */
 	outline: none;
-	/* Only allows single-finger vertical panning gestures. */
-	/* (disable all other touch gestures). */
-	/* Don't know what exactly does it do. */
-	/* Just copy-pasted it from Instagram. */
-	touch-action: pan-y;
+	/* Disables browser handling pan and zoom gestures. */
+	/* Pan and zoom are handled manually on "pointermove" instead. */
+	/* `touch-action: none` is not supported in Safari. */
+	/* https://caniuse.com/#feat=css-touch-action */
+	touch-action: none;
 }
 
 .rrui__slideshow--fullscreen {
