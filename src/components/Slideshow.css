@@ -14,11 +14,13 @@
 .rrui__slideshow {
 	/* Slideshow is focused upon opening. */
 	outline: none;
+	/* Update: doesn't seem to disable neither scroll nor pinch-zoom, */
+	/* scroll and pinch-zoom are disabled via `event.preventDefault()` instead. */
 	/* Disables browser handling pan and zoom gestures. */
 	/* Pan and zoom are handled manually on "pointermove" instead. */
 	/* `touch-action: none` is not supported in Safari. */
 	/* https://caniuse.com/#feat=css-touch-action */
-	touch-action: none;
+	/*touch-action: none;*/
 }
 
 .rrui__slideshow--fullscreen {

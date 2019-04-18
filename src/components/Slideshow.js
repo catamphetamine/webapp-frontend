@@ -4,12 +4,12 @@ import classNames from 'classnames'
 import throttle from 'lodash/throttle'
 import FocusLock from 'react-focus-lock'
 
-// `body-scroll-lock` has been modified a bit, see the info in the header of the file.
-import {
-	disableBodyScroll,
-	enableBodyScroll,
-	clearAllBodyScrollLocks
-} from '../utility/body-scroll-lock'
+// // `body-scroll-lock` has been modified a bit, see the info in the header of the file.
+// import {
+// 	disableBodyScroll,
+// 	enableBodyScroll,
+// 	clearAllBodyScrollLocks
+// } from '../utility/body-scroll-lock'
 
 import {
 	isClickable,
@@ -18,7 +18,7 @@ import {
 	onFullScreenChange,
 	getViewportWidth,
 	getViewportHeight,
-	getScrollBarWidth
+	// getScrollBarWidth
 } from '../utility/dom'
 
 import {
@@ -45,7 +45,7 @@ import EllipsisVerticalCounterform from '../../assets/images/icons/ellipsis-vert
 import './Slideshow.css'
 
 const PAN_SPEED_CALC_THROTTLE = 200  // in milliseconds
-const PAN_SPEED_CALC_WINDOW = PAN_SPEED_CALC_THROTTLE + 200 // in milliseconds
+const PAN_SPEED_CALC_WINDOW = PAN_SPEED_CALC_THROTTLE + 100 // in milliseconds
 
 export default function SlideshowWrapper(props) {
 	if (props.isOpen) {
@@ -135,7 +135,7 @@ class Slideshow extends React.PureComponent {
 	panOffsetX = 0
 	panOffsetY = 0
 	panSpeed = 0
-
+	touches = []
 	transitionDuration = 0
 
 	constructor(props)
@@ -163,27 +163,35 @@ class Slideshow extends React.PureComponent {
 			}
 		}
 		window.addEventListener('resize', this.onWindowResize)
-		if (!inline) {
-			// Without this in iOS Safari body content would scroll.
-			// https://medium.com/jsdownunder/locking-body-scroll-for-all-devices-22def9615177
-			const scrollBarWidth = getScrollBarWidth()
-			disableBodyScroll(this.container.current, {
-				// Apply the scrollbar-compensating padding immediately when setting
-				// body's `overflow: hidden` to prevent "jitter" ("jank") (visual lag).
-				// (for the `<body/>`)
-				reserveScrollBarGap: true,
-				onBodyOverflowHide: () => {
-					// Apply the scrollbar-compensating padding immediately when setting
-					// body's `overflow: hidden` to prevent "jitter" ("jank") (visual lag).
-					// (for the slideshow `position: fixed` layer)
-					if (this.container.current) {
-						this.container.current.style.paddingRight = scrollBarWidth + 'px'
-						// Render the slideshow with scrollbar-compensating padding in future re-renders.
-						this.containerPaddingRight = scrollBarWidth + 'px'
-					}
-				}
-			})
-		}
+		// if (!inline) {
+		// 	// Without this in iOS Safari body content would scroll.
+		// 	// https://medium.com/jsdownunder/locking-body-scroll-for-all-devices-22def9615177
+		// 	const scrollBarWidth = getScrollBarWidth()
+		// 	disableBodyScroll(this.container.current, {
+		// 		// Apply the scrollbar-compensating padding immediately when setting
+		// 		// body's `overflow: hidden` to prevent "jitter" ("jank") (visual lag).
+		// 		// (for the `<body/>`)
+		// 		reserveScrollBarGap: true,
+		// 		onBodyOverflowHide: () => {
+		// 			// Apply the scrollbar-compensating padding immediately when setting
+		// 			// body's `overflow: hidden` to prevent "jitter" ("jank") (visual lag).
+		// 			// (for the slideshow `position: fixed` layer)
+		// 			if (this.container.current) {
+		// 				this.container.current.style.paddingRight = scrollBarWidth + 'px'
+		// 				// Render the slideshow with scrollbar-compensating padding in future re-renders.
+		// 				this.containerPaddingRight = scrollBarWidth + 'px'
+		// 			}
+		// 		}
+		// 	})
+		// }
+
+		// React doesn't support setting up non-passive listeners.
+		// https://github.com/facebook/react/issues/14856
+		// onTouchMove={this.onTouchMove}
+		// onWheel={this.onWheel}>
+		this.container.current.addEventListener('touchmove', this.onTouchMove)
+		this.container.current.addEventListener('wheel', this.onWheel)
+
 		// `this.slides.current` is now available for `this.getSlideshowWidth()`.
 		// Also updates container padding-right for scrollbar width compensation.
 		this.forceUpdate()
@@ -205,11 +213,11 @@ class Slideshow extends React.PureComponent {
 		clearTimeout(this.transitionEndTimer)
 		window.removeEventListener('resize', this.onWindowResize)
 		this._isMounted = false
-		if (!inline) {
-			// Disable `body-scroll-lock` (as per their README).
-			enableBodyScroll(this.container.current)
-			clearAllBodyScrollLocks()
-		}
+		// if (!inline) {
+		// 	// Disable `body-scroll-lock` (as per their README).
+		// 	enableBodyScroll(this.container.current)
+		// 	clearAllBodyScrollLocks()
+		// }
 	}
 
 	resetTapEvent = () => {
@@ -734,28 +742,28 @@ class Slideshow extends React.PureComponent {
 
 	onTouchStart = (event) => {
 		this.isTouchDevice = true
-		if (event.touches.length === 1) {
+		for (const touch of event.changedTouches) {
+			this.touches.push({
+				id: touch.identifier,
+				x: touch.clientX,
+				y: touch.clientY
+			})
+		}
+		if (this.touches.length === 1) {
 			// Ignore button/link clicks.
 			if (isButton(event.target)) {
 				return
 			}
 			this.onPanStart(
-				event.changedTouches[0].clientX,
-				event.changedTouches[0].clientY
+				this.touches[0].x,
+				this.touches[0].y
 			)
-		} else if (event.touches.length === 2) {
+		} else if (this.touches.length === 2) {
 			// Ignore multitouch when panning.
 			if (this.isPanning) {
-				this.onPanEnd()
+				this.onPanEnd(true)
 			}
-			this.onZoomStart(
-				event.changedTouches[0].identifier,
-				event.changedTouches[0].clientX,
-				event.changedTouches[0].clientY,
-				event.changedTouches[1].identifier,
-				event.changedTouches[1].clientX,
-				event.changedTouches[1].clientY
-			)
+			this.onZoomStart()
 		} else {
 			// Ignore multitouch.
 			// Reset.
@@ -766,31 +774,50 @@ class Slideshow extends React.PureComponent {
 	onTouchEnd = (event) => {
 		this.isTapEvent = true
 		this.tapEventTimeout = setTimeout(this.resetTapEvent, 30)
-		this.onTouchCancel()
+		this.onTouchCancel(event)
 	}
 
-	onTouchCancel = () => {
+	onTouchCancel = (event) => {
+		// Remove cancelled/ended touches.
+		if (event) {
+			this.touches = this.touches.filter((touch) => {
+				for (const untouch of event.changedTouches) {
+					if (untouch.identifier === touch.id) {
+						return false
+					}
+				}
+				return true
+			})
+		}
 		if (this.isPanning) {
 			this.onPanEnd()
 		} else if (this.isZooming) {
 			this.onZoomEnd()
 		}
+		if (this.touches.length === 1) {
+			this.onPanStart(
+				this.touches[0].x,
+				this.touches[0].y
+			)
+		}
 	}
 
 	onTouchMove = (event) => {
+		for (const touch of event.changedTouches) {
+			this.updateTouch(
+				touch.identifier,
+				touch.clientX,
+				touch.clientY
+			)
+		}
 		if (this.isPanning) {
+			event.preventDefault()
 			this.onPan(
-				event.changedTouches[0].clientX,
-				event.changedTouches[0].clientY
+				this.touches[0].x,
+				this.touches[0].y
 			)
 		} else if (this.isZooming) {
-			for (const touch of event.changedTouches) {
-				this.updateTouch(
-					touch.identifier,
-					touch.clientX,
-					touch.clientY
-				)
-			}
+			event.preventDefault()
 			this.onZoom()
 		}
 	}
@@ -847,40 +874,29 @@ class Slideshow extends React.PureComponent {
 		}
 	}
 
-	onZoomStart(id1, x1, y1, id2, x2, y2) {
+	onZoomStart() {
 		this.isZooming = true
 		this.scaleBeforeZoom = this.state.scale
-		this.zoomTouches = [
-			{
-				id: id1,
-				x: x1,
-				y: y1
-			},
-			{
-				id: id2,
-				x: x2,
-				y: y2
-			}
-		]
-		const distanceX = Math.abs(x1 - x2)
-		const distanceY = Math.abs(y1 - y2)
-		this.zoomTouchStartDistance = Math.sqrt(distanceX * distanceX + distanceY * distanceY)
+		this.zoomTouchStartDistance = this.calculateTouchZoomDistance()
+	}
+
+	calculateTouchZoomDistance() {
+		const distanceX = Math.abs(this.touches[0].x - this.touches[1].x)
+		const distanceY = Math.abs(this.touches[0].y - this.touches[1].y)
+		return Math.sqrt(distanceX * distanceX + distanceY * distanceY)
 	}
 
 	updateTouch(id, x, y) {
-		if (id === this.zoomTouches[0].id) {
-			this.zoomTouches[0].x = x
-			this.zoomTouches[0].y = y
-		} else if (id === this.zoomTouches[1].id) {
-			this.zoomTouches[1].x = x
-			this.zoomTouches[1].y = y
+		for (const touch of this.touches) {
+			if (touch.id === id) {
+				touch.x = x
+				touch.y = y
+			}
 		}
 	}
 
 	onZoom() {
-		const distanceX = Math.abs(this.zoomTouches[0].x - this.zoomTouches[1].x)
-		const distanceY = Math.abs(this.zoomTouches[0].y - this.zoomTouches[1].y)
-		const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY)
+		const distance = this.calculateTouchZoomDistance()
 		const scaleFactor = distance / this.zoomTouchStartDistance
 		const scale = this.scaleBeforeZoom * scaleFactor
 		this.setState({
@@ -892,13 +908,9 @@ class Slideshow extends React.PureComponent {
 	}
 
 	onZoomEnd() {
-		// this.setState({
-		// 	scale: this.scaleBeforeZoom
-		// })
+		this.isZooming = false
 		this.scaleBeforeZoom = undefined
 		this.zoomTouchStartDistance = undefined
-		this.zoomTouches = undefined
-		this.isZooming = false
 	}
 
 	onPanStart(x, y) {
@@ -916,7 +928,7 @@ class Slideshow extends React.PureComponent {
 		this.container.current.classList.add('rrui__slideshow--panning')
 	}
 
-	onPanEnd() {
+	onPanEnd(cancel) {
 		const {
 			inline,
 			slideInDuration,
@@ -928,21 +940,27 @@ class Slideshow extends React.PureComponent {
 			let pannedRatio
 			if (this.panOffsetX) {
 				pannedRatio = Math.abs(this.panOffsetX) / this.getSlideshowWidth()
-				if (pannedRatio > 0.5 || this.panSpeed > 0.05) {
-					if (this.panOffsetX < 0) {
-						this.showNext()
-					} else {
-						this.showPrevious()
+				// Switch slide (if panning wasn't taken over by zooming).
+				if (!cancel) {
+					if (pannedRatio > 0.5 || this.panSpeed > 0.05) {
+						if (this.panOffsetX < 0) {
+							this.showNext()
+						} else {
+							this.showPrevious()
+						}
 					}
 				}
-				this.panOffsetX = 0
 			} else {
 				pannedRatio = Math.abs(this.panOffsetY) / this.getSlideshowHeight()
-				if (pannedRatio > 0.5 || this.panSpeed > 0.05) {
-					this.close()
+				// Switch slide (if panning wasn't taken over by zooming).
+				if (!cancel) {
+					if (pannedRatio > 0.5 || this.panSpeed > 0.05) {
+						this.close()
+					}
 				}
-				this.panOffsetY = 0
 			}
+			this.panOffsetX = 0
+			this.panOffsetY = 0
 			this.transitionDuration = minSlideInDuration + Math.abs(pannedRatio) * (slideInDuration - minSlideInDuration)
 			this.updateSlideTransitionDuration()
 			this.updateSlidePosition()
@@ -1256,6 +1274,11 @@ class Slideshow extends React.PureComponent {
 		// onPointerMove={this.onPointerMove}
 		// onPointerOut={this.onPointerOut}
 
+		// React doesn't support setting up non-passive listeners.
+		// https://github.com/facebook/react/issues/14856
+		// onTouchMove={this.onTouchMove}
+		// onWheel={this.onWheel}>
+
 		// `tabIndex={ -1 }` makes the `<div/>` focusable.
 		return (
 			<FocusLock
@@ -1265,7 +1288,7 @@ class Slideshow extends React.PureComponent {
 				ref={this.container}
 				tabIndex={-1}
 				style={inline ? undefined : {
-					paddingRight: this.containerPaddingRight,
+					// paddingRight: this.containerPaddingRight,
 					transitionDuration: this.getOverlayTransitionDuration(),
 					// `this.props.overlayOpacity` is the default overlay opacity
 					// and doesn't reflect the current overlay opacity.
@@ -1284,13 +1307,11 @@ class Slideshow extends React.PureComponent {
 				onTouchStart={this.onTouchStart}
 				onTouchEnd={this.onTouchEnd}
 				onTouchCancel={this.onTouchCancel}
-				onTouchMove={this.onTouchMove}
 				onMouseDown={this.onPointerDown}
 				onMouseUp={this.onPointerUp}
 				onMouseMove={this.onPointerMove}
 				onMouseLeave={this.onPointerOut}
-				onClick={this.onBackgroundClick}
-				onWheel={this.onWheel}>
+				onClick={this.onBackgroundClick}>
 				<div style={{ position: 'relative', width: '100%', height: '100%' }}>
 					<ul
 						ref={this.slides}
