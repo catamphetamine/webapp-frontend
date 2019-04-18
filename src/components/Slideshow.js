@@ -850,30 +850,36 @@ class Slideshow extends React.PureComponent {
 	onZoomStart(id1, x1, y1, id2, x2, y2) {
 		this.isZooming = true
 		this.scaleBeforeZoom = this.state.scale
-		this.zoomTouch1Id = id1
-		this.zoomTouch1X = x1
-		this.zoomTouch1Y = y1
-		this.zoomTouch2Id = id2
-		this.zoomTouch2X = x2
-		this.zoomTouch2Y = y2
-		const distanceX = Math.abs(this.zoomTouch1X - this.zoomTouch2X)
-		const distanceY = Math.abs(this.zoomTouch1Y - this.zoomTouch2Y)
+		this.zoomTouches = [
+			{
+				id: id1,
+				x: x1,
+				y: y1
+			},
+			{
+				id: id2,
+				x: x2,
+				y: y2
+			}
+		]
+		const distanceX = Math.abs(x1 - x2)
+		const distanceY = Math.abs(y1 - y2)
 		this.zoomTouchStartDistance = Math.sqrt(distanceX * distanceX + distanceY * distanceY)
 	}
 
 	updateTouch(id, x, y) {
-		if (id === this.zoomTouch1Id) {
-			this.zoomTouch1X = x
-			this.zoomTouch1Y = y
-		} else if (id === this.zoomTouch2Id) {
-			this.zoomTouch2X = x
-			this.zoomTouch2Y = y
+		if (id === this.zoomTouches[0].id) {
+			this.zoomTouches[0].x = x
+			this.zoomTouches[0].y = y
+		} else if (id === this.zoomTouches[1].id) {
+			this.zoomTouches[1].x = x
+			this.zoomTouches[1].y = y
 		}
 	}
 
 	onZoom() {
-		const distanceX = Math.abs(this.zoomTouch1X - this.zoomTouch2X)
-		const distanceY = Math.abs(this.zoomTouch1Y - this.zoomTouch2Y)
+		const distanceX = Math.abs(this.zoomTouches[0].x - this.zoomTouches[1].x)
+		const distanceY = Math.abs(this.zoomTouches[0].y - this.zoomTouches[1].y)
 		const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY)
 		const scaleFactor = distance / this.zoomTouchStartDistance
 		const scale = this.scaleBeforeZoom * scaleFactor
@@ -886,10 +892,12 @@ class Slideshow extends React.PureComponent {
 	}
 
 	onZoomEnd() {
-		this.setState({
-			scale: this.scaleBeforeZoom
-		})
+		// this.setState({
+		// 	scale: this.scaleBeforeZoom
+		// })
 		this.scaleBeforeZoom = undefined
+		this.zoomTouchStartDistance = undefined
+		this.zoomTouches = undefined
 		this.isZooming = false
 	}
 
