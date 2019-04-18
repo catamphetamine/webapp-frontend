@@ -44,6 +44,9 @@ import EllipsisVerticalCounterform from '../../assets/images/icons/ellipsis-vert
 
 import './Slideshow.css'
 
+const PAN_SPEED_CALC_THROTTLE = 200  // in milliseconds
+const PAN_SPEED_CALC_WINDOW = PAN_SPEED_CALC_THROTTLE + 200 // in milliseconds
+
 export default function SlideshowWrapper(props) {
 	if (props.isOpen) {
 		return <Slideshow {...props}/>
@@ -131,6 +134,7 @@ class Slideshow extends React.PureComponent {
 
 	panOffsetX = 0
 	panOffsetY = 0
+	panSpeed = 0
 
 	transitionDuration = 0
 
@@ -828,9 +832,6 @@ class Slideshow extends React.PureComponent {
 	onActualPanStart(x, y) {
 		this.panOriginX = x
 		this.panOriginY = y
-		this.panSpeed = 0
-		this.panSpeedSampleOffset = undefined
-		this.panSpeedSampleTimestamp = undefined
 		this.isActuallyPanning = true
 		this.container.current.classList.add('rrui__slideshow--panning')
 	}
@@ -843,26 +844,26 @@ class Slideshow extends React.PureComponent {
 		} = this.props
 
 		if (this.panOffsetX || this.panOffsetY) {
-			this.calculatePanSpeedThrottled()
-			if (this.panOffsetX !== 0) {
-				const speedFactor = Math.exp(this.panSpeed * 4)
-				const pannedWidthRatio = this.panOffsetX / this.getSlideshowWidth()
-				if (pannedWidthRatio < -1 * 0.5 / speedFactor) {
-					this.showNext()
-				} else if (pannedWidthRatio > 0.5 / speedFactor) {
-					this.showPrevious()
+			this.calculatePanSpeed()
+			let pannedRatio
+			if (this.panOffsetX) {
+				pannedRatio = Math.abs(this.panOffsetX) / this.getSlideshowWidth()
+				if (pannedRatio > 0.5 || this.panSpeed > 0.05) {
+					if (this.panOffsetX < 0) {
+						this.showNext()
+					} else {
+						this.showPrevious()
+					}
 				}
 				this.panOffsetX = 0
-				this.transitionDuration = minSlideInDuration + Math.abs(pannedWidthRatio) * (slideInDuration - minSlideInDuration)
-			} else if (this.panOffsetY !== 0) {
-				const pannedHeightRatio = Math.abs(this.panOffsetY) / this.getSlideshowHeight()
-				const speedFactor = 1 + Math.pow(this.panSpeed * 4, 2)
-				if (pannedHeightRatio > 0.5 / speedFactor) {
+			} else {
+				pannedRatio = Math.abs(this.panOffsetY) / this.getSlideshowHeight()
+				if (pannedRatio > 0.5 || this.panSpeed > 0.05) {
 					this.close()
 				}
 				this.panOffsetY = 0
-				this.transitionDuration = minSlideInDuration + Math.abs(pannedHeightRatio) * (slideInDuration - minSlideInDuration)
 			}
+			this.transitionDuration = minSlideInDuration + Math.abs(pannedRatio) * (slideInDuration - minSlideInDuration)
 			this.updateSlideTransitionDuration()
 			this.updateSlidePosition()
 			if (!inline) {
@@ -880,6 +881,9 @@ class Slideshow extends React.PureComponent {
 		this.isActuallyPanning = false
 		this.isPanning = false
 		this.panDirection = undefined
+		this.panSpeed = 0
+		this.panSpeedSampleOffset = undefined
+		this.panSpeedSampleTimestamp = undefined
 	}
 
 	onPan(positionX, positionY) {
@@ -970,21 +974,25 @@ class Slideshow extends React.PureComponent {
 		}
 	}
 
-	calculatePanSpeed() {
+	calculatePanSpeed = () => {
 		const now = Date.now()
-		const offset = this.panDirection === 'horizontal' ? this.panOffsetX : this.panOffsetY
-		if (this.panSpeedSampleTimestamp && this.panSpeedSampleOffset) {
+		const offset = this.panOffsetX || this.panOffsetY
+		if (this.panSpeedSampleTimestamp) {
 			const dt = now - this.panSpeedSampleTimestamp
 			if (dt > 0) {
-				const dxy = offset - this.panSpeedSampleOffset
-				this.panSpeed = Math.abs(dxy) / dt
+				if (dt < PAN_SPEED_CALC_WINDOW) {
+					const dr = Math.abs(offset - this.panSpeedSampleOffset)
+					this.panSpeed = dr / dt
+				} else {
+					this.panSpeed = 0
+				}
 			}
 		}
 		this.panSpeedSampleTimestamp = now
 		this.panSpeedSampleOffset = offset
 	}
 
-	calculatePanSpeedThrottled = throttle(this.calculatePanSpeed, 10, {
+	calculatePanSpeedThrottled = throttle(this.calculatePanSpeed, PAN_SPEED_CALC_THROTTLE, {
 		trailing: false
 	})
 
