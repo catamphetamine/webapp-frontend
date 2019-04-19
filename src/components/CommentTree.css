@@ -75,7 +75,7 @@ This CSS class can be used for styling such special case.
 			.comment-tree__branch-line {
 				border-left-color: var(--comment-tree-branch-toggler-hover-line-color);
 			}
-			.comment-tree__dialogue-chain-marker-wrapper .comment-tree__dialogue-chain-marker {
+			.comment-tree__dialogue-chain-marker {
 				border-color: var(--comment-tree-branch-toggler-hover-line-color);
 			}
 			.comment-tree__branch-marker {
