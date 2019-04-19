@@ -200,18 +200,18 @@ describe('getPostText', () => {
 		getPostPreviewTest(
 			[
 				[
-					'The first paragraph.'
+					'The first paragraph with a long line of text. The first paragraph with a long line of text.'
 				],
 				[
 					'The second paragraph is a longer one. Is a longer one.'
 				]
 			],
 			{
-				limit: 100
+				limit: 200
 			},
 			[
 				[
-					'The first paragraph.'
+					'The first paragraph with a long line of text. The first paragraph with a long line of text.'
 				],
 				[
 					'The second paragraph is a longer one.',
@@ -264,7 +264,7 @@ describe('getPostText', () => {
 				}]
 			},
 			{
-				limit: 260
+				limit: 280
 			},
 			[
 				{
@@ -297,7 +297,7 @@ describe('getPostText', () => {
 				}]
 			},
 			{
-				limit: 300
+				limit: 320
 			},
 			[
 				{
@@ -348,7 +348,7 @@ describe('getPostText', () => {
 				]
 			},
 			{
-				limit: 450
+				limit: 490
 			},
 			[
 				{
@@ -485,6 +485,68 @@ describe('getPostText', () => {
 		)
 	})
 
+	it('should compensate for short lines of text (inline level)', () => {
+		getPostPreviewTest(
+			[
+				[
+					"A1",
+					"\n",
+					"B2",
+					"\n",
+					"C3",
+					"\n",
+					"D4",
+					"\n",
+					"E5"
+				]
+			],
+			{
+				limit: 200,
+				fitFactor: 0.2
+			},
+			[
+				[
+					"A1",
+					"\n",
+					"B2"
+				],
+				{ type: 'read-more' }
+			]
+		)
+	})
+
+	it('should compensate for short lines of text (paragraph level)', () => {
+		getPostPreviewTest(
+			[
+				[
+					"A1"
+				],
+				[
+					"B2"
+				],
+				[
+					"C3"
+				],
+				[
+					"D4"
+				],
+				[
+					"E5"
+				]
+			],
+			{
+				limit: 100,
+				fitFactor: 0.2
+			},
+			[
+				[
+					"A1"
+				],
+				{ type: 'read-more' }
+			]
+		)
+	})
+
 	it('should add "read more" button in a new paragraph when trimming content at paragraph-level due to a fit factor', () => {
 		getPostPreviewTest(
 			[
@@ -555,21 +617,6 @@ describe('getPostText', () => {
 				],
 				[
 					"х — ролл времени"
-				],
-				[
-					"1 — 1935"
-				],
-				[
-					"2 — 1905"
-				],
-				[
-					"3 — 1915"
-				],
-				[
-					"4 — 1850"
-				],
-				[
-					"5 — 1530"
 				],
 				{ type: 'read-more' }
 			]

@@ -5,19 +5,19 @@ import findLastSentenceEnd from './findLastSentenceEnd'
 import splitContent from './splitContent'
 
 const NEW_LINE_COST = 30
-const NEW_PARAGRAPH_COST = 40
+const NEW_PARAGRAPH_COST = 60
 const EMBEDDED_ATTACHMENT_COST = 100
 const EMBEDDED_PICTURE_COST = 200
 const EMBEDDED_VIDEO_COST = 200
 const EMBEDDED_AUDIO_COST = 100
 
-// // Could somehow be used to compensate for long posts with short lines.
-// // Example:
-// // "Ratings:
-// //  8/10
-// //  9/10
-// //  ..."
-// const AVERAGE_LINE_CHARACTERS = 70
+// Is used to compensate for long posts with short lines.
+// Example:
+// "Ratings:
+//  8/10
+//  9/10
+//  ..."
+const AVERAGE_LINE_CHARACTERS = 80
 
 // If the total content length doesn't exceed
 // `(1 + FIT_FACTOR) * limit` then preview is not neccessary.
@@ -62,19 +62,36 @@ class PreviewGenerator {
 						trimmedBlock = block
 					}
 					this.characterPoints += NEW_LINE_COST
+					// Compensate for short lines of text (in this case: empty line).
+					this.characterPoints += AVERAGE_LINE_CHARACTERS
 				} else {
 					const points = countCharacters(block, 'points')
 					const characters = countCharacters(block, 'characters')
+					// See if this text fits entirely.
 					if (this.countIfFits(points, characters, 1)) {
 						trimmedBlock = block
+						// Compensate for short lines of text.
+						if (characters < AVERAGE_LINE_CHARACTERS) {
+							this.characterPoints += AVERAGE_LINE_CHARACTERS - characters
+						}
 					} else {
+						// See if this text can be discarded.
 						if (!this.willTrimLongEnoughAt(this.blockLevelTrimCharacterCount)) {
+							// If this block can't be discarded, then trim it somehow.
+							// First with a smaller "fit factor".
 							trimmedBlock = this.trimTextContentPreferrable(block, 0) ||
 								this.trimTextContentPreferrable(block, 1)
 							if (!trimmedBlock) {
+								// Then with a larger "fit factor".
+								// First see if it fits entirely.
 								if (this.countIfFits(points, characters, 2)) {
 									trimmedBlock = block
+									// Compensate for short lines of text.
+									if (characters < AVERAGE_LINE_CHARACTERS) {
+										this.characterPoints += AVERAGE_LINE_CHARACTERS - characters
+									}
 								} else {
+									// If it doesn't fit entirely then trim it somehow.
 									trimmedBlock = this.trimTextContentPreferrable(block, 2) ||
 										this.trimTextContentFallback(block) ||
 										this.trimTextContentAsIs(block)
@@ -87,10 +104,18 @@ class PreviewGenerator {
 			else if (Array.isArray(block)) {
 				const points = countCharacters(block, 'points')
 				const characters = countCharacters(block, 'characters')
+				// See if this paragraph fits entirely.
 				if (this.countIfFits(points, characters, 1)) {
 					trimmedBlock = block
+					// Compensate for short lines of text.
+					if (characters < AVERAGE_LINE_CHARACTERS) {
+						this.characterPoints += AVERAGE_LINE_CHARACTERS - characters
+					}
 				} else {
+					// See if this paragraph can be discarded.
 					if (!this.willTrimLongEnoughAt(this.blockLevelTrimCharacterCount)) {
+						// If it can't be discarded then trim it somehow.
+						// First with a smaller "fit factor".
 						// Trimming at "\n" leaves the "\n" at the end so that
 						// later it detects a "new line" trim point and appends
 						// `{ type: 'read-more' }` as a block-level part.
@@ -99,9 +124,16 @@ class PreviewGenerator {
 							this.trimTextContentPreferrable(block, 0) ||
 							this.trimTextContentPreferrable(block, 1)
 						if (!trimmedBlock) {
+							// Then with a larger "fit factor".
+							// See if this paragraph fits entirely.
 							if (this.countIfFits(points, characters, 2)) {
 								trimmedBlock = block
+								// Compensate for short lines of text.
+								if (characters < AVERAGE_LINE_CHARACTERS) {
+									this.characterPoints += AVERAGE_LINE_CHARACTERS - characters
+								}
 							} else {
+								// If it doesn't fit entirely then trim it somehow.
 								// Trimming at "\n" leaves the "\n" at the end so that
 								// later it detects a "new line" trim point and appends
 								// `{ type: 'read-more' }` as a block-level part.
@@ -328,10 +360,25 @@ class PreviewGenerator {
 		}
 		let trimPointIndex
 		let overflow = countCharacters(block, 'points') - this.getCharacterPointsLeft(fitFactor)
+		let charactersFromLineStart = 0
 		const indexes = searchContent(block, (content) => {
+			// Only string parts and `.content` of object parts are counted.
 			if (typeof content === 'string') {
-				const characterPoints = countCharacters(content, 'points')
+				// Calculate part character points.
+				let characterPoints = countCharacters(content, 'points')
+				// Compensate for short lines of text.
+				if (content === '\n') {
+					if (charactersFromLineStart < AVERAGE_LINE_CHARACTERS) {
+						characterPoints += AVERAGE_LINE_CHARACTERS - charactersFromLineStart
+					}
+					charactersFromLineStart = 0
+				} else {
+					// For regular inline content "points" are same as "characters".
+					charactersFromLineStart += characterPoints
+				}
+				// Count in the part character points.
 				overflow -= characterPoints
+				// If trim point reached.
 				if (overflow < 0) {
 					if (type === 'new-line') {
 						return content === '\n'
@@ -400,11 +447,28 @@ function addReadMore(content) {
 	// return content.concat({ type: 'read-more' })
 }
 
-function countCharacters(content, mode) {
+function countCharacters(content, mode, getCharactersFromLineStart, setCharactersFromLineStart) {
+	if (mode === 'points' && !getCharactersFromLineStart) {
+		let charactersFromLineStart = 0
+		getCharactersFromLineStart = () => charactersFromLineStart
+		setCharactersFromLineStart = (count) => charactersFromLineStart = count
+	}
 	if (Array.isArray(content)) {
 		let count = 0
 		for (const part of content) {
-			count += countCharacters(part, mode)
+			// Calculate characters count.
+			let characterCount = countCharacters(part, mode, getCharactersFromLineStart, setCharactersFromLineStart)
+			// Compensate for short lines of text.
+			if (mode === 'points') {
+				if (part === '\n') {
+					if (getCharactersFromLineStart() < AVERAGE_LINE_CHARACTERS) {
+						characterCount += AVERAGE_LINE_CHARACTERS - getCharactersFromLineStart()
+					}
+					setCharactersFromLineStart(0)
+				}
+			}
+			// Count in characters count.
+			count += characterCount
 		}
 		return count
 	} else if (typeof content === 'string') {
@@ -415,12 +479,16 @@ function countCharacters(content, mode) {
 				return 0
 			}
 		}
+		if (mode === 'points') {
+			setCharactersFromLineStart(getCharactersFromLineStart() + content.length)
+		}
 		return content.length
 	} else if (content.content) {
+		// Recurse into object parts' `.content`.
 		if (content.type === 'post-link' && (content.quote || content.quotes)) {
-			return countCharacters(content.quote || content.quotes, mode)
+			return countCharacters(content.quote || content.quotes, mode, getCharactersFromLineStart, setCharactersFromLineStart)
 		} else {
-			return countCharacters(content.content, mode)
+			return countCharacters(content.content, mode, getCharactersFromLineStart, setCharactersFromLineStart)
 		}
 	} else {
 		console.error(`No "content" is present for an inline-level paragraph part:`)
