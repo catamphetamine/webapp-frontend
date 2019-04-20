@@ -11,7 +11,7 @@ import scrollIntoView from '../utility/scrollIntoView'
 
 import './CommentTree.css'
 
-export default class CommentTree extends React.PureComponent {
+export default class CommentTree extends React.Component {
 	static propTypes = {
 		flat: PropTypes.bool,
 		comment: post.isRequired,
@@ -23,6 +23,13 @@ export default class CommentTree extends React.PureComponent {
 
 	state = {
 		showReplies: false
+	}
+
+	shouldComponentUpdate(nextProps, nextState) {
+		if (nextState !== this.state) {
+			return true
+		}
+		return nextProps.comment !== this.props.comment
 	}
 
 	onToggleShowReplies = () => {

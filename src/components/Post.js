@@ -18,7 +18,7 @@ import generatePostPreview from '../utility/post/generatePostPreview'
 import './Post.css'
 import './PostQuoteBlock.css'
 
-export default class Post extends React.PureComponent {
+export default class Post extends React.Component {
 	static propTypes = {
 		post: post.isRequired,
 		header: PropTypes.func,
@@ -111,6 +111,13 @@ export default class Post extends React.PureComponent {
 
 	componentWillUnmount() {
 		this._isMounted = false
+	}
+
+	shouldComponentUpdate(nextProps, nextState) {
+		if (nextState !== this.state) {
+			return true
+		}
+		return nextProps.post !== this.props.post
 	}
 
 	render() {

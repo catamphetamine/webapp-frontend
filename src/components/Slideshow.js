@@ -59,7 +59,7 @@ const PLUGINS = [
 	PicturePlugin
 ]
 
-class Slideshow extends React.PureComponent {
+class Slideshow extends React.Component {
 	static propTypes = {
 		messages: PropTypes.object.isRequired,
 		onClose: PropTypes.func.isRequired,
@@ -218,6 +218,10 @@ class Slideshow extends React.PureComponent {
 		// 	enableBodyScroll(this.container.current)
 		// 	clearAllBodyScrollLocks()
 		// }
+	}
+
+	shouldComponentUpdate(nextProps, nextState) {
+		return nextState !== this.state
 	}
 
 	resetTapEvent = () => {
