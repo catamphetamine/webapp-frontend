@@ -14,7 +14,7 @@ import LeftArrowIcon from '../../assets/images/icons/left-arrow-minimal.svg'
 
 import './PostHeader.css'
 
-export default class PostHeader extends React.PureComponent {
+export default class PostHeader extends React.Component {
 	toggleMenu = () => {
 		const { onMoreActions } = this.props
 		if (onMoreActions) {
@@ -160,7 +160,9 @@ export default class PostHeader extends React.PureComponent {
 						}
 					</div>
 				</div>
-				{Header && <Header post={post} locale={locale}/>}
+				{Header &&
+					<Header post={post} locale={locale}/>
+				}
 				{post.title &&
 					<h1 className="post__heading">
 						{post.titleCensored &&

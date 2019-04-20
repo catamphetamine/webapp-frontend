@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 
@@ -25,7 +25,7 @@ const DEV_MODE_WAIT_FOR_STYLES = 1000
  * On server it renders an empty picture.
  * (because there's no way of getting the device pixel ratio on server).
  */
-export default class Picture extends PureComponent
+export default class Picture extends React.PureComponent
 {
 	static propTypes =
 	{
@@ -71,16 +71,6 @@ export default class Picture extends PureComponent
 
 		// Blurs the `<img/>`.
 		blur : PropTypes.number,
-
-		// (optional)
-		// Image type (for example, vector or raster).
-		type: PropTypes.oneOf([
-			'image/svg+xml',
-			'image/jpeg',
-			'image/png',
-			'image/gif',
-			'image/webp'
-		]),
 
 		picture: picture,
 
