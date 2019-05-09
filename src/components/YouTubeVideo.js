@@ -3,6 +3,8 @@ import PropTypes from 'prop-types'
 
 import { video } from '../PropTypes'
 
+import loadScript from '../utility/loadScript'
+
 export default class YouTubeVideo extends React.Component {
 	node = React.createRef()
 
@@ -161,22 +163,19 @@ YouTubeVideo.loadApi = () => {
 			}
 	}
 	apiStatus = 'LOADING'
-	apiPromise = new Promise((resolve, reject) => {
-		const script = document.createElement('script')
-		script.onerror = (error) => {
-			apiStatus = undefined
-			apiPromise = undefined
-			reject(error)
-		}
-		script.src = 'https://www.youtube.com/iframe_api'
-		window.onYouTubeIframeAPIReady = () => {
+	apiPromise = loadScript(
+		'https://www.youtube.com/iframe_api',
+		(resolve) => window.onYouTubeIframeAPIReady = resolve
+	).then(
+		() => {
 			apiStatus = 'LOADED'
 			apiPromise = undefined
-			resolve()
+		},
+		() => {
+			apiStatus = undefined
+			apiPromise = undefined
 		}
-		const firstScriptTag = document.getElementsByTagName('script')[0]
-		firstScriptTag.parentNode.insertBefore(script, firstScriptTag)
-	})
+	)
 	return apiPromise
 }
 
