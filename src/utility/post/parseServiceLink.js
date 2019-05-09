@@ -110,12 +110,18 @@ const SERVICES = {
 				if (url.searchParams.get('q')) {
 					return url.searchParams.get('q')
 				}
+				if (url.searchParams.get('tbs') && url.searchParams.get('tbs').indexOf('sbi:') === 0) {
+					return '(search by image)'
+				}
 			}
 			const coordinatesMatch = url.pathname.match(/^\/maps\/([^\/]+)/)
 			if (coordinatesMatch) {
 				return `maps/${coordinatesMatch[1]}`
 			}
 		}
+	},
+	'images.google.com': {
+		name: 'google'
 	},
 	'yandex.ru': {
 		name: 'yandex',
