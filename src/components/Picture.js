@@ -101,6 +101,10 @@ export default class Picture extends React.PureComponent
 	componentDidMount() {
 		this._isMounted = true
 
+		if (!window.interactiveResize) {
+			window.interactiveResize = new InteractiveResize()
+		}
+
 		// When the DOM node has been mounted
 		// its width in pixels is known
 		// so an appropriate size can now be picked.
@@ -121,7 +125,14 @@ export default class Picture extends React.PureComponent
 		} else {
 			const elapsed = Date.now() - PAGE_LOADED_AT
 			if (elapsed < DEV_MODE_WAIT_FOR_STYLES) {
-				setTimeout(this.setUpSizing, DEV_MODE_WAIT_FOR_STYLES - elapsed)
+				setTimeout(
+					() => {
+						if (this._isMounted) {
+							this.setUpSizing()
+						}
+					},
+					DEV_MODE_WAIT_FOR_STYLES - elapsed
+				)
 			} else {
 				this.setUpSizing()
 			}
@@ -130,9 +141,6 @@ export default class Picture extends React.PureComponent
 
 	setUpSizing = () => {
 		this.refreshSize()
-		if (!window.interactiveResize) {
-			window.interactiveResize = new InteractiveResize()
-		}
 		window.interactiveResize.add(this.refreshSize)
 	}
 
