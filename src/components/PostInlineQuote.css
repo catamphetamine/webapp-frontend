@@ -41,6 +41,8 @@
 }
 
 .post__inline-quote__block {
+	/* `position: relative` is for the quote marker to only span through this inline quote block. */
+	position: relative;
 	display: inline-block;
 }
 
