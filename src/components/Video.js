@@ -493,9 +493,12 @@ export default class Video extends React.Component {
 		} = this.state
 
 		if (!video.provider) {
+			// `onClick` is used to prevent Chrome Video player
+			// triggering "pause"/"play" on click while dragging.
 			return (
 				<HtmlVideo
 					ref={this.video}
+					onClick={this.onClick}
 					tabIndex={tabIndex}
 					video={video}
 					width="100%"

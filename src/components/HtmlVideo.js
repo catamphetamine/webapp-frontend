@@ -37,11 +37,13 @@ export default class HtmlVideo extends React.Component {
 			width,
 			height,
 			tabIndex,
-			autoPlay
+			autoPlay,
+			...rest
 		} = this.props
 
 		return (
 			<video
+				{...rest}
 				ref={this.node}
 				tabIndex={tabIndex}
 				width={width}
@@ -60,7 +62,7 @@ export default class HtmlVideo extends React.Component {
 HtmlVideo.propTypes = {
 	video: video.isRequired,
 	tabIndex: PropTypes.number,
-	autoStart: PropTypes.bool,
+	autoPlay: PropTypes.bool,
 	width: PropTypes.oneOfType([
 		PropTypes.string,
 		PropTypes.number
