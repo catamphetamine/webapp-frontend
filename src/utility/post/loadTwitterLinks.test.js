@@ -71,7 +71,7 @@ describe('loadTwitterLinks', () => {
 							type: 'link',
 							url: 'https://twitter.com/HaloCodex/status/1049097736211980288',
 							service: 'twitter',
-							content: 'HaloCodex (@HaloCodex): The Halo 2 voice acting was amazing. @joestaten @MartyTheElder  #Halo2 (link)',
+							content: 'Halo Codex (@HaloCodex): The Halo 2 voice acting was amazing. @joestaten @MartyTheElder  #Halo2 (link)',
 							attachment: {
 								type: 'social',
 								social: {
@@ -81,7 +81,7 @@ describe('loadTwitterLinks', () => {
 									date: new Date(2018, 9, 8),
 									author: {
 										id: 'HaloCodex',
-										name: 'HaloCodex',
+										name: 'Halo Codex',
 										url: 'https://twitter.com/HaloCodex'
 									}
 								}
