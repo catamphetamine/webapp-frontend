@@ -9,22 +9,23 @@ import visitPostParts from './visitPostParts'
  * @return {void}
  */
 export default async function parseYouTubeLinks(post, options = {}) {
+	const { youTubeApiKey, messages } = options
 	const result = await Promise.all(visitPostParts(
 		'link',
-		link => parseYouTubeLink(link, options),
+		link => parseYouTubeLink(link, { youTubeApiKey, messages }),
 		post.content
 	))
 	return result.findIndex(_ => _) >= 0
 }
 
-async function parseYouTubeLink(link, options) {
+async function parseYouTubeLink(link, { youTubeApiKey, messages }) {
 	if (link.service !== 'youtube') {
 		return
 	}
 	if (link.attachment) {
 		return
 	}
-	const video = await YouTube.parse(link.url, options)
+	const video = await YouTube.parse(link.url, { youTubeApiKey, messages })
 	if (video) {
 		link.attachment = {
 			type: 'video',
@@ -35,8 +36,8 @@ async function parseYouTubeLink(link, options) {
 		}
 		return true
 	} else if (video === null) {
-		if (options.messages && options.messages.videoNotFound) {
-			link.content = options.messages.videoNotFound
+		if (messages && messages.videoNotFound) {
+			link.content = messages.videoNotFound
 		}
 		return true
 	}

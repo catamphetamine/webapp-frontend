@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
+import cloneDeep from 'lodash/cloneDeep'
 
 import { post, postBadge, postMessages } from '../PropTypes'
 
@@ -14,6 +15,7 @@ import loadYouTubeLinks from '../utility/post/loadYouTubeLinks'
 import loadTwitterLinks from '../utility/post/loadTwitterLinks'
 import expandStandaloneAttachmentLinks from '../utility/post/expandStandaloneAttachmentLinks'
 import generatePostPreview from '../utility/post/generatePostPreview'
+import resolvePromises from '../utility/resolvePromises'
 
 import './Post.css'
 import './PostQuoteBlock.css'
@@ -40,19 +42,33 @@ export default class Post extends React.Component {
 		url: PropTypes.string,
 		locale: PropTypes.string,
 		onMoreActions: PropTypes.func,
+		initialExpandContent: PropTypes.bool,
+		onExpandContent: PropTypes.func,
+		onContentDidChange: PropTypes.func,
 		messages: postMessages.isRequired,
 		className: PropTypes.string
 	}
 
 	state = {
-		showPreview: true
+		showPreview: this.props.initialExpandContent ? false : true
 	}
 
 	node = React.createRef()
 
 	getNode = () => this.node.current
 
-	expandContent = () => this.setState({ showPreview: false })
+	onExpandContent = () => {
+		const {
+			onExpandContent,
+			onContentDidChange
+		} = this.props
+		if (onExpandContent) {
+			onExpandContent()
+		}
+		this.setState({
+			showPreview: false
+		}, onContentDidChange)
+	}
 
 	getNonEmbeddedAttachments() {
 		const { post } = this.props
@@ -82,10 +98,15 @@ export default class Post extends React.Component {
 	componentDidMount() {
 		const {
 			post,
-			youTubeApiKey
+			youTubeApiKey,
+			onContentDidChange
 		} = this.props
+		this._isMounted = true
+		// Clone the post so that the original `post` is only
+		// changed after the modified post has rendered.
+		const postWithLinksExpanded = cloneDeep(post)
 		const promises = [
-			loadTwitterLinks(post, {
+			loadTwitterLinks(postWithLinksExpanded, {
 				// Replace these with proper `messages` when this is moved to `chanchan` repo maybe.
 				messages: {
 					link: 'Link',
@@ -95,18 +116,51 @@ export default class Post extends React.Component {
 		]
 		if (youTubeApiKey) {
 			promises.push(
-				loadYouTubeLinks(post, { youTubeApiKey })
+				loadYouTubeLinks(postWithLinksExpanded, {
+					youTubeApiKey,
+					messages: undefined
+				})
 			)
 		}
-		Promise.all(promises).then((results) => {
-			const foundSomething = results.find(_ => _)
-			if (foundSomething && this._isMounted) {
-				expandStandaloneAttachmentLinks(post)
-				post.contentPreview = generatePostPreview(post, { limit: 500 })
-				this.forceUpdate()
+		function updatePostInState(newPost) {
+			post.content = newPost.content
+			post.contentPreview = newPost.contentPreview
+			post.attachments = newPost.attachments
+		}
+		// `this._isMounted` is used inside.
+		const updatePost = (post) => {
+			// Clone the post because it's being updated as links are being loaded.
+			post = cloneDeep(post)
+			// Expand attachment links (objects of shape `{ type: 'link', attachment: ... }`)
+			// into standalone attachments (block-level attachments: `{ type: 'attachment' }`).
+			// In such case attachments are moved from `{ type: 'link' }` objects to `post.attachments`.
+			expandStandaloneAttachmentLinks(post)
+			// Re-generate post content preview (because post content has changed).
+			post.contentPreview = generatePostPreview(post, { limit: 500 })
+			if (this._isMounted) {
+				// Update the post in state.
+				updatePostInState(post)
+				// Re-render the post and update it in state.
+				this.forceUpdate(() => {
+					// The post could shrink in height due to the re-generated preview.
+					if (onContentDidChange) {
+						onContentDidChange()
+					}
+				})
+			} else {
+				// Update the post in state.
+				updatePostInState(post)
+			}
+		}
+		// Perhaps loading "service" links could be paralleled.
+		// For example, if YouTube links load first then render them first.
+		// Then, twitter links load, and render them too.
+		resolvePromises(promises, (foundSomething) => {
+			// Intermediary updates.
+			if (foundSomething) {
+				updatePost(postWithLinksExpanded)
 			}
 		})
-		this._isMounted = true
 	}
 
 	componentWillUnmount() {
@@ -174,7 +228,7 @@ export default class Post extends React.Component {
 							<PostBlock
 								key={i}
 								url={url}
-								onReadMore={this.expandContent}
+								onReadMore={this.onExpandContent}
 								readMoreLabel={messages.readMore}
 								attachments={attachments}
 								attachmentThumbnailSize={attachmentThumbnailSize}

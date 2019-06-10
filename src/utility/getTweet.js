@@ -19,7 +19,7 @@ let counter = 1
  * @param  {object} options — `{ messages }`
  * @return {object} [result] `{ url, content, authorName, authorId, authorUrl }`.
  */
-export default async function getTweet(id, options) {
+export default async function getTweet(id, { messages }) {
 	if (counter === Number.MAX_SAFE_INTEGER) {
 		counter = 1
 	}
@@ -27,15 +27,15 @@ export default async function getTweet(id, options) {
 		const response = await fetchJsonp(`https://publish.twitter.com/oembed?url=https://twitter.com/Interior/status/${id}`, {
 			jsonpCallbackFunction: `jsonp_twitter_${counter++}`
 		})
-		return parseTweet(await response.json(), options)
+		return parseTweet(await response.json(), { messages })
 	} catch (error) {
 		console.error(error)
 		return
 	}
 }
 
-export function parseTweet(json, options) {
-	const text = getTweetText(json.html, options)
+export function parseTweet(json, { messages }) {
+	const text = getTweetText(json.html, { messages })
 	if (!text) {
 		return
 	}

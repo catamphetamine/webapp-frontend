@@ -1,3 +1,8 @@
+/**
+ * Combines `{ type: 'inline-quote' }` objects on consequtive lines
+ * into a single `{ type: 'inline-quote' }` object with "\n"s inside.
+ * @param  {any} content
+ */
 export default function combineQuotes(content) {
 	if (!content) {
 		return

@@ -8,15 +8,16 @@ import visitPostParts from './visitPostParts'
  * @return {void}
  */
 export default async function loadTwitterLinks(post, options = {}) {
+	const { messages } = options
 	const result = await Promise.all(visitPostParts(
 		'link',
-		link => parseTwitterLink(link, options),
+		link => parseTwitterLink(link, { messages }),
 		post.content
 	))
 	return result.findIndex(_ => _) >= 0
 }
 
-async function parseTwitterLink(link, options) {
+async function parseTwitterLink(link, { messages }) {
 	if (link.service !== 'twitter') {
 		return
 	}
@@ -27,7 +28,7 @@ async function parseTwitterLink(link, options) {
 	if (!tweetId) {
 		return
 	}
-	const tweet = await getTweet(getTweetId(link.url), options)
+	const tweet = await getTweet(tweetId, { messages })
 	if (tweet) {
 		link.attachment = {
 			type: 'social',

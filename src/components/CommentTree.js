@@ -15,32 +15,121 @@ export default class CommentTree extends React.Component {
 	static propTypes = {
 		flat: PropTypes.bool,
 		comment: post.isRequired,
-		component: PropTypes.func.isRequired
+		component: PropTypes.func.isRequired,
+		getComponentProps: PropTypes.func,
+		// `state` is a recursive structure.
+		// For a comment, `state` is either `null`
+		// or an array having the same count of elements as the replies count for the comment.
+		// `null` means "the comment's replies are not expanded".
+		//  (or there're no replies to this comment).
+		// `[...]` means "the comment's replies are expanded".
+		//
+		// Example:
+		//
+		// State:
+		// {
+		// 	replies: [
+		// 		null,
+		// 		null,
+		// 		{
+		// 			replies: [
+		// 				null,
+		// 				{
+		// 					replies: [
+		// 						null
+		// 					]
+		// 				}
+		// 			]
+		// 		},
+		// 		null
+		// 	]
+		// }
+		//
+		// Representation:
+		// |---------|
+		// | Comment |
+		// |---------|
+		// |  |---------|
+		// |--| Comment |
+		// |  |---------|
+		// |  |---------|
+		// |--| Comment |
+		// |  |---------|
+		// |  |---------|
+		// |--| Comment |
+		// |  |---------|
+		// |  |  |---------|
+		// |  |--| Comment |
+		// |  |  |---------|
+		// |  |  |---------|
+		// |  |--| Comment |
+		// |     |---------|
+		// |     |  |---------|
+		// |     |--| Comment |
+		// |        |---------|
+		// |  |---------|
+		// |--| Comment |
+		//    |---------|
+		// "Dialogue" reply chains are always expanded
+		// when the first reply in the chain is expanded.
+		initialState: PropTypes.arrayOf(PropTypes.any),
+		onStateChange: PropTypes.func,
+		// These two properties are only passed to child comment trees.
+		setState: PropTypes.func,
+		getState: PropTypes.func
 	}
 
 	post = React.createRef()
 	toggleShowRepliesButton = React.createRef()
 
 	state = {
-		showReplies: false
+		showReplies: (
+			this.props.initialState && this.props.initialState.replies
+			||
+			(this.props.getState && this.props.getState() && this.props.getState().replies)
+		) ? true : false
 	}
 
-	shouldComponentUpdate(nextProps, nextState) {
-		if (nextState !== this.state) {
-			return true
-		}
-		return nextProps.comment !== this.props.comment
+	subtreeState = this.props.initialState || {}
+
+	shouldTrackState() {
+		const {
+			onStateChange,
+			setState
+		} = this.props
+		return onStateChange || setState ? true : false
 	}
 
 	onToggleShowReplies = () => {
-		const { showReplies } = this.state
-		let promise
-		if (showReplies) {
+		const { comment, onDidToggleShowReplies } = this.props
+		let { showReplies } = this.state
+		showReplies = !showReplies
+		if (this.shouldTrackState()) {
+			let state
+			if (showReplies) {
+				state = {
+					replies: new Array(comment.replies.length)
+				}
+				// "Dialogue" reply chains are always expanded
+				// when the first reply in the chain is expanded.
+				// If this is such auto-expanded dialoglue chain
+				// then update `state` in accordance.
+				if (comment.replies.length === 1) {
+					expandDialogueChainReplies(comment, state)
+				}
+			}
+			// Using `.updateSubtreeState()` instead of `.setSubtreeState()` here
+			// so that the "expanded replies" state doesn't erase other "custom" state
+			// like "post is expanded" or "reply form is expanded".
+			this.updateSubtreeState(state)
+		}
+		let promise = Promise.resolve()
+		// On expand replies — no scroll.
+		// On un-expand replies — scroll to the original comment if it's not visible.
+		if (!showReplies) {
 			if (this.post.current) {
 				const postRect = this.post.current.getNode().getBoundingClientRect()
-				if (postRect.top >= 0) {
-					promise = Promise.resolve()
-				} else {
+				if (postRect.top < 0) {
 					const scrolledDistance = Math.abs(postRect.top)
 					promise = scrollIntoView(this.post.current.getNode(), {
 						ease: 'easeInOutSine',
@@ -49,22 +138,58 @@ export default class CommentTree extends React.Component {
 						block: 'nearest'
 					})
 				}
-			} else {
-				promise = Promise.resolve()
 			}
 			if (this.toggleShowRepliesButton.current) {
 				promise.then(() => {
 					this.toggleShowRepliesButton.current.focus()
 				})
 			}
-		} else {
-			promise = Promise.resolve()
 		}
 		promise.then(() => {
 			this.setState({
-				showReplies: !showReplies
+				showReplies
+			}, () => {
+				if (onDidToggleShowReplies) {
+					onDidToggleShowReplies()
+				}
 			})
 		})
+	}
+
+	getSubtreeState = () => {
+		const { getState } = this.props
+		if (getState) {
+			return getState()
+		} else {
+			return this.subtreeState
+		}
+	}
+
+	updateSubtreeState = (state) => {
+		this.setSubtreeState({
+			...this.getSubtreeState(),
+			...state
+		})
+	}
+
+	setSubtreeState(state) {
+		const {
+			setState,
+			getState,
+			onStateChange
+		} = this.props
+		if (setState) {
+			setState(state)
+		} else {
+			this.subtreeState = state
+			onStateChange(this.subtreeState)
+		}
+	}
+
+	setChildSubtreeState(i, childState) {
+		const state = this.getSubtreeState()
+		state.replies[i] = childState
+		this.setSubtreeState(state)
 	}
 
 	onBranchToggleClick = (event) => {
@@ -77,6 +202,12 @@ export default class CommentTree extends React.Component {
 			comment,
 			parentComment,
 			component: Component,
+			getComponentProps,
+			// Rest.
+			initialState,
+			onStateChange,
+			setState,
+			getState,
 			...rest
 		} = this.props
 		let {
@@ -90,6 +221,11 @@ export default class CommentTree extends React.Component {
 		if (_isMiddleDialogueChainLink) {
 			showReplies = true
 		}
+		const subtreeState = this.shouldTrackState() ? this.getSubtreeState() : undefined
+		const componentProps = getComponentProps ? getComponentProps({
+			getState: this.getSubtreeState,
+			updateState: this.updateSubtreeState
+		}) : undefined
 		return (
 			<div className={classNames('comment-tree', {
 				'comment-tree--nested': parentComment && !flat
@@ -100,25 +236,33 @@ export default class CommentTree extends React.Component {
 				{parentComment && !flat &&
 					<div className="comment-tree__branch-line"/>
 				}
+				{/* The comment. */}
 				<Component
 					{...rest}
+					{...componentProps}
 					comment={comment}
 					parentComment={parentComment}
 					postRef={this.post}
 					showingReplies={showReplies}
 					onToggleShowReplies={comment.replies ? this.onToggleShowReplies : undefined}
 					toggleShowRepliesButtonRef={this.toggleShowRepliesButton}/>
+				{/* Reply link marker for a single reply. */}
 				{showReplies && _isMiddleDialogueChainLink && comment.replies &&
 					<div className="comment-tree__dialogue-chain-marker"/>
 				}
+				{/* If there's only a single reply then there won't be the actual reply "tree" rendered. */}
 				{showReplies && comment.replies && _isMiddleDialogueChainLink &&
 					<CommentTree
 						{...rest}
 						flat
+						getState={this.shouldTrackState() ? (() => subtreeState.replies[0]) : undefined}
+						setState={this.shouldTrackState() ? (state => this.setChildSubtreeState(0, state)) : undefined}
 						comment={removeLeadingPostLink(comment.replies[0], comment)}
 						parentComment={comment}
-						component={Component}/>
+						component={Component}
+						getComponentProps={getComponentProps}/>
 				}
+				{/* If there're more than a single reply then show the replies tree. */}
 				{showReplies && !_isMiddleDialogueChainLink &&
 					<div className={classNames('comment-tree__replies', {
 						// If comments don't have any side padding
@@ -127,18 +271,23 @@ export default class CommentTree extends React.Component {
 						// This CSS class can be used for styling such special case.
 						'comment-tree__replies--root': !parentComment
 					})}>
+						{/* Comment tree branch which is also a "Show"/"Hide" replies tree toggler. */}
 						<button
 							type="button"
 							tabIndex={-1}
 							onClick={this.onBranchToggleClick}
 							className="rrui__button-reset comment-tree__branch-toggler"/>
-						{comment.replies.map((reply) => (
+						{/* The replies. */}
+						{comment.replies.map((reply, i) => (
 							<CommentTree
 								{...rest}
 								key={reply.id}
+								getState={this.shouldTrackState() ? (() => subtreeState.replies[i]) : undefined}
+								setState={this.shouldTrackState() ? (state => this.setChildSubtreeState(i, state)) : undefined}
 								comment={removeLeadingPostLink(reply, comment)}
 								parentComment={comment}
-								component={Component}/>
+								component={Component}
+								getComponentProps={getComponentProps}/>
 						))}
 					</div>
 				}
@@ -150,4 +299,19 @@ export default class CommentTree extends React.Component {
 export function isMiddleDialogueChainLink(comment, parentComment) {
 	return comment.replies && comment.replies.length === 1 &&
 			parentComment && parentComment.replies.length === 1
+}
+
+function expandDialogueChainReplies(comment, subtreeState) {
+	let parentComment = comment
+	let parentCommentState = subtreeState
+	let _comment
+	while ((_comment = parentComment.replies[0]) &&
+		_comment.replies && _comment.replies.length === 1) {
+		const subtreeState = {
+			replies: [null]
+		}
+		parentCommentState.replies[0] = subtreeState
+		parentCommentState = subtreeState
+		parentComment = _comment
+	}
 }

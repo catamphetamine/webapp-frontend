@@ -1,7 +1,10 @@
-import YouTube from 'webapp-frontend/src/utility/video-youtube'
+import addAttachment from './addAttachment'
+import YouTube from '../video-youtube'
 
 /**
- * Expands attachment links into standalone attachments.
+ * Expands attachment links (objects of shape `{ type: 'link', attachment: ... }`)
+ * into standalone attachments (block-level attachments: `{ type: 'attachment' }`).
+ * In such case attachments are moved from `{ type: 'link' }` objects to `post.attachments`.
  * @param  {object} post
  */
 export default function expandStandaloneAttachmentLinks(post) {
@@ -26,19 +29,6 @@ export default function expandStandaloneAttachmentLinks(post) {
 				const prevBlock = paragraph[i - 1]
 				const nextBlock = paragraph[i + 1]
 				if ((!prevBlock || prevBlock === '\n') && (!nextBlock || nextBlock === '\n')) {
-
-					const attachmentId = getNextAttachmentId(post.attachments)
-					const attachment = {
-						type: 'attachment',
-						attachmentId
-					}
-
-					post.attachments = post.attachments || []
-					post.attachments.push({
-						id: attachmentId,
-						...block.attachment
-					})
-
 					const paragraphs = []
 					// Add previous paragraph.
 					let prevParagraph
@@ -49,8 +39,11 @@ export default function expandStandaloneAttachmentLinks(post) {
 							paragraphs.push(prevParagraph)
 						}
 					}
-					// Add current paragraph.
-					paragraphs.push(attachment)
+					// Add current paragraph (block-level attachment).
+					paragraphs.push({
+						type: 'attachment',
+						attachmentId: addAttachment(post, block.attachment)
+					})
 					// Add next paragraph.
 					if (paragraph.length > i + 1) {
 						// There may be more than one '\n' separating stuff.
@@ -73,18 +66,6 @@ export default function expandStandaloneAttachmentLinks(post) {
 		}
 		j++
 	}
-}
-
-function getNextAttachmentId(attachments) {
-	let maxId = 0
-	if (attachments) {
-		for (const attachment of attachments) {
-			if (attachment.id) {
-				maxId = Math.max(maxId, attachment.id)
-			}
-		}
-	}
-	return maxId + 1
 }
 
 function trimNewLines(array) {

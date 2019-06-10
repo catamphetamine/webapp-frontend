@@ -53,6 +53,11 @@ export default {
 	 * @return {object} [video] Returns `null` if the video doesn't exist. Returns `undefined` if it's not a YouTube video.
 	 */
 	parse: async function(url, options = {}) {
+		const {
+			locale,
+			picture,
+			youTubeApiKey
+		} = options
 		// Get video ID.
 		let id
 		let startAt
@@ -75,10 +80,10 @@ export default {
 		// Get video info by ID.
 		if (id) {
 			let video
-			if (options.youTubeApiKey) {
-				for (const youTubeApiKey of toArray(options.youTubeApiKey)) {
+			if (youTubeApiKey) {
+				for (const _youTubeApiKey of toArray(youTubeApiKey)) {
 					try {
-						video = await getVideoData(id, youTubeApiKey, options)
+						video = await getVideoData(id, _youTubeApiKey, { locale })
 						// `null` means "Video doesn't exist" (for example, it was deleted).
 						if (video === null) {
 							return null
@@ -190,8 +195,9 @@ export default {
  * @param  {object} options
  * @return {object} [video] Returns `null` if the video doesn't exist. Returns `undefined` if some error happened.
  */
-async function getVideoData(id, youTubeApiKey, options) {
-	const response = await fetch(`https://content.googleapis.com/youtube/v3/videos?part=snippet,contentDetails${options.locale ? ',localizations' : ''}&id=${id}&key=${youTubeApiKey}${options.locale ? '&hl=' + options.locale : ''}`)
+async function getVideoData(id, youTubeApiKey, options = {}) {
+	const { locale } = options
+	const response = await fetch(`https://content.googleapis.com/youtube/v3/videos?part=snippet,contentDetails${locale ? ',localizations' : ''}&id=${id}&key=${youTubeApiKey}${locale ? '&hl=' + locale : ''}`)
 	const json = await response.json()
 	if (json.error) {
 		// Example: "Bad Request".
@@ -224,8 +230,8 @@ async function getVideoData(id, youTubeApiKey, options) {
 		]
 	).filter(_ => _)
 	const video = {
-		title: options.locale ? snippet.localized.title : snippet.title,
-		description: options.locale ? snippet.localized.description : snippet.description,
+		title: locale ? snippet.localized.title : snippet.title,
+		description: locale ? snippet.localized.description : snippet.description,
 		duration: parseISO8601Duration(contentDetails.duration),
 		// HD aspect ratio is 16:9 which is 1.777777777...
 		// SD aspect ratio is 4:3 which is 1.3333333333...
