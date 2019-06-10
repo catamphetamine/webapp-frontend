@@ -127,7 +127,7 @@ export default class Post extends React.Component {
 			post.contentPreview = newPost.contentPreview
 			post.attachments = newPost.attachments
 		}
-		// `this._isMounted` is used inside.
+		// `this._isMounted` and `this.props.post` are used inside.
 		const updatePost = (post) => {
 			// Clone the post because it's being updated as links are being loaded.
 			post = cloneDeep(post)
@@ -138,14 +138,17 @@ export default class Post extends React.Component {
 			// Re-generate post content preview (because post content has changed).
 			post.contentPreview = generatePostPreview(post, { limit: 500 })
 			if (this._isMounted) {
-				// Update the post in state.
-				updatePostInState(post)
 				// Re-render the post and update it in state.
-				this.forceUpdate(() => {
+				this.setState({
+					postWithLinksExpanded: post,
+					postWithLinksExpandedForPost: this.props.post
+				}, () => {
 					// The post could shrink in height due to the re-generated preview.
 					if (onContentDidChange) {
 						onContentDidChange()
 					}
+					// Update the post in state.
+					updatePostInState(post)
 				})
 			} else {
 				// Update the post in state.
@@ -176,7 +179,7 @@ export default class Post extends React.Component {
 
 	render() {
 		const {
-			post,
+			post: postProperty,
 			header,
 			headerBadges,
 			footerBadges,
@@ -196,7 +199,13 @@ export default class Post extends React.Component {
 			className
 		} = this.props
 
-		const { showPreview } = this.state
+		const {
+			showPreview,
+			postWithLinksExpanded,
+			postWithLinksExpandedForPost
+		} = this.state
+
+		const post = postWithLinksExpandedForPost === postProperty ? postWithLinksExpanded : postProperty
 
 		const attachments = post.attachments || []
 		const postContent = showPreview && post.contentPreview ? post.contentPreview : post.content
