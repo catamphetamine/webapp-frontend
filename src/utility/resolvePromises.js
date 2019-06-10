@@ -1,6 +1,5 @@
 export default function resolvePromises(promises, onPartialResolve) {
 	return new Promise((resolve, reject) => {
-		console.log(promises)
 		const results = new Array(promises.length)
 		let countdown = promises.length
 		let i = 0
