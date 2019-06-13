@@ -798,12 +798,14 @@ class Slideshow extends React.Component {
 		} else if (this.isZooming) {
 			this.onZoomEnd()
 		}
-		if (this.touches.length === 1) {
-			this.onPanStart(
-				this.touches[0].x,
-				this.touches[0].y
-			)
-		}
+		// // Proceed on handling panning after zoomed with a pinch gesture
+		// // and then lifted up one of the two fingers.
+		// if (this.touches.length === 1) {
+		// 	this.onPanStart(
+		// 		this.touches[0].x,
+		// 		this.touches[0].y
+		// 	)
+		// }
 	}
 
 	onTouchMove = (event) => {
