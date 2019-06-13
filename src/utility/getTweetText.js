@@ -24,8 +24,9 @@ export default function getTweetText(html, { messages }) {
   textHtml = textHtml.replace(/<a [^>]+>#(.+?)<\/a>/g, '#$1')
   // Replace links with `(link)` messages.
   textHtml = textHtml.replace(/<a [^>]+>(.+?)<\/a>/g, (_, text) => {
-    if ((messages.media || messages.attachment) && text.indexOf('pic.twitter.com') === 0) {
-      return `(${(messages.media || messages.attachment).toLowerCase()})`
+    // Replace attachment links with `(attachment)` messages.
+    if (messages.attachment && text.indexOf('pic.twitter.com') === 0) {
+      return `(${messages.attachment.toLowerCase()})`
     }
     return `(${messages.link.toLowerCase()})`
   })

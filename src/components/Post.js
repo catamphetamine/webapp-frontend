@@ -110,7 +110,7 @@ export default class Post extends React.Component {
 				// Replace these with proper `messages` when this is moved to `chanchan` repo maybe.
 				messages: {
 					link: 'Link',
-					media: 'Media'
+					attachment: 'Attachment'
 				}
 			})
 		]
