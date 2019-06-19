@@ -106,10 +106,11 @@ export default class Video extends React.Component {
 		const isPaused = this.isPaused()
 		if (isPaused !== undefined) {
 			if (isPaused) {
-				return this.getPlayer().play()
+				this.getPlayer().play()
 			} else {
-				return this.getPlayer().pause()
+				this.getPlayer().pause()
 			}
+			return true
 		}
 	}
 
