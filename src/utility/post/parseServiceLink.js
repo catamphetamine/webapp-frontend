@@ -1,3 +1,7 @@
+const WWW_REGEXP = /^www\./
+const WIKIPEDIA_REGEXP = /^[a-z]+\.wikipedia\.org$/
+// const SUBDOMAIN_REGEXP = /^[^.]+\.wikipedia\.org$/
+
 /**
  * Parses popular service links.
  * @param  {string} url
@@ -22,7 +26,10 @@ export default function parseServiceLink(url) {
 		return
 	}
 	// Remove `www.` in the beginning.
-	const hostname = url.hostname.replace(/^www\./, '')
+	let hostname = url.hostname.replace(WWW_REGEXP, '')
+	if (WIKIPEDIA_REGEXP.test(hostname)) {
+		hostname = 'wikipedia.org'
+	}
 	const service = SERVICES[hostname]
 	if (service) {
 		return {
@@ -189,6 +196,15 @@ const SERVICES = {
 			const peopleMatch = url.pathname.match(/^\/people\/(.+?)\//)
 			if (peopleMatch) {
 				return peopleMatch[1]
+			}
+		}
+	},
+	'wikipedia.org': {
+		name: 'wikipedia',
+		getText(url) {
+			const wikiPageMatch = url.pathname.match(/^\/wiki\/(.+)/)
+			if (wikiPageMatch) {
+				return wikiPageMatch[1].replace(/_/g, ' ')
 			}
 		}
 	},

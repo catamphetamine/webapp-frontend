@@ -5,6 +5,7 @@ import classNames from 'classnames'
 
 import './PostLink.css'
 
+import WikipediaIcon from '../../assets/images/icons/services/wikipedia.svg'
 import GoogleIcon from '../../assets/images/icons/services/google.svg'
 import YandexIcon from '../../assets/images/icons/services/yandex.svg'
 import YouTubeIcon from '../../assets/images/icons/services/youtube.svg'
@@ -106,5 +107,6 @@ const SERVICE_ICONS = {
 	'google': GoogleIcon,
 	'yandex': YandexIcon,
 	'twitch': TwitchIcon,
-	'steam': SteamIcon
+	'steam': SteamIcon,
+	'wikipedia': WikipediaIcon
 }
