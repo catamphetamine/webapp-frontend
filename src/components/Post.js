@@ -45,6 +45,7 @@ export default class Post extends React.Component {
 		initialExpandContent: PropTypes.bool,
 		onExpandContent: PropTypes.func,
 		onContentDidChange: PropTypes.func,
+		onPostContentChange: PropTypes.func,
 		messages: postMessages.isRequired,
 		className: PropTypes.string
 	}
@@ -99,7 +100,8 @@ export default class Post extends React.Component {
 		const {
 			post,
 			youTubeApiKey,
-			onContentDidChange
+			onContentDidChange,
+			onPostContentChange
 		} = this.props
 		this._isMounted = true
 		// Clone the post so that the original `post` is only
@@ -126,6 +128,13 @@ export default class Post extends React.Component {
 			post.content = newPost.content
 			post.contentPreview = newPost.contentPreview
 			post.attachments = newPost.attachments
+			if (post.onContentChange) {
+				for (const id of post.onContentChange()) {
+					if (onPostContentChange) {
+						onPostContentChange(id)
+					}
+				}
+			}
 		}
 		// `this._isMounted` and `this.props.post` are used inside.
 		const updatePost = (post) => {
@@ -168,13 +177,6 @@ export default class Post extends React.Component {
 
 	componentWillUnmount() {
 		this._isMounted = false
-	}
-
-	shouldComponentUpdate(nextProps, nextState) {
-		if (nextState !== this.state) {
-			return true
-		}
-		return nextProps.post !== this.props.post
 	}
 
 	render() {
