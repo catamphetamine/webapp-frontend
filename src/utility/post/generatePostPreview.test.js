@@ -9,44 +9,43 @@ function getPostPreviewTest(post, options, expected) {
 			content: post
 		}
 	}
-	if (options.fitFactor === undefined) {
+	// The default `fitFactor` is not 0 by default.
+	if (options.fitFactor === undefined && !options.useDefaultFitFactor) {
 		options.fitFactor = 0
 	}
-	expectToEqual(generatePostPreview(post, options), expected)
+	expectToEqual(generatePostPreview(post.content, post.attachments, options), expected)
 }
 
 describe('getPostText', () => {
 	it('should return `undefined` if no preview is required (when post is small enough)', () => {
-		expectToEqual(
-			generatePostPreview(
-				{
-					content: [
-						[
-							'Abc'
-						],
-						[
-							'Def'
-						]
-					]
-				},
-				{ limit: 100 }
-			),
+		getPostPreviewTest(
+			[
+				[
+					'Abc'
+				],
+				[
+					'Def'
+				]
+			],
+			{
+				limit: 100,
+				useDefaultFitFactor: true
+			},
 			undefined
 		)
 	})
 
 	it('should truncate on whitespace when there\'re no ends of sentence', () => {
-		expectToEqual(
-			generatePostPreview(
-				{
-					content: [
-						[
-							'Thefirstsentence.'
-						]
-					]
-				},
-				{ limit: 10 }
-			),
+		getPostPreviewTest(
+			[
+				[
+					'Thefirstsentence.'
+				]
+			],
+			{
+				limit: 10,
+				useDefaultFitFactor: true
+			},
 			[
 				[
 					'Thefirstse…',
@@ -57,15 +56,14 @@ describe('getPostText', () => {
 	})
 
 	it('should truncate on whitespace when there\'re no ends of sentence (not a nested array)', () => {
-		expectToEqual(
-			generatePostPreview(
-				{
-					content: [
-						'Thefirstsentence.'
-					]
-				},
-				{ limit: 10 }
-			),
+		getPostPreviewTest(
+			[
+				'Thefirstsentence.'
+			],
+			{
+				limit: 10,
+				useDefaultFitFactor: true
+			},
 			[
 				[
 					'Thefirstse…',
@@ -81,11 +79,12 @@ describe('getPostText', () => {
 				'The firstsentence.'
 			]
 		]
-		expectToEqual(
-			generatePostPreview(
-				{ content },
-				{ limit: 5 }
-			),
+		getPostPreviewTest(
+			content,
+			{
+				limit: 5,
+				useDefaultFitFactor: true
+			},
 			[
 				[
 					'The …',

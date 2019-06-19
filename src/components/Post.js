@@ -136,7 +136,7 @@ export default class Post extends React.Component {
 			// In such case attachments are moved from `{ type: 'link' }` objects to `post.attachments`.
 			expandStandaloneAttachmentLinks(post)
 			// Re-generate post content preview (because post content has changed).
-			post.contentPreview = generatePostPreview(post, { limit: 500 })
+			post.contentPreview = generatePostPreview(post.content, post.attachments, { limit: 500 })
 			if (this._isMounted) {
 				// Re-render the post and update it in state.
 				this.setState({

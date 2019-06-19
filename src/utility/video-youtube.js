@@ -190,6 +190,7 @@ export default {
  * but the correct one is "https://i.ytimg.com/vi/INVdbXTuPVI/maxresdefault.jpg".
  * And also this "oembed" endpoint doesn't support neither CORS nor JSONP
  * so it's uncallable from a web browser (could be proxied though).
+ * A typical "Get video info" API response is about 6KB in size.
  * @param  {string} id
  * @param  {string} youTubeApiKey
  * @param  {object} options

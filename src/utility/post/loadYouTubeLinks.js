@@ -27,6 +27,10 @@ async function parseYouTubeLink(link, { youTubeApiKey, messages }) {
 	}
 	const video = await YouTube.parse(link.url, { youTubeApiKey, messages })
 	if (video) {
+		// Video description is not currently being output anywhere.
+		// Without `description` the `video` size is about 400 bytes.
+		// With `description` the `video` size is about 1000 bytes on average.
+		delete video.description
 		link.attachment = {
 			type: 'video',
 			video

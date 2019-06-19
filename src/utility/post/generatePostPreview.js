@@ -25,11 +25,11 @@ const FIT_FACTOR = 0.2
 
 const ENOUGH_CONTENT_FACTOR = 0.75
 
-export default function generatePostPreview(post, options) {
-	if (!post.content) {
+export default function generatePostPreview(content, attachments, options) {
+	if (!content) {
 		return
 	}
-	return new PreviewGenerator(post, options).generate()
+	return new PreviewGenerator(content, attachments, options).generate()
 }
 
 class PreviewGenerator {
@@ -43,7 +43,7 @@ class PreviewGenerator {
 	blockLevelTrimCharacterCount = 0
 	blockLevelTrimCharacterPoints = 0
 
-	constructor({ content, attachments }, options) {
+	constructor(content, attachments, options) {
 		this.content = content
 		this.attachments = attachments
 		this.options = options
