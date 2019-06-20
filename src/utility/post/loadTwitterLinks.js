@@ -4,15 +4,15 @@ import visitPostParts from './visitPostParts'
 /**
  * Transforms Twitter `link`s by inserting twitter text as link content,
  * and also attaches a "social" `attachment` to the `link`.
- * @param  {object} post
+ * @param  {any} content — Post `content`.
  * @return {void}
  */
-export default async function loadTwitterLinks(post, options = {}) {
+export default async function loadTwitterLinks(content, options = {}) {
 	const { messages } = options
 	const result = await Promise.all(visitPostParts(
 		'link',
 		link => parseTwitterLink(link, { messages }),
-		post.content
+		content
 	))
 	return result.findIndex(_ => _) >= 0
 }

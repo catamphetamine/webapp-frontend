@@ -1,7 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
-import cloneDeep from 'lodash/cloneDeep'
 
 import { post, postBadge, postMessages } from '../PropTypes'
 
@@ -11,11 +10,7 @@ import PostBlock from './PostBlock'
 import PostAttachments from './PostAttachments'
 import PostFooter, { hasFooter } from './PostFooter'
 
-import loadYouTubeLinks from '../utility/post/loadYouTubeLinks'
-import loadTwitterLinks from '../utility/post/loadTwitterLinks'
-import expandStandaloneAttachmentLinks from '../utility/post/expandStandaloneAttachmentLinks'
-import generatePostPreview from '../utility/post/generatePostPreview'
-import resolvePromises from '../utility/resolvePromises'
+import loadResourceLinks from '../utility/post/loadResourceLinks'
 
 import './Post.css'
 import './PostQuoteBlock.css'
@@ -97,80 +92,37 @@ export default class Post extends React.Component {
 	}
 
 	componentDidMount() {
+		this._isMounted = true
 		const {
 			post,
 			youTubeApiKey,
 			onContentDidChange,
-			onPostContentChange
+			onPostContentChange,
+			commentLengthLimit,
+			messages
 		} = this.props
-		this._isMounted = true
-		// Clone the post so that the original `post` is only
-		// changed after the modified post has rendered.
-		const postWithLinksExpanded = cloneDeep(post)
-		const promises = [
-			loadTwitterLinks(postWithLinksExpanded, {
-				// Replace these with proper `messages` when this is moved to `chanchan` repo maybe.
-				messages: {
-					link: 'Link',
-					attachment: 'Attachment'
+		loadResourceLinks(post, {
+			youTubeApiKey,
+			onPostContentChange,
+			messages,
+			commentLengthLimit,
+			onUpdatePost: (post, callback) => {
+				if (this._isMounted) {
+					// Re-render the post and update it in state.
+					this.setState({
+						postWithLinksExpanded: post,
+						postWithLinksExpandedForPost: this.props.post
+					}, () => {
+						// The post could shrink in height due to the re-generated preview.
+						// `onContentDidChange()` could be `virtual-scroller`'s `onItemHeightChange()`.
+						if (onContentDidChange) {
+							onContentDidChange()
+						}
+						callback()
+					})
+				} else {
+					callback()
 				}
-			})
-		]
-		if (youTubeApiKey) {
-			promises.push(
-				loadYouTubeLinks(postWithLinksExpanded, {
-					youTubeApiKey,
-					messages: undefined
-				})
-			)
-		}
-		function updatePostInState(newPost) {
-			post.content = newPost.content
-			post.contentPreview = newPost.contentPreview
-			post.attachments = newPost.attachments
-			if (post.onContentChange) {
-				for (const id of post.onContentChange()) {
-					if (onPostContentChange) {
-						onPostContentChange(id)
-					}
-				}
-			}
-		}
-		// `this._isMounted` and `this.props.post` are used inside.
-		const updatePost = (post) => {
-			// Clone the post because it's being updated as links are being loaded.
-			post = cloneDeep(post)
-			// Expand attachment links (objects of shape `{ type: 'link', attachment: ... }`)
-			// into standalone attachments (block-level attachments: `{ type: 'attachment' }`).
-			// In such case attachments are moved from `{ type: 'link' }` objects to `post.attachments`.
-			expandStandaloneAttachmentLinks(post)
-			// Re-generate post content preview (because post content has changed).
-			post.contentPreview = generatePostPreview(post.content, post.attachments, { limit: 500 })
-			if (this._isMounted) {
-				// Re-render the post and update it in state.
-				this.setState({
-					postWithLinksExpanded: post,
-					postWithLinksExpandedForPost: this.props.post
-				}, () => {
-					// The post could shrink in height due to the re-generated preview.
-					if (onContentDidChange) {
-						onContentDidChange()
-					}
-					// Update the post in state.
-					updatePostInState(post)
-				})
-			} else {
-				// Update the post in state.
-				updatePostInState(post)
-			}
-		}
-		// Perhaps loading "service" links could be paralleled.
-		// For example, if YouTube links load first then render them first.
-		// Then, twitter links load, and render them too.
-		resolvePromises(promises, (foundSomething) => {
-			// Intermediary updates.
-			if (foundSomething) {
-				updatePost(postWithLinksExpanded)
 			}
 		})
 	}

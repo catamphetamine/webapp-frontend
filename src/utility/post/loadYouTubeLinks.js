@@ -4,21 +4,21 @@ import visitPostParts from './visitPostParts'
 /**
  * Transforms YouTube `link`s by inserting video title as link content,
  * and also attaches a video `attachment` to the `link`.
- * @param  {object} post
+ * @param  {any} content — Post `content`.
  * @param  {object} options — `{ youTubeApiKey, messages }`
  * @return {void}
  */
-export default async function parseYouTubeLinks(post, options = {}) {
+export default async function loadYouTubeLinks(content, options = {}) {
 	const { youTubeApiKey, messages } = options
 	const result = await Promise.all(visitPostParts(
 		'link',
-		link => parseYouTubeLink(link, { youTubeApiKey, messages }),
-		post.content
+		link => loadYouTubeLink(link, { youTubeApiKey, messages }),
+		content
 	))
 	return result.findIndex(_ => _) >= 0
 }
 
-async function parseYouTubeLink(link, { youTubeApiKey, messages }) {
+async function loadYouTubeLink(link, { youTubeApiKey, messages }) {
 	if (link.service !== 'youtube') {
 		return
 	}
