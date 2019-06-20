@@ -42,6 +42,7 @@ export default class Post extends React.Component {
 		onContentDidChange: PropTypes.func,
 		onPostContentChange: PropTypes.func,
 		messages: postMessages.isRequired,
+		genericMessages: PropTypes.object,
 		className: PropTypes.string
 	}
 
@@ -99,12 +100,12 @@ export default class Post extends React.Component {
 			onContentDidChange,
 			onPostContentChange,
 			commentLengthLimit,
-			messages
+			genericMessages
 		} = this.props
 		loadResourceLinks(post, {
 			youTubeApiKey,
 			onPostContentChange,
-			messages,
+			messages: genericMessages,
 			commentLengthLimit,
 			onUpdatePost: (post, callback) => {
 				if (this._isMounted) {
