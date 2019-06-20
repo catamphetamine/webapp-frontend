@@ -5,3 +5,15 @@
 	width: 1em;
 	height: 1em;
 }
+
+.service-icon--monochrome [data-icon-part-type="stroke"] {
+	color: red;
+}
+
+.service-icon--monochrome [data-icon-part-type="background"] {
+	color: white;
+}
+
+.service-icon--monochrome [data-icon-stroke-type="gradient"] {
+	fill: color;
+}
