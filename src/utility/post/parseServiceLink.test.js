@@ -5,10 +5,18 @@ import parseServiceLink from './parseServiceLink'
 describe('parseServiceLink', () => {
 	it('should parse popular service links', () => {
 		expectToEqual(
-			parseServiceLink('https://ru.wikipedia.org/wiki/Brothers:_A_Tale_of_Two_Sons'),
+			parseServiceLink('https://en.wikipedia.org/wiki/Brothers:_A_Tale_of_Two_Sons'),
 			{
 				service: 'wikipedia',
 				text: 'Brothers: A Tale of Two Sons'
+			}
+		)
+
+		expectToEqual(
+			parseServiceLink('https://ru.wikipedia.org/wiki/%D0%A4%D0%BE%D1%82%D0%BE%D1%8D%D1%84%D1%84%D0%B5%D0%BA%D1%82'),
+			{
+				service: 'wikipedia',
+				text: 'Фотоэффект'
 			}
 		)
 
