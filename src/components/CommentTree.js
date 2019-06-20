@@ -74,6 +74,7 @@ export default class CommentTree extends React.Component {
 		// when the first reply in the chain is expanded.
 		initialState: PropTypes.arrayOf(PropTypes.any),
 		onStateChange: PropTypes.func,
+		onShowReply: PropTypes.func,
 		// These two properties are only passed to child comment trees.
 		setState: PropTypes.func,
 		getState: PropTypes.func
@@ -101,7 +102,11 @@ export default class CommentTree extends React.Component {
 	}
 
 	onToggleShowReplies = () => {
-		const { comment, onDidToggleShowReplies } = this.props
+		const {
+			comment,
+			onDidToggleShowReplies,
+			onShowReply
+		} = this.props
 		let { showReplies } = this.state
 		showReplies = !showReplies
 		if (this.shouldTrackState()) {
@@ -110,12 +115,17 @@ export default class CommentTree extends React.Component {
 				state = {
 					replies: new Array(comment.replies.length)
 				}
+				if (onShowReply) {
+					for (const reply of comment.replies) {
+						onShowReply(reply)
+					}
+				}
 				// "Dialogue" reply chains are always expanded
 				// when the first reply in the chain is expanded.
 				// If this is such auto-expanded dialoglue chain
 				// then update `state` in accordance.
 				if (comment.replies.length === 1) {
-					expandDialogueChainReplies(comment, state)
+					expandDialogueChainReplies(comment, state, onShowReply)
 				}
 			}
 			// Using `.updateSubtreeState()` instead of `.setSubtreeState()` here
@@ -206,6 +216,7 @@ export default class CommentTree extends React.Component {
 			// Rest.
 			initialState,
 			onStateChange,
+			onShowReply,
 			setState,
 			getState,
 			...rest
@@ -255,6 +266,7 @@ export default class CommentTree extends React.Component {
 					<CommentTree
 						{...rest}
 						flat
+						onShowReply={onShowReply}
 						getState={this.shouldTrackState() ? (() => subtreeState.replies[0]) : undefined}
 						setState={this.shouldTrackState() ? (state => this.setChildSubtreeState(0, state)) : undefined}
 						comment={removeLeadingPostLink(comment.replies[0], comment)}
@@ -282,6 +294,7 @@ export default class CommentTree extends React.Component {
 							<CommentTree
 								{...rest}
 								key={reply.id}
+								onShowReply={onShowReply}
 								getState={this.shouldTrackState() ? (() => subtreeState.replies[i]) : undefined}
 								setState={this.shouldTrackState() ? (state => this.setChildSubtreeState(i, state)) : undefined}
 								comment={removeLeadingPostLink(reply, comment)}
@@ -301,17 +314,22 @@ export function isMiddleDialogueChainLink(comment, parentComment) {
 			parentComment && parentComment.replies.length === 1
 }
 
-function expandDialogueChainReplies(comment, subtreeState) {
+function expandDialogueChainReplies(comment, subtreeState, onShowReply) {
 	let parentComment = comment
 	let parentCommentState = subtreeState
-	let _comment
-	while ((_comment = parentComment.replies[0]) &&
-		_comment.replies && _comment.replies.length === 1) {
+	let reply
+	// Keep expanding the reply tree while the reply
+	// to the `comment` has itself a single reply too.
+	while ((reply = parentComment.replies[0]) &&
+		reply.replies && reply.replies.length === 1) {
 		const subtreeState = {
 			replies: [null]
 		}
 		parentCommentState.replies[0] = subtreeState
 		parentCommentState = subtreeState
-		parentComment = _comment
+		parentComment = reply
+		if (onShowReply) {
+			onShowReply(reply.replies[0])
+		}
 	}
 }
