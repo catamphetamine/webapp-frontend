@@ -23,13 +23,16 @@ export default function getTweetText(html, { messages }) {
   // Replace hashtag links with hashtag text.
   textHtml = textHtml.replace(/<a [^>]+>#(.+?)<\/a>/g, '#$1')
   // Replace links with `(link)` messages.
-  textHtml = textHtml.replace(/<a [^>]+>(.+?)<\/a>/g, (_, text) => {
-    // Replace attachment links with `(attachment)` messages.
-    if (messages.attachment && text.indexOf('pic.twitter.com') === 0) {
-      return `(${messages.attachment.toLowerCase()})`
-    }
-    return `(${messages.link.toLowerCase()})`
-  })
+  if (messages && messages.link) {
+    textHtml = textHtml.replace(/<a [^>]+>(.+?)<\/a>/g, (_, text) => {
+      // Replace attachment links with `(attachment)` messages.
+      // Could be a picture or a video.
+      if (messages.attachment && text.indexOf('pic.twitter.com') === 0) {
+        return `(${messages.attachment.toLowerCase()})`
+      }
+      return `(${messages.link.toLowerCase()})`
+    })
+  }
   // Replace new lines.
   textHtml = textHtml.replace(/<br>/g, '\n')
   // Return tweet text.
