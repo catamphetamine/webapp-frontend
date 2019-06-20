@@ -3,6 +3,9 @@
 :root {
 	--content-section-margin : calc(var(--unit) * 1);
 
+	--content-section-color: original;
+	--content-section-background-color: var(--white-color);
+
 	/*
 	--content-section-horizontal-padding : calc(var(--unit) * 2);
 	--content-section-vertical-padding : calc(var(--unit) * 1.5);
@@ -28,7 +31,8 @@
 	padding-right : var(--content-section-horizontal-padding);
 	padding-top : var(--content-section-vertical-padding);
 	padding-bottom : var(--content-section-vertical-padding);
-	background-color : var(--white-color);
+	color : var(--content-section-color);
+	background-color : var(--content-section-background-color);
 	border-radius : var(--border-radius);
 	/*box-shadow : var(--content-section-shadow);*/
   box-shadow: 0 0.0005rem 0.1rem 0 hsla(210,7%,61%,.15), 0 0.1rem 0.75rem 0 hsla(210,7%,61%,.15);
