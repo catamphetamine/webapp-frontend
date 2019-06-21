@@ -6,4 +6,5 @@ import './getTweetText.test'
 // So it doesn't work.
 // import './getInstagramPost.test'
 import './video-youtube.test'
+import './video-youtube-cache.test'
 import './post/test'

@@ -2,7 +2,7 @@ import { parseURL, parseQueryString } from './url'
 import { getImageSize } from './image'
 import { getUrlQueryPart } from './video-common'
 
-const PREVIEW_PICTURE_SIZES = [
+export const PREVIEW_PICTURE_SIZES = [
 	// 1280 x 720.
 	// HD aspect ratio.
 	{
@@ -49,7 +49,9 @@ export default {
 	/**
 	 * Parses YouTube video URL (if it's a video URL).
 	 * @param  {string} url
-	 * @param  {object} options
+	 * @param  {string} [options.locale] — Isn't used.
+	 * @param  {boolean} [options.picture] — Set to `false` to disable looking up video thumbnail.
+	 * @param  {string} [options.youTubeApiKey] — YouTube API v3 key.
 	 * @return {object} [video] Returns `null` if the video doesn't exist. Returns `undefined` if it's not a YouTube video.
 	 */
 	parse: async function(url, options = {}) {
@@ -58,25 +60,7 @@ export default {
 			picture,
 			youTubeApiKey
 		} = options
-		// Get video ID.
-		let id
-		let startAt
-		const location = parseURL(url)
-		if (location.hostname === 'www.youtube.com' || location.hostname === 'm.youtube.com') {
-			if (location.search) {
-				const query = parseQueryString(location.search.slice('?'.length))
-				id = query.v
-				if (query.t) {
-					startAt = parseInt(query.t)
-				}
-			}
-		} else if (location.hostname === 'youtu.be') {
-			id = location.pathname.slice('/'.length)
-			const query = parseQueryString(location.search.slice('?'.length))
-			if (query.t) {
-				startAt = parseInt(query.t)
-			}
-		}
+		const { id, startAt } = parseUrl(url)
 		// Get video info by ID.
 		if (id) {
 			let video
@@ -266,7 +250,10 @@ async function getVideoData(id, youTubeApiKey, options = {}) {
 	return video
 }
 
-const getPictureSizeURL = (id, sizeName) => `https://img.youtube.com/vi/${id}/${sizeName}.jpg`
+// Alternative domains:
+// * `i.ytimg.com`
+// * `i3.ytimg.com`
+export const getPictureSizeURL = (id, sizeName) => `https://img.youtube.com/vi/${id}/${sizeName}.jpg`
 
 // Copied from:
 // https://stackoverflow.com/questions/22148885/converting-youtube-data-api-v3-video-duration-format-to-seconds-in-javascript-no
@@ -322,4 +309,30 @@ if (parseISO8601Duration('P1Y43W5DT5M54S') !== 57974754) {
 
 function toArray(anything) {
 	return Array.isArray(anything) ? anything : [anything]
+}
+
+export function parseUrl(url) {
+	// Get video ID.
+	let id
+	let startAt
+	const location = parseURL(url)
+	if (location.hostname === 'www.youtube.com' || location.hostname === 'm.youtube.com') {
+		if (location.search) {
+			const query = parseQueryString(location.search.slice('?'.length))
+			id = query.v
+			if (query.t) {
+				startAt = parseInt(query.t)
+			}
+		}
+	} else if (location.hostname === 'youtu.be') {
+		id = location.pathname.slice('/'.length)
+		const query = parseQueryString(location.search.slice('?'.length))
+		if (query.t) {
+			startAt = parseInt(query.t)
+		}
+	}
+	return {
+		id,
+		startAt
+	}
 }

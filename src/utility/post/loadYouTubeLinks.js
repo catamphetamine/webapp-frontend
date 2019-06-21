@@ -1,4 +1,5 @@
 import YouTube from '../video-youtube'
+import YouTubeCached from '../video-youtube-cached'
 import visitPostParts from './visitPostParts'
 
 /**
@@ -9,28 +10,29 @@ import visitPostParts from './visitPostParts'
  * @return {void}
  */
 export default async function loadYouTubeLinks(content, options = {}) {
-	const { youTubeApiKey, messages } = options
+	const { youTubeApiKey, messages, cache } = options
 	const result = await Promise.all(visitPostParts(
 		'link',
-		link => loadYouTubeLink(link, { youTubeApiKey, messages }),
+		link => loadYouTubeLink(link, { youTubeApiKey, messages, cache }),
 		content
 	))
 	return result.findIndex(_ => _) >= 0
 }
 
-async function loadYouTubeLink(link, { youTubeApiKey, messages }) {
+async function loadYouTubeLink(link, { youTubeApiKey, messages, cache }) {
 	if (link.service !== 'youtube') {
 		return
 	}
 	if (link.attachment) {
 		return
 	}
-	const video = await YouTube.parse(link.url, { youTubeApiKey, messages })
+	const video = await (cache === false ? YouTube : YouTubeCached).parse(link.url, { youTubeApiKey, messages })
 	if (video) {
 		// Video description is not currently being output anywhere.
 		// Without `description` the `video` size is about 400 bytes.
 		// With `description` the `video` size is about 1000 bytes on average.
 		delete video.description
+		console.log(JSON.stringify(video))
 		link.attachment = {
 			type: 'video',
 			video

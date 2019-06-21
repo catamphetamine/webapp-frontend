@@ -43,7 +43,7 @@ describe('loadYouTubeLinks', () => {
 			]
 		]
 		expectToEqual(
-			await loadYouTubeLinks(content),
+			await loadYouTubeLinks(content, { cache: false }),
 			true
 		)
 		expectToEqual(
@@ -93,7 +93,7 @@ export function loadYouTubeLinksTestWithApiKey(youTubeApiKey) {
 				]
 			]
 			expectToEqual(
-				await loadYouTubeLinks(content, { youTubeApiKey }),
+				await loadYouTubeLinks(content, { youTubeApiKey, cache: false }),
 				true
 			)
 			expectToEqual(
