@@ -46,3 +46,12 @@ export function addStorageListener(key, listener) {
 		}
 	})
 }
+
+export function forEach(func) {
+	let i = 0
+	while (i < localStorage.length) {
+		const key = localStorage.key(i)
+		func(key)
+		i++
+	}
+}
