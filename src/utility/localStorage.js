@@ -7,13 +7,25 @@ export function hasObject(key) {
 export function getObject(key, defaultValue) {
 	const value = localStorage.getItem(key)
 	if (value) {
-		return JSON.parse(value)
+		try {
+			return JSON.parse(value)
+		} catch (error) {
+			if (error instanceof SyntaxError) {
+				console.error(`Invalid JSON:\n\n${value}`)
+				return defaultValue
+			} else {
+				throw error
+			}
+		}
 	} else {
 		return defaultValue
 	}
 }
 
 export function setObject(key, value) {
+	if (value === undefined) {
+		return deleteObject(key)
+	}
 	localStorage.setItem(key, JSON.stringify(value))
 }
 

@@ -21,6 +21,12 @@ export function getVideoFromCache(id) {
 	}
 }
 
+export function clearCache() {
+	if (cache) {
+		cache.clear()
+	}
+}
+
 // An archived video is about 100 bytes in size.
 // An unarchived video is about 400 bytes in size.
 export function archiveVideo(video) {

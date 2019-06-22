@@ -1,4 +1,4 @@
-import { getObject, setObject } from './localStorage'
+import { getObject, setObject, deleteObject } from './localStorage'
 
 export default class LocalStorageCache {
 	constructor(maxSize, prefix) {
@@ -8,7 +8,7 @@ export default class LocalStorageCache {
 
 	get(key) {
 		const keys = getObject(this.prefix + ':keys') || []
-		const index = keys.findIndex(_ => _ === key)
+		const index = keys.indexOf(key)
 		if (index < 0) {
 			return
 		}
@@ -35,5 +35,10 @@ export default class LocalStorageCache {
 		entries[key] = value
 		setObject(this.prefix + ':keys', keys)
 		setObject(this.prefix + ':entries', entries)
+	}
+
+	clear() {
+		deleteObject(this.prefix + ':keys')
+		deleteObject(this.prefix + ':entries')
 	}
 }
