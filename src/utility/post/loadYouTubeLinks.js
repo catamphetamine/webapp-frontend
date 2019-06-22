@@ -32,7 +32,6 @@ async function loadYouTubeLink(link, { youTubeApiKey, messages, cache }) {
 		// Without `description` the `video` size is about 400 bytes.
 		// With `description` the `video` size is about 1000 bytes on average.
 		delete video.description
-		console.log(JSON.stringify(video))
 		link.attachment = {
 			type: 'video',
 			video
