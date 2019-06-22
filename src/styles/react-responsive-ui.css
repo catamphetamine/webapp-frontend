@@ -30,3 +30,7 @@
 {
 	opacity : 0;
 }
+
+.rrui__button--auto-height {
+	height: auto;
+}
