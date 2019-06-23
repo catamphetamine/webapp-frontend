@@ -7,64 +7,86 @@ import classNames from 'classnames'
 import './Menu.css'
 
 @connect(({ found }) => ({
-  location: found.resolvedMatch.location
+  pathname: found.resolvedMatch.location.pathname
 }))
 export default class Menu extends React.Component {
 	render() {
 		const {
-			location,
+			pathname,
 			className,
 			children
 		} = this.props
-
 		return (
 			<ul className={classNames('menu', className)}>
-				{children.map(({ isActive, action, link, title, outlineIcon, fillIcon }, i) => {
-					if (link) {
-						isActive = isActive && location.pathname === link
-					}
-					const icon = React.createElement(
-						isActive ? fillIcon : outlineIcon,
-						{ className: 'menu-item__icon' }
-					)
-					return (
-						<li
-							key={i}
-							className="menu-list-item">
-							{action &&
-								<button
-									type="button"
-									title={title}
-									onClick={action}
-									className={classNames('rrui__button-reset', 'menu-item', isActive && 'menu-item--selected')}>
-									{icon}
-								</button>
-							}
-							{link &&
-								<Link
-									to={link}
-									title={title}
-									activeClassName="menu-item--selected"
-									className="menu-item">
-									{icon}
-								</Link>
-							}
-						</li>
-					)
-				})}
+				{children.map((properties, i) => (
+					<MenuItem key={i} {...properties} pathname={pathname}/>
+				))}
 			</ul>
 		)
 	}
 }
 
 Menu.propTypes = {
-	location: PropTypes.object.isRequired,
+	pathname: PropTypes.string.isRequired,
 	children: PropTypes.arrayOf(PropTypes.shape({
-		link: PropTypes.string.isRequired,
+		url: PropTypes.string.isRequired,
 		action: PropTypes.func,
 		isActive: PropTypes.bool,
 		title: PropTypes.string.isRequired,
 		outlineIcon: PropTypes.func.isRequired,
 		fillIcon: PropTypes.func.isRequired
 	}))
+}
+
+class MenuItem extends React.Component {
+	render() {
+		let {
+			isActive
+		} = this.props
+		const {
+			action,
+			url,
+			title,
+			outlineIcon: OutlineIcon,
+			fillIcon: FillIcon,
+			pathname
+		} = this.props
+		if (url) {
+			isActive = isActive && pathname === url
+		}
+		return (
+			<li className="menu-item-container">
+				{action &&
+					<button
+						type="button"
+						title={title}
+						onClick={action}
+						className={classNames('rrui__button-reset', 'menu-item', isActive && 'menu-item--selected')}>
+						<FillIcon className="menu-item__icon menu-item__icon--fill"/>
+						<OutlineIcon className="menu-item__icon menu-item__icon--outline"/>
+					</button>
+				}
+				{url &&
+					<Link
+						to={url}
+						title={title}
+						activeClassName="menu-item--selected"
+						className="menu-item">
+						<FillIcon className="menu-item__icon menu-item__icon--fill"/>
+						<OutlineIcon className="menu-item__icon menu-item__icon--outline"/>
+					</Link>
+				}
+			</li>
+		)
+	}
+}
+
+MenuItem.propTypes = {
+	url: PropTypes.string.isRequired,
+	action: PropTypes.func,
+	isActive: PropTypes.bool,
+	title: PropTypes.string.isRequired,
+	outlineIcon: PropTypes.func.isRequired,
+	fillIcon: PropTypes.func.isRequired,
+	pathname: PropTypes.string.isRequired
 }
