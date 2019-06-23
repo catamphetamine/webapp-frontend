@@ -64,17 +64,5 @@
 	overflow : hidden;
 	pointer-events : none;
 
-	font-size : 5rem;
-
-	@mixin xxs {
-		font-size : 3rem;
-	}
-
-	@mixin xs-s {
-		font-size : 4rem;
-	}
-
-	@mixin m {
-		font-size : 5rem;
-	}
+	font-size : 3rem;
 }

@@ -120,7 +120,12 @@ class Slideshow extends React.Component {
 		mouseWheelScaleFactor: 0.33,
 		// minInitialScale: 0.5,
 		fullScreenFitPrecisionFactor: 0.875,
-		plugins: PLUGINS
+		plugins: PLUGINS,
+		messages: {
+			actions: {
+				//
+			}
+		}
 	}
 
 	// `state` is initialized at the bottom because it uses some instance methods.

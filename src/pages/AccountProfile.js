@@ -48,15 +48,14 @@ import './AccountProfile.css'
 	const account = await dispatch(getAccount(params.id))
 	// Get the list of account's posts.
 	await dispatch(getAccountPosts(account.id))
-}, { client: true })
+})
 @connect(({ account }) => ({
 	account: account.account,
 	posts: account.posts
 }), {
 	openSlideshow
 })
-export default class Profile extends React.Component
-{
+export default class Profile extends React.Component {
 	static propTypes = {
 		account: accountShapeProfile,
 		posts: PropTypes.arrayOf(post),
@@ -66,7 +65,8 @@ export default class Profile extends React.Component
 	render() {
 		const {
 			account,
-			posts
+			posts,
+			openSlideshow
 		} = this.props
 
 		if (!account) {
@@ -97,11 +97,13 @@ export default class Profile extends React.Component
 
 							{/* Page content */}
 							{posts && posts.map((post) => (
-								<ContentSection key={post.id}>
+								<ContentSection key={post.id} className="account-profile__post-section">
 									{/*<ContentSectionHeader>
 										Craft
 									</ContentSectionHeader>*/}
-									<Post post={post} openSlideshow={openSlideshow}/>
+									<Post
+										post={post}
+										openSlideshow={openSlideshow}/>
 								</ContentSection>
 							))}
 						</div>

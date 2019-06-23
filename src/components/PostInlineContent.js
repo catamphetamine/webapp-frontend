@@ -17,7 +17,7 @@ export default function PostInlineContent({
 	if (typeof children === 'string') {
 		return children
 	}
-	return children.map((content, i) => (
+	return toArray(children).map((content, i) => (
 		<PostInlineContentElement
 			key={i}
 			{...rest}>
@@ -144,4 +144,8 @@ function PostInlineContentElement({ children: content, ...rest }) {
 PostInlineContentElement.propTypes = {
 	...PostInlineContent.propTypes,
 	children: postInlineElement.isRequired
+}
+
+function toArray(content) {
+	return Array.isArray(content) ? content : [content]
 }

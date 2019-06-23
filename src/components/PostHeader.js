@@ -60,7 +60,7 @@ export default class PostHeader extends React.Component {
 				<div className="post__header-top">
 					<div className="post__summary">
 						{post.account &&
-							<div className="post__summary-item">
+							<div className="post__summary__account">
 								<Link to={accountLink(post.account)}>
 									<AccountPicture
 										account={post.account}

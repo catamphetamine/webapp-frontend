@@ -51,7 +51,7 @@ export default function PostBlock({
 					readMoreLabel={readMoreLabel}
 					openSlideshow={openSlideshow}
 					serviceIcons={serviceIcons}>
-					{content}
+					{content.content}
 				</PostInlineContent>
 			</PostSubheading>
 		)

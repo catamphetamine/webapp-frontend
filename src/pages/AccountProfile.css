@@ -43,3 +43,22 @@
 .account-profile .account-actions {
 	margin-bottom: calc(var(--unit) * 1);
 }
+
+.account-profile {
+	.account-profile__post-section {
+		/*.thread__comment {*/
+			margin-top: calc(var(--unit) * 1);
+			margin-bottom: calc(var(--unit) * 1);
+		/*}*/
+	}
+	.account-profile__post-section:first-child {
+		/*.thread__comment {*/
+			margin-top: 0;
+		/*}*/
+	}
+	.account-profile__post-section:last-child {
+		/*.thread__comment {*/
+			margin-bottom: 0;
+		/*}*/
+	}
+}

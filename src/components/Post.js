@@ -46,6 +46,12 @@ export default class Post extends React.Component {
 		className: PropTypes.string
 	}
 
+	static defaultProps = {
+		messages: {
+			readMore: '...'
+		}
+	}
+
 	state = {
 		showPreview: this.props.initialExpandContent ? false : true
 	}
@@ -69,13 +75,12 @@ export default class Post extends React.Component {
 
 	getNonEmbeddedAttachments() {
 		const { post } = this.props
-		const postContent = post.content && toArray(post.content)
 		const attachments = post.attachments || []
 		const nonEmbeddedAttachments = attachments.filter((attachment) => {
 			if (!attachment.id) {
 				return true
 			}
-			return !postContent.find((paragraph) => {
+			return !getParagraphs(post.content).find((paragraph) => {
 				return typeof paragraph === 'object' &&
 					paragraph.type === 'attachment' &&
 					paragraph.attachmentId === attachment.id
@@ -188,7 +193,7 @@ export default class Post extends React.Component {
 					onVote={onVote}/>
 				{postContent &&
 					<div className="post__content">
-						{postContent.map((content, i) => (
+						{getParagraphs(postContent).map((content, i) => (
 							<PostBlock
 								key={i}
 								url={url}
@@ -225,6 +230,12 @@ export default class Post extends React.Component {
 	}
 }
 
-function toArray(object) {
-	return Array.isArray(object) ? object : [object]
+function getParagraphs(content) {
+	if (content === undefined || content === null) {
+		return []
+	}
+	if (typeof content === 'string') {
+		return [content]
+	}
+	return content
 }

@@ -17,6 +17,11 @@
 	}
 }
 
+.post__summary__account {
+	display: flex;
+	align-items: center;
+}
+
 .post__header-misc {
 	color: var(--gray-color-600);
 }

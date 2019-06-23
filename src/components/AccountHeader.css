@@ -108,20 +108,14 @@
 {
 	position : absolute;
 	left     : calc(var(--column-padding));
-	bottom   : calc(-1 * var(--unit) * 2);
+	bottom   : calc(-1 * var(--unit) * 1);
 	/* Must be above the account name layer for clickability. */
 	z-index  : 2;
 
 	width  : var(--account-header-picture-size);
 	height : var(--account-header-picture-size);
 
-	@mixin xs
-	{
-		bottom : calc(-1 * var(--unit) * 1);
-	}
-
-	@mixin ms
-	{
+	@mixin s-plus {
 		bottom : calc(-1 * var(--unit) * 1.5);
 	}
 }

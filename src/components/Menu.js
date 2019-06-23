@@ -19,15 +19,37 @@ export default class Menu extends React.Component {
 
 		return (
 			<ul className={classNames('menu', className)}>
-				{children.map(({ link, outlineIcon, fillIcon }) => {
-					const isSelected = location.pathname === link
+				{children.map(({ isActive, action, link, title, outlineIcon, fillIcon }, i) => {
+					if (link) {
+						isActive = isActive && location.pathname === link
+					}
+					const icon = React.createElement(
+						isActive ? fillIcon : outlineIcon,
+						{ className: 'menu-item__icon' }
+					)
 					return (
-						<MenuLink to={link} key={link}>
-							{React.createElement(
-								isSelected ? fillIcon : outlineIcon,
-								{ className: 'menu-item__icon' }
-							)}
-						</MenuLink>
+						<li
+							key={i}
+							className="menu-list-item">
+							{action &&
+								<button
+									type="button"
+									title={title}
+									onClick={action}
+									className={classNames('rrui__button-reset', 'menu-item', isActive && 'menu-item--selected')}>
+									{icon}
+								</button>
+							}
+							{link &&
+								<Link
+									to={link}
+									title={title}
+									activeClassName="menu-item--selected"
+									className="menu-item">
+									{icon}
+								</Link>
+							}
+						</li>
 					)
 				})}
 			</ul>
@@ -39,30 +61,10 @@ Menu.propTypes = {
 	location: PropTypes.object.isRequired,
 	children: PropTypes.arrayOf(PropTypes.shape({
 		link: PropTypes.string.isRequired,
-		selected: PropTypes.bool,
+		action: PropTypes.func,
+		isActive: PropTypes.bool,
+		title: PropTypes.string.isRequired,
 		outlineIcon: PropTypes.func.isRequired,
 		fillIcon: PropTypes.func.isRequired
 	}))
-}
-
-export function MenuLink({ to, selected, children })
-{
-	return (
-		<li className="menu-list-item">
-			<Link
-				to={to}
-				activeClassName="menu-item--selected"
-				className={classNames('menu-item', {
-					'menu-item--selected': selected
-				})}>
-				{children}
-			</Link>
-		</li>
-	)
-}
-
-MenuLink.propTypes = {
-	to: PropTypes.string.isRequired,
-	selected: PropTypes.bool,
-	children: PropTypes.node.isRequired
 }

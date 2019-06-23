@@ -38,8 +38,10 @@ export function createConfig({ reducers, routes, container, transformURL, ...res
 }
 
 export function onError(error, { path, url, redirect, dispatch, getState, server }) {
-	console.error(`Error while preloading "${url}"`)
-	console.error(error)
+  console.error('--------------------------------');
+  console.error(`Error while loading "${url}"`);
+  console.error('--------------------------------');
+	console.error(error.stack)
 	const redirectToErrorPage = (errorPagePath) => {
 		// Prevents infinite redirection loop or double redirection.
 		// For example, a double redirection in case of `/unauthenticated`.

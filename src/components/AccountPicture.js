@@ -41,6 +41,7 @@ export default class AccountPicture extends React.Component
 		return (
 			<Picture
 				{...rest}
+				fit="cover"
 				picture={ picture || account.picture || DEFAULT_ACCOUNT_PICTURE }
 				className={ classNames('account-picture', className) }/>
 		)

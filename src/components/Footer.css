@@ -15,6 +15,16 @@
 .webpage__footer
 {
 	margin-bottom : var(--footer-menu-height);
+	margin-top: calc(var(--unit) * 2);
+	@mixin s {
+		margin-top: calc(var(--unit) * 3);
+	}
+	@mixin m {
+		margin-top: calc(var(--unit) * 4);
+	}
+	@mixin l-plus {
+		margin-top: calc(var(--unit) * 6);
+	}
 }
 
 @mixin m {
