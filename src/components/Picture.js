@@ -657,7 +657,10 @@ export function preloadImage(url) {
 			if (event.path && event.path[0]) {
 				console.error(`Image not found: ${event.path[0].src}`)
 			}
-			reject(event)
+			const error = new Error('IMAGE_NOT_FOUND')
+			error.url = url
+			error.event = event
+			reject(error)
 		}
 		image.src = url
 	})

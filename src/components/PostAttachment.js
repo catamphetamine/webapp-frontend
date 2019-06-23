@@ -125,7 +125,11 @@ class AttachmentButton extends React.Component {
 			this.setState({
 				isLoading: true
 			})
-			await SlideshowPicture.preload(attachment, getViewportWidth())
+			try {
+				await SlideshowPicture.preload(attachment, getViewportWidth())
+			} catch (error) {
+				console.error(error)
+			}
 			// For testing/styling.
 			// await new Promise(_ => setTimeout(_, 30000000))
 			this.setState({
