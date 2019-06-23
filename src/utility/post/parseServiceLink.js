@@ -1,6 +1,7 @@
 const WWW_REGEXP = /^www\./
 const WIKIPEDIA_REGEXP = /^[a-z]+\.wikipedia\.org$/
 // const SUBDOMAIN_REGEXP = /^[^.]+\.wikipedia\.org$/
+const ABSOLUTE_URL_REGEXP = /^(https?|ftp):/
 
 /**
  * Parses popular service links.
@@ -8,6 +9,9 @@ const WIKIPEDIA_REGEXP = /^[a-z]+\.wikipedia\.org$/
  * @return {object} [result] `{ service: string, text: string }`
  */
 export default function parseServiceLink(url) {
+	if (!ABSOLUTE_URL_REGEXP.test(url)) {
+		return
+	}
 	// Remove `/` in the end.
 	url = url.replace(/\/$/, '')
 	// Fix same protocol links.
