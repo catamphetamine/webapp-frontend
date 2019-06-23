@@ -8,7 +8,12 @@ import getAttachmentMessage from '../getAttachmentMessage'
  * Can optionally ignore attachments (or skip them unless there's no text).
  * Can optionally exclude `quotes` and `inline-quote`s.
  * @param  {object} post
- * @param  {object} options — `{ softLimit, messages, excludeQuotes, ignoreAttachments, skipAttachments }`
+ * @param  {number} [options.softLimit]
+ * @param  {object} [options.messages]
+ * @param  {boolean} [options.excludeQuotes]
+ * @param  {boolean} [options.ignoreAttachments]
+ * @param  {boolean} [options.skipAttachments]
+ * @param  {boolean} [options.stopOnNewLine]
  * @return {string}
  */
 export default function getPostText(post, options = {}) {
@@ -35,6 +40,9 @@ export default function getPostText(post, options = {}) {
 				text += '\n\n'
 			}
 			text += blockText
+			if (options.stopOnNewLine) {
+				return text
+			}
 			if (softLimit !== undefined) {
 				softLimit -= blockText.length - countOccurrences(blockText, '\n')
 				if (softLimit <= 0) {
@@ -73,6 +81,9 @@ export function getContentText(content, softLimit, options = {}) {
 		let i = 0
 		while (i < content.length) {
 			const part = content[i]
+			if (part === '\n' && options.stopOnNewLine && text) {
+				break
+			}
 			const isStandalonePostLink = content[i].type === 'post-link' &&
 				(i === 0 || content[i - 1] === '\n') &&
 				(i === content.length - 1 || content[i + 1] === '\n')
