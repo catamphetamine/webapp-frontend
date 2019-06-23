@@ -374,7 +374,7 @@ describe('parseServiceLink', () => {
 			parseServiceLink('https://store.steampowered.com/app/6200/Ghost_Master/?l=russian'),
 			{
 				service: 'steam',
-				text: 'Ghost_Master'
+				text: 'Ghost Master'
 			}
 		)
 

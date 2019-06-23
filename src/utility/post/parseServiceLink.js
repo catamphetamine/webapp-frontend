@@ -157,7 +157,7 @@ const SERVICES = {
 		getText(url) {
 			const gameMatch = url.pathname.match(/^\/app\/\d+\/([^\/]+)/)
 			if (gameMatch) {
-				return gameMatch[1]
+				return gameMatch[1].replace(/_+/g, ' ')
 			}
 			if (url.searchParams.get('appids')) {
 				return `${url.searchParams.get('appids')}${trimTrailingSlash(url.pathname)}`
