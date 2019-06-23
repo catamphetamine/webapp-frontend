@@ -4,6 +4,8 @@ import classNames from 'classnames'
 
 import Picture from './Picture'
 
+import './AccountPicture.css'
+
 import DefaultAccountPicture from '../../assets/images/account-picture.svg'
 
 const DEFAULT_ACCOUNT_PICTURE =
@@ -42,7 +44,7 @@ export default class AccountPicture extends React.Component
 			<Picture
 				{...rest}
 				fit="cover"
-				picture={ picture || account.picture || DEFAULT_ACCOUNT_PICTURE }
+				picture={ DEFAULT_ACCOUNT_PICTURE }
 				className={ classNames('account-picture', className) }/>
 		)
 	}
