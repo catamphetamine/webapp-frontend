@@ -1,8 +1,8 @@
 import getPostText from './getPostText'
 import trimText from './trimText'
 
-export default function getPostSummary(post, { messages, maxLength, stopOnNewLine }) {
-	let text = getPostText(post, {
+export default function getPostSummary(content, attachments, { messages, maxLength, stopOnNewLine }) {
+	let text = getPostText(content, attachments, {
 		excludePostQuotes: true,
 		excludeCodeBlocks: true,
 		softLimit: maxLength,
@@ -14,7 +14,7 @@ export default function getPostSummary(post, { messages, maxLength, stopOnNewLin
 	// then loosen the filters and include quotes.
 	// Code blocks are replaced with "(code)".
 	if (!text) {
-		text = getPostText(post, {
+		text = getPostText(content, attachments, {
 			excludePostQuotes: false,
 			excludeCodeBlocks: true,
 			softLimit: maxLength,
@@ -26,7 +26,7 @@ export default function getPostSummary(post, { messages, maxLength, stopOnNewLin
 		// then loosen the filters and include quotes.
 		// Code blocks are always replaced with "(code)".
 		if (!text) {
-			text = getPostText(post, {
+			text = getPostText(content, attachments, {
 				excludePostQuotes: false,
 				excludeCodeBlocks: false,
 				softLimit: maxLength,

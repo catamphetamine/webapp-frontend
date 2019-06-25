@@ -16,19 +16,19 @@ import getAttachmentMessage from '../getAttachmentMessage'
  * @param  {boolean} [options.stopOnNewLine]
  * @return {string}
  */
-export default function getPostText(post, options = {}) {
+export default function getPostText(content, attachments, options = {}) {
 	// Simple case optimization.
-	if (typeof post.content === 'string') {
-		return post.content
+	if (typeof content === 'string') {
+		return content
 	}
-	if (post.content) {
+	if (content) {
 		// Concatenate post paragraphs' text.
 		let text = ''
 		let softLimit = options.softLimit
-		for (const block of post.content) {
+		for (const block of content) {
 			let blockText = getContentText(block, softLimit, {
 				...options,
-				attachments: post.attachments
+				attachments
 			})
 			if (blockText) {
 				blockText = blockText.trim()
@@ -55,14 +55,14 @@ export default function getPostText(post, options = {}) {
 		}
 	}
 	// If there're any attachments then fall back to attachment text.
-	if (post.attachments && !options.ignoreAttachments) {
-		for (const attachment of post.attachments) {
+	if (attachments && !options.ignoreAttachments) {
+		for (const attachment of attachments) {
 			if (getAttachmentText(attachment, options.messages)) {
 				return getAttachmentText(attachment, options.messages)
 			}
 		}
 		if (options.messages) {
-			for (const attachment of post.attachments) {
+			for (const attachment of attachments) {
 				if (getAttachmentMessage(attachment, options.messages)) {
 					return getAttachmentMessage(attachment, options.messages)
 				}

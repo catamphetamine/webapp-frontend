@@ -8,7 +8,7 @@ function getPostTextTest(post, options, text) {
 		text = options
 		options = {}
 	}
-	expectToEqual(getPostText(post, options), text)
+	expectToEqual(getPostText(post.content, post.attachments, options), text)
 }
 
 describe('getPostText', () => {
@@ -604,6 +604,43 @@ describe('getPostText', () => {
 				}
 			},
 			'Abc\n\nZooey Deschanel (@zooeydeschanel): My favorite cat from tonight\'s episode- a true winner. #newgirl'
+		)
+	})
+
+	it('should return on new line', () => {
+		getPostTextTest(
+			{
+				content: [
+					[
+						'Abc',
+						'\n',
+						'Def'
+					]
+				]
+			},
+			{
+				stopOnNewLine: true
+			},
+			'Abc'
+		)
+	})
+
+	it('should return on new line (paragraph)', () => {
+		getPostTextTest(
+			{
+				content: [
+					[
+						'Abc'
+					],
+					[
+						'Def'
+					]
+				]
+			},
+			{
+				stopOnNewLine: true
+			},
+			'Abc'
 		)
 	})
 })
