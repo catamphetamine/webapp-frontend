@@ -1,27 +1,26 @@
 @import "../styles/common";
 
 :root {
-	--content-section-margin : calc(var(--unit) * 1);
-
-	--content-section-color: original;
-	--content-section-background-color: var(--white-color);
+	--content-section-margin: calc(var(--unit) * 1);
 
 	/*
-	--content-section-horizontal-padding : calc(var(--unit) * 2);
-	--content-section-vertical-padding : calc(var(--unit) * 1.5);
+	--content-section-horizontal-padding: calc(var(--unit) * 2);
+	--content-section-vertical-padding: calc(var(--unit) * 1.5);
 	*/
 
-	--content-section-horizontal-padding : calc(var(--unit) * 1.5);
-	--content-section-vertical-padding : calc(var(--unit) * 1.5);
+	--content-section-horizontal-padding: calc(var(--unit) * 1.5);
+	--content-section-vertical-padding: calc(var(--unit) * 1.5);
 
-	/*--background-section-vertical-margin : var(--unit);*/
+	--content-section-shadow: 0 1px 0 0 var(--content-section-shadow-color), 0 0 0 1px var(--content-section-border-color);
+
+	/*--background-section-vertical-margin: var(--unit);*/
 
 	@mixin upto-xs {
-		--content-section-margin : calc(var(--unit) * 1);
-		--content-section-horizontal-padding : calc(var(--unit) * 1);
-		--content-section-vertical-padding : calc(var(--unit) * 1);
+		--content-section-margin: calc(var(--unit) * 1);
+		--content-section-horizontal-padding: calc(var(--unit) * 1);
+		--content-section-vertical-padding: calc(var(--unit) * 1);
 
-		/*--background-section-vertical-margin : calc(var(--unit) * 2);*/
+		/*--background-section-vertical-margin: calc(var(--unit) * 2);*/
 	}
 }
 
@@ -31,8 +30,8 @@
 	padding-right : var(--content-section-horizontal-padding);
 	padding-top : var(--content-section-vertical-padding);
 	padding-bottom : var(--content-section-vertical-padding);
-	color : var(--content-section-color);
-	background-color : var(--content-section-background-color);
+	color : var(--Content-color);
+	background-color : var(--Content-backgroundColor);
 	border-radius : var(--border-radius);
 	/*box-shadow : var(--content-section-shadow);*/
   box-shadow: 0 0.0005rem 0.1rem 0 hsla(210,7%,61%,.15), 0 0.1rem 0.75rem 0 hsla(210,7%,61%,.15);
@@ -73,7 +72,7 @@
 	padding-right : var(--content-section-horizontal-padding);
 	padding-top      : 0.5em;
 	padding-bottom   : 0.45em;
-	border-bottom    : 1px solid var(--content-section-divider-color);
+	border-bottom    : 1px solid var(--content-section-border-color);
 	color            : var(--black-color);
 	font-weight      : normal;
 	font-size        : 1.4rem;

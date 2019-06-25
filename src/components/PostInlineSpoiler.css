@@ -16,13 +16,13 @@
 }
 
 .post__inline-spoiler--hidden {
-	background-color: var(--gray-color-100);
+	background-color: var(--PostInlineSpoiler-backgroundColor);
 	border-radius: 0.2em;
 }
 
 .post__inline-spoiler--censored {
 	&.post__inline-spoiler--hidden {
-		background-color: #f0e1e1;
+		background-color: var(--PostInlineSpoiler-backgroundColor--censored);
 		cursor: not-allowed;
 	}
 }

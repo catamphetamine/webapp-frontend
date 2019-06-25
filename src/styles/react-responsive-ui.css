@@ -34,3 +34,7 @@
 .rrui__button--auto-height {
 	height: auto;
 }
+
+.rrui__button-reset {
+	color: inherit;
+}

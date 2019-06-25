@@ -81,7 +81,7 @@ export default class PostHeader extends React.Component {
 							</div>
 						}
 						{!post.account &&
-							<div className="post__summary-item post__header-misc">
+							<div className="post__summary-item">
 								<PostDate
 									date={post.createdAt}
 									link={url}
@@ -89,7 +89,7 @@ export default class PostHeader extends React.Component {
 							</div>
 						}
 						{onReply &&
-							<div className="post__summary-item post__header-misc">
+							<div className="post__summary-item">
 								<button
 									type="button"
 									onClick={onReply}
@@ -101,7 +101,7 @@ export default class PostHeader extends React.Component {
 					</div>
 					<div className="post__actions">
 						{(hasBadges || hasVotes) &&
-							<div className="post__actions-except-more post__header-misc">
+							<div className="post__actions-except-more">
 								{hasVotes &&
 									<div className="post__votes">
 										<button

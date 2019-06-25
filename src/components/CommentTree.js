@@ -127,6 +127,8 @@ export default class CommentTree extends React.Component {
 				if (comment.replies.length === 1) {
 					expandDialogueChainReplies(comment, state, onShowReply)
 				}
+			} else {
+				state = null
 			}
 			// Using `.updateSubtreeState()` instead of `.setSubtreeState()` here
 			// so that the "expanded replies" state doesn't erase other "custom" state
@@ -176,10 +178,14 @@ export default class CommentTree extends React.Component {
 	}
 
 	updateSubtreeState = (state) => {
-		this.setSubtreeState({
-			...this.getSubtreeState(),
-			...state
-		})
+		if (state) {
+			this.setSubtreeState({
+				...this.getSubtreeState(),
+				...state
+			})
+		} else {
+			this.setSubtreeState()
+		}
 	}
 
 	setSubtreeState(state) {

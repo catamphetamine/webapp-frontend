@@ -55,9 +55,9 @@
 	--critical-color-800 : #A20013;
 	--critical-color-900 : #77000E;
 
-	--background-color-empty : #eaeaea;
-	--content-section-divider-color : #e3e4e8;
-	--content-section-shadow : 0 1px 0 0 #d7d8db, 0 0 0 1px var(--content-section-divider-color);
+	--Empty-backgroundColor: #eaeaea;
+	--content-section-border-color: #e3e4e8;
+	--content-section-shadow-color: #d7d8db;
 
 	--unit : 14px;
 	--column-padding : var(--unit);
@@ -92,9 +92,32 @@
 
 	--footer-menu-height : calc(var(--unit) * 3);
 
-	--picture-background-color: var(--background-color-empty);
+	--picture-background-color: var(--Empty-backgroundColor);
 	--picture-border-color: rgba(0, 0, 0, 0.5);
 	--picture-border-width: 1px;
+
+	--Content-color: original;
+	--Content-backgroundColor: var(--white-color);
+
+	--Clickable-color: var(--base-color-700);
+	--Clickable-color--active: var(--base-color-600);
+
+	--PostInlineQuoteLink-backgroundColor--hover: #fcfcfc;
+	--PostInlineQuoteLink-borderColor--hover: #f5f5f5;
+	--Post-color--secondary: var(--gray-color-600);
+
+	--PostInlineSpoiler-backgroundColor: var(--gray-color-100);;
+	--PostInlineSpoiler-backgroundColor--censored: #f0e1e1;
+
+	--Notification-color: var(--white-color);
+	--Notification-backgroundColor: var(--black-color);
+	--Notification-backgroundColor--error: var(--critical-color-700);
+
+	--HoverButton-backgroundColor--hover: var(--gray-color-transparent);
+	--HoverButton-borderColor: var(--gray-color-100);
+	--HoverButtonPushed-color: var(--base-color-700);
+	--HoverButtonPushed-backgroundColor: var(--base-color-100);
+	--HoverButtonPushed-color--active: var(--base-color-600);
 
 	@mixin m-plus {
 		--header-height: calc(var(--unit) * 3);

@@ -57,10 +57,10 @@ body
 }
 
 a {
-	color: var(--base-color-700);
+	color: var(--Clickable-color);
 	text-decoration: none;
 	&:active {
-		color: var(--base-color-600);
+		color: var(--Clickable-color--active);
 	}
 }
 

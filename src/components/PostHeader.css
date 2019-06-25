@@ -22,8 +22,8 @@
 	align-items: center;
 }
 
-.post__header-misc {
-	color: var(--gray-color-600);
+.post__header-top {
+	color: var(--Post-color--secondary);
 }
 
 .post__summary-button {
@@ -148,10 +148,6 @@
 	padding-left: 0.25em;
 	padding-right: 0.25em;
 	box-sizing: content-box;
-	color: rgba(0,0,0,0.2);
-	&:active {
-		color: var(--base-color-600);
-	}
 }
 
 .post__more-actions-icon {
@@ -159,6 +155,11 @@
 	/* `<OnClick/>`'s `filter` is set up to ignore clicks on `<button/>`s.
 	   `<svg/>` is required to ignore clicks in order for them to be registered by `<button/>`. */
 	pointer-events: none;
+	opacity: 0.6;
+}
+
+.post__more-actions:active .post__more-actions-icon {
+	opacity: 1;
 }
 
 .post--compact.post--anonymous {
@@ -190,7 +191,7 @@
 	width  : calc(var(--unit) * 4);
 	height : calc(var(--unit) * 4);
 	border-radius : var(--border-radius);
-	box-shadow : 0 0 0 1px var(--content-section-divider-color);
+	box-shadow : 0 0 0 1px var(--content-section-border-color);
 }
 
 .post__heading {

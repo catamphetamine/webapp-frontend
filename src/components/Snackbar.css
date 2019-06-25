@@ -1,4 +1,9 @@
+.rrui__snackbar {
+	color: var(--Notification-color);
+	background-color: var(--Notification-backgroundColor);
+}
+
 .rrui__snackbar--error
 {
-	background-color : var(--critical-color-700);
+	background-color: var(--Notification-backgroundColor--error);
 }
