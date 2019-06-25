@@ -6,9 +6,9 @@
 	left  : 0;
 	right : 0;
 	z-index : 1;
-	background-color : var(--white-color);
-	color : var(--black-color);
-	border-bottom : 1px solid rgba(0,0,0,.15);
+	color : var(--Header-color);
+	background-color : var(--Header-backgroundColor);
+	border-top : 1px solid var(--Header-borderColor);
 }
 
 .webpage__header__row {

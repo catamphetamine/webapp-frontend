@@ -11,7 +11,7 @@
 	--content-section-horizontal-padding: calc(var(--unit) * 1.5);
 	--content-section-vertical-padding: calc(var(--unit) * 1.5);
 
-	--content-section-shadow: 0 1px 0 0 var(--content-section-shadow-color), 0 0 0 1px var(--content-section-border-color);
+	--content-section-shadow: 0 1px 0 0 var(--ContentSection-shadowColor), 0 0 0 1px var(--ContentSection-borderColor);
 
 	/*--background-section-vertical-margin: var(--unit);*/
 
@@ -72,7 +72,7 @@
 	padding-right : var(--content-section-horizontal-padding);
 	padding-top      : 0.5em;
 	padding-bottom   : 0.45em;
-	border-bottom    : 1px solid var(--content-section-border-color);
+	border-bottom    : 1px solid var(--ContentSection-borderColor);
 	color            : var(--black-color);
 	font-weight      : normal;
 	font-size        : 1.4rem;

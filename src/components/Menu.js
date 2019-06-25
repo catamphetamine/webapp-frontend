@@ -52,8 +52,9 @@ class MenuItem extends React.Component {
 			pathname
 		} = this.props
 		if (url) {
-			isActive = isActive && pathname === url
+			isActive = (isActive === undefined ? true : isActive) && pathname === url
 		}
+		// activeClassName={isActive ? 'menu-item--selected' : undefined}
 		return (
 			<li className="menu-item-container">
 				{action &&
@@ -70,8 +71,9 @@ class MenuItem extends React.Component {
 					<Link
 						to={url}
 						title={title}
-						activeClassName="menu-item--selected"
-						className="menu-item">
+						className={classNames('menu-item', {
+							'menu-item--selected': isActive
+						})}>
 						<FillIcon className="menu-item__icon menu-item__icon--fill"/>
 						<OutlineIcon className="menu-item__icon menu-item__icon--outline"/>
 					</Link>

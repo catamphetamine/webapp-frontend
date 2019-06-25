@@ -20,6 +20,7 @@
 	--gray-color-800 : #49515C;
 	--gray-color-900 : #404852;
 
+	/* https://refactoringui.com/previews/building-your-color-palette */
 	--base-color-100 : #97E0FF;
 	--base-color-200 : #63D0FF;
 	--base-color-300 : #3FC6FF;
@@ -32,6 +33,7 @@
 
 	/* Base color transparency: rgba(0, 179, 255, 0.6); */
 
+	/* https://refactoringui.com/previews/building-your-color-palette */
 	--accent-color-100 : #FFA6C7;
 	--accent-color-200 : #FF78AA;
 	--accent-color-300 : #FF5191;
@@ -45,6 +47,7 @@
 	/* critical color */
 	/* warning color */
 	/* positive color */
+	/* https://refactoringui.com/previews/building-your-color-palette */
 	--critical-color-100 : #FFA3AE;
 	--critical-color-200 : #FF7D8C;
 	--critical-color-300 : #FF5B6E;
@@ -56,8 +59,8 @@
 	--critical-color-900 : #77000E;
 
 	--Empty-backgroundColor: #eaeaea;
-	--content-section-border-color: #e3e4e8;
-	--content-section-shadow-color: #d7d8db;
+	--ContentSection-borderColor: #e3e4e8;
+	--ContentSection-shadowColor: #d7d8db;
 
 	--unit : 14px;
 	--column-padding : var(--unit);
@@ -96,7 +99,14 @@
 	--picture-border-color: rgba(0, 0, 0, 0.5);
 	--picture-border-width: 1px;
 
-	--Content-color: original;
+	--Header-backgroundColor: var(--white-color);
+	--Header-color: var(--gray-color-800);
+	--Header-borderColor: rgba(0,0,0,.15);
+
+	--Menu-color: initial;
+	--Menu-color--active: var(--gray-color-650);
+
+	--Content-color: initial;
 	--Content-backgroundColor: var(--white-color);
 
 	--Clickable-color: var(--base-color-700);
@@ -106,7 +116,7 @@
 	--PostInlineQuoteLink-borderColor--hover: #f5f5f5;
 	--Post-color--secondary: var(--gray-color-600);
 
-	--PostInlineSpoiler-backgroundColor: var(--gray-color-100);;
+	--PostInlineSpoiler-backgroundColor: var(--gray-color-100);
 	--PostInlineSpoiler-backgroundColor--censored: #f0e1e1;
 
 	--Notification-color: var(--white-color);
