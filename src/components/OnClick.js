@@ -105,7 +105,7 @@ export default class OnClick extends React.Component {
 		)
 	}
 
-	onPointerUp = () => {
+	onPointerUp = (event) => {
 		if (this.isClickInProgress) {
 			this.onPanEnd(
 				event.clientX,
