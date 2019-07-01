@@ -4,7 +4,6 @@ import classNames from 'classnames'
 
 import { post, postBadge, postMessages } from '../PropTypes'
 
-import Slideshow from './Slideshow'
 import PostHeader from './PostHeader'
 import PostBlock from './PostBlock'
 import PostAttachments from './PostAttachments'
@@ -31,7 +30,7 @@ export default class Post extends React.Component {
 			PropTypes.number
 		]),
 		attachmentThumbnailSize: PropTypes.number,
-		openSlideshow: PropTypes.func,
+		onAttachmentClick: PropTypes.func,
 		onReply: PropTypes.func,
 		onVote: PropTypes.func,
 		url: PropTypes.string,
@@ -41,6 +40,11 @@ export default class Post extends React.Component {
 		onExpandContent: PropTypes.func,
 		onContentDidChange: PropTypes.func,
 		onPostContentChange: PropTypes.func,
+		// `lynxchan` doesn't provide `width` and `height`
+		// neither for the picture not for the thumbnail
+		// in `/catalog.json` API response (which is a bug).
+		// http://lynxhub.com/lynxchan/res/722.html#q984
+		fixAttachmentThumbnailSizes: PropTypes.bool,
 		messages: postMessages.isRequired,
 		genericMessages: PropTypes.object,
 		className: PropTypes.string
@@ -73,14 +77,25 @@ export default class Post extends React.Component {
 		}, onContentDidChange)
 	}
 
+	getPost() {
+		const {
+			post
+		} = this.props
+		const {
+			showPreview,
+			postWithLinksExpanded,
+			postWithLinksExpandedForPost
+		} = this.state
+		return postWithLinksExpandedForPost === post ? postWithLinksExpanded : post
+	}
+
 	getNonEmbeddedAttachments() {
-		const { post } = this.props
-		const attachments = post.attachments || []
+		const attachments = this.getPost().attachments || []
 		const nonEmbeddedAttachments = attachments.filter((attachment) => {
 			if (!attachment.id) {
 				return true
 			}
-			return !getParagraphs(post.content).find((paragraph) => {
+			return !getParagraphs(this.getPost().content).find((paragraph) => {
 				return typeof paragraph === 'object' &&
 					paragraph.type === 'attachment' &&
 					paragraph.attachmentId === attachment.id
@@ -92,11 +107,6 @@ export default class Post extends React.Component {
 		return nonEmbeddedAttachments
 	}
 
-	openSlideshowForAttachments = (picturesAndVideos, i) => {
-		const { openSlideshow } = this.props
-		openSlideshow(picturesAndVideos, i)
-	}
-
 	componentDidMount() {
 		this._isMounted = true
 		const {
@@ -105,13 +115,15 @@ export default class Post extends React.Component {
 			onContentDidChange,
 			onPostContentChange,
 			commentLengthLimit,
-			genericMessages
+			genericMessages,
+			fixAttachmentThumbnailSizes
 		} = this.props
 		loadResourceLinks(post, {
 			youTubeApiKey,
 			onPostContentChange,
 			messages: genericMessages,
 			commentLengthLimit,
+			fixAttachmentThumbnailSizes,
 			onUpdatePost: (post, callback) => {
 				if (this._isMounted) {
 					// Re-render the post and update it in state.
@@ -139,7 +151,6 @@ export default class Post extends React.Component {
 
 	render() {
 		const {
-			post: postProperty,
 			header,
 			headerBadges,
 			footerBadges,
@@ -151,7 +162,7 @@ export default class Post extends React.Component {
 			attachmentThumbnailSize,
 			saveBandwidth,
 			serviceIcons,
-			openSlideshow,
+			onAttachmentClick,
 			onReply,
 			onVote,
 			onMoreActions,
@@ -160,12 +171,10 @@ export default class Post extends React.Component {
 		} = this.props
 
 		const {
-			showPreview,
-			postWithLinksExpanded,
-			postWithLinksExpandedForPost
+			showPreview
 		} = this.state
 
-		const post = postWithLinksExpandedForPost === postProperty ? postWithLinksExpanded : postProperty
+		const post = this.getPost()
 
 		const attachments = post.attachments || []
 		const postContent = showPreview && post.contentPreview ? post.contentPreview : post.content
@@ -203,7 +212,7 @@ export default class Post extends React.Component {
 								attachmentThumbnailSize={attachmentThumbnailSize}
 								saveBandwidth={saveBandwidth}
 								spoilerLabel={messages.spoiler}
-								openSlideshow={openSlideshow}
+								onAttachmentClick={onAttachmentClick}
 								serviceIcons={serviceIcons}
 								locale={locale}>
 								{content}
@@ -217,7 +226,7 @@ export default class Post extends React.Component {
 					maxAttachmentThumbnails={maxAttachmentThumbnails}
 					attachmentThumbnailSize={attachmentThumbnailSize}
 					spoilerLabel={messages.spoiler}
-					openSlideshow={openSlideshow && this.openSlideshowForAttachments}>
+					onAttachmentClick={onAttachmentClick}>
 					{this.getNonEmbeddedAttachments()}
 				</PostAttachments>
 				<PostFooter

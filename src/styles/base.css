@@ -26,7 +26,7 @@ body
 /* `html` is required in order for `rem`s to work. */
 /* Also doesn't work without `body` for some weird reason. */
 html, body {
-	font-family : var(--font-family);
+	font-family : var(--Document-fontFamily);
 	@mixin xxs {
 		font-size : var(--font-size-xxs);
 	}
@@ -50,17 +50,18 @@ input, textarea, select, table
 	font-size: inherit;
 }
 
-body
-{
-	margin     : 0;
-	overflow-y : scroll;
+body {
+	margin: 0;
+	/* Always shows the vertical scrollbar so that
+	   it doesn't appear/disappear on different pages. */
+	overflow-y: scroll;
 }
 
 a {
-	color: var(--Clickable-color);
+	color: var(--Clickable-color--dark);
 	text-decoration: none;
 	&:active {
-		color: var(--Clickable-color--active);
+		color: var(--Clickable-color);
 	}
 }
 

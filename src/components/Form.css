@@ -1,0 +1,42 @@
+.form {
+	.rrui__input-error {
+		position: absolute;
+		width: 100%;
+		margin-top: 0;
+    text-align: right;
+		font-size: 85%;
+	}
+}
+
+.form__component {
+	/* `position: relative` is for `.rrui__input-error`. */
+	position: relative;
+	margin-top: calc(var(--unit) * 1.5);
+	&:first-child {
+		margin-top: 0;
+	}
+}
+
+.form__component--button {
+	margin-top: calc(var(--unit) * 1);
+}
+
+.form__component--button + .form__component--button {
+	margin-top: calc(var(--unit) * 0.75);
+}
+
+.form__action {
+	display: block;
+	height: calc(var(--unit) * 3)
+}
+
+.form__actions {
+	display: flex;
+	justify-content: flex-end;
+	margin-top: calc(var(--unit) * 1.5);
+}
+
+.form__component--description {
+	margin-top: calc(var(--unit) * 0.5);
+	margin-bottom: 0;
+}

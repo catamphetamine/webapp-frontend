@@ -21,9 +21,11 @@
 	}
 }
 
+/* 16:9 aspect ratio */
+/* Selector specificity overrides `postition: relative` on `<Picture/>`. */
+/*
 .aspect-ratio--hd
 {
-	/* 16:9 aspect ratio */
 	padding-bottom: 56.25%;
 }
 
@@ -40,7 +42,12 @@
 		width  : 100%;
     height : 100%;
 
-		/* Selector specificity overrides `postition: relative` on `<Picture/>`. */
 		position : absolute;
 	}
+}
+*/
+
+.content-section__description {
+	margin-top: 0;
+	margin-bottom: calc(var(--line-height) * 1em);
 }

@@ -1,10 +1,26 @@
 .post__quote-block {
 	padding-left: 0.5em;
 	position: relative;
+	color: var(--PostQuote-color);
+	background-color: var(--PostQuote-backgroundColor);
+	/*
+	margin-top: -1px;
+	margin-bottom: -1px;
+	*/
+	border-top: 1px solid var(--PostQuote-borderColor);
+	border-bottom: 1px solid var(--PostQuote-borderColor);
+}
+
+.post__inline-quote--link:hover,
+.post__inline-quote--link:active {
+	--PostQuote-borderColor: var(--PostQuote-borderColor--hover);
+	--PostQuote-backgroundColor: var(--PostQuote-backgroundColor--hover);
+	/* Overrides the default `a:active` color for `.post__inline-quote--link`. */
+	color: var(--PostQuote-color);
 }
 
 .post__quote-block__marker {
-	color: var(--gray-color-700);
+	color: var(--PostQuoteMarker-color);
 }
 
 .post__quote-block__marker {
@@ -18,23 +34,23 @@
 	&:before {
 		display: block;
 		content: '';
-		width: 2px;
-		height: calc(100% - 2 * 0.2em);
+		width: var(--PostQuoteMarker-width);
+		height: calc(100% - 2 * var(--PostQuoteMarker-padding));
 		min-height: 1.3em;
 		background-color: currentColor;
-		opacity: 0.7;
+		opacity: var(--PostQuoteMarker-opacity);
 	}
 }
 
 .post.content-section {
 	.post__quote-block {
 		padding-left: 0;
-		margin-left: calc(var(--content-section-horizontal-padding) * -1);
-		margin-right: calc(var(--content-section-horizontal-padding) * -1);
-		width: calc(100% + 2 * var(--content-section-horizontal-padding));
+		margin-left: calc(var(--ContentSection-padding--horizontal) * -1);
+		margin-right: calc(var(--ContentSection-padding--horizontal) * -1);
+		width: calc(100% + 2 * var(--ContentSection-padding--horizontal));
 	}
 	.post__quote-block__content {
-		padding-left: var(--content-section-horizontal-padding);
-		padding-right: var(--content-section-horizontal-padding);
+		padding-left: var(--ContentSection-padding--horizontal);
+		padding-right: var(--ContentSection-padding--horizontal);
 	}
 }

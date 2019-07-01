@@ -1,23 +1,28 @@
-export default function loadStylesheet(url, setCallback) {
-	if (!setCallback) {
-		// Avoid duplicates.
-		for (const stylesheet of document.styleSheets) {
-			if (stylesheet.href === url) {
-				return Promise.resolve()
-			}
+export function getStylesheet(url) {
+	for (const stylesheet of document.styleSheets) {
+		if (stylesheet.href === url) {
+			return stylesheet.ownerNode
 		}
 	}
+}
+
+export default function loadStylesheet(url, setCallback) {
 	return new Promise((resolve, reject) => {
 		const stylesheet = document.createElement('link')
 		stylesheet.rel = 'stylesheet'
 		stylesheet.type = 'text/css'
-		script.onerror = reject
+		stylesheet.onerror = (event) => {
+			document.head.removeChild(stylesheet)
+			const error = new Error('STYLESHEET_ERROR')
+			error.event = event
+			reject(error)
+		}
 		stylesheet.href = url
 		if (setCallback) {
-			setCallback(resolve)
+			setCallback(() => resolve(stylesheet))
 		} else {
-			stylesheet.onload = resolve
+			stylesheet.onload = () => resolve(stylesheet)
 		}
-		document.head.appendChild(link)
+		document.head.appendChild(stylesheet)
 	})
 }

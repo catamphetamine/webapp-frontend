@@ -6,6 +6,8 @@ import expandStandaloneAttachmentLinks from './expandStandaloneAttachmentLinks'
 import generatePostPreview from './generatePostPreview'
 import resolvePromises from '../resolvePromises'
 
+import { getImageSize } from '../image'
+
 /**
  * Loads "resource" links (such as links to YouTube and Twitter)
  * by loading the info associated with the resources.
@@ -23,7 +25,8 @@ export default function loadResourceLinks(post, {
 	youTubeApiKey,
 	messages,
 	onUpdatePost,
-	commentLengthLimit
+	commentLengthLimit,
+	fixAttachmentThumbnailSizes
 }) {
 	// Clone the post so that the original `post` is only
 	// changed after the modified post has rendered.
@@ -37,6 +40,13 @@ export default function loadResourceLinks(post, {
 			messages
 		})
 	]
+	// `lynxchan` doesn't provide `width` and `height`
+	// neither for the picture not for the thumbnail
+	// in `/catalog.json` API response (which is a bug).
+	// http://lynxhub.com/lynxchan/res/722.html#q984
+	if (fixAttachmentThumbnailSizes && postWithLinksExpanded.attachments) {
+		promises.push(fixPostAttachmentThumbnailSizes(postWithLinksExpanded.attachments))
+	}
 	function updatePostObject(newPost) {
 		post.content = newPost.content
 		post.contentPreview = newPost.contentPreview
@@ -59,8 +69,6 @@ export default function loadResourceLinks(post, {
 	}
 	// `this._isMounted` and `this.props.post` are used inside.
 	const updatePost = (post) => {
-		// Clone the post because it's being updated as links are being loaded.
-		post = cloneDeep(post)
 		// Expand attachment links (objects of shape `{ type: 'link', attachment: ... }`)
 		// into standalone attachments (block-level attachments: `{ type: 'attachment' }`).
 		// In such case attachments are moved from `{ type: 'link' }` objects to `post.attachments`.
@@ -69,6 +77,9 @@ export default function loadResourceLinks(post, {
 		post.contentPreview = generatePostPreview(post.content, post.attachments, {
 			limit: commentLengthLimit
 		})
+		// Snapshot the `post` in its current state for re-rendering
+		// because other resource loaders will be modifying `post` too.
+		post = cloneDeep(post)
 		// Update the post in state.
 		onUpdatePost(post, () => updatePostObject(post))
 	}
@@ -81,4 +92,25 @@ export default function loadResourceLinks(post, {
 			updatePost(postWithLinksExpanded)
 		}
 	})
+}
+
+// `lynxchan` doesn't provide `width` and `height`
+// neither for the picture not for the thumbnail
+// in `/catalog.json` API response (which is a bug).
+// http://lynxhub.com/lynxchan/res/722.html#q984
+function fixPostAttachmentThumbnailSizes(attachments) {
+	return Promise.all(attachments.map(async (attachment) => {
+		switch (attachment.type) {
+			case 'picture':
+				attachment.picture = {
+					...attachment.picture,
+					...(await getImageSize(attachment.picture.url))
+				}
+				attachment.picture.sizes[0] = {
+					...attachment.picture.sizes[0],
+					...(await getImageSize(attachment.picture.sizes[0].url))
+				}
+				break
+		}
+	})).then(() => true)
 }

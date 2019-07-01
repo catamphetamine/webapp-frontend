@@ -1,6 +1,7 @@
 .hover-button {
+	color: inherit;
 	&:hover {
-		background-color: var(--HoverButton-backgroundColor--hover);
+		background-color: var(--HoverButton-backgroundColor);
 		box-shadow: 0 0 0 1px var(--HoverButton-borderColor);
 	}
 }
@@ -9,7 +10,7 @@
 .hover-button--link {
 	border-radius: var(--border-radius);
 	&:focus {
-		background-color: var(--gray-color-transparent);
+		background-color: var(--HoverButton-backgroundColor);
 		box-shadow: 0 0 0 1px var(--HoverButton-borderColor);
 	}
 }
@@ -17,18 +18,20 @@
 /* Added `.hover-button` for CSS selector specificity
    to override `:hover` and `:focus` styles. */
 .hover-button.hover-button--pushed {
-	color: var(--HoverButtonPushed-color);
-	background-color: var(--HoverButtonPushed-backgroundColor);
+	color: var(--HoverButton-color--pushed);
+	background-color: var(--HoverButton-backgroundColor--pushed);
 }
 
-.hover-button--pushed {
+.hover-button--pushed,
+.hover-button--pushed:focus {
 	/* Added the border here because `--pushed` won't have `:focus` style applied. */
-	box-shadow: 0 0 0 1px var(--HoverButton-borderColor);
+	box-shadow: 0 0 0 1px var(--HoverButton-borderColor--pushed);
 }
 
 .hover-button:active,
 .hover-button--link:active,
 .hover-button--pushed:active {
-	color: var(--HoverButtonPushed-color--active);
-	background-color: var(--HoverButtonPushed-backgroundColor);
+	color: var(--HoverButton-color--active);
+	background-color: var(--HoverButton-backgroundColor--active);
+	box-shadow: 0 0 0 1px var(--HoverButton-borderColor--active);
 }

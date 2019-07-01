@@ -6,11 +6,11 @@
 	height: 1em;
 }
 
-.service-icon--monochrome [data-icon-part-type="stroke"] {
+.service-icon--monochrome [data-stroke="true"] {
 	color: inherit;
 }
 
-.service-icon--monochrome [data-icon-part-type="background"] {
+.service-icon--monochrome [data-fill="true"] {
 	color: white;
 }
 

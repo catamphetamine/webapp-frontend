@@ -53,14 +53,10 @@
 	--critical-color-300 : #FF5B6E;
 	--critical-color-400 : #FF3C53;
 	--critical-color-500 : #E6001B;
-	--critical-color-600 : #E3001B;
+	--critical-color-600 : #cf0019;
 	--critical-color-700 : #BB0016;
 	--critical-color-800 : #A20013;
 	--critical-color-900 : #77000E;
-
-	--Empty-backgroundColor: #eaeaea;
-	--ContentSection-borderColor: #e3e4e8;
-	--ContentSection-shadowColor: #d7d8db;
 
 	--unit : 14px;
 	--column-padding : var(--unit);
@@ -70,18 +66,14 @@
 
 	--header-height : 0;
 
-	--font-family : sans-serif;
-	--font-family-text : sans-serif;
-	/*--font-family-designer : Roboto, sans-serif;*/
-
 	/*
 	Mobile font size must be at least 16px
 	to prevent automatic zoom on input focus.
 	*/
-	--font-size-xxs : 16px;
-	--font-size-xs : 18px;
-	--font-size-s  : 19px;
-	--font-size-m : 20px;
+	--font-size-xxs: 16px;
+	--font-size-xs: 18px;
+	--font-size-s: 19px;
+	--font-size-m: 20px;
 
 	--preloading-screen-z-index : 10;
 	--slideshow-z-index : 1;
@@ -95,9 +87,16 @@
 
 	--footer-menu-height : calc(var(--unit) * 3);
 
-	--picture-background-color: var(--Empty-backgroundColor);
-	--picture-border-color: rgba(0, 0, 0, 0.5);
-	--picture-border-width: 1px;
+	--Empty-backgroundColor: #eaeaea;
+
+	--Document-color: var(--Content-color);
+	--Document-backgroundColor: var(--Empty-backgroundColor);
+	--Document-fontFamily: sans-serif;
+	--Document-fontFamily--text: sans-serif;
+	/*--Document-fontFamily--designer: Roboto, sans-serif;*/
+
+	--ContentSection-borderColor: #e3e4e8;
+	--ContentSection-shadowColor: #d7d8db;
 
 	--Header-backgroundColor: var(--white-color);
 	--Header-color: var(--gray-color-800);
@@ -105,29 +104,78 @@
 
 	--Menu-color: initial;
 	--Menu-color--active: var(--gray-color-650);
+	--Menu-color--selected: var(--Menu-color);
 
-	--Content-color: initial;
-	--Content-backgroundColor: var(--white-color);
+	--Sidebar-borderColor: transparent;
 
-	--Clickable-color: var(--base-color-700);
-	--Clickable-color--active: var(--base-color-600);
+	--Clickable-color--dark: var(--base-color-700);
+	--Clickable-color: var(--base-color-600);
+	--Clickable-color--light: var(--base-color-500);
 
-	--PostInlineQuoteLink-backgroundColor--hover: #fcfcfc;
-	--PostInlineQuoteLink-borderColor--hover: #f5f5f5;
-	--Post-color--secondary: var(--gray-color-600);
-
-	--PostInlineSpoiler-backgroundColor: var(--gray-color-100);
-	--PostInlineSpoiler-backgroundColor--censored: #f0e1e1;
+	--Picture-backgroundColor: var(--Empty-backgroundColor);
+	--Picture-borderColor: rgba(0, 0, 0, 0.5);
+	--Picture-borderWidth: 1px;
 
 	--Notification-color: var(--white-color);
 	--Notification-backgroundColor: var(--black-color);
-	--Notification-backgroundColor--error: var(--critical-color-700);
+	--Notification-borderColor: transparent;
+	--Notification-borderWidth: 0px;
+	--Notification-color--error: var(--Error-color);
+	--Notification-backgroundColor--error: var(--Error-backgroundColor);
+	--Notification-borderColor--error: var(--Notification-borderColor);
+	--Notification-borderWidth--error: var(--Notification-borderWidth);
 
-	--HoverButton-backgroundColor--hover: var(--gray-color-transparent);
+	--Error-color: var(--white-color);
+	--Error-backgroundColor: var(--critical-color-600);
+
+	--Content-color: initial;
+	--Content-backgroundColor: var(--white-color);
+	--Content-backgroundColor--active: initial;
+	--Content-color--300: var(--gray-color-400);
+	--Content-color--200: var(--gray-color-300);
+	--Content-color--100: var(--gray-color-200);
+	--Content-color--50: var(--gray-color-100);
+
+	--Post-color--secondary: var(--gray-color-600);
+
+	--PostQuote-color: initial;
+	--PostQuote-backgroundColor: initial;
+	--PostQuote-backgroundColor--hover: #fcfcfc;
+	--PostQuote-borderColor: transparent;
+	--PostQuote-borderColor--hover: #f5f5f5;
+
+	--PostQuoteMarker-color: var(--gray-color-700);
+	--PostQuoteMarker-opacity: 0.7;
+	--PostQuoteMarker-width: 2px;
+	--PostQuoteMarker-padding: 0.2em;
+
+	--PostInlineSpoiler-color: var(--gray-color-100);
+	--PostInlineSpoiler-color--postActive: var(--PostInlineSpoiler-color);
+	--PostInlineSpoiler-color--censored: #f0e1e1;
+	--PostInlineSpoiler-color--censoredPostActive: #f2dccb;
+
+	--CommentTree-padding: var(--ContentSection-padding--horizontal);
+	--CommentTree-borderWidth: 1px;
+	--CommentTree-color: var(--gray-color-200);
+	--CommentTree-color--branch: var(--gray-color-300);
+	--CommentTree-backgroundColor--hover: var(--gray-color-100);
+	--CommentTree-color--hover: var(--base-color-700);
+	/* Approximate offset top so that it points to the first line of text in a comment. */
+	--CommentTree-branchContentTop: 1.6em;
+	--CommentTree-branchTop: calc(var(--ContentSection-padding--vertical) + var(--CommentTree-branchContentTop));
+	@mixin upto-xs {
+		--CommentTree-branchContentTop: 1.9em;
+	}
+
+	--HoverButton-color--active: initial;
+	--HoverButton-color--pushed: var(--base-color-700);
+	--HoverButton-color--pushedActive: var(--HoverButton-color--active);
+	--HoverButton-backgroundColor: var(--gray-color-transparent);
+	--HoverButton-backgroundColor--active: var(--base-color-100);
+	--HoverButton-backgroundColor--pushed: var(--HoverButton-backgroundColor--active);
 	--HoverButton-borderColor: var(--gray-color-100);
-	--HoverButtonPushed-color: var(--base-color-700);
-	--HoverButtonPushed-backgroundColor: var(--base-color-100);
-	--HoverButtonPushed-color--active: var(--base-color-600);
+	--HoverButton-borderColor--active: var(--HoverButton-borderColor);
+	--HoverButton-borderColor--pushed: var(--HoverButton-borderColor--active);
 
 	@mixin m-plus {
 		--header-height: calc(var(--unit) * 3);

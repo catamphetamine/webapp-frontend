@@ -6,7 +6,7 @@ import classNames from 'classnames'
 
 import './UploadablePicture.css'
 
-import ResponsivePicture, { getPreferredSize } from './Picture'
+import ResponsivePicture, { getPreferredSize, preloadImage } from './Picture'
 
 import { uploadPicture } from '../redux/uploadablePicture'
 import { notify } from '../redux/notifications'
@@ -206,7 +206,7 @@ export default class UploadablePicture extends Component
 			// Upload the picture.
 			const newPicture = await uploadPicture(file)
 			// Prefetch the uploaded picture to avoid a flash of a not yet loaded image.
-			await prefetchImage(getPreferredSize(newPicture, this.container.current.clientWidth).url)
+			await preloadImage(getPreferredSize(newPicture, this.container.current.clientWidth).url)
 			// Show the uploaded picture.
 			this.setState({ newPicture })
 			if (onChange) {
@@ -252,16 +252,4 @@ export class Picture extends Component
 				picture={picture || defaultPicture}/>
 		)
 	}
-}
-
-// Preloads an image before displaying it
-function prefetchImage(url)
-{
-	return new Promise((resolve, reject) =>
-	{
-		const image = new Image()
-		image.onload = () => resolve()
-		image.onerror = reject
-		image.src = url
-	})
 }

@@ -45,6 +45,6 @@
 		display: none;
 	}
 	.menu {
-		margin-right: calc(var(--unit) * -1);
+		margin-right: calc(var(--unit) / 2);
 	}
 }

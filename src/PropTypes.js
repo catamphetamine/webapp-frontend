@@ -200,6 +200,12 @@ export const postMonospace = shape({
 	content: arrayOf(postInlineElement).isRequired
 })
 
+export const postEmoji = shape({
+	type: oneOf(['emoji']).isRequired,
+	name: string.isRequired,
+	url: string.isRequired
+})
+
 const postNewLine = oneOf(['\n'])
 
 export const postInlineContent = oneOfType([
@@ -208,7 +214,8 @@ export const postInlineContent = oneOfType([
 	arrayOf([
 		string,
 		postNewLine,
-		postStyledText
+		postStyledText,
+		postEmoji
 	])
 ])
 

@@ -1,3 +1,10 @@
+.post__header {
+	/* Added `z-index: 1` so that post header "hover buttons"' borders
+	   aren't hidden by the first block quote's background color. */
+  position: relative;
+  z-index: 1;
+}
+
 .post__header-top {
 	display: flex;
 	justify-content: space-between;
@@ -158,8 +165,10 @@
 	opacity: 0.6;
 }
 
-.post__more-actions:active .post__more-actions-icon {
-	opacity: 1;
+.post__more-actions:active {
+	.post__more-actions-icon {
+		opacity: initial;
+	}
 }
 
 .post--compact.post--anonymous {

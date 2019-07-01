@@ -4,12 +4,13 @@
  * @param {object} attachment
  * @return {number} attachmentId
  */
-export default function addAttachment(post, attachment) {
+export default function addAttachment(post, attachment, options) {
 	const attachmentId = getNextAttachmentId(post.attachments)
 	post.attachments = post.attachments || []
 	post.attachments.push({
 		id: attachmentId,
-		...attachment
+		...attachment,
+		...options
 	})
 	return attachmentId
 }

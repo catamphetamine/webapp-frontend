@@ -31,23 +31,23 @@
 }
 
 .post.content-section {
-	--content-section-vertical-padding: 1em;
+	--ContentSection-padding--vertical: 1em;
 }
 
 .post--compact.content-section {
-	--content-section-vertical-padding: 0.9em;
+	--ContentSection-padding--vertical: 0.9em;
 }
 
 .post__content {
 	/*margin-bottom: calc(-1 * var(--post-content-vertical-spacing));*/
-	font-family: var(--font-family-text);
+	font-family: var(--Document-fontFamily--text);
 }
 
 .post__picture,
 .post__video .rrui__video,
 .post__attachment-thumbnail__picture {
-	background-color : var(--picture-background-color);
-	box-shadow : 0 0 0 var(--picture-border-width) var(--picture-border-color);
+	background-color : var(--Picture-backgroundColor);
+	box-shadow : 0 0 0 var(--Picture-borderWidth) var(--Picture-borderColor);
 	cursor : pointer;
 }
 
@@ -72,9 +72,19 @@
 	padding-top: 0.15em;
 	background: var(--gray-color-900);
 	color: var(--white-color);
-	font-family: var(--font-family);
+	font-family: var(--Document-fontFamily);
 	font-weight: 300;
 	text-transform: uppercase;
 	letter-spacing: 0.1em;
 	opacity: 0.75;
+}
+
+.on-click--active {
+	--Content-backgroundColor: var(--Content-backgroundColor--active);
+	--PostInlineSpoiler-color: var(--PostInlineSpoiler-color--postActive);
+	--PostInlineSpoiler-color--censored: var(--PostInlineSpoiler-color--censoredPostActive);
+
+	.post, .post__inline-spoiler {
+		transition: background-color 60ms;
+	}
 }

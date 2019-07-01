@@ -54,7 +54,7 @@ export default function PostAttachments({
 	attachmentThumbnailSize,
 	saveBandwidth,
 	spoilerLabel,
-	openSlideshow,
+	onAttachmentClick,
 	maxAttachmentThumbnails,
 	children: attachments
 }) {
@@ -80,10 +80,10 @@ export default function PostAttachments({
 	// Sort attachment thumbnails by height descending.
 	sortPostAttachments(picturesAndVideos)
 
-	// "All pictures and videos" used for the slideshow.
-	let slideshowPicturesAndVideos = picturesAndVideos
+	// "All pictures and videos" that can be used for a slideshow.
+	let allPicturesAndVideos = picturesAndVideos
 	if (titlePictureOrVideo) {
-		slideshowPicturesAndVideos = [titlePictureOrVideo].concat(picturesAndVideos)
+		allPicturesAndVideos = [titlePictureOrVideo].concat(picturesAndVideos)
 	}
 
 	const audios = attachments.filter(_ => _.type === 'audio').map(_ => _.audio)
@@ -109,10 +109,10 @@ export default function PostAttachments({
 		}
 	}
 
-	function createOnOpenSlideshow(i) {
+	function createOnAttachmentClick(i) {
 		return (event) => {
 			event.preventDefault()
-			openSlideshow(slideshowPicturesAndVideos, i)
+			onAttachmentClick(allPicturesAndVideos[i], i, allPicturesAndVideos)
 		}
 	}
 
@@ -123,14 +123,14 @@ export default function PostAttachments({
 					attachment={titlePictureOrVideo}
 					saveBandwidth={saveBandwidth}
 					spoilerLabel={spoilerLabel}
-					onClick={openSlideshow ? createOnOpenSlideshow(0) : undefined}/>
+					onClick={onAttachmentClick ? createOnAttachmentClick(0) : undefined}/>
 			}
 			{titlePictureOrVideo && titlePictureOrVideo.type === 'video' &&
 				<PostVideo
 					attachment={titlePictureOrVideo}
 					saveBandwidth={saveBandwidth}
 					spoilerLabel={spoilerLabel}
-					onClick={openSlideshow ? createOnOpenSlideshow(0) : undefined}/>
+					onClick={onAttachmentClick ? createOnAttachmentClick(0) : undefined}/>
 			}
 			{picturesAndVideos.length > 0 &&
 				<ul className="post__attachment-thumbnails">
@@ -159,7 +159,7 @@ export default function PostAttachments({
 									maxSize={attachmentThumbnailSize}
 									exactSize={exactSize}
 									spoilerLabel={spoilerLabel}
-									onClick={openSlideshow ? createOnOpenSlideshow(i + (titlePictureOrVideo ? 1 : 0)) : undefined}
+									onClick={onAttachmentClick ? createOnAttachmentClick(i + (titlePictureOrVideo ? 1 : 0)) : undefined}
 									moreAttachmentsCount={i === picturesAndVideos.length - 1 ? picturesAndVideosMoreCount : undefined}/>
 							</li>
 						)
@@ -184,7 +184,7 @@ export default function PostAttachments({
 }
 
 PostAttachments.propTypes = {
-	openSlideshow: PropTypes.func,
+	onAttachmentClick: PropTypes.func,
 	expandFirstPictureOrVideo: PropTypes.bool.isRequired,
 	spoilerLabel: PropTypes.string,
 	saveBandwidth: PropTypes.bool.isRequired,

@@ -1,24 +1,24 @@
 @import "../styles/common";
 
 :root {
-	--content-section-margin: calc(var(--unit) * 1);
+	--ContentSection-margin: calc(var(--unit) * 1);
 
 	/*
-	--content-section-horizontal-padding: calc(var(--unit) * 2);
-	--content-section-vertical-padding: calc(var(--unit) * 1.5);
+	--ContentSection-padding--horizontal: calc(var(--unit) * 2);
+	--ContentSection-padding--vertical: calc(var(--unit) * 1.5);
 	*/
 
-	--content-section-horizontal-padding: calc(var(--unit) * 1.5);
-	--content-section-vertical-padding: calc(var(--unit) * 1.5);
+	--ContentSection-padding--horizontal: calc(var(--unit) * 1.5);
+	--ContentSection-padding--vertical: calc(var(--unit) * 1.5);
 
-	--content-section-shadow: 0 1px 0 0 var(--ContentSection-shadowColor), 0 0 0 1px var(--ContentSection-borderColor);
+	/*--ContentSection-shadow: 0 1px 0 0 var(--ContentSection-shadowColor), 0 0 0 1px var(--ContentSection-borderColor);*/
 
 	/*--background-section-vertical-margin: var(--unit);*/
 
 	@mixin upto-xs {
-		--content-section-margin: calc(var(--unit) * 1);
-		--content-section-horizontal-padding: calc(var(--unit) * 1);
-		--content-section-vertical-padding: calc(var(--unit) * 1);
+		--ContentSection-margin: calc(var(--unit) * 1);
+		--ContentSection-padding--horizontal: calc(var(--unit) * 1);
+		--ContentSection-padding--vertical: calc(var(--unit) * 1);
 
 		/*--background-section-vertical-margin: calc(var(--unit) * 2);*/
 	}
@@ -26,14 +26,14 @@
 
 .content-section
 {
-	padding-left : var(--content-section-horizontal-padding);
-	padding-right : var(--content-section-horizontal-padding);
-	padding-top : var(--content-section-vertical-padding);
-	padding-bottom : var(--content-section-vertical-padding);
+	padding-left : var(--ContentSection-padding--horizontal);
+	padding-right : var(--ContentSection-padding--horizontal);
+	padding-top : var(--ContentSection-padding--vertical);
+	padding-bottom : var(--ContentSection-padding--vertical);
 	color : var(--Content-color);
 	background-color : var(--Content-backgroundColor);
 	border-radius : var(--border-radius);
-	/*box-shadow : var(--content-section-shadow);*/
+	/*box-shadow : var(--ContentSection-shadow);*/
   box-shadow: 0 0.0005rem 0.1rem 0 hsla(210,7%,61%,.15), 0 0.1rem 0.75rem 0 hsla(210,7%,61%,.15);
 
 	@mixin xxs {
@@ -47,8 +47,8 @@
 
 .content-section--vertical-margin
 {
-	margin-top : var(--content-section-margin);
-	margin-bottom : var(--content-section-margin);
+	margin-top : var(--ContentSection-margin);
+	margin-bottom : var(--ContentSection-margin);
 }
 
 .content-section--background
@@ -64,12 +64,12 @@
 
 .content-section__header
 {
-	margin-top    : calc(-1 * var(--content-section-vertical-padding));
-	margin-bottom : var(--content-section-vertical-padding);
-	margin-left   : calc(-1 * var(--content-section-horizontal-padding));
-	margin-right  : calc(-1 * var(--content-section-horizontal-padding));
-	padding-left  : var(--content-section-horizontal-padding);
-	padding-right : var(--content-section-horizontal-padding);
+	margin-top    : calc(-1 * var(--ContentSection-padding--vertical));
+	margin-bottom : var(--ContentSection-padding--vertical);
+	margin-left   : calc(-1 * var(--ContentSection-padding--horizontal));
+	margin-right  : calc(-1 * var(--ContentSection-padding--horizontal));
+	padding-left  : var(--ContentSection-padding--horizontal);
+	padding-right : var(--ContentSection-padding--horizontal);
 	padding-top      : 0.5em;
 	padding-bottom   : 0.45em;
 	border-bottom    : 1px solid var(--ContentSection-borderColor);
@@ -96,12 +96,12 @@
 
 /*.content-section__errors
 {
-	margin-bottom : var(--content-section-vertical-padding);
+	margin-bottom : var(--ContentSection-padding--vertical);
 }*/
 
 /*.content-section__errors--top
 {
-	margin        : calc(-1 * var(--content-section-vertical-padding));
+	margin        : calc(-1 * var(--ContentSection-padding--vertical));
 	margin-bottom : var(--content-section-padding);
 	padding       : var(--content-section-padding);
 }*/
@@ -121,12 +121,12 @@
 
 /*.sections
 {
-	margin     : calc(var(--content-section-margin) / 2);
-	margin-top : calc(-1 * var(--content-section-margin) / 2);
+	margin     : calc(var(--ContentSection-margin) / 2);
+	margin-top : calc(-1 * var(--ContentSection-margin) / 2);
 
 	&:first-child
 	{
-		margin-top : calc(var(--content-section-margin) / 2);
+		margin-top : calc(var(--ContentSection-margin) / 2);
 	}
 }*/
 

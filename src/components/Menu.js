@@ -56,7 +56,7 @@ class MenuItem extends React.Component {
 		}
 		// activeClassName={isActive ? 'menu-item--selected' : undefined}
 		return (
-			<li className="menu-item-container">
+			<li>
 				{action &&
 					<button
 						type="button"

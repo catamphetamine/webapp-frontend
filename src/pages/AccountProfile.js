@@ -62,11 +62,15 @@ export default class Profile extends React.Component {
 		openSlideshow: PropTypes.func.isRequired
 	}
 
+	onAttachmentClick = (attachment, i, attachments) => {
+		const { openSlideshow } = this.props
+		openSlideshow(attachments, i)
+	}
+
 	render() {
 		const {
 			account,
-			posts,
-			openSlideshow
+			posts
 		} = this.props
 
 		if (!account) {
@@ -103,7 +107,7 @@ export default class Profile extends React.Component {
 									</ContentSectionHeader>*/}
 									<Post
 										post={post}
-										openSlideshow={openSlideshow}/>
+										onAttachmentClick={this.onAttachmentClick}/>
 								</ContentSection>
 							))}
 						</div>

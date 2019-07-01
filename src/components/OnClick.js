@@ -244,7 +244,12 @@ export default class OnClick extends React.Component {
 				onMouseMove={this.onPointerMove}
 				onMouseLeave={this.onPointerOut}
 				onClick={this.onClick}
-				className={classNames('on-click', className, isClickInProgress && onClickClassName)}>
+				className={classNames(
+					'on-click',
+					className,
+					isClickInProgress && 'on-click--active',
+					isClickInProgress && onClickClassName
+				)}>
 				{children}
 			</div>
 		)

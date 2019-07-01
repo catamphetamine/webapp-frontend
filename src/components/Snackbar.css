@@ -1,9 +1,12 @@
 .rrui__snackbar {
 	color: var(--Notification-color);
 	background-color: var(--Notification-backgroundColor);
+	border: var(--Notification-borderWidth) solid var(--Notification-borderColor);
 }
 
 .rrui__snackbar--error
 {
+	color: var(--Notification-color--error);
 	background-color: var(--Notification-backgroundColor--error);
+	border: var(--Notification-borderWidth--error) solid var(--Notification-borderColor--error);
 }

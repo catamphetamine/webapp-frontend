@@ -20,6 +20,8 @@ export default function searchContent(content, test, options = {}) {
 					return [i]
 				}
 			}
+		} else if (content[i].type === 'emoji') {
+			// Ignore emojis.
 		}
 		// I can imagine some inline-level post parts not having `content`
 		// being hypothetically added in some potential future (though unlikely).

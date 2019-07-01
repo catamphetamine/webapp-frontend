@@ -24,11 +24,11 @@
 	position: relative;
 	margin-top: var(--post-content-vertical-spacing);
 	margin-right: var(--post-content-vertical-spacing);
-	padding: var(--picture-border-width); /* the padding is for box-shadow */
+	padding: var(--Picture-borderWidth); /* the padding is for box-shadow */
 }
 
 .post__attachment-thumbnail--transparent {
-	--picture-border-width: 0;
-	--picture-background-color: transparent;
+	--Picture-borderWidth: 0;
+	--Picture-backgroundColor: transparent;
 	--post-attachment-hover-shadow: none;
 }

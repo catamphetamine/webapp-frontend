@@ -5,32 +5,76 @@
 @import "react-responsive-ui/small-screen/Snackbar.css" (max-width: $screen-xs-max);
 @import "react-responsive-ui/small-screen/DatePicker.InputOverlay.css" (max-width: $screen-xs-max);
 
-:root
-{
+:root {
 	--rrui-unit               : var(--unit);
-	--rrui-white-color        : var(--white-color);
-	--rrui-black-color        : var(--black-color);
-	--rrui-accent-color       : var(--base-color-500);
-	--rrui-accent-color-light : var(--base-color-400);
-	--rrui-gray-color         : var(--gray-color-400);
-	--rrui-error-color        : var(--critical-color-600);
+	--rrui-white-color        : var(--Content-backgroundColor);
+	--rrui-black-color        : var(--Content-color);
+	--rrui-accent-color       : var(--Clickable-color);
+	--rrui-accent-color-light : var(--Clickable-color--light);
+	--rrui-input-field-label-color-focus: var(--Clickable-color--dark);
+	--rrui-gray-color         : var(--Content-color--300);
+	--rrui-gray-color-light   : var(--Content-color--200);
+	--rrui-gray-color-lightest: var(--Content-color--100);
+	--rrui-error-color        : var(--Error-backgroundColor);
+	--rrui-input-height: calc(var(--unit) * 2.5);
 }
 
-.rrui__input-field
-{
+.rrui__input-field {
 	background-color: transparent;
 }
 
-.rrui__tooltip--after-show
-{
+.rrui__tooltip--after-show {
 	opacity : 0.85;
 }
 
-.rrui__tooltip--before-hide
-{
+.rrui__tooltip--before-hide {
 	opacity : 0;
 }
 
-.rrui__button--auto-height {
+.rrui__button--text {
 	height: auto;
+	color: var(--Clickable-color--dark);
+	border-bottom: 1px solid transparent;
+}
+
+.rrui__button--text:active {
+	color: var(--Clickable-color);
+}
+
+.rrui__button--text:focus {
+	border-bottom-color: currentColor;
+}
+
+.rrui__button--background {
+	color: var(--rrui-white-color);
+	background-color: var(--rrui-accent-color);
+	padding-left: var(--unit);
+	padding-right: var(--unit);
+	&:active {
+		color: var(--rrui-white-color);
+		background-color: var(--rrui-accent-color-light);
+	}
+	&:focus {
+		/*box-shadow: 0 0 0 4px inset var(--rrui-accent-color-light);*/
+		box-shadow: 0 0 2px var(--rrui-accent-color-light);
+	}
+}
+
+/* Firefox is being stubbort with outlines. */
+/* https://stackoverflow.com/questions/71074/how-to-remove-firefoxs-dotted-outline-on-buttons-as-well-as-links */
+/* Actually having tab-only outlines is good UX. */
+/*
+.rrui__button-reset:not(.rrui__outline--default)::-moz-focus-inner {
+	border: 0;
+}
+*/
+
+.rrui__modal__contents {
+	max-width: calc(100vw - var(--rrui-unit) * 2);
+	width: calc(var(--rrui-unit) * 40);
+}
+
+.rrui__button--multiline {
+	white-space: initial;
+	text-align: left;
 }

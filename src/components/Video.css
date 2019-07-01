@@ -72,7 +72,7 @@ and that's how the embedded video's aspect ratio is set.
 	padding-left: 0.26em;
 	padding-right: 0.26em;
 	border-radius: 0.2em;
-	font-family: var(--font-family);
+	font-family: var(--Document-fontFamily);
 	font-size: 70%;
 	font-weight: 300;
 	letter-spacing: 0.03em;

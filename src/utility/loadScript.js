@@ -7,12 +7,17 @@
 export default function loadScript(url, setCallback) {
 	return new Promise((resolve, reject) => {
 		const script = document.createElement('script')
-		script.onerror = reject
+		script.onerror = (event) => {
+			document.head.removeChild(script)
+			const error = new Error('SCRIPT_ERROR')
+			error.event = event
+			reject(error)
+		}
 		script.src = url
 		if (setCallback) {
-			setCallback(resolve)
+			setCallback(() => resolve(script))
 		} else {
-			script.onload = resolve
+			script.onload = () => resolve(script)
 		}
 		const firstScriptTag = document.getElementsByTagName('script')[0]
 		firstScriptTag.parentNode.insertBefore(script, firstScriptTag)

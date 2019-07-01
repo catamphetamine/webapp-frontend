@@ -22,7 +22,7 @@ export default function PostBlock({
 	readMoreLabel,
 	attachments,
 	attachmentThumbnailSize,
-	openSlideshow,
+	onAttachmentClick,
 	serviceIcons,
 	saveBandwidth,
 	spoilerLabel,
@@ -36,7 +36,7 @@ export default function PostBlock({
 					url={url}
 					onReadMore={onReadMore}
 					readMoreLabel={readMoreLabel}
-					openSlideshow={openSlideshow}
+					onAttachmentClick={onAttachmentClick}
 					serviceIcons={serviceIcons}>
 					{content}
 				</PostInlineContent>
@@ -49,7 +49,7 @@ export default function PostBlock({
 					url={url}
 					onReadMore={onReadMore}
 					readMoreLabel={readMoreLabel}
-					openSlideshow={openSlideshow}
+					onAttachmentClick={onAttachmentClick}
 					serviceIcons={serviceIcons}>
 					{content.content}
 				</PostInlineContent>
@@ -66,7 +66,7 @@ export default function PostBlock({
 					url={url}
 					onReadMore={onReadMore}
 					readMoreLabel={readMoreLabel}
-					openSlideshow={openSlideshow}
+					onAttachmentClick={onAttachmentClick}
 					serviceIcons={serviceIcons}>
 					{content.content}
 				</PostInlineContent>
@@ -95,10 +95,10 @@ export default function PostBlock({
 						saveBandwidth={saveBandwidth}
 						spoilerLabel={spoilerLabel}
 						maxHeight={attachmentThumbnailSize}
-						onClick={openSlideshow ?
+						onClick={onAttachmentClick ?
 							(event) => {
 								event.preventDefault()
-								openSlideshow([attachment])
+								onAttachmentClick(attachment, 0, [attachment])
 							} :
 							undefined
 						}/>
@@ -110,10 +110,10 @@ export default function PostBlock({
 						saveBandwidth={saveBandwidth}
 						spoilerLabel={spoilerLabel}
 						maxHeight={attachmentThumbnailSize}
-						onClick={openSlideshow ?
+						onClick={onAttachmentClick ?
 							(event) => {
 								event.preventDefault()
-								openSlideshow([attachment])
+								onAttachmentClick(attachment, 0, [attachment])
 							} :
 							undefined
 						}/>
@@ -127,7 +127,7 @@ export default function PostBlock({
 						locale={locale}
 						attachmentThumbnailSize={attachmentThumbnailSize}
 						saveBandwidth={saveBandwidth}
-						openSlideshow={openSlideshow}/>
+						onAttachmentClick={onAttachmentClick}/>
 				)
 			default:
 				console.error(`Unknown embedded attachment type: "${attachment.type}"\n`, attachment)
@@ -141,7 +141,7 @@ export default function PostBlock({
 					url={url}
 					onReadMore={onReadMore}
 					readMoreLabel={readMoreLabel}
-					openSlideshow={openSlideshow}
+					onAttachmentClick={onAttachmentClick}
 					serviceIcons={serviceIcons}>
 					{(Array.isArray(content.content) || content.content) ? content.content : JSON.stringify(content.content)}
 				</PostInlineContent>
@@ -156,7 +156,7 @@ PostBlock.propTypes = {
 	readMoreLabel: PropTypes.string,
 	attachments: PropTypes.arrayOf(postAttachment).isRequired,
 	attachmentThumbnailSize: PropTypes.number,
-	openSlideshow: PropTypes.func,
+	onAttachmentClick: PropTypes.func,
 	serviceIcons: PropTypes.objectOf(PropTypes.func),
 	saveBandwidth: PropTypes.bool,
 	spoilerLabel: PropTypes.string,

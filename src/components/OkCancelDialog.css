@@ -1,0 +1,6 @@
+.ok-cancel-dialog__ok {
+}
+
+.ok-cancel-dialog__cancel {
+	margin-right: calc(var(--unit) * 1.5);
+}

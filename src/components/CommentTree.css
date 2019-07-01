@@ -1,24 +1,11 @@
 @import "../styles/common";
 
 .comment-tree {
-	--comment-tree-padding: var(--content-section-horizontal-padding);
-	--comment-tree-line-thickness: 1px;
-	--comment-tree-line-color: var(--gray-color-200);
-	--comment-tree-branch-color: var(--gray-color-300);
-	--comment-tree-branch-toggler-hover-background-color: var(--gray-color-100);
-	--comment-tree-branch-toggler-hover-line-color: var(--base-color-700);
-	--comment-tree-root-level-replies-branch-width-factor: 1;
-	/* Approximate offset top so that it points to the first line of text in a comment. */
-	--comment-tree-branch-post-content-offset-top: 1.6em;
-	--comment-tree-branch-offset-top: calc(var(--content-section-vertical-padding) + var(--comment-tree-branch-post-content-offset-top));
-	@mixin upto-xs {
-		--comment-tree-branch-post-content-offset-top: 1.9em;
-	}
 	position: relative;
 }
 
 .comment-tree--nested {
-	margin-left: var(--comment-tree-padding);
+	margin-left: var(--CommentTree-padding);
 }
 
 .comment-tree__replies {
@@ -35,51 +22,51 @@ This CSS class can be used for styling such special case.
 	> .comment-tree {
 		> .comment-tree__branch-line,
 		> .comment-tree__branch-marker {
-			left: calc(-1 * var(--comment-tree-padding) * var(--comment-tree-root-level-replies-branch-width-factor));
+			left: calc(-1 * var(--CommentTree-padding));
 		}
 		> .comment-tree__branch-marker {
-			width: calc(var(--comment-tree-padding) * var(--comment-tree-root-level-replies-branch-width-factor));
+			width: calc(var(--CommentTree-padding));
 		}
 	}
 }
+/* ^ var(--CommentTree-padding) * var(--CommentTree-root-level-replies-branch-width-factor) */
 
 .comment-tree__branch-line {
 	position: absolute;
-	left: calc(-1 * var(--comment-tree-padding));
+	left: calc(-1 * var(--CommentTree-padding));
 	height: 100%;
-	border-left: var(--comment-tree-line-thickness) solid var(--comment-tree-line-color);
+	border-left: var(--CommentTree-borderWidth) solid var(--CommentTree-color);
 	pointer-events: none;
 }
 
 .comment-tree:last-child > .comment-tree__branch-line {
-	height: var(--comment-tree-branch-offset-top);
+	height: var(--CommentTree-branchTop);
 }
 
 .comment-tree__branch-toggler {
 	position: absolute;
 	left: 0;
 	top: 0;
-	width: var(--comment-tree-padding);
+	width: var(--CommentTree-padding);
 	height: 100%;
-	/*border-left: var(--comment-tree-line-thickness) solid var(--comment-tree-line-color);*/
 	box-sizing: border-box;
 	cursor: pointer;
 	&:hover {
-		background-color: var(--comment-tree-branch-toggler-hover-background-color);
+		background-color: var(--CommentTree-backgroundColor--hover);
 		& ~ .comment-tree {
 			/* Highlights branch lines for the immediate child comment tree
 			   and for all nested comment trees. */
 			.comment-tree__branch-toggler {
-				background-color: var(--comment-tree-branch-toggler-hover-background-color);
+				background-color: var(--CommentTree-backgroundColor--hover);
 			}
 			.comment-tree__branch-line {
-				border-left-color: var(--comment-tree-branch-toggler-hover-line-color);
+				border-left-color: var(--CommentTree-color--hover);
 			}
 			.comment-tree__dialogue-chain-marker {
-				border-color: var(--comment-tree-branch-toggler-hover-line-color);
+				border-color: var(--CommentTree-color--hover);
 			}
 			.comment-tree__branch-marker {
-				background-color: var(--comment-tree-branch-toggler-hover-line-color);
+				background-color: var(--CommentTree-color--hover);
 			}
 		}
 	}
@@ -87,22 +74,22 @@ This CSS class can be used for styling such special case.
 
 .comment-tree__branch-marker {
 	position: absolute;
-	left: calc(-1 * var(--comment-tree-padding));
-	width: var(--comment-tree-padding);
-	height: var(--comment-tree-line-thickness);
-	margin-top: var(--comment-tree-branch-offset-top);
-	background-color: var(--comment-tree-branch-color);
+	left: calc(-1 * var(--CommentTree-padding));
+	width: var(--CommentTree-padding);
+	height: var(--CommentTree-borderWidth);
+	margin-top: var(--CommentTree-branchTop);
+	background-color: var(--CommentTree-color--branch);
 	pointer-events: none;
 }
 
 .comment-tree__dialogue-chain-marker {
 	position: absolute;
-	left: calc(-1 * var(--comment-tree-padding));
-	width: var(--comment-tree-padding);
-	height: calc(var(--comment-tree-padding) * 2);
-	margin-top: calc(-1 * var(--comment-tree-padding));
-	border: var(--comment-tree-line-thickness) solid var(--comment-tree-branch-color);
-	border-left-color: var(--comment-tree-line-color);
+	left: calc(-1 * var(--CommentTree-padding));
+	width: var(--CommentTree-padding);
+	height: calc(var(--CommentTree-padding) * 2);
+	margin-top: calc(-1 * var(--CommentTree-padding));
+	border: var(--CommentTree-borderWidth) solid var(--CommentTree-color--branch);
+	border-left-color: var(--CommentTree-color);
 	border-right: none;
 	box-sizing: border-box;
 	pointer-events: none;

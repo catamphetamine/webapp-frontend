@@ -53,21 +53,3 @@
 	   characters and at the same time still trims whitespace. */
 	white-space: pre-line;
 }
-
-.post.content-section {
-	.post__inline-quote--link:hover {
-		margin-top: -1px;
-		margin-bottom: -1px;
-		border-top: 1px solid var(--PostInlineQuoteLink-borderColor--hover); /* #f0f0f0 */
-		border-bottom: 1px solid var(--PostInlineQuoteLink-borderColor--hover); /* #f0f0f0 */
-		background-color: var(--PostInlineQuoteLink-backgroundColor--hover);
-	}
-
-	/* When there are two or more consequtive inline quotes
-	   then their adjacent borders add up. This CSS rule fixes that. */
-	/*
-	.post__inline-quote + br + .post__inline-quote {
-		border-top: 0;
-	}
-	*/
-}

@@ -61,7 +61,11 @@ export function trim(content, side) {
 				// Non-whitespace content found.
 				return whitespaceTrimmed
 			}
-		} else {
+		} else if (content[i].type === 'emoji') {
+			// An emoji found.
+			// Non-whitespace content found.
+			return whitespaceTrimmed
+		} else if (content[i].content) {
 			let contentArray = content[i].content
 			if (!Array.isArray(contentArray)) {
 				contentArray = [contentArray]
@@ -86,6 +90,9 @@ export function trim(content, side) {
 				// Non-whitespace content found (and possibly trimmed from whitespace).
 				return whitespaceTrimmed
 			}
+		} else {
+			console.error(`No "content" is present for an inline-level paragraph part at index ${i}`)
+			console.error(content)
 		}
 		if (side === 'left') {
 			i++

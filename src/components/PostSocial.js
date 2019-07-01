@@ -16,7 +16,7 @@ export default function PostSocial({
 	locale,
 	attachmentThumbnailSize,
 	saveBandwidth,
-	openSlideshow
+	onAttachmentClick
 }) {
 	const ProviderLogo = getProviderLogoComponent(social.provider)
 	const authorId = (
@@ -91,7 +91,7 @@ export default function PostSocial({
 				<PostAttachments
 					attachmentThumbnailSize={attachmentThumbnailSize}
 					saveBandwidth={saveBandwidth}
-					openSlideshow={openSlideshow}>
+					onAttachmentClick={onAttachmentClick}>
 					{social.attachments}
 				</PostAttachments>
 			}
@@ -104,7 +104,7 @@ PostSocial.propTypes = {
 	locale: PropTypes.string,
 	attachmentThumbnailSize: PropTypes.number,
 	saveBandwidth: PropTypes.bool,
-	openSlideshow: PropTypes.func
+	onAttachmentClick: PropTypes.func
 }
 
 function getProviderLogoComponent(provider) {

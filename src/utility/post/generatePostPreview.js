@@ -490,6 +490,8 @@ function countCharacters(content, mode, getCharactersFromLineStart, setCharacter
 		} else {
 			return countCharacters(content.content, mode, getCharactersFromLineStart, setCharactersFromLineStart)
 		}
+	} else if (content.type === 'emoji') {
+		return 0
 	} else {
 		console.error(`No "content" is present for an inline-level paragraph part:`)
 		console.error(content)

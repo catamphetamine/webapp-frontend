@@ -28,15 +28,15 @@
 
 .post.content-section {
 	.post__monospace:not(.post__monospace--inline) {
-		margin-left: calc(var(--content-section-horizontal-padding) * -1);
-		margin-right: calc(var(--content-section-horizontal-padding) * -1);
-		padding-left: var(--content-section-horizontal-padding);
-		padding-right: var(--content-section-horizontal-padding);
+		margin-left: calc(var(--ContentSection-padding--horizontal) * -1);
+		margin-right: calc(var(--ContentSection-padding--horizontal) * -1);
+		padding-left: var(--ContentSection-padding--horizontal);
+		padding-right: var(--ContentSection-padding--horizontal);
 		padding-top: 0.5em;
 		padding-bottom: 0.5em;
 		border-left: none;
 		border-right: none;
-		width: calc(100% + 2 * var(--content-section-horizontal-padding));
+		width: calc(100% + 2 * var(--ContentSection-padding--horizontal));
 		border-radius: 0;
 	}
 }
