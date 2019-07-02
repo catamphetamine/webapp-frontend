@@ -367,6 +367,14 @@ describe('parseServiceLink', () => {
 				text: 'honeymad/videos'
 			}
 		)
+
+		expectToEqual(
+			parseServiceLink('https://www.twitch.tv/directory/game/Quake%20Champions'),
+			{
+				service: 'twitch',
+				text: 'directory/game/Quake Champions'
+			}
+		)
 	})
 
 	it('should parse Steam links', () => {
@@ -399,6 +407,26 @@ describe('parseServiceLink', () => {
 			{
 				service: 'steam',
 				text: '76561198436304058/recommended/365590'
+			}
+		)
+	})
+
+	it('should fallback to path', () => {
+		expectToEqual(
+			parseServiceLink('https://youtube.com/path/space%20bar'),
+			{
+				service: 'youtube',
+				text: 'path/space bar'
+			}
+		)
+	})
+
+	it('should fallback to search + hash', () => {
+		expectToEqual(
+			parseServiceLink('https://youtube.com/?param%20eter=space%20bar#ha%20sh'),
+			{
+				service: 'youtube',
+				text: '?param eter=space bar#ha sh'
 			}
 		)
 	})

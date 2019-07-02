@@ -39,8 +39,8 @@ export default function parseServiceLink(url) {
 		return {
 			service: service.name,
 			text: (service.getText && service.getText(url)) ||
-				trimTrailingSlash(url.pathname.slice('/'.length)) ||
-				(url.search + url.hash) ||
+				decodeURI(trimTrailingSlash(url.pathname.slice('/'.length))) ||
+				decodeURI(url.search + url.hash) ||
 				hostname
 		}
 	}
