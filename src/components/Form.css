@@ -8,10 +8,14 @@
 	}
 }
 
+.form__component,
+.form__action {
+	margin-top: calc(var(--unit) * 1.5);
+}
+
 .form__component {
 	/* `position: relative` is for `.rrui__input-error`. */
 	position: relative;
-	margin-top: calc(var(--unit) * 1.5);
 	&:first-child {
 		margin-top: 0;
 	}
@@ -27,13 +31,23 @@
 
 .form__action {
 	display: block;
-	height: calc(var(--unit) * 3)
+	height: calc(var(--unit) * 3);
+	margin-right: calc(var(--unit) * 1.5);
+	&:last-child {
+		margin-right: 0;
+	}
 }
+
+/*
+.form__action.rrui__button--text {
+	padding-left: calc(var(--unit) * 0.5);
+	padding-right: calc(var(--unit) * 0.5);
+}
+*/
 
 .form__actions {
 	display: flex;
 	justify-content: flex-end;
-	margin-top: calc(var(--unit) * 1.5);
 }
 
 .form__component--description {
