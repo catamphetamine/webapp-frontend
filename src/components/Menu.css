@@ -33,6 +33,9 @@
 	display: none;
 	width: calc(var(--unit) * 1.75);
 	height: calc(var(--unit) * 1.75);
+	/* A weird fix for Tor Browser, otherwise it wouldn't navigate
+	  to the `/settings` page on `captchan` site when clicking the icon. */
+	pointer-events: none;
 }
 
 .menu-item__icon--outline {
