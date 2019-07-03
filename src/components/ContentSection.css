@@ -34,7 +34,7 @@
 	background-color : var(--Content-backgroundColor);
 	border-radius : var(--border-radius);
 	/*box-shadow : var(--ContentSection-shadow);*/
-  box-shadow: 0 0.0005rem 0.1rem 0 hsla(210,7%,61%,.15), 0 0.1rem 0.75rem 0 hsla(210,7%,61%,.15);
+  box-shadow: 0 0.0005rem 0.1rem 0 var(--ContentSection-shadowColor), 0 0.1rem 0.75rem 0 var(--ContentSection-shadowColor);
 
 	@mixin xxs {
 		/*
@@ -73,11 +73,10 @@
 	padding-top      : 0.5em;
 	padding-bottom   : 0.45em;
 	border-bottom    : 1px solid var(--ContentSection-borderColor);
-	color            : var(--black-color);
+	color            : currentColor;
 	font-weight      : normal;
 	font-size        : 1.4rem;
 	text-align       : left;
-	/*background-color : var(--gray-color-100);*/
 }
 
 .content-section__header--lite {

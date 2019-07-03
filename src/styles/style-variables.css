@@ -1,0 +1,157 @@
+@import "./grid.mixins";
+
+:root {
+	/* Empty. */
+	--Empty-backgroundColor: #eaeaea;
+
+	/* Document. */
+	--Document-color: var(--Content-color);
+	--Document-backgroundColor: var(--Empty-backgroundColor);
+	--Document-fontFamily: sans-serif;
+	--Document-fontFamily--text: var(--Document-fontFamily);
+	/*--Document-fontFamily--designer: Roboto, sans-serif;*/
+
+	/* Header. */
+	--Header-backgroundColor: var(--white-color);
+	--Header-color: var(--gray-color-800);
+	--Header-borderColor: rgba(0,0,0,.15);
+
+	/* Menu. */
+	--Menu-color: initial;
+	--Menu-color--active: var(--gray-color-650);
+	--Menu-color--selected: var(--Menu-color);
+
+	/* Clickable. */
+	--Clickable-color--text: var(--base-color-700);
+	--Clickable-color--textActive: var(--Clickable-color);
+	--Clickable-color: var(--base-color-600);
+	--Clickable-color--light: var(--base-color-500);
+
+	/* Picture. */
+	--Picture-backgroundColor: var(--Empty-backgroundColor);
+	--Picture-borderColor: rgba(0, 0, 0, 0.5);
+	--Picture-borderColor--focus: var(--base-color-700);
+	--Picture-borderWidth: 1px;
+
+	/* Notification. */
+	--Notification-color: var(--white-color);
+	--Notification-backgroundColor: var(--black-color);
+	--Notification-borderColor: transparent;
+	--Notification-borderWidth: 0px;
+	--Notification-color--error: var(--Error-color);
+	--Notification-backgroundColor--error: var(--Error-backgroundColor);
+	--Notification-borderColor--error: var(--Notification-borderColor);
+	--Notification-borderWidth--error: var(--Notification-borderWidth);
+
+	/* Error. */
+	--Error-color: var(--white-color);
+	--Error-backgroundColor: var(--critical-color-600);
+
+	/* Content. */
+	--Content-color: initial;
+	--Content-backgroundColor: var(--white-color);
+	--Content-backgroundColor--active: initial;
+	--Content-color--300: var(--gray-color-400);
+	--Content-color--200: var(--gray-color-300);
+	--Content-color--100: var(--gray-color-200);
+	--Content-color--50: var(--gray-color-100);
+	--Content-fontWeight--bold: bolder;
+
+	/* ContentSection. */
+	--ContentSection-borderColor: #e3e4e8;
+	--ContentSection-shadowColor: hsla(210,7%,61%,.15);
+
+	/* Post. */
+	--Post-color--secondary: var(--gray-color-600);
+
+	/* PostQuote. */
+	--PostQuote-color: initial;
+	--PostQuote-backgroundColor: initial;
+	--PostQuote-backgroundColor--hover: #fcfcfc;
+	--PostQuote-borderColor: transparent;
+	--PostQuote-borderColor--hover: #f5f5f5;
+
+	/* PostQuoteMarker. */
+	--PostQuoteMarker-color: var(--gray-color-700);
+	--PostQuoteMarker-opacity: 0.7;
+	--PostQuoteMarker-width: 2px;
+	--PostQuoteMarker-padding: 0.2em;
+
+	/* PostInlineSpoiler. */
+	--PostInlineSpoiler-color: var(--gray-color-100);
+	--PostInlineSpoiler-color--postActive: var(--PostInlineSpoiler-color);
+	--PostInlineSpoiler-color--censored: #f0e1e1;
+	--PostInlineSpoiler-color--censoredPostActive: #f2dccb;
+
+	/* CommentTree. */
+	--CommentTree-padding: var(--ContentSection-padding--horizontal);
+	--CommentTree-borderWidth: 1px;
+	--CommentTree-color: var(--gray-color-200);
+	--CommentTree-color--branch: var(--gray-color-300);
+	--CommentTree-backgroundColor--hover: var(--gray-color-100);
+	--CommentTree-color--hover: var(--base-color-700);
+	/* Approximate offset top so that it points to the first line of text in a comment. */
+	--CommentTree-branchContentTop: 1.6em;
+	--CommentTree-branchTop: calc(var(--ContentSection-padding--vertical) + var(--CommentTree-branchContentTop));
+	@mixin upto-xs {
+		--CommentTree-branchContentTop: 1.9em;
+	}
+
+	/* HoverButton. */
+	--HoverButton-color--active: initial;
+	--HoverButton-color--pushed: var(--base-color-700);
+	--HoverButton-color--pushedActive: var(--HoverButton-color--active);
+	--HoverButton-backgroundColor: var(--gray-color-transparent);
+	--HoverButton-backgroundColor--active: var(--base-color-100);
+	--HoverButton-backgroundColor--pushed: var(--HoverButton-backgroundColor--active);
+	--HoverButton-borderColor: var(--gray-color-100);
+	--HoverButton-borderColor--active: var(--HoverButton-borderColor);
+	--HoverButton-borderColor--pushed: var(--HoverButton-borderColor--active);
+	--HoverButton-borderColor--pushedFocus: var(--HoverButton-borderColor--pushed);
+}
+
+/* Dark Mode. */
+:root.dark {
+	/* Empty. */
+	--Empty-backgroundColor: #303030;
+
+	/* Document. */
+	/* Roboto is more eligible for white text on black background
+	   because when using default font the letters merge with each other. */
+	--Document-fontFamily--text: var(--Document-fontFamily);
+
+	/* Menu. */
+	--Menu-color--active: var(--gray-color-600);
+
+	/* Notification. */
+	--Notification-color: var(--white-color);
+	--Notification-backgroundColor: var(--black-color);
+	--Notification-borderColor: var(--Content-color--300);
+	--Notification-borderWidth: 1px;
+
+	/* Content. */
+	--Content-color: #f4f4f4;
+	--Content-color--50: #333333;
+	--Content-color--100: #434343;
+	--Content-color--200: #535353;
+	--Content-color--300: #5b5b5b;
+	--Content-backgroundColor: #262626;
+	/* The default "bold" font weight is too bold
+	   for white text on black background. */
+	--Content-fontWeight--bold: 500;
+
+	/* ContentSection. */
+	--ContentSection-shadowColor: rgba(0,0,0,.15);
+
+	/* Clickable. */
+	--Clickable-color--text: var(--base-color-600);
+	--Clickable-color--textActive: var(--base-color-500);
+
+	/* PostQuote. */
+	/*--PostQuote-color: var(--base-color-600);*/
+	--PostQuote-color: #75cc59;
+
+	/* HoverButton. */
+	--HoverButton-backgroundColor--active: var(--Content-color--100);
+	--HoverButton-borderColor: var(--Content-color--100);
+}

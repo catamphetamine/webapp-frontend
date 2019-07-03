@@ -11,7 +11,7 @@
 	--rrui-black-color        : var(--Content-color);
 	--rrui-accent-color       : var(--Clickable-color);
 	--rrui-accent-color-light : var(--Clickable-color--light);
-	--rrui-input-field-label-color-focus: var(--Clickable-color--dark);
+	--rrui-input-field-label-color-focus: var(--Clickable-color--text);
 	--rrui-gray-color         : var(--Content-color--300);
 	--rrui-gray-color-light   : var(--Content-color--200);
 	--rrui-gray-color-lightest: var(--Content-color--100);
@@ -33,12 +33,12 @@
 
 .rrui__button--text {
 	height: auto;
-	color: var(--Clickable-color--dark);
+	color: var(--Clickable-color--text);
 	border-bottom: 1px solid transparent;
 }
 
 .rrui__button--text:active {
-	color: var(--Clickable-color);
+	color: var(--Clickable-color--textActive);
 }
 
 .rrui__button--text:focus {

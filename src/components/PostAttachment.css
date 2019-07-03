@@ -12,7 +12,7 @@
 	/* Outline is not shown on `<a/>` too for some reason. */
 	&:focus {
 		.post__attachment-thumbnail__picture {
-			--Picture-borderColor: var(--base-color-700);
+			--Picture-borderColor: var(--Picture-borderColor--focus);
 		}
 	}
 }

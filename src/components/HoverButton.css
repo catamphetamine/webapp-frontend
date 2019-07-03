@@ -22,10 +22,13 @@
 	background-color: var(--HoverButton-backgroundColor--pushed);
 }
 
-.hover-button--pushed,
-.hover-button--pushed:focus {
-	/* Added the border here because `--pushed` won't have `:focus` style applied. */
+.hover-button--pushed {
 	box-shadow: 0 0 0 1px var(--HoverButton-borderColor--pushed);
+}
+
+.hover-button--pushed:hover,
+.hover-button--pushed:focus {
+	box-shadow: 0 0 0 1px var(--HoverButton-borderColor--pushedFocus);
 }
 
 .hover-button:active,

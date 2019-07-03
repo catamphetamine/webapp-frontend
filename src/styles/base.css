@@ -58,11 +58,15 @@ body {
 }
 
 a {
-	color: var(--Clickable-color--dark);
+	color: var(--Clickable-color--text);
 	text-decoration: none;
 	&:active {
-		color: var(--Clickable-color);
+		color: var(--Clickable-color--textActive);
 	}
+}
+
+strong {
+	font-weight: var(--Content-fontWeight--bold);
 }
 
 .link--block
