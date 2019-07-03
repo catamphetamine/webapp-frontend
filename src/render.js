@@ -1,8 +1,10 @@
 import { render } from 'react-website'
 
 import settings from './react-website'
+import darkMode from '../utility/darkMode'
 
 export default async function() {
+	darkMode()
   // Renders the webpage on the client side
   const result = await render(settings)
   // If there was an error during the initial rendering

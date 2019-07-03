@@ -20,7 +20,7 @@
 }
 
 .post__attachment-thumbnail {
-	--post-attachment-hover-shadow: 0 0 0.3em rgba(0,0,0,0.2), 0 0 0.15em rgba(0,0,0,0.18);
+	--post-attachment-hover-shadow: 0 0 0.3em var(--PostAttachment-shadowColor--hover), 0 0 0.15em var(--PostAttachment-shadowColor--hover);
 	position: relative;
 	margin-top: var(--post-content-vertical-spacing);
 	margin-right: var(--post-content-vertical-spacing);

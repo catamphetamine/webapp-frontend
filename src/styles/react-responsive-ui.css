@@ -8,13 +8,13 @@
 :root {
 	--rrui-unit               : var(--unit);
 	--rrui-white-color        : var(--Content-backgroundColor);
-	--rrui-black-color        : var(--Content-color);
+	--rrui-black-color        : var(--Content-color-900);
 	--rrui-accent-color       : var(--Clickable-color);
 	--rrui-accent-color-light : var(--Clickable-color--light);
 	--rrui-input-field-label-color-focus: var(--Clickable-color--text);
-	--rrui-gray-color         : var(--Content-color--300);
-	--rrui-gray-color-light   : var(--Content-color--200);
-	--rrui-gray-color-lightest: var(--Content-color--100);
+	--rrui-gray-color         : var(--Content-color-400);
+	--rrui-gray-color-light   : var(--Content-color-300);
+	--rrui-gray-color-lightest: var(--Content-color-200);
 	--rrui-error-color        : var(--Error-backgroundColor);
 	--rrui-input-height: calc(var(--unit) * 2.5);
 }
@@ -77,4 +77,8 @@
 .rrui__button--multiline {
 	white-space: initial;
 	text-align: left;
+}
+
+.rrui__input--monospace .rrui__input-field {
+	font-family: monospace;
 }

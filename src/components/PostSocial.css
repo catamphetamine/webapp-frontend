@@ -39,10 +39,10 @@
 
 .post__social__author-id {
 	font-size: 85%;
-	color: var(--gray-color-600);
+	color: var(--Content-color-600);
 	/*
 	&:hover {
-		color: var(--gray-color-700);
+		color: var(--Content-color-700);
 	}
 	*/
 }

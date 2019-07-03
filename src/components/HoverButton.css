@@ -34,7 +34,16 @@
 .hover-button:active,
 .hover-button--link:active,
 .hover-button--pushed:active {
-	color: var(--HoverButton-color--active);
 	background-color: var(--HoverButton-backgroundColor--active);
+}
+
+.hover-button:active,
+.hover-button--link:active {
+	color: var(--HoverButton-color--active);
 	box-shadow: 0 0 0 1px var(--HoverButton-borderColor--active);
+}
+
+.hover-button--pushed:active {
+	color: var(--HoverButton-color--pushedActive);
+	box-shadow: 0 0 0 1px var(--HoverButton-borderColor--pushedActive);
 }

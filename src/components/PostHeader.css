@@ -115,11 +115,11 @@
 }
 
 .post__votes-count--positive {
-	color: #008800;
+	color: var(--PostVotes-color--positive);
 }
 
 .post__votes-count--negative {
-	color: #cc0000;
+	color: var(--PostVotes-color--negative);
 }
 
 .post__vote-icon {

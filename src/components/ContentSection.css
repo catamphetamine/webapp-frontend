@@ -30,7 +30,7 @@
 	padding-right : var(--ContentSection-padding--horizontal);
 	padding-top : var(--ContentSection-padding--vertical);
 	padding-bottom : var(--ContentSection-padding--vertical);
-	color : var(--Content-color);
+	color : var(--Content-color-900);
 	background-color : var(--Content-backgroundColor);
 	border-radius : var(--border-radius);
 	/*box-shadow : var(--ContentSection-shadow);*/

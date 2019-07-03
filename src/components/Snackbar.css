@@ -5,7 +5,7 @@
 }
 
 .rrui__snackbar {
-	border: var(--Notification-borderWidth) solid var(--Notification-borderColor);
+	box-shadow: 0 0 0 var(--Notification-borderWidth) var(--Notification-borderColor);
 }
 
 .rrui__snackbar__count {
@@ -15,5 +15,5 @@
 .rrui__snackbar--error {
 	color: var(--Notification-color--error);
 	background-color: var(--Notification-backgroundColor--error);
-	border: var(--Notification-borderWidth--error) solid var(--Notification-borderColor--error);
+	box-shadow: 0 0 0 var(--Notification-borderWidth--error) var(--Notification-borderColor--error);
 }

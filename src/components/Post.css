@@ -81,8 +81,8 @@
 
 .on-click--active {
 	--Content-backgroundColor: var(--Content-backgroundColor--active);
-	--PostInlineSpoiler-color: var(--PostInlineSpoiler-color--postActive);
-	--PostInlineSpoiler-color--censored: var(--PostInlineSpoiler-color--censoredPostActive);
+	--PostInlineSpoiler-color: var(--PostInlineSpoiler-color--contentActive);
+	--PostInlineSpoiler-color--censored: var(--PostInlineSpoiler-color--censoredContentActive);
 
 	.post, .post__inline-spoiler {
 		transition: background-color 60ms;

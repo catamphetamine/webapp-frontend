@@ -99,6 +99,6 @@ p
 }
 
 ::selection {
-	color: var(--white-color);
-	background-color: var(--base-color-600);
+	color: var(--Selection-color);
+	background-color: var(--Selection-backgroundColor);
 }
