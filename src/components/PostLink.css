@@ -14,6 +14,6 @@
 	color: white;
 }
 
-.service-icon--monochrome [data-icon-stroke-type="gradient"] {
+.service-icon--monochrome [data-fill="gradient"] {
 	fill: color;
 }
