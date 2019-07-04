@@ -54,7 +54,7 @@
 	--PostQuote-borderColor--hover: var(--PostQuote-borderColor);
 
 	/* PostQuoteMarker. */
-	--PostQuoteMarker-color: var(--PostQuote-color);
+	--PostQuoteMarker-color: currentColor;
 	--PostQuoteMarker-opacity: 0.7;
 	--PostQuoteMarker-width: 2px;
 	--PostQuoteMarker-padding: 0.2em;
@@ -118,6 +118,7 @@
 	--PostVotes-color--negative: #cc0000;
 
 	/* PostQuote. */
+	--PostQuote-color: var(--base-color-700);
 	--PostQuote-backgroundColor--hover: #fcfcfc;
 	--PostQuote-borderColor--hover: #f5f5f5;
 
