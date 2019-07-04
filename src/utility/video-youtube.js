@@ -51,7 +51,7 @@ export default {
 	 * @param  {string} url
 	 * @param  {string} [options.locale] — Isn't used.
 	 * @param  {boolean} [options.picture] — Set to `false` to disable looking up video thumbnail.
-	 * @param  {string} [options.youTubeApiKey] — YouTube API v3 key.
+	 * @param  {(string|string[])} [options.youTubeApiKey] — YouTube API v3 key. YouTube has a limit of `1 000 000` API requests per day for a key.
 	 * @return {object} [video] Returns `null` if the video doesn't exist. Returns `undefined` if it's not a YouTube video.
 	 */
 	parse: async function(url, options = {}) {
@@ -65,9 +65,16 @@ export default {
 		if (id) {
 			let video
 			if (youTubeApiKey) {
-				for (const _youTubeApiKey of toArray(youTubeApiKey)) {
+				// Pick a random key from the list until it works.
+				const keysLeft = toArray(youTubeApiKey)
+				while (keysLeft.length > 0) {
+					// Pick a random key from the list (removing it from the list).
+					const keyIndex = Math.floor(Math.random() * keysLeft.length)
+					const key = keysLeft[keyIndex]
+					keysLeft.splice(keyIndex, 1)
+					// See if the key works.
 					try {
-						video = await getVideoData(id, _youTubeApiKey, { locale })
+						video = await getVideoData(id, key, { locale })
 						// `null` means "Video doesn't exist" (for example, it was deleted).
 						if (video === null) {
 							return null
