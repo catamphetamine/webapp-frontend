@@ -160,7 +160,7 @@
 	--Document-fontFamily--text: var(--Document-fontFamily);
 
 	/* Header. */
-	--Header-borderColor: rgba(255,255,255,.1);
+	--Header-borderColor: rgba(255,255,255,.07);
 
 	/* Menu. */
 	--Menu-color--active: var(--Content-color-600);
