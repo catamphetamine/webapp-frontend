@@ -155,11 +155,6 @@
 	/* Document. */
 	--Document-backgroundColor: #1a1a1a;
 
-	/* Document. */
-	/* Roboto is more eligible for white text on black background
-	   because when using default font the letters merge with each other. */
-	--Document-fontFamily--text: var(--Document-fontFamily);
-
 	/* Header. */
 	--Header-borderColor: rgba(255,255,255,.07);
 
