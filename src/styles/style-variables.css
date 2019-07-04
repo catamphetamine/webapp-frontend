@@ -204,8 +204,8 @@
 	--Post-color--secondary: var(--Content-color-600);
 
 	/* PostVotes. */
-	--PostVotes-color--positive: #00d400;
-	--PostVotes-color--negative: #e70000;
+	--PostVotes-color--positive: #17e017;
+	--PostVotes-color--negative: #f01515;
 
 	/* PostQuote. */
 	/*--PostQuote-color: var(--base-color-600);*/
