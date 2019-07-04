@@ -1,5 +1,6 @@
 import { PREVIEW_PICTURE_SIZES, getPictureSizeURL } from './video-youtube'
 import LocalStorageCache from './localStorageCache'
+import { areCookiesAccepted } from './cookiePolicy'
 
 let cache
 if (typeof window !== 'undefined') {
@@ -7,7 +8,7 @@ if (typeof window !== 'undefined') {
 }
 
 export function cacheVideo(video) {
-	if (cache) {
+	if (cache && areCookiesAccepted()) {
 		return cache.set(video.id, archiveVideo(video))
 	}
 }
