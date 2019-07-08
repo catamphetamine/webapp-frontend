@@ -8,18 +8,42 @@ export default function PostAudio({ audio }) {
 	if (!audio.provider) {
 		return <PostAudioFile audio={audio} className="post__audio"/>
 	}
-	console.error(`Unsupported audio provider: "${audio.provider}`)
-	return (
-		<div className="post__audio">
-			{audio.author}
-			{audio.author && ' — '}
-			{audio.title}
-		</div>
-	)
+	switch (audio.provider) {
+		case 'SoundCloud':
+			return <SoundCloudAudio audio={audio} className="post__audio"/>
+		default:
+			console.error(`Unsupported audio provider: "${audio.provider}`)
+			return (
+				<div className="post__audio">
+					{audio.author}
+					{audio.author && ' — '}
+					{audio.title}
+				</div>
+			)
+	}
 }
 
 PostAudio.propTypes = {
 	audio: audio.isRequired
+}
+
+function SoundCloudAudio({ audio: { id } }) {
+	const color = encodeURIComponent('#ff5500')
+	return (
+		<iframe
+			width="100%"
+			height={166}
+			scrolling="no"
+			frameBorder={0}
+			allow="autoplay"
+			className={className}
+			src={`https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/${id}&color=${color}&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"`}/>
+	)
+}
+
+SoundCloudAudio.propTypes = {
+	audio: audio.isRequired,
+	className: PropTypes.string
 }
 
 function PostAudioFile({ audio, className }) {

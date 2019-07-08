@@ -1,6 +1,6 @@
 /**
- * Combines `{ type: 'inline-quote' }` objects on consequtive lines
- * into a single `{ type: 'inline-quote' }` object with "\n"s inside.
+ * Combines `{ type: 'quote' }` objects on consequtive lines
+ * into a single `{ type: 'quote' }` object with "\n"s inside.
  * @param  {any} content
  */
 export default function combineQuotes(content) {
@@ -20,7 +20,7 @@ export default function combineQuotes(content) {
 function _combineQuotes(content) {
 	let i = 0
 	while (i < content.length) {
-		if (content[i].type === 'inline-quote') {
+		if (content[i].type === 'quote') {
 			// The combined quote must be placed on a new line.
 			if (i === 0 || content[i - 1] === '\n') {
 				// `kohlchan.net` and `8ch.net` have regular (green) quotes
@@ -72,7 +72,7 @@ export function forEachFollowingQuote(content, startIndex, action) {
 		if (typeof content[i] !== 'object') {
 			break
 		}
-		if (content[i].type !== 'inline-quote') {
+		if (content[i].type !== 'quote') {
 			break
 		}
 		action(content[i], i)

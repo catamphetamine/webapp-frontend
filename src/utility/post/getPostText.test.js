@@ -80,7 +80,7 @@ describe('getPostText', () => {
 				[
 					[
 						{
-							type: 'inline-quote',
+							type: 'quote',
 							content: 'Quote'
 						},
 						'\n',
@@ -121,7 +121,7 @@ describe('getPostText', () => {
 				[
 					[
 						{
-							type: 'inline-quote',
+							type: 'quote',
 							content: 'Quote'
 						},
 						'\n',

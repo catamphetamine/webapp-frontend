@@ -10,7 +10,14 @@ export const getAccount = redux.action
 
 export const getAccountPosts = redux.action
 (
-	(id) => async http => http.get(`api://accounts/${id}/posts`),
+	(id) => async http => {
+		const posts = await http.get(`api://accounts/${id}/posts`)
+		for (const post of posts) {
+			post.author = post.account
+			post.account = undefined
+		}
+		return posts
+	},
 	'posts'
 )
 

@@ -116,17 +116,19 @@ export const video = shape({
 
 export const audio = shape({
 	type: audioType.isRequired,
+	url: string,
+	provider: oneOf([
+		'SoundCloud'
+	]),
+	id: string,
 	author: string,
 	title: string.isRequired,
 	description: string,
 	date: date,
 	duration: number,
 	picture: picture,
-	provider: string,
 	size: number,
-	bitrate: number,
-	url: string,
-	id: string
+	bitrate: number
 })
 
 export const postLinkBlock = shape({
@@ -253,7 +255,10 @@ export const postPostLinkShape = shape({
 })
 
 const social = shape({
-	provider: string.isRequired,
+	provider: oneOf([
+		'Instagram',
+		'Twitter'
+	]).isRequired,
 	url: string,
 	content: string,
 	date: date,
@@ -274,7 +279,7 @@ export const postQuote = shape({
 })
 
 export const postInlineQuote = shape({
-	type: oneOf(['inline-quote']).isRequired,
+	type: oneOf(['quote']).isRequired,
 	content: postInlineContent.isRequired
 })
 

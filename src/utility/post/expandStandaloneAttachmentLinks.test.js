@@ -318,7 +318,7 @@ describe('expandStandaloneAttachmentLinks', () => {
 					"\n",
 					"\n",
 					{
-						"type": "inline-quote",
+						"type": "quote",
 						"content": "/rsg/ Guides Imgur Album"
 					},
 					"\n",
@@ -330,7 +330,7 @@ describe('expandStandaloneAttachmentLinks', () => {
 					"\n",
 					"\n",
 					{
-						"type": "inline-quote",
+						"type": "quote",
 						"content": "Beastmaster Durzag and Yakamaru indepth guide"
 					},
 					"\n",
@@ -348,7 +348,7 @@ describe('expandStandaloneAttachmentLinks', () => {
 					"\n",
 					"\n",
 					{
-						"type": "inline-quote",
+						"type": "quote",
 						"content": "I've been inactive since the First Age, what did I miss?"
 					},
 					"\n",
@@ -360,7 +360,7 @@ describe('expandStandaloneAttachmentLinks', () => {
 					"\n",
 					"\n",
 					{
-						"type": "inline-quote",
+						"type": "quote",
 						"content": "Latest Patch Notes"
 					},
 					"\n",
@@ -372,7 +372,7 @@ describe('expandStandaloneAttachmentLinks', () => {
 					"\n",
 					"\n",
 					{
-						"type": "inline-quote",
+						"type": "quote",
 						"content": "Latest Update"
 					},
 					"\n",
@@ -390,7 +390,7 @@ describe('expandStandaloneAttachmentLinks', () => {
 					"\n",
 					"\n",
 					{
-						"type": "inline-quote",
+						"type": "quote",
 						"content": "RuneScape in 2019 - an introduction"
 					},
 					"\n",
@@ -406,7 +406,7 @@ describe('expandStandaloneAttachmentLinks', () => {
 				},
 				[
 					{
-						"type": "inline-quote",
+						"type": "quote",
 						"content": "RuneScape Winter Reveals (RuneFest 2018)"
 					}
 				],
@@ -526,7 +526,7 @@ describe('expandStandaloneAttachmentLinks', () => {
 						"\n",
 						"\n",
 						{
-							"type": "inline-quote",
+							"type": "quote",
 							"content": "/rsg/ Guides Imgur Album"
 						},
 						"\n",
@@ -538,7 +538,7 @@ describe('expandStandaloneAttachmentLinks', () => {
 						"\n",
 						"\n",
 						{
-							"type": "inline-quote",
+							"type": "quote",
 							"content": "Beastmaster Durzag and Yakamaru indepth guide"
 						},
 						"\n",
@@ -556,7 +556,7 @@ describe('expandStandaloneAttachmentLinks', () => {
 						"\n",
 						"\n",
 						{
-							"type": "inline-quote",
+							"type": "quote",
 							"content": "I've been inactive since the First Age, what did I miss?"
 						},
 						"\n",
@@ -568,7 +568,7 @@ describe('expandStandaloneAttachmentLinks', () => {
 						"\n",
 						"\n",
 						{
-							"type": "inline-quote",
+							"type": "quote",
 							"content": "Latest Patch Notes"
 						},
 						"\n",
@@ -580,7 +580,7 @@ describe('expandStandaloneAttachmentLinks', () => {
 						"\n",
 						"\n",
 						{
-							"type": "inline-quote",
+							"type": "quote",
 							"content": "Latest Update"
 						},
 						"\n",
@@ -598,7 +598,7 @@ describe('expandStandaloneAttachmentLinks', () => {
 						"\n",
 						"\n",
 						{
-							"type": "inline-quote",
+							"type": "quote",
 							"content": "RuneScape in 2019 - an introduction"
 						},
 						"\n",
@@ -614,7 +614,7 @@ describe('expandStandaloneAttachmentLinks', () => {
 					},
 					[
 						{
-							"type": "inline-quote",
+							"type": "quote",
 							"content": "RuneScape Winter Reveals (RuneFest 2018)"
 						}
 					],

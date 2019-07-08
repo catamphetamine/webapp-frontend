@@ -1,7 +1,7 @@
 import { render } from 'react-website'
 
 import settings from './react-website'
-import darkMode from '../utility/darkMode'
+import darkMode from './utility/darkMode'
 
 export default async function() {
 	darkMode()

@@ -37,8 +37,7 @@ export default function getPostSummary(content, attachments, { messages, maxLeng
 		}
 	}
 	if (text) {
-		// Set `content.quote` to the quoted post text abstract.
-		// Doesn't set `content.post` object to prevent JSON circular structure.
+		// Return the quoted post text abstract.
 		// Compacts multiple paragraphs into multiple lines.
 		return trimText(text, maxLength).replace(/\n\n+/g, '\n')
 	}

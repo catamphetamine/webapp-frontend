@@ -397,7 +397,7 @@ class PreviewGenerator {
 			const [left, right] = splitContent(block, indexes, {
 				// Leaves the "\n" character for detecting block-level trim later in `.generate()`.
 				// include: type === 'new-line' ? false : undefined,
-				transform: type === 'new-line' ? undefined : (part) => {
+				transformSplitPoint: type === 'new-line' ? undefined : (part) => {
 					if (typeof part === 'string') {
 						return trimTextAtIndex(part, trimPointIndex + 1, type)
 					} else if (typeof part.content === 'string') {
@@ -484,12 +484,7 @@ function countCharacters(content, mode, getCharactersFromLineStart, setCharacter
 		}
 		return content.length
 	} else if (content.content) {
-		// Recurse into object parts' `.content`.
-		if (content.type === 'post-link' && (content.quote || content.quotes)) {
-			return countCharacters(content.quote || content.quotes, mode, getCharactersFromLineStart, setCharactersFromLineStart)
-		} else {
-			return countCharacters(content.content, mode, getCharactersFromLineStart, setCharactersFromLineStart)
-		}
+		return countCharacters(content.content, mode, getCharactersFromLineStart, setCharactersFromLineStart)
 	} else if (content.type === 'emoji') {
 		return 0
 	} else {

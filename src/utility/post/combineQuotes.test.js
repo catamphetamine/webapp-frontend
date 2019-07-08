@@ -33,12 +33,12 @@ describe('combineQuotes', () => {
 			[
 				'123',
 				{
-					type: 'inline-quote',
+					type: 'quote',
 					content: 'abc'
 				},
 				'\n',
 				{
-					type: 'inline-quote',
+					type: 'quote',
 					content: 'def'
 				}
 			]
@@ -50,12 +50,12 @@ describe('combineQuotes', () => {
 				[
 					'123',
 					{
-						type: 'inline-quote',
+						type: 'quote',
 						content: 'abc'
 					},
 					'\n',
 					{
-						type: 'inline-quote',
+						type: 'quote',
 						content: 'def'
 					}
 				]
@@ -67,12 +67,12 @@ describe('combineQuotes', () => {
 		const content = [
 			[
 				{
-					type: 'inline-quote',
+					type: 'quote',
 					content: 'abc'
 				},
 				'\n',
 				{
-					type: 'inline-quote',
+					type: 'quote',
 					content: 'def'
 				}
 			]
@@ -83,7 +83,7 @@ describe('combineQuotes', () => {
 			[
 				[
 					{
-						type: 'inline-quote',
+						type: 'quote',
 						content: [
 							'abc',
 							'\n',
@@ -101,12 +101,12 @@ describe('combineQuotes', () => {
 				'123',
 				'\n',
 				{
-					type: 'inline-quote',
+					type: 'quote',
 					content: 'abc'
 				},
 				'\n',
 				{
-					type: 'inline-quote',
+					type: 'quote',
 					content: 'def'
 				},
 				'\n',
@@ -121,7 +121,7 @@ describe('combineQuotes', () => {
 					'123',
 					'\n',
 					{
-						type: 'inline-quote',
+						type: 'quote',
 						content: [
 							'abc',
 							'\n',
@@ -139,7 +139,7 @@ describe('combineQuotes', () => {
 		const content = [
 			[
 				{
-					type: 'inline-quote',
+					type: 'quote',
 					content: [
 						{
 							type: 'text',
@@ -150,7 +150,7 @@ describe('combineQuotes', () => {
 				},
 				'\n',
 				{
-					type: 'inline-quote',
+					type: 'quote',
 					content: [
 						{
 							type: 'text',
@@ -167,7 +167,7 @@ describe('combineQuotes', () => {
 			[
 				[
 					{
-						type: 'inline-quote',
+						type: 'quote',
 						content: [
 							{
 								type: 'text',
@@ -191,11 +191,11 @@ describe('combineQuotes', () => {
 		const content = [
 			[
 				{
-					type: 'inline-quote',
+					type: 'quote',
 					content: 'abc'
 				},
 				{
-					type: 'inline-quote',
+					type: 'quote',
 					content: 'def'
 				}
 			]
@@ -206,11 +206,11 @@ describe('combineQuotes', () => {
 			[
 				[
 					{
-						type: 'inline-quote',
+						type: 'quote',
 						content: 'abc'
 					},
 					{
-						type: 'inline-quote',
+						type: 'quote',
 						content: 'def'
 					}
 				]
@@ -222,12 +222,12 @@ describe('combineQuotes', () => {
 		const content = [
 			[
 				{
-					type: 'inline-quote',
+					type: 'quote',
 					content: 'abc'
 				},
 				'\n',
 				{
-					type: 'inline-quote',
+					type: 'quote',
 					content: 'def',
 					kind: 'inverse'
 				}
@@ -239,12 +239,12 @@ describe('combineQuotes', () => {
 			[
 				[
 					{
-						type: 'inline-quote',
+						type: 'quote',
 						content: 'abc'
 					},
 					'\n',
 					{
-						type: 'inline-quote',
+						type: 'quote',
 						content: 'def',
 						kind: 'inverse'
 					}
@@ -259,17 +259,17 @@ describe('combineQuotes', () => {
 				'123',
 				'\n',
 				{
-					type: 'inline-quote',
+					type: 'quote',
 					content: 'abc'
 				},
 				'\n',
 				{
-					type: 'inline-quote',
+					type: 'quote',
 					content: 'def'
 				},
 				'\n',
 				{
-					type: 'inline-quote',
+					type: 'quote',
 					content: 'ghi'
 				},
 				'\n',
@@ -284,7 +284,7 @@ describe('combineQuotes', () => {
 					'123',
 					'\n',
 					{
-						type: 'inline-quote',
+						type: 'quote',
 						content: [
 							'abc',
 							'\n',
