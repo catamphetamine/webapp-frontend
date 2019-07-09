@@ -32,7 +32,7 @@ export default function trimText(string, maxLength, options) {
 		let pointsLeft = NEW_LINE_COST + maxLength
 		for (let line of lines) {
 			pointsLeft -= NEW_LINE_COST
-			if (pointsLeft < 0) {
+			if (pointsLeft <= 0) {
 				break
 			}
 			if (line.length > pointsLeft) {
@@ -45,7 +45,8 @@ export default function trimText(string, maxLength, options) {
 						// Omits the last line being trimmed if it doesn't result in relatively much text.
 						break
 					}
-					line = _trimText(line, pointsLeft, method, fitFactor)
+					const reFitFactor = 1 + maxLength * (fitFactor - 1) / pointsLeft
+					line = _trimText(line, pointsLeft, method, reFitFactor)
 				}
 			}
 			if (!line) {
