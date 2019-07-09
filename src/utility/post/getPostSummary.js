@@ -39,6 +39,12 @@ export default function getPostSummary(content, attachments, { messages, maxLeng
 	if (text) {
 		// Return the quoted post text abstract.
 		// Compacts multiple paragraphs into multiple lines.
-		return trimText(text, maxLength).replace(/\n\n+/g, '\n')
+		return trimText(
+			text.replace(/\n\n+/g, '\n'),
+			maxLength,
+			{
+				countNewLines: true
+			}
+		)
 	}
 }

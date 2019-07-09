@@ -68,7 +68,7 @@ export const picture = shape({
 	width: number.isRequired,
 	height: number.isRequired,
 	// `true` if the image has transparent background.
-	transparent: bool,
+	transparentBackground: bool,
 	// Extra picture sizes (thumbnails).
 	sizes: arrayOf(shape({
 		// Thumbnail MIME type.

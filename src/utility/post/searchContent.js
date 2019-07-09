@@ -1,9 +1,9 @@
 /**
- * Searches a paragraph for content part for which `test()` returns `true`.
+ * Searches content for (arbitrarily deep) parts for which `test()` function returns `true`.
  * @param  {any[]} content — A content paragraph (an array) or content (an array of arrays).
  * @param  {function} test — `function(content: string, parentArray?: any[], indexInParentArray?: number)`
  * @param  {Object} [options] — `{ backwards }`
- * @return {number[]} [path]
+ * @return {number[]} [indexPath]
  */
 export default function searchContent(content, test, options = {}) {
 	if (!Array.isArray(content)) {

@@ -1,3 +1,9 @@
+/**
+ * Removes leading `post-link`s to `parentPost` from `post.content`.
+ * Is used before showing an expanded parent post replies branch.
+ * @param  {object} post
+ * @param  {object} parentPost — The "parent" post. The post for which the `post` is a reply.
+ */
 export default function removeLeadingPostLink(post, parentPost) {
 	const content = removeLeadingPostLinkFromContent(post.content, parentPost.id)
 	if (content === post.content) {

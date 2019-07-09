@@ -1,5 +1,10 @@
 import findLastSentenceEnd from './findLastSentenceEnd'
 
+// New line cost is 30.
+// Same as in `generatePostPreview.js`.
+const NEW_LINE_COST = 30
+const MIN_LAST_LINE_CHARACTERS = 20
+
 /**
  * Trims a string if it exceeds the maximum length.
  * Trims at sentence endings when available,
@@ -8,7 +13,48 @@ import findLastSentenceEnd from './findLastSentenceEnd'
  * @param  {number} maxLength
  * @return {string}
  */
-export default function trimText(string, maxLength, method) {
+export default function trimText(string, maxLength, options) {
+	let method
+	if (typeof options === 'string') {
+		method = options
+		options = undefined
+	} else {
+		if (options) {
+			method = options.method
+		}
+	}
+	if (options && options.countNewLines) {
+		const lines = string.split('\n').filter(_ => _)
+		string = ''
+		let pointsLeft = NEW_LINE_COST + maxLength
+		for (let line of lines) {
+			pointsLeft -= NEW_LINE_COST
+			if (pointsLeft < MIN_LAST_LINE_CHARACTERS &&
+				// The first line always skips this rule.
+				maxLength >= MIN_LAST_LINE_CHARACTERS) {
+				break
+			}
+			if (pointsLeft < 0) {
+				break
+			}
+			if (line.length > pointsLeft) {
+				line = _trimText(line, pointsLeft, method)
+			}
+			if (!line) {
+				break
+			}
+			string += '\n'
+			string += line
+			pointsLeft -= line.length
+		}
+		// Remove the leading `\n`.
+		return string.slice('\n'.length)
+	} else {
+		return _trimText(string, maxLength, method)
+	}
+}
+
+function _trimText(string, maxLength, method) {
 	if (string.length <= maxLength) {
 		return string
 	}
@@ -33,7 +79,7 @@ export default function trimText(string, maxLength, method) {
 	}
 }
 
-function trimByEndOfSentence(string) {
+function trimByEndOfSentence(string, options) {
 	// Trim by end of sentence (if available).
 	let trimAtIndex
 	const lastNewLineIndex = string.lastIndexOf('\n')
@@ -50,8 +96,10 @@ function trimByEndOfSentence(string) {
 	}
 	if (trimAtIndex !== undefined) {
 		return string.slice(0, trimAtIndex + 1)
-		// There may be sentences like "Abc.\n\nDef."
-		// and without trimming at the end it would return `"Abc.\n"`.
-		.replace(/\s*$/, '')
+			// There may be sentences like "Abc.\n\nDef."
+			// and when trimming by "end of sentence"
+			// it could return, for example, `"Abc.\n"`.
+			// Such whitespace at the end should be trimmed.
+			.replace(/\s*$/, '')
 	}
 }

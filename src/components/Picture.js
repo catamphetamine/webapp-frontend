@@ -514,6 +514,10 @@ function _getPreferredSize(sizes, width, options = {}) {
 	width = Math.floor(width)
 	let preferredSize
 	for (const size of sizes) {
+		// Don't show GIF on previews.
+		if (preview && preferredSize && size.type === 'image/gif') {
+			break
+		}
 		// if (size.width > maxWidth) {
 		// 	return preferredSize || sizes[0]
 		// }
@@ -547,17 +551,33 @@ function _getPreferredSize(sizes, width, options = {}) {
 			// 	}
 			return size
 		}
-		// When a GIF is small enough a JPG preview is generated,
-		// and so `sizes` contains the JPF preview and the original GIF
-		// which are of the same size so without this explicit `if` check
-		// the size returned would be the original GIF and not the JPG preview.
-		if (preview && preferredSize && preferredSize.width === size.width) {
-			// Skip this one (most likely the original GIF animation).
-		} else {
-			preferredSize = size
-		}
+		// // When a GIF is small enough a JPG preview is generated,
+		// // and so `sizes` contains the JPF preview and the original GIF
+		// // which are of the same size so without this explicit `if` check
+		// // the size returned would be the original GIF and not the JPG preview.
+		// if (preview && preferredSize && preferredSize.width === size.width) {
+		// 	// Skip this one (most likely the original GIF animation).
+		// } else {
+		// 	preferredSize = size
+		// }
+		preferredSize = size
 	}
 	return preferredSize
+}
+
+// Self-test.
+const testSizes = [
+	{ width: 200, height: 163, type: 'image/jpeg' },
+	{ width: 248, height: 203, type: 'image/gif' }
+]
+if (
+	// Should use a larger image if not saving bandwidth.
+	_getPreferredSize(testSizes, 220) !== testSizes[1] ||
+	// Should use a larger image if saving bandwidth but the larger size is closer to the preferred width.
+	_getPreferredSize(testSizes, 220, { saveBandwidth: true }) !== testSizes[1] ||
+	// Shouldn't use GIF as a preview if there're non-GIF sizes.
+	_getPreferredSize(testSizes, 220, { saveBandwidth: true, preview: true }) !== testSizes[0]) {
+	console.error('Picture.getPreferredSize() test didn\'t pass')
 }
 
 const IMAGE_STYLE_BASE =

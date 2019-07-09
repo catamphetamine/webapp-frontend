@@ -50,4 +50,15 @@ describe('trimText', () => {
 	it('should trim at whitespace if it\'s at more than half of max length', () => {
 		test('Abcdef ghij', 9, 'Abcdef …')
 	})
+
+	it('should count new lines', () => {
+		expectToEqual(
+			trimText('Abc\nDef', 10),
+			'Abc\nDef'
+		)
+		expectToEqual(
+			trimText('Abc\nDef', 10, { countNewLines: true }),
+			'Abc'
+		)
+	})
 })
