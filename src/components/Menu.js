@@ -32,6 +32,7 @@ Menu.propTypes = {
 		url: PropTypes.string.isRequired,
 		action: PropTypes.func,
 		isActive: PropTypes.bool,
+		size: PropTypes.string,
 		title: PropTypes.string.isRequired,
 		outlineIcon: PropTypes.func.isRequired,
 		fillIcon: PropTypes.func.isRequired
@@ -49,12 +50,18 @@ class MenuItem extends React.Component {
 			title,
 			outlineIcon: OutlineIcon,
 			fillIcon: FillIcon,
+			size,
 			pathname
 		} = this.props
 		if (url) {
 			isActive = (isActive === undefined ? true : isActive) && pathname === url
 		}
 		// activeClassName={isActive ? 'menu-item--selected' : undefined}
+		const className = classNames(
+			'menu-item',
+			size && `menu-item--${size}`,
+			isActive && 'menu-item--selected'
+		)
 		return (
 			<li>
 				{action &&
@@ -62,7 +69,7 @@ class MenuItem extends React.Component {
 						type="button"
 						title={title}
 						onClick={action}
-						className={classNames('rrui__button-reset', 'menu-item', isActive && 'menu-item--selected')}>
+						className={classNames('rrui__button-reset', className)}>
 						<FillIcon className="menu-item__icon menu-item__icon--fill"/>
 						<OutlineIcon className="menu-item__icon menu-item__icon--outline"/>
 					</button>
@@ -71,9 +78,7 @@ class MenuItem extends React.Component {
 					<Link
 						to={url}
 						title={title}
-						className={classNames('menu-item', {
-							'menu-item--selected': isActive
-						})}>
+						className={className}>
 						<FillIcon className="menu-item__icon menu-item__icon--fill"/>
 						<OutlineIcon className="menu-item__icon menu-item__icon--outline"/>
 					</Link>
@@ -87,6 +92,7 @@ MenuItem.propTypes = {
 	url: PropTypes.string.isRequired,
 	action: PropTypes.func,
 	isActive: PropTypes.bool,
+	size: PropTypes.string,
 	title: PropTypes.string.isRequired,
 	outlineIcon: PropTypes.func.isRequired,
 	fillIcon: PropTypes.func.isRequired,
