@@ -24,8 +24,8 @@ export default function trimText(string, maxLength, options) {
 			method = options.method
 		}
 	}
+	const fitFactor = options && options.fitFactor || 1
 	if (options && options.countNewLines) {
-		const fitFactor = options.fitFactor || 1
 		const lines = string.split('\n').filter(_ => _)
 		string = ''
 		let characters = 0
@@ -45,7 +45,7 @@ export default function trimText(string, maxLength, options) {
 						// Omits the last line being trimmed if it doesn't result in relatively much text.
 						break
 					}
-					line = _trimText(line, pointsLeft, method)
+					line = _trimText(line, pointsLeft, method, fitFactor)
 				}
 			}
 			if (!line) {
@@ -59,31 +59,32 @@ export default function trimText(string, maxLength, options) {
 		// Remove the leading `\n`.
 		return string.slice('\n'.length)
 	}
-	return _trimText(string, maxLength, method)
+	return _trimText(string, maxLength, method, fitFactor)
 }
 
-function _trimText(string, maxLength, method) {
-	if (string.length <= maxLength) {
+function _trimText(string, maxLength, method, fitFactor) {
+	if (string.length <= maxLength * fitFactor) {
 		return string
 	}
-	string = string.slice(0, maxLength)
 	// Trim by end of sentence.
 	if (!method || method === 'sentence-end' || method === 'sentence-or-word-end') {
-		const result = trimByEndOfSentence(string)
-		if (result && result.length > 0.5 * maxLength) {
+		const longerSubstring = string.slice(0, maxLength * fitFactor)
+		const result = trimByEndOfSentence(longerSubstring)
+		if (result && result.length > 0.7 * maxLength) {
 			return result
 		}
 	}
+	string = string.slice(0, maxLength)
 	// Trim by end of word (if available).
 	if (!method || method === 'sentence-or-word-end') {
 		const lastWordEndsAtPlusOne = string.lastIndexOf(' ')
-		if (lastWordEndsAtPlusOne >= 0 && lastWordEndsAtPlusOne > 0.5 * maxLength) {
+		if (lastWordEndsAtPlusOne >= 0 && lastWordEndsAtPlusOne > 0.8 * maxLength) {
 			return string.slice(0, lastWordEndsAtPlusOne).trim() + ' ' + '…'
 		}
 	}
 	// Simple trim.
 	if (!method) {
-		return string + '…'
+		return string.slice(0, maxLength) + '…'
 	}
 }
 

@@ -14,7 +14,7 @@ describe('trimText', () => {
 
 		test('A b c. D e f. G h', 17, 'A b c. D e f. G h')
 		test('A b c. D e f. G h', 16, 'A b c. D e f.')
-		test('A b c. D e f. G', 5, 'A b …')
+		test('A b c. D e f. G', 5, 'A b c…')
 		test('A b c. D e f. G', 4, 'A b …')
 		test('A b c. D e f. G', 3, 'A b…')
 		test('A b c. D e f. G', 2, 'A …')
@@ -22,33 +22,33 @@ describe('trimText', () => {
 		test('A b c. D e f. G', 0, '…')
 
 		test('Abc.', 2, 'Ab…')
-		test('Abc? Def.', 7, 'Abc?')
-		test('Abc! Def.', 7, 'Abc!')
+		test('AbcAbcAbc? Def.', 12, 'AbcAbcAbc?')
+		test('AbcAbcAbc! Def.', 12, 'AbcAbcAbc!')
 
-		test('Abc. Def? Ghi', 12, 'Abc. Def?')
-		test('Abc. Def! Ghi', 12, 'Abc. Def!')
+		test('AbcAbc. Def? Ghi', 14, 'AbcAbc. Def?')
+		test('AbcAbc. Def! Ghi', 14, 'AbcAbc. Def!')
 
-		test('A b c\nD e f\nG h i', 16, 'A b c\nD e f')
+		test('AA b c\nD e f\nG h i', 14, 'AA b c\nD e f')
 	})
 
-	it('shouldn\'t trim at sentence end if it\'s at less than half of max length', () => {
-		// The sentence end is at less than half of the max length.
+	it('shouldn\'t trim at sentence end if it\'s at less than 0.8 of max length', () => {
+		// The sentence end is at less than 0.8 of the max length.
 		test('A b c. D e f. G', 12, 'A b c. D e …')
 		// New line (sentence end) is at less than max length so it won't trim at that point.
 		test("Embrace the 2d edition\n\nHIS GENERAL ISN'T JUST ABOUT SLAVE TRAINERS OTHER GENRES OF GAMES FIT HERE ALSO (Please read the next part for further clarification).", 150, 'Embrace the 2d edition\n\nHIS GENERAL ISN\'T JUST ABOUT SLAVE TRAINERS OTHER GENRES OF GAMES FIT HERE ALSO (Please read the next part for further …')
 	})
 
-	it('should trim at sentence end if it\'s at more than half of max length', () => {
-		// The sentence end is at more than half of the max length.
-		test('A b c c c c. D e f. G', 16, 'A b c c c c.')
+	it('should trim at sentence end if it\'s at more than 0.8 of max length', () => {
+		// The sentence end is at more than 0.8 of the max length.
+		test('A b c c c c c c c. D e f. G', 22, 'A b c c c c c c c.')
 	})
 
-	it('shouldn\'t trim at whitespace if it\'s at less than half of max length', () => {
+	it('shouldn\'t trim at whitespace if it\'s at less than 0.8 of max length', () => {
 		test('Abcd efghij', 9, 'Abcd efgh…')
 	})
 
-	it('should trim at whitespace if it\'s at more than half of max length', () => {
-		test('Abcdef ghij', 9, 'Abcdef …')
+	it('should trim at whitespace if it\'s at more than 0.8 of max length', () => {
+		test('Abcdeffffffff ghij', 16, 'Abcdeffffffff …')
 	})
 
 	it('should count new lines', () => {
