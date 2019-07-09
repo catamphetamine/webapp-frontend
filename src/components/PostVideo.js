@@ -12,7 +12,6 @@ export default function PostVideo({
 	},
 	maxSize,
 	maxHeight,
-	saveBandwidth,
 	spoilerLabel,
 	onClick
 }) {
@@ -22,7 +21,6 @@ export default function PostVideo({
 			<Video
 				video={video}
 				maxWidth={maxSize || maxHeight ? getMaxWidth(video, maxSize, maxHeight) : undefined}
-				saveBandwidth={saveBandwidth}
 				spoilerLabel={spoilerLabel}
 				onClick={onClick}/>
 			{video.title &&
@@ -45,7 +43,6 @@ PostVideo.propTypes = {
 	attachment: videoAttachment.isRequired,
 	maxSize: PropTypes.number,
 	maxHeight: PropTypes.number,
-	saveBandwidth: PropTypes.bool,
 	spoilerLabel: PropTypes.string
 }
 

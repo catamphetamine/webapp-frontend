@@ -24,7 +24,6 @@ export default function PostBlock({
 	attachmentThumbnailSize,
 	onAttachmentClick,
 	serviceIcons,
-	saveBandwidth,
 	spoilerLabel,
 	locale,
 	children: content
@@ -92,7 +91,6 @@ export default function PostBlock({
 				return (
 					<PostPicture
 						attachment={attachment}
-						saveBandwidth={saveBandwidth}
 						spoilerLabel={spoilerLabel}
 						maxHeight={attachmentThumbnailSize}
 						onClick={onAttachmentClick ?
@@ -107,7 +105,6 @@ export default function PostBlock({
 				return (
 					<PostVideo
 						attachment={attachment}
-						saveBandwidth={saveBandwidth}
 						spoilerLabel={spoilerLabel}
 						maxHeight={attachmentThumbnailSize}
 						onClick={onAttachmentClick ?
@@ -126,7 +123,6 @@ export default function PostBlock({
 						social={attachment.social}
 						locale={locale}
 						attachmentThumbnailSize={attachmentThumbnailSize}
-						saveBandwidth={saveBandwidth}
 						onAttachmentClick={onAttachmentClick}/>
 				)
 			default:
@@ -158,7 +154,6 @@ PostBlock.propTypes = {
 	attachmentThumbnailSize: PropTypes.number,
 	onAttachmentClick: PropTypes.func,
 	serviceIcons: PropTypes.objectOf(PropTypes.func),
-	saveBandwidth: PropTypes.bool,
 	spoilerLabel: PropTypes.string,
 	locale: PropTypes.string,
 	children: postBlock.isRequired

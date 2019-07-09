@@ -11,7 +11,6 @@ import './PostPicture.css'
 
 export default function PostPicture({
 	attachment,
-	saveBandwidth,
 	maxSize,
 	maxHeight,
 	spoilerLabel,
@@ -22,7 +21,6 @@ export default function PostPicture({
 	return (
 		<PostAttachment
 			attachment={attachment}
-			saveBandwidth={saveBandwidth}
 			maxSize={maxSize}
 			maxHeight={maxHeight}
 			spoilerLabel={spoilerLabel}
@@ -34,7 +32,6 @@ export default function PostPicture({
 PostPicture.propTypes = {
 	attachment: pictureAttachment.isRequired,
 	onClick: PropTypes.func,
-	saveBandwidth: PropTypes.bool,
 	maxSize: PropTypes.number,
 	maxHeight: PropTypes.number,
 	spoilerLabel: PropTypes.string

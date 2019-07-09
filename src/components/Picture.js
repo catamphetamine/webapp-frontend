@@ -29,10 +29,6 @@ export default class Picture extends React.PureComponent
 {
 	static propTypes =
 	{
-		// When a GIF picture is rendered and `preview` is `true`
-		// then it will output a non-gif preview (if available).
-		preview : PropTypes.bool,
-
 		maxWidth : PropTypes.number,
 		maxHeight: PropTypes.number,
 
@@ -70,17 +66,12 @@ export default class Picture extends React.PureComponent
 		]).isRequired,
 
 		// Blurs the `<img/>`.
-		blur : PropTypes.number,
+		blur: PropTypes.number,
 
 		picture: picture,
 
-		// // In "bandwidth saving" mode it won't load
-		// // sharper images for "retina" displays
-		// // and it also won't load larger images
-		// // until their respective size is surpassed.
-		// In "bandwidth saving" mode it won't load larger images
-		// until their respective size is surpassed.
-		saveBandwidth: PropTypes.bool.isRequired
+		// If `true` then will only show the smallest size ever.
+		smallestSize: PropTypes.bool
 	}
 
 	static defaultProps =
@@ -88,7 +79,6 @@ export default class Picture extends React.PureComponent
 		border: false,
 		showLoadingPlaceholder: false,
 		showLoadingIndicator: false,
-		saveBandwidth: false,
 		// fadeInDuration: 0,
 		maxWidthWrapper: true
 	}
@@ -309,14 +299,13 @@ export default class Picture extends React.PureComponent
 			children,
 			// Rest.
 			fit: _fit,
-			preview,
 			picture,
 			width,
 			height,
 			maxWidth,
 			maxHeight,
-			saveBandwidth,
 			maxWidthWrapper,
+			smallestSize,
 			...rest
 		} = this.props
 
@@ -402,17 +391,15 @@ export default class Picture extends React.PureComponent
 
 	getPreferredSize = () => {
 		const {
-			preview,
-			saveBandwidth,
-			picture
+			picture,
+			smallestSize
 		} = this.props
+		if (smallestSize) {
+			return picture.sizes && picture.sizes[0] || picture
+		}
 		return getPreferredSize(
 			picture,
-			this.getWidth(),
-			{
-				preview,
-				saveBandwidth
-			}
+			this.getWidth()
 		)
 	}
 
@@ -497,18 +484,12 @@ export function getPreferredSize(picture, width, options = {}) {
 
 // `sizes` must be sorted from smallest to largest.
 function _getPreferredSize(sizes, width, options = {}) {
-	const {
-		preview,
-		saveBandwidth
-	} = options
 	if (!width) {
 		return sizes[0]
 	}
 	let pixelRatio = 1
 	if (typeof window !== 'undefined' && window.devicePixelRatio) {
-		if (!saveBandwidth) {
-			pixelRatio = window.devicePixelRatio
-		}
+		pixelRatio = window.devicePixelRatio
 	}
 	width *= pixelRatio
 	width = Math.floor(width)
@@ -521,12 +502,12 @@ function _getPreferredSize(sizes, width, options = {}) {
 			return size
 		}
 		if (size.width > width) {
-			// Prefer larger size unless it's too oversized.
-			if (saveBandwidth && preferredSize) {
-				if ((width - preferredSize.width) / (size.width - width) < 0.35) {
-					return preferredSize
-				}
-			}
+			// // Prefer larger size unless it's too oversized.
+			// if (saveBandwidth && preferredSize) {
+			// 	if ((width - preferredSize.width) / (size.width - width) < 0.35) {
+			// 		return preferredSize
+			// 	}
+			// }
 			// 	const aspectRatio = sizes[sizes.length - 1].width / sizes[sizes.length - 1].height
 			// 	//
 			// 	const w1 = preferredSize.width
@@ -547,15 +528,6 @@ function _getPreferredSize(sizes, width, options = {}) {
 			// 	}
 			return size
 		}
-		// // When a GIF is small enough a JPG preview is generated,
-		// // and so `sizes` contains the JPF preview and the original GIF
-		// // which are of the same size so without this explicit `if` check
-		// // the size returned would be the original GIF and not the JPG preview.
-		// if (preview && preferredSize && preferredSize.width === size.width) {
-		// 	// Skip this one (most likely the original GIF animation).
-		// } else {
-		// 	preferredSize = size
-		// }
 		preferredSize = size
 	}
 	return preferredSize
@@ -566,13 +538,12 @@ const testSizes = [
 	{ width: 200, height: 163, type: 'image/jpeg' },
 	{ width: 248, height: 203, type: 'image/gif' }
 ]
-if (
-	// Should use a larger image if not saving bandwidth.
-	_getPreferredSize(testSizes, 220) !== testSizes[1] ||
-	// Should use a smaller image if saving bandwidth and the larger size is not closer to the preferred width.
-	_getPreferredSize(testSizes, 210, { saveBandwidth: true }) !== testSizes[0]) {
-	console.error('Picture.getPreferredSize() test didn\'t pass')
-}
+
+// These tests are non-deterministic because they're using `window.devicePixelRatio`.
+// if (_getPreferredSize(testSizes, 220) !== testSizes[1] ||
+// 	_getPreferredSize(testSizes, 200) !== testSizes[0]) {
+// 	console.error('Picture.getPreferredSize() test didn\'t pass')
+// }
 
 const IMAGE_STYLE_BASE =
 {

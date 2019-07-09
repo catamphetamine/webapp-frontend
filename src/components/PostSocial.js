@@ -15,7 +15,6 @@ export default function PostSocial({
 	social,
 	locale,
 	attachmentThumbnailSize,
-	saveBandwidth,
 	onAttachmentClick
 }) {
 	const ProviderLogo = getProviderLogoComponent(social.provider)
@@ -90,7 +89,6 @@ export default function PostSocial({
 			{social.attachments &&
 				<PostAttachments
 					attachmentThumbnailSize={attachmentThumbnailSize}
-					saveBandwidth={saveBandwidth}
 					onAttachmentClick={onAttachmentClick}>
 					{social.attachments}
 				</PostAttachments>
@@ -103,7 +101,6 @@ PostSocial.propTypes = {
 	social: social.isRequired,
 	locale: PropTypes.string,
 	attachmentThumbnailSize: PropTypes.number,
-	saveBandwidth: PropTypes.bool,
 	onAttachmentClick: PropTypes.func
 }
 

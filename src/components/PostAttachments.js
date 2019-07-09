@@ -52,7 +52,7 @@ const TEST = false
 export default function PostAttachments({
 	expandFirstPictureOrVideo,
 	attachmentThumbnailSize,
-	saveBandwidth,
+	useSmallestThumbnails,
 	spoilerLabel,
 	onAttachmentClick,
 	maxAttachmentThumbnails,
@@ -121,14 +121,12 @@ export default function PostAttachments({
 			{titlePictureOrVideo && titlePictureOrVideo.type === 'picture' &&
 				<PostPicture
 					attachment={titlePictureOrVideo}
-					saveBandwidth={saveBandwidth}
 					spoilerLabel={spoilerLabel}
 					onClick={onAttachmentClick ? createOnAttachmentClick(0) : undefined}/>
 			}
 			{titlePictureOrVideo && titlePictureOrVideo.type === 'video' &&
 				<PostVideo
 					attachment={titlePictureOrVideo}
-					saveBandwidth={saveBandwidth}
 					spoilerLabel={spoilerLabel}
 					onClick={onAttachmentClick ? createOnAttachmentClick(0) : undefined}/>
 			}
@@ -155,7 +153,7 @@ export default function PostAttachments({
 									style={POSITION_ABSOLUTE}/>
 								<PostAttachment
 									attachment={pictureOrVideo}
-									saveBandwidth={saveBandwidth}
+									useSmallestThumbnail={useSmallestThumbnails}
 									maxSize={attachmentThumbnailSize}
 									exactSize={exactSize}
 									spoilerLabel={spoilerLabel}
@@ -187,7 +185,7 @@ PostAttachments.propTypes = {
 	onAttachmentClick: PropTypes.func,
 	expandFirstPictureOrVideo: PropTypes.bool.isRequired,
 	spoilerLabel: PropTypes.string,
-	saveBandwidth: PropTypes.bool.isRequired,
+	useSmallestThumbnails: PropTypes.bool,
 	attachmentThumbnailSize: PropTypes.number.isRequired,
 	maxAttachmentThumbnails: PropTypes.oneOfType([
 		PropTypes.oneOf([false]),
@@ -198,7 +196,6 @@ PostAttachments.propTypes = {
 
 PostAttachments.defaultProps = {
 	expandFirstPictureOrVideo: false,
-	saveBandwidth: false,
 	attachmentThumbnailSize: 160,
 	maxAttachmentThumbnails: 6
 }

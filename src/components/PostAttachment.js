@@ -31,7 +31,7 @@ export default class PostAttachment extends React.Component {
 		maxSize: PropTypes.number,
 		maxHeight: PropTypes.number,
 		exactSize: PropTypes.bool,
-		saveBandwidth: PropTypes.bool,
+		useSmallestThumbnail: PropTypes.bool,
 		moreAttachmentsCount: PropTypes.number,
 		className: PropTypes.string
 	}
@@ -63,7 +63,7 @@ export default class PostAttachment extends React.Component {
 			maxSize,
 			maxHeight,
 			exactSize,
-			saveBandwidth,
+			useSmallestThumbnail,
 			moreAttachmentsCount,
 			className
 		} = this.props
@@ -79,7 +79,7 @@ export default class PostAttachment extends React.Component {
 				className={classNames('post__attachment-thumbnail__clickable', className)}>
 				<AttachmentThumbnail
 					attachment={attachment}
-					saveBandwidth={saveBandwidth}
+					smallestSize={useSmallestThumbnail}
 					spoilerLabel={spoilerLabel}
 					isRevealed={isRevealed}
 					maxSize={maxSize}
@@ -222,7 +222,7 @@ function AttachmentThumbnail({
 	maxSize,
 	maxHeight,
 	exactSize,
-	saveBandwidth,
+	smallestSize,
 	spoilerLabel,
 	moreAttachmentsCount
 }) {
@@ -248,14 +248,13 @@ function AttachmentThumbnail({
 	return (
 		<React.Fragment>
 			<Picture
-				preview
 				picture={picture}
 				width={width}
 				height={height}
 				maxWidth={!exactSize && isLandscape ? maxSize : undefined}
 				maxHeight={!exactSize && !isLandscape ? maxSize : undefined}
 				maxWidthWrapper={false}
-				saveBandwidth={saveBandwidth}
+				smallestSize={smallestSize}
 				blur={attachment.spoiler && !isRevealed ? BLUR_FACTOR : undefined}
 				className={classNames('post__attachment-thumbnail__picture', {
 					// 'post__attachment-thumbnail__picture--spoiler': attachment.spoiler && !isRevealed
@@ -286,7 +285,7 @@ AttachmentThumbnail.propTypes = {
 	maxSize: PropTypes.number,
 	maxHeight: PropTypes.number,
 	exactSize: PropTypes.bool,
-	saveBandwidth: PropTypes.bool,
+	smallestSize: PropTypes.bool,
 	spoilerLabel: PropTypes.string,
 	moreAttachmentsCount: PropTypes.number
 }

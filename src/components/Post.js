@@ -22,7 +22,7 @@ export default class Post extends React.Component {
 		footerBadges: PropTypes.arrayOf(postBadge),
 		compact: PropTypes.bool,
 		expandFirstPictureOrVideo: PropTypes.bool,
-		saveBandwidth: PropTypes.bool,
+		useSmallestThumbnailsForAttachments: PropTypes.bool,
 		serviceIcons: PropTypes.objectOf(PropTypes.func),
 		youTubeApiKey: PropTypes.string,
 		maxAttachmentThumbnails: PropTypes.oneOfType([
@@ -160,7 +160,7 @@ export default class Post extends React.Component {
 			expandFirstPictureOrVideo,
 			maxAttachmentThumbnails,
 			attachmentThumbnailSize,
-			saveBandwidth,
+			useSmallestThumbnailsForAttachments,
 			serviceIcons,
 			onAttachmentClick,
 			onReply,
@@ -210,7 +210,6 @@ export default class Post extends React.Component {
 								readMoreLabel={messages.readMore}
 								attachments={attachments}
 								attachmentThumbnailSize={attachmentThumbnailSize}
-								saveBandwidth={saveBandwidth}
 								spoilerLabel={messages.spoiler}
 								onAttachmentClick={onAttachmentClick}
 								serviceIcons={serviceIcons}
@@ -222,7 +221,7 @@ export default class Post extends React.Component {
 				}
 				<PostAttachments
 					expandFirstPictureOrVideo={expandFirstPictureOrVideo}
-					saveBandwidth={saveBandwidth}
+					useSmallestThumbnails={useSmallestThumbnailsForAttachments}
 					maxAttachmentThumbnails={maxAttachmentThumbnails}
 					attachmentThumbnailSize={attachmentThumbnailSize}
 					spoilerLabel={messages.spoiler}
