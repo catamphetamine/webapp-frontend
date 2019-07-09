@@ -1252,10 +1252,12 @@ class Slideshow extends React.Component {
 	}
 
 	shouldHideControls() {
-		// On "large" screens (FullHD and larger) control buttons are large too.
-		// On "medium" screens control buttons are small.
-		// Therefore, control buttons fit for both "medium" and "large" screens.
-		return this.isSmallScreen()
+		// // On "large" screens (FullHD and larger) control buttons are large too.
+		// // On "medium" screens control buttons are small.
+		// // Therefore, control buttons fit for both "medium" and "large" screens.
+		// return this.isSmallScreen()
+		// Actually, always hide controls because it looks cleaner, even on desktops.
+		return true
 	}
 
 	render() {
