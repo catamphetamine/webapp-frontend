@@ -52,7 +52,7 @@ See [`Post Content Types`](https://github.com/catamphetamine/webapp-frontend/tre
 }
 ```
 
-* See [`Post Content Types`](https://github.com/catamphetamine/webapp-frontend/tree/master/src/utility/post/https://github.com/catamphetamine/webapp-frontend/tree/master/src/utility/post/PostContentTypes.md#file) for more details on `File`.
+* See [`Post Content Types`](https://github.com/catamphetamine/webapp-frontend/tree/master/src/utility/post/PostContentTypes.md#file) for more details on `File`.
 
 ## Social
 
