@@ -1,7 +1,13 @@
 import getPostText from './getPostText'
 import trimText from './trimText'
 
-export default function getPostSummary(content, attachments, { messages, maxLength, stopOnNewLine }) {
+export default function getPostSummary(content, attachments, {
+	messages,
+	maxLength,
+	stopOnNewLine,
+	countNewLines,
+	fitFactor
+}) {
 	let text = getPostText(content, attachments, {
 		excludePostQuotes: true,
 		excludeCodeBlocks: true,
@@ -43,7 +49,8 @@ export default function getPostSummary(content, attachments, { messages, maxLeng
 			text.replace(/\n\n+/g, '\n'),
 			maxLength,
 			{
-				countNewLines: true
+				countNewLines,
+				fitFactor
 			}
 		)
 	}

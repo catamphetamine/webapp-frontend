@@ -60,5 +60,38 @@ describe('trimText', () => {
 			trimText('Abc\nDef', 10, { countNewLines: true }),
 			'Abc'
 		)
+		// Everything fits.
+		expectToEqual(
+			trimText('Abc\nDefDefDefDef', 45, { countNewLines: true }),
+			'Abc\nDefDefDefDef'
+		)
+		// Test `fitFactor`.
+		// Everything fits with fit factor.
+		expectToEqual(
+			trimText('Abc\nDefDefDefDef', 38, { countNewLines: true, fitFactor: 1.2 }),
+			'Abc\nDefDefDefDef'
+		)
+		// The last line doesn't fit but is not omitted.
+		expectToEqual(
+			trimText('Abc\nDefDefDefDef', 37, { countNewLines: true, fitFactor: 1.2 }),
+			'Abc\nDefD…'
+		)
+		// The last line doesn't fit at all.
+		expectToEqual(
+			trimText('Abc\nDefDefDefDef', 10, { countNewLines: true, fitFactor: 1.2 }),
+			'Abc'
+		)
+		// When the last line being trimmed doesn't result in
+		// relatively much text then it's omitted.
+		expectToEqual(
+			trimText('AbcAbcAbcAbcAbcAbc\nDefDefDefDefDef', 51, { countNewLines: true, fitFactor: 1.2 }),
+			'AbcAbcAbcAbcAbcAbc'
+		)
+		// When the last line being trimmed does result in
+		// relatively enough text then it's not omitted.
+		expectToEqual(
+			trimText('AbcAbcAbcAbcAbcAbc\nDefDefDefDefDef', 52, { countNewLines: true, fitFactor: 1.2 }),
+			'AbcAbcAbcAbcAbcAbc\nDefD…'
+		)
 	})
 })
