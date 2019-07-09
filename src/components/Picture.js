@@ -514,10 +514,6 @@ function _getPreferredSize(sizes, width, options = {}) {
 	width = Math.floor(width)
 	let preferredSize
 	for (const size of sizes) {
-		// Don't show GIF on previews.
-		if (preview && preferredSize && size.type === 'image/gif') {
-			break
-		}
 		// if (size.width > maxWidth) {
 		// 	return preferredSize || sizes[0]
 		// }
@@ -573,10 +569,8 @@ const testSizes = [
 if (
 	// Should use a larger image if not saving bandwidth.
 	_getPreferredSize(testSizes, 220) !== testSizes[1] ||
-	// Should use a larger image if saving bandwidth but the larger size is closer to the preferred width.
-	_getPreferredSize(testSizes, 220, { saveBandwidth: true }) !== testSizes[1] ||
-	// Shouldn't use GIF as a preview if there're non-GIF sizes.
-	_getPreferredSize(testSizes, 220, { saveBandwidth: true, preview: true }) !== testSizes[0]) {
+	// Should use a smaller image if saving bandwidth and the larger size is not closer to the preferred width.
+	_getPreferredSize(testSizes, 210, { saveBandwidth: true }) !== testSizes[0]) {
 	console.error('Picture.getPreferredSize() test didn\'t pass')
 }
 
