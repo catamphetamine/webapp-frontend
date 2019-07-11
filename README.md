@@ -1,30 +1,30 @@
 Some experiments on a generic web application frontend.
 
+## Install
+
+First, [install `webapp-backend`](https://github.com/catamphetamine/webapp-backend).
+
+Then:
+
+```
+git clone git@github.com:catamphetamine/webapp-frontend.git
+cd webapp-frontend
+npm install
+```
+
 ## Use
 
-Download the code:
-
-```
-git clone git@github.com:catamphetamine/webapp-api.git
-git clone git@github.com:catamphetamine/webapp-backend.git
-git clone git@github.com:catamphetamine/webapp-frontend.git
-```
-
-Set up and seed [`webapp-api`](https://github.com/catamphetamine/webapp-api) database (as per the README)
-
-Run the API:
+Run the backend:
 
 ```
 cd webapp-backend
-npm install
 npm run dev
 ```
 
-Run the application (in a separate terminal):
+Run the frontend (in a separate terminal):
 
 ```
 cd webapp-frontend
-npm install
 npm run dev
 ```
 
