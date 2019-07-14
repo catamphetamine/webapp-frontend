@@ -338,7 +338,7 @@ export default class Picture extends React.PureComponent
 				style={style ? { ...style, ...this.getContainerStyle() } : this.getContainerStyle()}
 				className={classNames(className, 'rrui__picture', {
 					'rrui__picture--repeat-x': fit === 'repeat-x',
-					'rrui__picture--border': border,
+					'rrui__picture--border': border && !picture.transparentBackground,
 					'rrui__pictureo--expanded': expand,
 					'rrui__picture--transparent-background': picture.transparentBackground
 				})}

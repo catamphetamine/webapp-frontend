@@ -8,6 +8,7 @@
 	/* If the `<img/>` image is blurred then `overflow: hidden`
 	   prevents it bleeding over the edges. */
 	overflow: hidden;
+	background-color: var(--Picture-backgroundColor);
 }
 
 /*
@@ -40,6 +41,10 @@
 	content       : '';
 	border        : var(--Picture-borderWidth) solid var(--Picture-borderColor);
 	border-radius : inherit;
+}
+
+.rrui__picture--transparent-background {
+	background-color: transparent;
 }
 
 .rrui__picture__image {
