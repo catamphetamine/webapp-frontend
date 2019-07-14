@@ -4,8 +4,8 @@ $screen-xs-max : 700px; /* 14 * 50 */
 $screen-s-min : 701px;
 $screen-s-max : 882px; /* 14 * 63 */
 $screen-m-min : 883px;
-$screen-m-max : 1274px; /* 14 * 91 */
-$screen-l-min : 1275px;
+$screen-m-max : 1260px; /* 14 * 90 */
+$screen-l-min : 1261px; /* "l" is for "1280x1024" monitors (scrollbar is about 17px in width). */
 $screen-l-max : 1764px; /* $screen-s-max * 2 */
 $screen-xl-min : 1765px;
 
