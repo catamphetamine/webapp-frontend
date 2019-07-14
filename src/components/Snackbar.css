@@ -1,3 +1,5 @@
+@import "../styles/common";
+
 .rrui__snackbar,
 .rrui__snackbar__count {
 	color: var(--Notification-color);
@@ -6,6 +8,14 @@
 
 .rrui__snackbar {
 	box-shadow: 0 0 0 var(--Notification-borderWidth) var(--Notification-borderColor);
+	@mixin xxs {
+		--rrui-snackbar-height: calc(var(--unit) * 3);
+		--rrui-snackbar-side-padding: var(--unit);
+	}
+	@mixin xs {
+		--rrui-snackbar-height: calc(var(--unit) * 3.5);
+		--rrui-snackbar-side-padding: var(--unit);
+	}
 }
 
 .rrui__snackbar__count {
