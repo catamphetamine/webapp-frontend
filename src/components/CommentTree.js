@@ -102,47 +102,20 @@ export default class CommentTree extends React.Component {
 	}
 
 	onToggleShowReplies = () => {
-		const {
-			comment,
-			onDidToggleShowReplies,
-			onShowReply
-		} = this.props
+		const { onDidToggleShowReplies } = this.props
 		let { showReplies } = this.state
 		showReplies = !showReplies
-		if (this.shouldTrackState()) {
-			let state
-			if (showReplies) {
-				state = {
-					replies: new Array(comment.replies.length)
-				}
-				if (onShowReply) {
-					for (const reply of comment.replies) {
-						onShowReply(reply)
-					}
-				}
-				// "Dialogue" reply chains are always expanded
-				// when the first reply in the chain is expanded.
-				// If this is such auto-expanded dialoglue chain
-				// then update `state` in accordance.
-				if (comment.replies.length === 1) {
-					expandDialogueChainReplies(comment, state, onShowReply)
-				}
-			} else {
-				state = null
-			}
-			// Using `.updateSubtreeState()` instead of `.setSubtreeState()` here
-			// so that the "expanded replies" state doesn't erase other "custom" state
-			// like "post is expanded" or "reply form is expanded".
-			this.updateSubtreeState(state)
-		}
 		let promise = Promise.resolve()
 		// On expand replies — no scroll.
 		// On un-expand replies — scroll to the original comment if it's not visible.
 		if (!showReplies) {
 			if (this.post.current) {
-				const postRect = this.post.current.getNode().getBoundingClientRect()
-				if (postRect.top < 0) {
-					const scrolledDistance = Math.abs(postRect.top)
+				// const postRect = this.post.current.getNode().getBoundingClientRect()
+				const toggleShowRepliesButtonRect = this.toggleShowRepliesButton.current.getBoundingClientRect()
+				// if (postRect.top < 0) {
+				if (toggleShowRepliesButtonRect.top < 0) {
+					// const scrolledDistance = Math.abs(postRect.top)
+					const scrolledDistance = Math.abs(toggleShowRepliesButtonRect.top)
 					promise = scrollIntoView(this.post.current.getNode(), {
 						ease: 'easeInOutSine',
 						duration: Math.min(140 + scrolledDistance / 2, 320),
@@ -151,13 +124,18 @@ export default class CommentTree extends React.Component {
 					})
 				}
 			}
-			if (this.toggleShowRepliesButton.current) {
-				promise.then(() => {
+			promise.then(() => {
+				// If the component is still mounted then
+				// focus the "Toggle show replies" button.
+				if (this.toggleShowRepliesButton.current) {
 					this.toggleShowRepliesButton.current.focus()
-				})
-			}
+				}
+			})
 		}
 		promise.then(() => {
+			if (this.shouldTrackState()) {
+				this.updateStateOnToggleShowReplies(showReplies)
+			}
 			this.setState({
 				showReplies
 			}, () => {
@@ -166,6 +144,37 @@ export default class CommentTree extends React.Component {
 				}
 			})
 		})
+	}
+
+	updateStateOnToggleShowReplies(showReplies) {
+		const {
+			comment,
+			onShowReply
+		} = this.props
+		let state
+		if (showReplies) {
+			state = {
+				replies: new Array(comment.replies.length)
+			}
+			if (onShowReply) {
+				for (const reply of comment.replies) {
+					onShowReply(reply)
+				}
+			}
+			// "Dialogue" reply chains are always expanded
+			// when the first reply in the chain is expanded.
+			// If this is such auto-expanded dialoglue chain
+			// then update `state` in accordance.
+			if (comment.replies.length === 1) {
+				expandDialogueChainReplies(comment, state, onShowReply)
+			}
+		} else {
+			state = null
+		}
+		// Using `.updateSubtreeState()` instead of `.setSubtreeState()` here
+		// so that the "expanded replies" state doesn't erase other "custom" state
+		// like "post is expanded" or "reply form is expanded".
+		this.updateSubtreeState(state)
 	}
 
 	getSubtreeState = () => {
