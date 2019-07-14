@@ -264,11 +264,11 @@ export default class CommentTree extends React.Component {
 					onToggleShowReplies={comment.replies ? this.onToggleShowReplies : undefined}
 					toggleShowRepliesButtonRef={this.toggleShowRepliesButton}/>
 				{/* Reply link marker for a single reply. */}
-				{showReplies && _isMiddleDialogueChainLink && comment.replies &&
+				{showReplies && _isMiddleDialogueChainLink &&
 					<div className="comment-tree__dialogue-chain-marker"/>
 				}
 				{/* If there's only a single reply then there won't be the actual reply "tree" rendered. */}
-				{showReplies && comment.replies && _isMiddleDialogueChainLink &&
+				{showReplies && _isMiddleDialogueChainLink &&
 					<CommentTree
 						{...rest}
 						flat
