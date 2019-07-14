@@ -24,6 +24,7 @@ export default function PostBlock({
 	attachmentThumbnailSize,
 	onAttachmentClick,
 	serviceIcons,
+	expandAttachments,
 	spoilerLabel,
 	locale,
 	children: content
@@ -90,6 +91,7 @@ export default function PostBlock({
 			case 'picture':
 				return (
 					<PostPicture
+						expand={expandAttachments}
 						attachment={attachment}
 						spoilerLabel={spoilerLabel}
 						maxHeight={attachmentThumbnailSize}
@@ -104,6 +106,7 @@ export default function PostBlock({
 			case 'video':
 				return (
 					<PostVideo
+						expand={expandAttachments}
 						attachment={attachment}
 						spoilerLabel={spoilerLabel}
 						maxHeight={attachmentThumbnailSize}
@@ -120,6 +123,7 @@ export default function PostBlock({
 			case 'social':
 				return (
 					<PostSocial
+						expandAttachments={expandAttachments}
 						social={attachment.social}
 						locale={locale}
 						attachmentThumbnailSize={attachmentThumbnailSize}
@@ -154,6 +158,7 @@ PostBlock.propTypes = {
 	attachmentThumbnailSize: PropTypes.number,
 	onAttachmentClick: PropTypes.func,
 	serviceIcons: PropTypes.objectOf(PropTypes.func),
+	expandAttachments: PropTypes.bool,
 	spoilerLabel: PropTypes.string,
 	locale: PropTypes.string,
 	children: postBlock.isRequired

@@ -13,6 +13,7 @@ import Search from '../../assets/images/icons/menu/search-outline.svg'
 // import GoogleIcon from '../../assets/images/icons/services/google-monochrome.svg'
 
 export default {
+	changeSlideOnClick: true,
 	getMaxSize(slide) {
 		return slide.picture
 	},

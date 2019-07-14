@@ -81,6 +81,7 @@ class Slideshow extends React.Component {
 		mouseWheelScaleFactor: PropTypes.number.isRequired,
 		// minInitialScale: PropTypes.number.isRequired,
 		fullScreenFitPrecisionFactor: PropTypes.number.isRequired,
+		slideshowMode: PropTypes.bool,
 		plugins: PropTypes.arrayOf(PropTypes.shape({
 			getMaxSize: PropTypes.func.isRequired,
 			getAspectRatio: PropTypes.func.isRequired,
@@ -143,8 +144,7 @@ class Slideshow extends React.Component {
 	touches = []
 	transitionDuration = 0
 
-	constructor(props)
-	{
+	constructor(props) {
 		super(props)
 
 		const { i, children: slides } = this.props
@@ -583,7 +583,7 @@ class Slideshow extends React.Component {
 	}
 
 	shouldShowNextSlideOnClick() {
-		return this.getPluginForSlide().changeSlideOnClick !== false
+		return this.getPluginForSlide().changeSlideOnClick
 	}
 
 	shouldShowPreviousNextButtons() {
@@ -693,7 +693,9 @@ class Slideshow extends React.Component {
 
 	onKeyDown = (event) => {
 		if (this.getPluginForSlide().onKeyDown) {
-			this.getPluginForSlide().onKeyDown(event, this.getCurrentSlide(), this.currentSlideRef)
+			if (this.getPluginForSlide().onKeyDown(event, this.getCurrentSlide(), this.currentSlideRef) === true) {
+				return
+			}
 		}
 		if (event.defaultPrevented) {
 			return
@@ -717,6 +719,8 @@ class Slideshow extends React.Component {
 			case 39:
 			// "Page Down".
 			case 34:
+			// "Spacebar".
+			case 32:
 				event.preventDefault()
 				this.finishTransition()
 				this.showNext()
@@ -1152,8 +1156,9 @@ class Slideshow extends React.Component {
 		return `translate(${-1 * (this.getSlideshowWidth() * i - this.panOffsetX)}px, ${this.panOffsetY}px)`
 	}
 
-	getScaleStyle() {
-		const { scale } = this.state
+	getScaleStyle(j) {
+		const { i } = this.state
+		const scale = i === j ? this.state.scale : this.getScaleForSlide(j)
 		const style = {
 			/* Can be scaled via `style="transform: scale(...)". */
 			transition: 'transform 120ms ease-out'
@@ -1504,7 +1509,8 @@ class Slideshow extends React.Component {
 	}
 
 	renderSlide(slide, j, wasExpanded) {
-		const { i, scale } = this.state
+		const { slideshowMode } = this.props
+		const { i } = this.state
 		const isShown = j === i
 		return this.getPluginForSlide(slide).render({
 			ref: isShown ? this.currentSlideRef : undefined,
@@ -1512,10 +1518,11 @@ class Slideshow extends React.Component {
 			slide,
 			isShown,
 			wasExpanded,
+			slideshowMode,
 			onClick: this.onSlideClick,
 			maxWidth: this.getSlideshowWidth(),
 			maxHeight: this.getSlideshowHeight(),
-			style: isShown ? this.getScaleStyle() : undefined
+			style: this.getScaleStyle(j)
 			// shouldUpscaleSmallSlides: this.shouldUpscaleSmallSlides()
 		})
 	}

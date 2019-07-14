@@ -13,6 +13,7 @@ export default function PostPicture({
 	attachment,
 	maxSize,
 	maxHeight,
+	expand,
 	spoilerLabel,
 	onClick
 }) {
@@ -23,6 +24,7 @@ export default function PostPicture({
 			attachment={attachment}
 			maxSize={maxSize}
 			maxHeight={maxHeight}
+			expand={expand}
 			spoilerLabel={spoilerLabel}
 			onClick={onClick}
 			className="post__picture"/>
@@ -34,6 +36,7 @@ PostPicture.propTypes = {
 	onClick: PropTypes.func,
 	maxSize: PropTypes.number,
 	maxHeight: PropTypes.number,
+	expand: PropTypes.bool,
 	spoilerLabel: PropTypes.string
 }
 

@@ -22,6 +22,7 @@ export default class Post extends React.Component {
 		footerBadges: PropTypes.arrayOf(postBadge),
 		compact: PropTypes.bool,
 		expandFirstPictureOrVideo: PropTypes.bool,
+		expandAttachments: PropTypes.bool,
 		useSmallestThumbnailsForAttachments: PropTypes.bool,
 		serviceIcons: PropTypes.objectOf(PropTypes.func),
 		youTubeApiKey: PropTypes.string,
@@ -158,6 +159,7 @@ export default class Post extends React.Component {
 			url,
 			locale,
 			expandFirstPictureOrVideo,
+			expandAttachments,
 			maxAttachmentThumbnails,
 			attachmentThumbnailSize,
 			useSmallestThumbnailsForAttachments,
@@ -210,6 +212,7 @@ export default class Post extends React.Component {
 								readMoreLabel={messages.readMore}
 								attachments={attachments}
 								attachmentThumbnailSize={attachmentThumbnailSize}
+								expandAttachments={expandAttachments}
 								spoilerLabel={messages.spoiler}
 								onAttachmentClick={onAttachmentClick}
 								serviceIcons={serviceIcons}
@@ -224,6 +227,7 @@ export default class Post extends React.Component {
 					useSmallestThumbnails={useSmallestThumbnailsForAttachments}
 					maxAttachmentThumbnails={maxAttachmentThumbnails}
 					attachmentThumbnailSize={attachmentThumbnailSize}
+					expandAttachments={expandAttachments}
 					spoilerLabel={messages.spoiler}
 					onAttachmentClick={onAttachmentClick}>
 					{this.getNonEmbeddedAttachments()}

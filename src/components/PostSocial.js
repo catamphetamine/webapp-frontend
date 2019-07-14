@@ -15,6 +15,7 @@ export default function PostSocial({
 	social,
 	locale,
 	attachmentThumbnailSize,
+	expandAttachments,
 	onAttachmentClick
 }) {
 	const ProviderLogo = getProviderLogoComponent(social.provider)
@@ -88,6 +89,7 @@ export default function PostSocial({
 			}
 			{social.attachments &&
 				<PostAttachments
+					expandAttachments={expandAttachments}
 					attachmentThumbnailSize={attachmentThumbnailSize}
 					onAttachmentClick={onAttachmentClick}>
 					{social.attachments}
@@ -100,6 +102,7 @@ export default function PostSocial({
 PostSocial.propTypes = {
 	social: social.isRequired,
 	locale: PropTypes.string,
+	expandAttachments: PropTypes.bool,
 	attachmentThumbnailSize: PropTypes.number,
 	onAttachmentClick: PropTypes.func
 }

@@ -19,7 +19,6 @@
 
 	/* MenuIcon. */
 	--MenuIcon-width: calc(var(--unit) * 1.75);
-	--MenuIcon-padding: calc(var(--unit) * 0.5);
 
 	/* Clickable. */
 	--Clickable-color--text: var(--base-color-700);

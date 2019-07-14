@@ -12,6 +12,7 @@ export default function PostVideo({
 	},
 	maxSize,
 	maxHeight,
+	expand,
 	spoilerLabel,
 	onClick
 }) {
@@ -19,8 +20,10 @@ export default function PostVideo({
 	return (
 		<section className="post__video">
 			<Video
+				border
+				expand={expand}
 				video={video}
-				maxWidth={maxSize || maxHeight ? getMaxWidth(video, maxSize, maxHeight) : undefined}
+				maxWidth={expand ? undefined : (maxSize || maxHeight ? getMaxWidth(video, maxSize, maxHeight) : undefined)}
 				spoilerLabel={spoilerLabel}
 				onClick={onClick}/>
 			{video.title &&
@@ -43,6 +46,7 @@ PostVideo.propTypes = {
 	attachment: videoAttachment.isRequired,
 	maxSize: PropTypes.number,
 	maxHeight: PropTypes.number,
+	expand: PropTypes.bool,
 	spoilerLabel: PropTypes.string
 }
 

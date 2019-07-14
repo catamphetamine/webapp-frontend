@@ -24,28 +24,28 @@ export default class ApplicationMenu extends React.Component {
 		return [{
 			title: 'Feed',
 			url: '/feed',
-			outlineIcon: FeedIconOutline,
-			fillIcon: FeedIconFill
+			icon: FeedIconOutline,
+			iconActive: FeedIconFill
 		}, {
 			title: 'Discover',
 			url: '/discover',
-			outlineIcon: SearchIconOutline,
-			fillIcon: SearchIconFill
+			icon: SearchIconOutline,
+			iconActive: SearchIconFill
 		}, {
 			title: 'Post',
 			url: '/post',
-			outlineIcon: AddIconOutline,
-			fillIcon: AddIconFill
+			icon: AddIconOutline,
+			iconActive: AddIconFill
 		}, {
 			title: 'Messages',
 			url: '/messages',
-			outlineIcon: MessageIconOutline,
-			fillIcon: MessageIconFill
+			icon: MessageIconOutline,
+			iconActive: MessageIconFill
 		}, {
 			title: 'Profile',
 			url: '/profile',
-			outlineIcon: PersonIconOutline,
-			fillIcon: PersonIconFill
+			icon: PersonIconOutline,
+			iconActive: PersonIconFill
 		}]
 	}
 

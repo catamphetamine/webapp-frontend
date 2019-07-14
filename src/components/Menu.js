@@ -26,52 +26,63 @@ export default class Menu extends React.Component {
 	}
 }
 
+const menuItemShape = {
+	url: PropTypes.string.isRequired,
+	title: PropTypes.string.isRequired,
+	size: PropTypes.string,
+	onClick: PropTypes.func,
+	isSelected: PropTypes.bool,
+	icon: PropTypes.func.isRequired,
+	iconActive: PropTypes.func
+}
+
 Menu.propTypes = {
 	pathname: PropTypes.string.isRequired,
-	children: PropTypes.arrayOf(PropTypes.shape({
-		url: PropTypes.string.isRequired,
-		action: PropTypes.func,
-		isActive: PropTypes.bool,
-		size: PropTypes.string,
-		title: PropTypes.string.isRequired,
-		outlineIcon: PropTypes.func.isRequired,
-		fillIcon: PropTypes.func.isRequired
-	}))
+	children: PropTypes.arrayOf(PropTypes.shape(menuItemShape)).isRequired
 }
 
 class MenuItem extends React.Component {
 	render() {
 		let {
-			isActive
+			isSelected
 		} = this.props
 		const {
-			action,
+			onClick,
 			url,
 			title,
-			outlineIcon: OutlineIcon,
-			fillIcon: FillIcon,
+			icon,
+			iconActive,
 			size,
 			pathname
 		} = this.props
+		const OutlineIcon = icon
+		const FillIcon = iconActive
 		if (url) {
-			isActive = (isActive === undefined ? true : isActive) && pathname === url
+			isSelected = (isSelected === undefined ? true : isSelected) && pathname === url
 		}
-		// activeClassName={isActive ? 'menu-item--selected' : undefined}
+		// activeClassName={isSelected ? 'menu-item--selected' : undefined}
 		const className = classNames(
 			'menu-item',
 			size && `menu-item--${size}`,
-			isActive && 'menu-item--selected'
+			isSelected && 'menu-item--selected',
+			iconActive && 'menu-item--fill',
+			!iconActive && 'menu-item--outline'
+		)
+		const children = (
+			<React.Fragment>
+				{FillIcon && <FillIcon className="menu-item__icon menu-item__icon--fill"/>}
+				<OutlineIcon className="menu-item__icon menu-item__icon--outline"/>
+			</React.Fragment>
 		)
 		return (
 			<li>
-				{action &&
+				{onClick &&
 					<button
 						type="button"
 						title={title}
-						onClick={action}
+						onClick={onClick}
 						className={classNames('rrui__button-reset', className)}>
-						<FillIcon className="menu-item__icon menu-item__icon--fill"/>
-						<OutlineIcon className="menu-item__icon menu-item__icon--outline"/>
+						{children}
 					</button>
 				}
 				{url &&
@@ -79,8 +90,7 @@ class MenuItem extends React.Component {
 						to={url}
 						title={title}
 						className={className}>
-						<FillIcon className="menu-item__icon menu-item__icon--fill"/>
-						<OutlineIcon className="menu-item__icon menu-item__icon--outline"/>
+						{children}
 					</Link>
 				}
 			</li>
@@ -88,13 +98,4 @@ class MenuItem extends React.Component {
 	}
 }
 
-MenuItem.propTypes = {
-	url: PropTypes.string.isRequired,
-	action: PropTypes.func,
-	isActive: PropTypes.bool,
-	size: PropTypes.string,
-	title: PropTypes.string.isRequired,
-	outlineIcon: PropTypes.func.isRequired,
-	fillIcon: PropTypes.func.isRequired,
-	pathname: PropTypes.string.isRequired
-}
+MenuItem.propTypes = menuItemShape

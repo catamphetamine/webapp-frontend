@@ -7,8 +7,10 @@ and that's how the embedded video's aspect ratio is set.
 	display: block;
 	position: relative;
 	overflow: hidden;
+}
 
-	--rrui-video-focus-border-color: var(--base-color-700);
+.rrui__video--border {
+	--Video-borderColor--focus: var(--base-color-700);
 }
 
 .rrui__video iframe,
@@ -31,14 +33,20 @@ and that's how the embedded video's aspect ratio is set.
 	display: block;
 }
 
-.rrui__video video:focus {
+.rrui__video--border video:focus {
 	outline: none;
-	box-shadow: 0 0 0 1px var(--rrui-video-focus-border-color);
+	box-shadow: 0 0 0 1px var(--Video-borderColor--focus);
 }
 
-.rrui__video--preview:focus {
+.rrui__video--border {
 	.rrui__picture {
-		box-shadow: 0 0 0 1px var(--rrui-video-focus-border-color);
+		box-shadow: 0 0 0 1px var(--Picture-borderColor);
+	}
+}
+
+.rrui__video--border.rrui__video--preview:focus {
+	.rrui__picture {
+		box-shadow: 0 0 0 1px var(--Video-borderColor--focus);
 	}
 	.rrui__video__play-icon-border,
 	.rrui__video__play-icon-triangle {

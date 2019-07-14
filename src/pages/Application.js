@@ -35,23 +35,22 @@ import './Application.css'
 @connect(({ slideshow }) => ({
 	slideshowIndex: slideshow.index,
 	slideshowIsOpen: slideshow.isOpen,
-	slideshowPictures: slideshow.pictures
+	slideshowPictures: slideshow.pictures,
+	slideshowMode: slideshow.slideshowMode
 }), {
 	closeSlideshow
 })
-export default class App extends Component
-{
-	static propTypes =
-	{
+export default class App extends Component {
+	static propTypes = {
 		children : PropTypes.node.isRequired
 	}
 
-	render()
-	{
+	render() {
 		const {
 			slideshowIndex,
 			slideshowIsOpen,
 			slideshowPictures,
+			slideshowMode,
 			closeSlideshow,
 			children
 		} = this.props
@@ -72,6 +71,7 @@ export default class App extends Component
 					<Slideshow
 						i={slideshowIndex}
 						isOpen={slideshowIsOpen}
+						slideshowMode={slideshowMode}
 						onClose={closeSlideshow}>
 						{slideshowPictures}
 					</Slideshow>

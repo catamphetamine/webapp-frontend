@@ -1,10 +1,13 @@
 @import "../styles/common";
 
 .menu {
-	display : flex;
-	margin  : 0;
-	padding : 0;
-	list-style-type : none;
+	--MenuIcon-padding: calc(var(--MenuIcon-width) / 3.5);
+	display: flex;
+	margin: 0;
+	margin-left: calc(-1 * var(--MenuIcon-padding));
+	margin-right: calc(-1 * var(--MenuIcon-padding));
+	padding: 0;
+	list-style: none;
 }
 
 .menu-item-container {
@@ -38,6 +41,12 @@
 	pointer-events: none;
 }
 
+.menu-item--s {
+	.menu-item__icon {
+		padding: calc(var(--MenuIcon-width) / 20);
+	}
+}
+
 .menu-item--xl {
 	padding: 0;
 	.menu-item__icon {
@@ -49,10 +58,10 @@
 .menu-item--xxl {
 	padding: 0;
 	.menu-item__icon {
-		width: calc(var(--MenuIcon-width) + var(--MenuIcon-padding) + var(--unit) * 0.25);
-		height: calc(var(--MenuIcon-width) + var(--MenuIcon-padding) + var(--unit) * 0.25);
-		margin-left: calc(var(--unit) * 0.25 * -1);
-		margin-right: calc(var(--unit) * 0.25 * -1);
+		width: calc(var(--MenuIcon-width) + var(--MenuIcon-padding) + var(--MenuIcon-width) / 7);
+		height: calc(var(--MenuIcon-width) + var(--MenuIcon-padding) + var(--MenuIcon-width) / 7);
+		margin-left: calc(-1 * var(--MenuIcon-width) / 7);
+		margin-right: calc(-1 * var(--MenuIcon-width) / 7);
 	}
 }
 
@@ -64,12 +73,12 @@
 	display: none;
 }
 
-.menu-item:active .menu-item__icon--outline,
+.menu-item--fill:active .menu-item__icon--outline,
 .menu-item--selected .menu-item__icon--outline {
 	display: none;
 }
 
-.menu-item:active .menu-item__icon--fill,
+.menu-item--fill:active .menu-item__icon--fill,
 .menu-item--selected .menu-item__icon--fill {
 	display: block;
 }

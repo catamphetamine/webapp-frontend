@@ -31,6 +31,7 @@ export default class PostAttachment extends React.Component {
 		maxSize: PropTypes.number,
 		maxHeight: PropTypes.number,
 		exactSize: PropTypes.bool,
+		expand: PropTypes.bool,
 		useSmallestThumbnail: PropTypes.bool,
 		moreAttachmentsCount: PropTypes.number,
 		className: PropTypes.string
@@ -60,6 +61,7 @@ export default class PostAttachment extends React.Component {
 			onClick,
 			attachment,
 			spoilerLabel,
+			expand,
 			maxSize,
 			maxHeight,
 			exactSize,
@@ -75,7 +77,7 @@ export default class PostAttachment extends React.Component {
 				attachment={attachment}
 				title={isRevealed ? attachment.title : spoilerLabel}
 				onClick={this.onClick}
-				style={!exactSize && maxSize ? getStyleForMaxSize(attachment, maxSize, maxHeight) : undefined}
+				style={expand ? EXPANDED_STYLE : (!exactSize && maxSize ? getStyleForMaxSize(attachment, maxSize, maxHeight) : undefined)}
 				className={classNames('post__attachment-thumbnail__clickable', className)}>
 				<AttachmentThumbnail
 					attachment={attachment}
@@ -248,6 +250,7 @@ function AttachmentThumbnail({
 	return (
 		<React.Fragment>
 			<Picture
+				border
 				picture={picture}
 				width={width}
 				height={height}
@@ -319,4 +322,8 @@ export function getStyleForMaxSize(attachment, maxSize, maxHeight) {
 		width: '100%',
 		maxWidth: getMaxWidth(attachment, maxSize, maxHeight) + 'px'
 	}
+}
+
+const EXPANDED_STYLE = {
+	width: '100%'
 }

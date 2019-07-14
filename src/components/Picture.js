@@ -39,9 +39,11 @@ export default class Picture extends React.PureComponent
 		width : PropTypes.number,
 		height : PropTypes.number,
 
-		// By default a border will be added around the picture.
-		// Set to `false` to not add border for picture.
-		border : PropTypes.bool.isRequired,
+		// Set to `true` to add border around the picture.
+		border : PropTypes.bool,
+
+		// Set to `true` when rendering the picture expanded to full width.
+		expand : PropTypes.bool,
 
 		// Can show a spinner while the initial image is loading.
 		// Will display the image over the loading indicator.
@@ -74,9 +76,7 @@ export default class Picture extends React.PureComponent
 		smallestSize: PropTypes.bool
 	}
 
-	static defaultProps =
-	{
-		border: false,
+	static defaultProps = {
 		showLoadingPlaceholder: false,
 		showLoadingIndicator: false,
 		// fadeInDuration: 0,
@@ -289,6 +289,7 @@ export default class Picture extends React.PureComponent
 	render_(fit) {
 		const {
 			border,
+			expand,
 			showLoadingPlaceholder,
 			showLoadingIndicator,
 			// fadeInDuration,
@@ -337,7 +338,9 @@ export default class Picture extends React.PureComponent
 				style={style ? { ...style, ...this.getContainerStyle() } : this.getContainerStyle()}
 				className={classNames(className, 'rrui__picture', {
 					'rrui__picture--repeat-x': fit === 'repeat-x',
-					'rrui__picture--border': border
+					'rrui__picture--border': border,
+					'rrui__pictureo--expanded': expand,
+					'rrui__picture--transparent-background': picture.transparentBackground
 				})}
 				{...rest}>
 

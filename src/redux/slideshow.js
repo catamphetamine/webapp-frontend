@@ -6,11 +6,10 @@ import { ReduxModule } from 'react-website'
 const redux = new ReduxModule('SLIDESHOW')
 
 export const openSlideshow = redux.simpleAction(
-	(pictures, index) => ({ pictures, index }),
-	(state, event) => ({
+	(pictures, index, options) => ({ pictures, index, ...options }),
+	(state, args) => ({
 		...state,
-		pictures: event.pictures,
-		index: event.index,
+		...args,
 		isOpen: true
 	})
 )
@@ -21,6 +20,7 @@ export const closeSlideshow = redux.simpleAction(
 		...state,
 		pictures: undefined,
 		index: undefined,
+		slideshowMode: undefined,
 		isOpen: false
 	})
 )

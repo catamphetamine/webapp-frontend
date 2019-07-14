@@ -51,6 +51,7 @@ const TEST = false
 
 export default function PostAttachments({
 	expandFirstPictureOrVideo,
+	expandAttachments,
 	attachmentThumbnailSize,
 	useSmallestThumbnails,
 	spoilerLabel,
@@ -72,7 +73,7 @@ export default function PostAttachments({
 
 	// Extract "title" picture or video.
 	let titlePictureOrVideo
-	if (expandFirstPictureOrVideo && picturesAndVideos.length > 0) {
+	if (!expandAttachments && expandFirstPictureOrVideo && picturesAndVideos.length > 0) {
 		titlePictureOrVideo = picturesAndVideos[0]
 		picturesAndVideos = picturesAndVideos.slice(1)
 	}
@@ -118,19 +119,43 @@ export default function PostAttachments({
 
 	return (
 		<div className="post__attachments">
-			{titlePictureOrVideo && titlePictureOrVideo.type === 'picture' &&
+			{expandAttachments &&
+				picturesAndVideos.map((pictureOrVideo, i) => {
+					switch (pictureOrVideo.type) {
+						case 'picture':
+							return (
+								<PostPicture
+									key={i}
+									expand
+									attachment={pictureOrVideo}
+									spoilerLabel={spoilerLabel}
+									onClick={onAttachmentClick ? createOnAttachmentClick(i) : undefined}/>
+							)
+						case 'video':
+							return (
+								<PostVideo
+									key={i}
+									expand
+									attachment={pictureOrVideo}
+									spoilerLabel={spoilerLabel}
+									onClick={onAttachmentClick ? createOnAttachmentClick(i) : undefined}/>
+							)
+					}
+				})
+			}
+			{!expandAttachments && titlePictureOrVideo && titlePictureOrVideo.type === 'picture' &&
 				<PostPicture
 					attachment={titlePictureOrVideo}
 					spoilerLabel={spoilerLabel}
 					onClick={onAttachmentClick ? createOnAttachmentClick(0) : undefined}/>
 			}
-			{titlePictureOrVideo && titlePictureOrVideo.type === 'video' &&
+			{!expandAttachments && titlePictureOrVideo && titlePictureOrVideo.type === 'video' &&
 				<PostVideo
 					attachment={titlePictureOrVideo}
 					spoilerLabel={spoilerLabel}
 					onClick={onAttachmentClick ? createOnAttachmentClick(0) : undefined}/>
 			}
-			{picturesAndVideos.length > 0 &&
+			{!expandAttachments && picturesAndVideos.length > 0 &&
 				<ul className="post__attachment-thumbnails">
 					{picturesAndVideos.map((pictureOrVideo, i) => {
 						const exactSize = true
@@ -139,7 +164,7 @@ export default function PostAttachments({
 								key={`picture-or-video-${i}`}
 								style={exactSize ? undefined : getStyleForMaxSize(pictureOrVideo, attachmentThumbnailSize)}
 								className={classNames('post__attachment-thumbnail', {
-									'post__attachment-thumbnail--transparent': pictureOrVideo.type === 'picture' && pictureOrVideo.picture.transparent
+									'post__attachment-thumbnail--transparent': pictureOrVideo.type === 'picture' && pictureOrVideo.picture.transparentBackground
 								})}>
 								{/* When copy-pasting content an `<img/>` inside a `<button/>`
 								    is ignored, that's why placing a "dummy" transparent pixel
@@ -184,6 +209,7 @@ export default function PostAttachments({
 PostAttachments.propTypes = {
 	onAttachmentClick: PropTypes.func,
 	expandFirstPictureOrVideo: PropTypes.bool.isRequired,
+	expandAttachments: PropTypes.bool,
 	spoilerLabel: PropTypes.string,
 	useSmallestThumbnails: PropTypes.bool,
 	attachmentThumbnailSize: PropTypes.number.isRequired,

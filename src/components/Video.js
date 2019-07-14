@@ -237,6 +237,7 @@ export default class Video extends React.Component {
 		const {
 			video,
 			seekOnArrowKeys,
+			seekOnArrowKeysAtBorders,
 			changeVolumeOnArrowKeys
 		} = this.props
 
@@ -256,7 +257,9 @@ export default class Video extends React.Component {
 
 			// Seek backwards on Left Arrow key.
 			case 37:
-				if (seekOnArrowKeys) {
+				if (seekOnArrowKeys &&
+					(seekOnArrowKeysAtBorders || this.hasStarted() === true)
+				) {
 					if (this.seek(false)) {
 						event.preventDefault()
 					}
@@ -265,7 +268,9 @@ export default class Video extends React.Component {
 
 			// Seek forward on Right Arrow key.
 			case 39:
-				if (seekOnArrowKeys) {
+				if (seekOnArrowKeys &&
+					(seekOnArrowKeysAtBorders || this.hasEnded() === false)
+				) {
 					if (this.seek(true)) {
 						event.preventDefault()
 					}
@@ -414,6 +419,7 @@ export default class Video extends React.Component {
 
 	render_(fit) {
 		const {
+			border,
 			video,
 			// width,
 			// height,
@@ -430,7 +436,9 @@ export default class Video extends React.Component {
 		const _style = style ? { ...style, ...this.getContainerStyle() } : this.getContainerStyle()
 		const _className = classNames(className, 'rrui__video', {
 			'rrui__video--preview': showPreview,
-			'rrui__video--aspect-ratio': fit === 'width'
+			'rrui__video--aspect-ratio': fit === 'width',
+			'rrui__video--border': border,
+			// 'rrui__video--expanded': expand
 		})
 
 		if (showPreview) {
@@ -464,7 +472,8 @@ export default class Video extends React.Component {
 	renderPreview() {
 		const {
 			video,
-			showPlayIcon
+			showPlayIcon,
+			expand
 		} = this.props
 
 		return (
@@ -472,6 +481,7 @@ export default class Video extends React.Component {
 				<Picture
 					picture={video.picture}
 					fit="cover"
+					expand={expand}
 					aria-hidden/>
 				{showPlayIcon &&
 					<VideoPlayIcon className="rrui__video__play-icon--center"/>
@@ -561,6 +571,7 @@ Video.propTypes = {
 	maxWidthWrapper : PropTypes.bool.isRequired,
 	showPreview: PropTypes.bool.isRequired,
 	seekOnArrowKeys: PropTypes.bool.isRequired,
+	seekOnArrowKeysAtBorders: PropTypes.bool.isRequired,
 	seekStep: PropTypes.number.isRequired,
 	changeVolumeOnArrowKeys: PropTypes.bool.isRequired,
 	changeVolumeStep: PropTypes.number.isRequired,
@@ -569,6 +580,8 @@ Video.propTypes = {
 	showPlayIcon: PropTypes.bool,
 	onClick: PropTypes.func,
 	tabIndex: PropTypes.number,
+	border: PropTypes.bool,
+	expand: PropTypes.bool,
 	style: PropTypes.object,
 	className: PropTypes.string
 }
@@ -576,6 +589,7 @@ Video.propTypes = {
 Video.defaultProps = {
 	showPreview: true,
 	seekOnArrowKeys: true,
+	seekOnArrowKeysAtBorders: true,
 	seekStep: 5,
 	changeVolumeOnArrowKeys: true,
 	changeVolumeStep: 0.1,

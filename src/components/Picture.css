@@ -24,6 +24,12 @@
 	background-repeat : repeat;
 }
 
+.rrui__picture--border
+{
+	/* `padding` is for the border. */
+	padding: var(--Picture-borderWidth);
+}
+
 .rrui__picture--border:after
 {
 	position      : absolute;
