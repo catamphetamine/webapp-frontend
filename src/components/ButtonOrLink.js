@@ -5,7 +5,7 @@ import { Link } from 'react-website'
 
 import _openLinkInNewTab from '../utility/openLinkInNewTab'
 
-function ButtonOrLink({
+const ButtonOrLink = React.forwardRef(function({
 	url,
 	children,
 	panOffsetThreshold,
@@ -185,7 +185,7 @@ function ButtonOrLink({
 			{children}
 		</a>
 	)
-}
+})
 
 ButtonOrLink.propTypes = {
 	onClick: PropTypes.func.isRequired,
@@ -198,4 +198,4 @@ ButtonOrLink.defaultProps = {
 	panOffsetThreshold: 5
 }
 
-export default React.forwardRef(ButtonOrLink)
+export default ButtonOrLink

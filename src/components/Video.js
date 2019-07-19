@@ -229,14 +229,15 @@ export default class Video extends React.Component {
 		// Handle click event.
 		const { onClick, expand } = this.props
 		const { showPreview } = this.state
-		if (!expand) {
-			if (onClick) {
-				onClick(event)
-			}
-			if (showPreview && !event.defaultPrevented) {
-				event.preventDefault()
-				this.showVideo()
-			}
+		if (expand) {
+			return
+		}
+		if (onClick) {
+			onClick(event)
+		}
+		if (showPreview && !event.defaultPrevented) {
+			event.preventDefault()
+			this.showVideo()
 		}
 	}
 
