@@ -223,10 +223,14 @@ export default class Video extends React.Component {
 				autoPlay: true
 			}, () => {
 				this.focus()
-				callback()
+				if (callback) {
+					callback()
+				}
 			})
 		} else {
-			callback()
+			if (callback) {
+				callback()
+			}
 		}
 	}
 
