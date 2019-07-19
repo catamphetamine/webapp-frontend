@@ -21,7 +21,7 @@ export const BORDER_WIDTH = 1
 
 export default class Video extends React.Component {
 	state = {
-		showPreview: this.props.showPreview, // && this.props.video.picture,
+		showPreview: this.props.showPreview && !this.props.autoPlay,
 		autoPlay: this.props.autoPlay
 	}
 
@@ -215,11 +215,19 @@ export default class Video extends React.Component {
 		}
 	}
 
-	showVideo = () => {
-		this.setState({
-			showPreview: false,
-			autoPlay: true
-		}, this.focus)
+	showVideo = (callback) => {
+		const { showPreview } = this.state
+		if (showPreview) {
+			this.setState({
+				showPreview: false,
+				autoPlay: true
+			}, () => {
+				this.focus()
+				callback()
+			})
+		} else {
+			callback()
+		}
 	}
 
 	onClick = (event) => {
@@ -367,16 +375,23 @@ export default class Video extends React.Component {
 
 	getMaxWidth() {
 		const {
+			video,
 			maxWidth,
-			maxHeight
+			maxHeight,
+			fit
 		} = this.props
+		const maxWidths = []
 		if (maxWidth) {
-			if (maxHeight) {
-				return Math.min(maxWidth, maxHeight * this.getAspectRatio())
-			}
-			return maxWidth
-		} else {
-			return maxHeight * this.getAspectRatio()
+			maxWidths.push(maxWidth)
+		}
+		if (maxHeight) {
+			maxWidths.push(maxHeight * this.getAspectRatio())
+		}
+		if (fit === 'scale-down') {
+			maxWidths.push(getMaxSize(video).width)
+		}
+		if (maxWidths.length > 0) {
+			return Math.min(...maxWidths)
 		}
 	}
 
@@ -396,13 +411,9 @@ export default class Video extends React.Component {
 			}
 		}
 		if (maxWidth || maxHeight) {
-			let _maxWidth = this.getMaxWidth()
-			if (fit === 'scale-down') {
-				_maxWidth = Math.min(_maxWidth, getMaxSize(video).width)
-			}
 			return {
 				width: '100%',
-				maxWidth: this.addBorder(_maxWidth) + 'px'
+				maxWidth: this.addBorder(this.getMaxWidth()) + 'px'
 			}
 		}
 	}
@@ -449,7 +460,7 @@ export default class Video extends React.Component {
 					tabIndex={tabIndex}
 					width={expand ? undefined : width}
 					height={expand ? undefined : height}
-					maxWidth={expand ? getMaxSize(video).width : maxWidth}
+					maxWidth={expand ? getMaxSize(video).width : this.getMaxWidth()}
 					maxHeight={expand ? undefined : maxHeight}
 					aspectRatio={video.width ? this.getAspectRatio() : undefined}
 					aria-hidden
@@ -486,20 +497,33 @@ export default class Video extends React.Component {
 		if (!video.provider) {
 			// `onClick` is used to prevent Chrome Video player
 			// triggering "pause"/"play" on click while dragging.
+			//
+			// `<video/>` can maintain its aspect ratio during layout
+			// but only after the video file has loaded, and there's a
+			// very short period of time at the start of `<video/>` layout
+			// when it doesn't maintain aspect ratio. This results in
+			// `<Post/>`s having `<video/>`s changing their height after
+			// such `<Post/>`s have been mounted which results in
+			// `virtual-scroller` jumping while scrolling.
+			// Therefore using an `<AspectRatioWrapper/>` here too
+			// to preserve aspect ratio.
 			return (
-				<HtmlVideo
-					{...rest}
-					preview={expand ? false : true}
-					ref={this.video}
-					onClick={this.onClick}
-					tabIndex={tabIndex}
-					video={video}
-					autoPlay={autoPlay}/>
+				<AspectRatioWrapper {...rest} aspectRatio={this.getAspectRatio()}>
+					<HtmlVideo
+						width="100%"
+						height="100%"
+						preview={expand ? false : true}
+						ref={this.video}
+						onClick={this.onClick}
+						tabIndex={tabIndex}
+						video={video}
+						autoPlay={autoPlay}/>
+				</AspectRatioWrapper>
 			)
 		}
 
 		if (video.provider === 'YouTube' && YouTubeVideo.hasApiLoaded()) {
-			// `<video/>` can maintain its aspect ratio while auto-scaling
+			// `<video/>` can maintain its aspect ratio during layout
 			// while `<iframe/>` can't, so using the `paddingBottom` trick here
 			// to preserve aspect ratio.
 			return (
@@ -519,7 +543,7 @@ export default class Video extends React.Component {
 			// https://developers.google.com/web/updates/2017/09/autoplay-policy-changes
 			// `allowFullScreen` property is for legacy browsers support.
 			//
-			// `<video/>` can maintain its aspect ratio while auto-scaling
+			// `<video/>` can maintain its aspect ratio during layout
 			// while `<iframe/>` can't, so using the `paddingBottom` trick here
 			// to preserve aspect ratio.
 			return (

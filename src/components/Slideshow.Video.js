@@ -79,6 +79,11 @@ export default {
 	canRender(slide) {
 		return slide.type === 'video'
 	},
+	onShowSlide(slide, ref, props) {
+		if (props.slideshowMode) {
+			ref.showVideo(() => ref.play())
+		}
+	},
 	render({
 		ref,
 		slide,

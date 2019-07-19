@@ -310,7 +310,21 @@ class Slideshow extends React.Component {
 			// Reset slide display mode.
 			scale: this.getScaleForSlide(i),
 			expandedSlideIndex: undefined
-		}, () => this.focus(direction))
+		}, () => {
+			this.onShowSlide(i)
+			this.focus(direction)
+		})
+	}
+
+	onShowSlide(i) {
+		const plugin = this.getPluginForSlide(this.getCurrentSlide())
+		if (plugin.onShowSlide) {
+			plugin.onShowSlide(
+				this.getCurrentSlide(),
+				this.currentSlideRef.current,
+				this.props
+			)
+		}
 	}
 
 	getScaleForSlide(i) {

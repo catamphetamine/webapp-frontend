@@ -26,12 +26,9 @@ and that's how the embedded video's aspect ratio is set.
 	overflow: visible;
 }*/
 
-video.rrui__video {
+.rrui__video video {
 	/* `<video/>`'s `display` is `inline` by default. */
 	display: block;
-}
-
-.rrui__video {
 	/* Don't show the `:focused` outline. */
 	outline: none;
 }
