@@ -53,20 +53,12 @@
 }
 
 .rrui__slideshow__video {
-	width: 100%;
-	height: 100%;
 	background-color: black;
 	/* Sometimes `video.width` and `video.height` are incorrect
 	   which would result in a wrong placement on screen.
 	   Centering such videos works around such bugs. */
 	display: flex;
 	align-items: center;
-}
-
-.rrui__slideshow__video .rrui__picture,
-.rrui__slideshow__picture {
-	width: 100%;
-	height: 100%;
 }
 
 /* Show a border around the current slide
@@ -76,14 +68,6 @@
 	   so that its `box-shadow` is visible. */
 	position: relative;
 	z-index: 1;
-	/* Using `box-shadow` here instead of `border`
-	   so that the border is not visible for the current slide
-	   but only when swiping from the current slide to its siblings. */
-	/*
-	.rrui__slideshow__picture:not(.rrui__picture--transparent-background); {
-		box-shadow: 0 0 0 1px var(--Picture-borderColor);
-	}
-	*/
 	.rrui__slideshow__video {
 		--Video-borderColor--focus: var(--Picture-borderColor);
 	}
@@ -155,8 +139,7 @@
 	outline: none;
 
 	&:hover, &:focus {
-		color: var(--base-color-500);
-		/*box-shadow: 0 0 0 1px inset var(--base-color-500);*/
+		color: var(--Clickable-color--active);
 	}
 }
 
@@ -164,8 +147,8 @@
 .rrui__slideshow__action--toggled {
 	/* Override link buttons :active color. */
 	color: var(--white-color);
-	background-color: var(--base-color-500);
-	/*box-shadow: 0 0 0 1px var(--white-color-500);*/
+	background-color: var(--Clickable-color--active);
+	/*box-shadow: 0 0 0 1px var(--Clickable-color--active);*/
 }
 
 .rrui__slideshow__action--counterform {
@@ -174,9 +157,9 @@
 
 .rrui__slideshow__action--counterform:active,
 .rrui__slideshow__action--counterform.rrui__slideshow__action--toggled {
-	background-color: var(--base-color-500);
+	background-color: var(--Clickable-color--active);
 	.svg-icon-counter-form {
-		color: var(--base-color-500);
+		color: var(--Clickable-color--active);
 		fill: var(--white-color);
 	}
 }
@@ -196,7 +179,7 @@
 }
 
 .rrui__slideshow__action:active {
-	background-color: var(--base-color-500);
+	background-color: var(--Clickable-color--active);
 }
 
 .rrui__slideshow__action-icon {
@@ -240,10 +223,6 @@
 	right: 0;
 }
 
-/*.rrui__slideshow__progress {
-	pointer-events: none;
-}*/
-
 .rrui__slideshow__progress-counter {
 	display: flex;
 	align-items: center;
@@ -255,11 +234,11 @@
 	color: var(--white-color);
 	font-weight: 300;
 	&:focus, &:hover {
-		color: var(--base-color-500);
+		color: var(--Clickable-color--active);
 	}
 	&:active {
 		color: var(--white-color);
-		background-color: var(--base-color-500);
+		background-color: var(--Clickable-color--active);
 		.rrui__slideshow__progress-counter-current {
 			opacity: 1;
 		}
@@ -310,7 +289,7 @@
 }
 
 .rrui__slideshow__progress-dot--selected {
-	background-color: var(--base-color-500);
+	background-color: var(--Clickable-color--active);
 }
 
 .rrui__slideshow__video .rrui__video__play-icon {

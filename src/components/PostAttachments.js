@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import classNames from 'classnames'
 
 import {
-	TRANSPARENT_PIXEL,
+	// TRANSPARENT_PIXEL,
 	// getAspectRatio as getPictureAspectRatio
 } from './Picture'
 
@@ -37,8 +37,10 @@ import PostFile, {
 } from './PostFile'
 
 import PostAttachment, {
-	getStyleForMaxSize
+	getPicture
 } from './PostAttachment'
+
+import { getMinSize } from './Picture'
 
 import {
 	postAttachment
@@ -156,38 +158,22 @@ export default function PostAttachments({
 					onClick={onAttachmentClick ? createOnAttachmentClick(0) : undefined}/>
 			}
 			{!expandAttachments && picturesAndVideos.length > 0 &&
-				<ul className="post__attachment-thumbnails">
+				<div className="post__attachment-thumbnails">
 					{picturesAndVideos.map((pictureOrVideo, i) => {
-						const exactSize = true
 						return (
-							<li
+							<PostAttachment
 								key={`picture-or-video-${i}`}
-								style={exactSize ? undefined : getStyleForMaxSize(pictureOrVideo, attachmentThumbnailSize)}
-								className={classNames('post__attachment-thumbnail', {
-									'post__attachment-thumbnail--transparent': pictureOrVideo.type === 'picture' && pictureOrVideo.picture.transparentBackground
-								})}>
-								{/* When copy-pasting content an `<img/>` inside a `<button/>`
-								    is ignored, that's why placing a "dummy" transparent pixel
-								    having the correct `alt` before the `<button/>`. */}
-								<img
-									aria-hidden
-									src={TRANSPARENT_PIXEL}
-									width={0}
-									height={0}
-									alt={pictureOrVideo.title}
-									style={POSITION_ABSOLUTE}/>
-								<PostAttachment
-									attachment={pictureOrVideo}
-									useSmallestThumbnail={useSmallestThumbnails}
-									maxSize={attachmentThumbnailSize}
-									exactSize={exactSize}
-									spoilerLabel={spoilerLabel}
-									onClick={onAttachmentClick ? createOnAttachmentClick(i + (titlePictureOrVideo ? 1 : 0)) : undefined}
-									moreAttachmentsCount={i === picturesAndVideos.length - 1 ? picturesAndVideosMoreCount : undefined}/>
-							</li>
+								attachment={pictureOrVideo}
+								useSmallestThumbnail={useSmallestThumbnails}
+								width={useSmallestThumbnails ? getMinSize(getPicture(pictureOrVideo)).width : undefined}
+								height={useSmallestThumbnails ? getMinSize(getPicture(pictureOrVideo)).height : undefined}
+								maxSize={attachmentThumbnailSize}
+								spoilerLabel={spoilerLabel}
+								onClick={onAttachmentClick ? createOnAttachmentClick(i + (titlePictureOrVideo ? 1 : 0)) : undefined}
+								moreAttachmentsCount={i === picturesAndVideos.length - 1 ? picturesAndVideosMoreCount : undefined}/>
 						)
 					})}
-				</ul>
+				</div>
 			}
 			{audios.length > 0 && audios.map((audio, i) => (
 				<PostAudio key={i} audio={audio}/>
@@ -387,15 +373,9 @@ const POSITION_ABSOLUTE = {
 function getAttachmentThumbnailHeight(attachment) {
 	switch (attachment.type) {
 		case 'picture':
-			if (attachment.picture.sizes) {
-				return attachment.picture.sizes[0].height
-			}
-			return attachment.picture.height
+			return getMinSize(attachment.picture).height
 		case 'video':
-			if (attachment.video.picture.sizes) {
-				return attachment.video.picture.sizes[0].height
-			}
-			return attachment.video.picture.height
+			return getMinSize(attachment.video.picture).height
 		default:
 			console.error(`Unknown attachment type: ${attachment.type}`)
 			console.log(attachment)

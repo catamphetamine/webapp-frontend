@@ -1,22 +1,26 @@
 @import "react-responsive-ui/style.css";
 @import "./grid.mixins";
 
-@import "react-responsive-ui/small-screen/Modal.css" (max-width: $screen-xs-max);
-@import "react-responsive-ui/small-screen/Snackbar.css" (max-width: $screen-xs-max);
-@import "react-responsive-ui/small-screen/DatePicker.InputOverlay.css" (max-width: $screen-xs-max);
+@import "react-responsive-ui/small-screen/Modal.css" (max-width: $screen-xxs-max);
+@import "react-responsive-ui/small-screen/Snackbar.css" (max-width: $screen-xxs-max);
+@import "react-responsive-ui/small-screen/DatePicker.InputOverlay.css" (max-width: $screen-xxs-max);
 
 :root {
 	--rrui-unit               : var(--unit);
 	--rrui-white-color        : var(--Content-backgroundColor);
 	--rrui-black-color        : var(--Content-color-900);
 	--rrui-accent-color       : var(--Clickable-color);
-	--rrui-accent-color-light : var(--Clickable-color--light);
+	--rrui-accent-color-light : var(--Clickable-color--active);
 	--rrui-input-field-label-color-focus: var(--Clickable-color--text);
 	--rrui-gray-color         : var(--Content-color-400);
 	--rrui-gray-color-light   : var(--Content-color-300);
 	--rrui-gray-color-lightest: var(--Content-color-200);
-	--rrui-error-color        : var(--Error-backgroundColor);
+	--rrui-error-color        : var(--Error-color);
 	--rrui-input-height: calc(var(--unit) * 2.5);
+}
+
+.dark {
+	--rrui-input-field-label-color: var(--Content-color-600);
 }
 
 .rrui__input-field {
@@ -81,4 +85,12 @@
 
 .rrui__input--monospace .rrui__input-field {
 	font-family: monospace;
+}
+
+.rrui__modal__actions .form__action {
+	margin-top: 0;
+}
+
+.rrui__modal__contents {
+	box-shadow: 0 0 0 var(--Modal-borderWidth) var(--Modal-borderColor);
 }

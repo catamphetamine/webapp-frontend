@@ -75,15 +75,14 @@ strong {
 	color: initial;
 }
 
-/*a:active
-{
-	color: var(--base-color-600);
-}*/
-
 /* Internet Explorer adds borders around all images */
-img
-{
+img {
 	border: none;
+}
+
+.dark img {
+	/* Darken pictures in "Dark Mode". */
+	filter: var(--Picture-filter);
 }
 
 p

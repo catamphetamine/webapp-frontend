@@ -1,0 +1,95 @@
+{
+	"languageName": "English",
+	"notifications": {
+		"title": "Notifications"
+	},
+	"darkMode": "Night mode",
+	"settings": {
+		"title": "Settings",
+		"language": "Language",
+		"fontSize": {
+			"title": "Font Size",
+			"small": "Small",
+			"medium": "Medium",
+			"large": "Large"
+		}
+	},
+	"deletedComment": "Deleted comment",
+	"hiddenComment": "Hidden comment",
+	"quotedComment": "Comment",
+	"contentType": {
+		"picture": "Picture",
+		"video": "Video",
+		"audio": "Audio",
+		"code": "Code",
+		"link": "Link",
+		"attachment": "Attachment"
+	},
+	"search": "Search",
+	"noSearchResults": "Nothing found",
+	"post": {
+		"banned": "The author of this comment was banned",
+		"bannedReason": ". Reason: \"{0}\".",
+		"sticky": "Sticky thread",
+		"closed": "Closed thread",
+		"commentsCount": "Comments",
+		"repliesCount": "Replies",
+		"readMore": "Show\u00a0more",
+		"moreActions": "More actions",
+		"reply": "Reply",
+		"spoiler": "Spoiler",
+		"expandAttachments": "Expand attachments",
+		"viewAttachments": "View attachments",
+		"videoNotFound": "Video not found"
+	},
+	"form": {
+		"error": {
+			"required": "Required"
+		}
+	},
+	"actions": {
+		"post": "Post",
+		"save": "Save",
+		"add": "Add",
+		"ok": "Ok",
+		"cancel": "Cancel",
+		"yes": "Yes",
+		"no": "No",
+		"close": "Close",
+		"accept": "Accept",
+		"learnMore": "Learn more",
+		"search": "Search"
+	},
+	"role": {
+		"administrator": "Administrator",
+		"moderator": "Moderator"
+	},
+	"errorPages": {
+		"404": {
+			"title": "Page not found"
+		},
+		"500": {
+			"title": "Error"
+		},
+		"requestedURL": "Page URL"
+	},
+	"slideshow": {
+		"actions": {
+			"previous": "Previous",
+			"next": "Next",
+			"download": "Download",
+			"close": "Close",
+			"scaleUp": "Scale Up",
+			"scaleDown": "Scale Down",
+			"scaleReset": "Initial size",
+			"searchInGoogle": "Search in Google",
+			"showControls": "Show controls",
+			"hideControls": "Hide controls",
+			"openExternalLink": "Open external link"
+		}
+	},
+	"cookies": {
+		"notice": "This website uses Cookies and Local Storage to personalise content, to provide social media features and to analyse traffic.",
+		"required": "You must accept the Cookies and Local Storage policy first."
+	}
+}

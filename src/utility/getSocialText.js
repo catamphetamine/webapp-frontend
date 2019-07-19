@@ -3,6 +3,12 @@
 import getAttachmentTextWithoutSocial from './getAttachmentTextWithoutSocial'
 import getAttachmentMessage from './getAttachmentMessage'
 
+/**
+ * Generates a text-only representation of a `social`.
+ * @param  {object} social
+ * @param  {object} [messages]
+ * @return {string}
+ */
 export default function getSocialText(social, messages) {
 	const author = getSocialAuthorText(social)
 	const content = getSocialContentText(social, messages)
@@ -35,7 +41,7 @@ function getSocialContentText(social, messages) {
 				return text
 			}
 		}
-		if (messages) {
+		if (messages && messages) {
 			for (const attachment of social.attachments) {
 				if (getAttachmentMessage(attachment, messages)) {
 					return getAttachmentMessage(attachment, messages)

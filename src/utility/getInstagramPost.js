@@ -21,7 +21,7 @@ let counter = 1
  * @param  {string} id
  * @return {object} [result] `{ url, content, authorName, authorId, authorUrl }`.
  */
-export default async function getTweet(id) {
+export default async function getInstagramPost(id) {
 	if (counter === Number.MAX_SAFE_INTEGER) {
 		counter = 1
 	}

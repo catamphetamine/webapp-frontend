@@ -1,5 +1,5 @@
 import { PREVIEW_PICTURE_SIZES, getPictureSizeURL } from './video-youtube'
-import LocalStorageCache from './localStorageCache'
+import { LocalStorageCache } from './LRUCache'
 import { areCookiesAccepted } from './cookiePolicy'
 
 let cache

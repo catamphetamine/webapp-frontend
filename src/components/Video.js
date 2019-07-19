@@ -14,6 +14,11 @@ import ButtonOrLink from './ButtonOrLink'
 
 import './Video.css'
 
+// Picture border width.
+// Could also be read from the CSS variable:
+// `parseInt(getComputedStyle(this.container.current).getPropertyValue('--Picture-borderWidth'))`.
+export const BORDER_WIDTH = 1
+
 export default class Video extends React.Component {
 	state = {
 		showPreview: this.props.showPreview, // && this.props.video.picture,
@@ -222,14 +227,16 @@ export default class Video extends React.Component {
 			return
 		}
 		// Handle click event.
-		const { onClick } = this.props
+		const { onClick, expand } = this.props
 		const { showPreview } = this.state
-		if (onClick) {
-			onClick(event)
-		}
-		if (showPreview && !event.defaultPrevented) {
-			event.preventDefault()
-			this.showVideo()
+		if (!expand) {
+			if (onClick) {
+				onClick(event)
+			}
+			if (showPreview && !event.defaultPrevented) {
+				event.preventDefault()
+				this.showVideo()
+			}
 		}
 	}
 
@@ -344,85 +351,71 @@ export default class Video extends React.Component {
 
 	onFullScreenChange() {}
 
-	getFit() {
+	addBorder(dimension) {
+		const { border } = this.props
+		if (border) {
+			return dimension + 2 * BORDER_WIDTH
+		}
+		return dimension
+	}
+
+	getAspectRatio() {
+		const { video } = this.props
+		return getAspectRatio(video)
+	}
+
+	getMaxWidth() {
 		const {
-			fit,
-			width,
-			height,
 			maxWidth,
 			maxHeight
 		} = this.props
-		if (fit) {
-			return fit
+		if (maxWidth) {
+			if (maxHeight) {
+				return Math.min(maxWidth, maxHeight * this.getAspectRatio())
+			}
+			return maxWidth
+		} else {
+			return maxHeight * this.getAspectRatio()
 		}
-		if (width || height) {
-			return 'exact'
-		}
-		if (maxWidth || maxHeight) {
-			return 'exact-contain'
-		}
-		return 'width'
 	}
 
 	getContainerStyle() {
 		const {
 			video,
+			width,
+			height,
 			maxWidth,
-			maxHeight
+			maxHeight,
+			fit
 		} = this.props
-		const fit = this.getFit()
-		switch (fit) {
-			case 'width':
-			case 'exact-contain':
-				return {
-					paddingBottom: 100 / getAspectRatio(video) + '%'
-				}
-			case 'scale-down':
-				const maxSize = getMaxFitSize(getMaxSize(video), maxWidth, maxHeight, fit)
-				return {
-					maxWidth: maxSize.width,
-					maxHeight: maxSize.height
-				}
+		if (width || height) {
+			return {
+				width: this.addBorder(width || (height * this.getAspectRatio())) + 'px',
+				height: this.addBorder(height || (width / this.getAspectRatio())) + 'px'
+			}
+		}
+		if (maxWidth || maxHeight) {
+			let _maxWidth = this.getMaxWidth()
+			if (fit === 'scale-down') {
+				_maxWidth = Math.min(_maxWidth, getMaxSize(video).width)
+			}
+			return {
+				width: '100%',
+				maxWidth: this.addBorder(_maxWidth) + 'px'
+			}
 		}
 	}
 
 	render() {
 		const {
-			video,
-			maxWidth,
-			maxHeight,
-			maxWidthWrapper
-		} = this.props
-		const fit = this.getFit()
-		switch (fit) {
-			case 'exact-contain':
-				// Setting `max-width` on the top-most container to make
-				// the whole thing downsize when the page width is not enough.
-				// Percentage `padding-bottom` is set on child element which sets aspect ratio.
-				// Setting `max-width` together with `padding-bottom` doesn't work:
-				// aspect ratio is not being inforced in that case.
-				// That's the reason the extra wrapper is introduced.
-				if (maxWidthWrapper) {
-					return (
-						<div style={{
-							maxWidth: (maxWidth || (maxHeight * getAspectRatio(video))) + 'px'
-						}}>
-							{this.render_(fit)}
-						</div>
-					)
-				}
-				return this.render_(fit)
-			default:
-				return this.render_(fit)
-		}
-	}
-
-	render_(fit) {
-		const {
 			border,
 			video,
-			// width,
-			// height,
+			showPlayIcon,
+			expand,
+			width,
+			height,
+			maxWidth,
+			maxHeight,
 			onClick,
 			tabIndex,
 			style,
@@ -430,71 +423,57 @@ export default class Video extends React.Component {
 		} = this.props
 
 		const {
-			showPreview
+			showPreview: _showPreview
 		} = this.state
 
-		const _style = style ? { ...style, ...this.getContainerStyle() } : this.getContainerStyle()
+		const showPreview = _showPreview && !expand
+
 		const _className = classNames(className, 'rrui__video', {
 			'rrui__video--preview': showPreview,
-			'rrui__video--aspect-ratio': fit === 'width',
+			// 'rrui__video--aspect-ratio': fit === 'width',
 			'rrui__video--border': border,
 			// 'rrui__video--expanded': expand
 		})
 
 		if (showPreview) {
-			// Percentage `padding-bottom` is set on the `<button/>` to enforce aspect ratio.
 			return (
-				<ButtonOrLink
+				<Picture
 					ref={this.button}
+					border={border}
+					picture={video.picture}
+					component={ButtonOrLink}
 					url={getUrl(video)}
 					onClick={this.onClick}
 					aria-label={this.props['aria-label']}
 					tabIndex={tabIndex}
-					style={_style}
-					className={classNames('rrui__button-reset', 'rrui__video__button', _className)}>
-					{this.renderPreview()}
-				</ButtonOrLink>
+					width={expand ? undefined : width}
+					height={expand ? undefined : height}
+					maxWidth={expand ? getMaxSize(video).width : maxWidth}
+					maxHeight={expand ? undefined : maxHeight}
+					aspectRatio={video.width ? this.getAspectRatio() : undefined}
+					aria-hidden
+					style={style}
+					className={classNames(_className, 'rrui__button-reset', 'rrui__video__preview')}>
+					{showPlayIcon &&
+						<VideoPlayIcon className="rrui__video__play-icon--center"/>
+					}
+					{!showPlayIcon &&
+						<VideoDuration duration={video.duration}/>
+					}
+				</Picture>
 			)
 		}
 
-		// Percentage `padding-bottom` is set on the `<div/>` to enforce aspect ratio.
-		return (
-			<div
-				ref={this.container}
-				onKeyDown={this.onKeyDown}
-				style={_style}
-				className={_className}>
-				{this.renderVideo()}
-			</div>
-		)
+		return this.renderVideo({
+			onKeyDown: this.onKeyDown,
+			style: style ? { ...style, ...this.getContainerStyle() } : this.getContainerStyle(),
+			className: _className
+		})
 	}
 
-	renderPreview() {
+	renderVideo(rest) {
 		const {
-			video,
-			showPlayIcon,
-			expand
-		} = this.props
-
-		return (
-			<React.Fragment>
-				<Picture
-					picture={video.picture}
-					fit="cover"
-					expand={expand}
-					aria-hidden/>
-				{showPlayIcon &&
-					<VideoPlayIcon className="rrui__video__play-icon--center"/>
-				}
-				{!showPlayIcon &&
-					<VideoDuration duration={video.duration}/>
-				}
-			</React.Fragment>
-		);
-	}
-
-	renderVideo() {
-		const {
+			expand,
 			video,
 			tabIndex
 		} = this.props
@@ -508,47 +487,55 @@ export default class Video extends React.Component {
 			// triggering "pause"/"play" on click while dragging.
 			return (
 				<HtmlVideo
+					{...rest}
+					preview={expand ? false : true}
 					ref={this.video}
 					onClick={this.onClick}
 					tabIndex={tabIndex}
 					video={video}
-					width="100%"
-					height="100%"
 					autoPlay={autoPlay}/>
 			)
 		}
 
 		if (video.provider === 'YouTube' && YouTubeVideo.hasApiLoaded()) {
+			// `<video/>` can maintain its aspect ratio while auto-scaling
+			// while `<iframe/>` can't, so using the `paddingBottom` trick here
+			// to preserve aspect ratio.
 			return (
-				<YouTubeVideo
-					ref={this.youTubeVideo}
-					tabIndex={tabIndex}
-					video={video}
-					width="100%"
-					height="100%"
-					autoPlay={autoPlay}/>
+				<AspectRatioWrapper {...rest} aspectRatio={this.getAspectRatio()}>
+					<YouTubeVideo
+						ref={this.youTubeVideo}
+						tabIndex={tabIndex}
+						video={video}
+						width="100%"
+						height="100%"
+						autoPlay={autoPlay}/>
+				</AspectRatioWrapper>
 			)
 		}
 
 		if (video.provider === 'Vimeo' || video.provider === 'YouTube') {
 			// https://developers.google.com/web/updates/2017/09/autoplay-policy-changes
 			// `allowFullScreen` property is for legacy browsers support.
+			//
+			// `<video/>` can maintain its aspect ratio while auto-scaling
+			// while `<iframe/>` can't, so using the `paddingBottom` trick here
+			// to preserve aspect ratio.
 			return (
-				<iframe
-					ref={this.iframeVideo}
-					src={getEmbeddedVideoUrl(video.id, video.provider, {
-						autoPlay,
-						startAt: video.startAt
-					})}
-					frameBorder={0}
-					allow="autoplay; fullscreen"
-					allowFullScreen />
+				<AspectRatioWrapper {...rest} aspectRatio={this.getAspectRatio()}>
+					<iframe
+						ref={this.iframeVideo}
+						src={getEmbeddedVideoUrl(video.id, video.provider, {
+							autoPlay,
+							startAt: video.startAt
+						})}
+						width="100%"
+						height="100%"
+						frameBorder={0}
+						allow="autoplay; fullscreen"
+						allowFullScreen/>
+				</AspectRatioWrapper>
 			)
-			/*
-			<iframe
-				width={width}
-				height={height} />
-			*/
 		}
 
 		console.error(`Unsupported video provider: ${video.provider}`)
@@ -560,15 +547,9 @@ Video.propTypes = {
 	video: video.isRequired,
 	width: PropTypes.number,
 	height: PropTypes.number,
-	fit: PropTypes.oneOf([
-		'contain',
-		'scale-down'
-	]).isRequired,
 	maxWidth: PropTypes.number,
 	maxHeight: PropTypes.number,
-	// `<button/>` containers require width being set on them directly
-	// and won't work as `<button><div style="max-width: ...">...</div></button>`.
-	maxWidthWrapper : PropTypes.bool.isRequired,
+	fit: PropTypes.oneOf(['scale-down']),
 	showPreview: PropTypes.bool.isRequired,
 	seekOnArrowKeys: PropTypes.bool.isRequired,
 	seekOnArrowKeysAtBorders: PropTypes.bool.isRequired,
@@ -594,8 +575,7 @@ Video.defaultProps = {
 	changeVolumeOnArrowKeys: true,
 	changeVolumeStep: 0.1,
 	autoPlay: false,
-	canPlay: true,
-	maxWidthWrapper: true
+	canPlay: true
 }
 
 export function getUrl(video) {
@@ -663,4 +643,22 @@ function formatTwoPositions(number) {
 		return '0' + number
 	}
 	return number
+}
+
+function AspectRatioWrapper({ aspectRatio, children, ...rest }) {
+	return (
+		<div {...rest}>
+			<div style={{ width: '100%', paddingBottom: 100 / aspectRatio + '%' }}>
+				<div style={ASPECT_RATIO_WRAPPER_INNER_STYLE}>
+					{children}
+				</div>
+			</div>
+		</div>
+	)
+}
+
+const ASPECT_RATIO_WRAPPER_INNER_STYLE = {
+	position: 'absolute',
+	width: '100%',
+	height: '100%'
 }

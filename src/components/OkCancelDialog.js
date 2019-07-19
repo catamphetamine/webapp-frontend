@@ -60,10 +60,10 @@ export default class OkCancelDialog extends React.Component {
 						{title}
 					</Modal.Title>
 				}
-				<Modal.Content className="ok-cancel-dialog__content">
+				<Modal.Content>
 					{content}
 				</Modal.Content>
-				<Modal.Actions className="ok-cancel-dialog__actions form__actions">
+				<Modal.Actions className="form__actions">
 					<Button
 						onClick={this.close}
 						className="rrui__button--text form__action">
@@ -71,7 +71,7 @@ export default class OkCancelDialog extends React.Component {
 					</Button>
 					<Button
 						onClick={this.onOk}
-						className="rrui__button--background  form__action">
+						className="rrui__button--background form__action">
 						{input ? okLabel : yesLabel}
 					</Button>
 				</Modal.Actions>

@@ -58,9 +58,10 @@ export default {
 				onClick={onClick}
 				tabIndex={tabIndex}
 				showLoadingIndicator
-				fit="scale-down"
+				showLoadingPlaceholder={false}
 				maxWidth={maxWidth}
 				maxHeight={maxHeight}
+				fit="scale-down"
 				style={style}
 				className="rrui__slideshow__picture"/>
 		)

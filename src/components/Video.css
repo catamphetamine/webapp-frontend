@@ -9,10 +9,7 @@ and that's how the embedded video's aspect ratio is set.
 	overflow: hidden;
 }
 
-.rrui__video--border {
-	--Video-borderColor--focus: var(--base-color-700);
-}
-
+/*
 .rrui__video iframe,
 .rrui__video object,
 .rrui__video embed {
@@ -22,54 +19,65 @@ and that's how the embedded video's aspect ratio is set.
 	width: 100%;
 	height: 100%;
 }
+*/
 
 /* `overflow: visible` is for the `box-shadow` to be visible. */
-.rrui__video {
+/*.rrui__video {
 	overflow: visible;
-}
+}*/
 
-.rrui__video video {
-	/* `display` is `inline` by default. */
+video.rrui__video {
+	/* `<video/>`'s `display` is `inline` by default. */
 	display: block;
 }
 
-.rrui__video--border video:focus {
+.rrui__video {
+	/* Don't show the `:focused` outline. */
 	outline: none;
-	box-shadow: 0 0 0 1px var(--Video-borderColor--focus);
 }
 
 .rrui__video--border {
-	.rrui__picture {
-		box-shadow: 0 0 0 1px var(--Picture-borderColor);
-	}
+	--Video-borderColor: var(--Picture-borderColor);
 }
 
-.rrui__video--border.rrui__video--preview:focus {
-	.rrui__picture {
+.rrui__video--border:focus {
+	--Video-borderColor: var(--Picture-borderColor--focus);
+}
+
+.rrui__video--border:not(.rrui__video__preview) {
+	border: 1px solid var(--Video-borderColor);
+}
+
+/*.rrui__video--border {
+	box-shadow: 0 0 0 1px var(--Picture-borderColor);
+}*/
+
+.rrui__video__preview:focus {
+	/*&.rrui__picture {
 		box-shadow: 0 0 0 1px var(--Video-borderColor--focus);
-	}
+	}*/
 	.rrui__video__play-icon-border,
 	.rrui__video__play-icon-triangle {
 		fill: var(--base-color-400);
 	}
 }
 
-.rrui__video--aspect-ratio {
+/*.rrui__video--aspect-ratio {
 	height: 0;
-}
+}*/
 
-.rrui__video__button {
+/*.rrui__video__button {
 	display: block;
 	width: 100%;
-}
+}*/
 
-.rrui__video .rrui__picture {
+/*.rrui__video__preview {
 	position: absolute;
 	top: 0;
 	width: 100%;
 	height: 100%;
 	cursor: pointer;
-}
+}*/
 
 .rrui__video__duration {
 	position: absolute;

@@ -26,7 +26,7 @@ async function loadYouTubeLink(link, { youTubeApiKey, messages, cache }) {
 	if (link.attachment) {
 		return
 	}
-	const video = await (cache === false ? YouTube : YouTubeCached).parse(link.url, { youTubeApiKey, messages })
+	const video = await (cache === false ? YouTube : YouTubeCached).parse(link.url, { youTubeApiKey })
 	if (video) {
 		// Video description is not currently being output anywhere.
 		// Without `description` the `video` size is about 400 bytes.

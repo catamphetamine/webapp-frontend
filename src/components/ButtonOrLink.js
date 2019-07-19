@@ -1,66 +1,89 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import { Link } from 'react-website'
 
-import openLinkInNewTab from '../utility/openLinkInNewTab'
+import _openLinkInNewTab from '../utility/openLinkInNewTab'
 
-export default class ButtonOrLink extends React.Component {
-	node = React.createRef()
+function ButtonOrLink({
+	url,
+	children,
+	panOffsetThreshold,
+	onClick: _onClick,
+	...rest
+}, ref) {
+	const isClickInProgress = useRef()
+	const panOrigin = useRef()
 
-	focus = () => this.node.current.focus()
-
-	onDragStart = (event) => {
-		// Prevent dragging.
-		event.preventDefault()
-		this.onPointerOut()
+	function isOverTheThreshold(x, y) {
+		return (
+			(Math.abs(x - panOrigin.current.x) > panOffsetThreshold) ||
+			(Math.abs(y - panOrigin.current.y) > panOffsetThreshold)
+		)
 	}
 
-	onClick = (event) => {
+	function openLinkInNewTab() {
+		_openLinkInNewTab(url)
+	}
+
+	function onClick(event) {
 		// `onClick` is only for the left mouse button click.
 		if (event.ctrlKey || event.cmdKey) {
-			return this.openLinkInNewTab()
+			return openLinkInNewTab()
 		}
-		const { onClick } = this.props
-		onClick(event)
+		_onClick(event)
 	}
 
-	onPointerDown = (event) => {
-		switch (event.button) {
-			// Middle mouse button.
-			case 1:
-				// `.preventDefault()` to prevent the web browser
-				// from showing the "all-scroll" cursor.
-				event.preventDefault()
-				this.onPanStart(
-					event.clientX,
-					event.clientY
-				)
-				break
-		}
-	}
-
-	onPointerUp = (event) => {
-		switch (event.button) {
-			// Middle mouse button.
-			case 1:
-				if (this.isClickInProgress) {
-					this.onPanEnd(
-						event.clientX,
-						event.clientY
-					)
-				}
-				break
-		}
-	}
-
-	onPointerMove = (event) => {
-		if (this.isClickInProgress) {
-			this.onPan(
+	function onPointerMove(event) {
+		if (isClickInProgress.current) {
+			onPan(
 				event.clientX,
 				event.clientY
 			)
 		}
+	}
+
+	function onDragStart(event) {
+		// Prevent dragging.
+		event.preventDefault()
+		onPointerOut()
+	}
+
+	function onClickStart() {
+		isClickInProgress.current = true
+	}
+
+	function onClickStop() {
+		isClickInProgress.current = false
+	}
+
+	function onPanStart(x, y) {
+		onClickStart()
+		panOrigin.current = { x, y }
+	}
+
+	function onPanStop() {
+		onClickStop()
+		panOrigin.current = undefined
+	}
+
+	function onPanCancel() {
+		onPanStop()
+	}
+
+	function onPan(x, y) {
+		if (isClickInProgress.current) {
+			if (isOverTheThreshold(x, y)) {
+				onPanStop()
+			}
+		}
+	}
+
+	function onPanEnd(x, y) {
+		if (isClickInProgress.current) {
+			openLinkInNewTab()
+		}
+		onPanStop()
 	}
 
 	// https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/pointerout_event
@@ -69,65 +92,46 @@ export default class ButtonOrLink extends React.Component {
 	// * firing the pointerup event for a device that does not support hover (see `pointerup`);
 	// * after firing the pointercancel event (see `pointercancel`);
 	// * when a pen stylus leaves the hover range detectable by the digitizer.
-	onPointerOut = () => {
-		this.onPanCancel()
+	function onPointerOut() {
+		onPanCancel()
 	}
 
-	onClickStart() {
-		this.isClickInProgress = true
-	}
-
-	onClickStop() {
-		this.isClickInProgress = false
-	}
-
-	onPanStart(x, y) {
-		this.onClickStart()
-		this.panOriginX = x
-		this.panOriginY = y
-	}
-
-	onPanStop() {
-		this.onClickStop()
-		this.panOriginX = undefined
-		this.panOriginY = undefined
-	}
-
-	onPanCancel() {
-		this.onPanStop()
-	}
-
-	onPan(x, y) {
-		if (this.isClickInProgress) {
-			if (this.isOverTheThreshold(x, y)) {
-				this.onPanStop()
-			}
+	function onPointerDown(event) {
+		switch (event.button) {
+			// Middle mouse button.
+			case 1:
+				// `.preventDefault()` to prevent the web browser
+				// from showing the "all-scroll" cursor.
+				event.preventDefault()
+				onPanStart(
+					event.clientX,
+					event.clientY
+				)
+				break
 		}
 	}
 
-	onPanEnd(x, y) {
-		const { onClick, link } = this.props
-		if (this.isClickInProgress) {
-			this.openLinkInNewTab()
+	function onPointerUp(event) {
+		switch (event.button) {
+			// Middle mouse button.
+			case 1:
+				if (isClickInProgress.current) {
+					onPanEnd(
+						event.clientX,
+						event.clientY
+					)
+				}
+				break
 		}
-		this.onPanStop()
-	}
-
-	isOverTheThreshold(x, y) {
-		const { panOffsetThreshold } = this.props
-		return (
-			(Math.abs(x - this.panOriginX) > panOffsetThreshold) ||
-			(Math.abs(y - this.panOriginY) > panOffsetThreshold)
-		)
 	}
 
 	// Click the link on Spacebar.
-	// onKeyDown = (event) => {
+	// function onKeyDown(event) {
 	// 	switch (event.keyCode) {
 	// 		// Click the link on Spacebar.
 	// 		case 32:
 	// 			event.preventDefault()
-	// 			return this.onClick({
+	// 			return onClick({
 	// 				// Simulate `event` argument.
 	// 				preventDefault() {
 	// 					this.defaultPrevented = true
@@ -137,65 +141,50 @@ export default class ButtonOrLink extends React.Component {
 	// 	}
 	// }
 
-	openLinkInNewTab() {
-		const { url } = this.props
-		openLinkInNewTab(url)
-	}
-
-	render() {
-		const {
-			url,
-			children,
-			// Rest.
-			onClick,
-			panOffsetThreshold,
-			...rest
-		} = this.props
-		if (onClick) {
-			// Safari doesn't support pointer events.
-			// https://caniuse.com/#feat=pointer
-			// https://webkit.org/status/#?search=pointer%20events
-			// onPointerDown={this.onPointerDown}
-			// onPointerUp={this.onPointerUp}
-			// onPointerMove={this.onPointerMove}
-			// onPointerOut={this.onPointerOut}
-			return (
-				<button
-					{...rest}
-					ref={this.node}
-					type="button"
-					onDragStart={this.onDragStart}
-					onClick={this.onClick}
-					onMouseDown={this.onPointerDown}
-					onMouseUp={this.onPointerUp}
-					onMouseMove={this.onPointerMove}
-					onMouseLeave={this.onPointerOut}
-					className={classNames(rest.className, 'rrui__button-reset')}>
-					{children}
-				</button>
-			)
-		}
-		if (url[0] === '/') {
-			return (
-				<Link
-					{...rest}
-					ref={this.node}
-					to={url}>
-					{children}
-				</Link>
-			)
-		}
+	if (_onClick) {
+		// Safari doesn't support pointer events.
+		// https://caniuse.com/#feat=pointer
+		// https://webkit.org/status/#?search=pointer%20events
+		// onPointerDown={onPointerDown}
+		// onPointerUp={onPointerUp}
+		// onPointerMove={onPointerMove}
+		// onPointerOut={onPointerOut}
 		return (
-			<a
+			<button
 				{...rest}
-				ref={this.node}
-				target={url[0] === '#' ? undefined : '_blank'}
-				href={url}>
-				{/* attachment && attachment.type === 'video' &&  attachment.video.provider === 'YouTube' && */}
+				ref={ref}
+				type="button"
+				onDragStart={onDragStart}
+				onClick={onClick}
+				onMouseDown={onPointerDown}
+				onMouseUp={onPointerUp}
+				onMouseMove={onPointerMove}
+				onMouseLeave={onPointerOut}
+				className={classNames(rest.className, 'rrui__button-reset')}>
 				{children}
-			</a>
+			</button>
 		)
 	}
+	if (url[0] === '/') {
+		return (
+			<Link
+				{...rest}
+				ref={ref}
+				to={url}>
+				{children}
+			</Link>
+		)
+	}
+	return (
+		<a
+			{...rest}
+			ref={ref}
+			target={url[0] === '#' ? undefined : '_blank'}
+			href={url}>
+			{/* attachment && attachment.type === 'video' &&  attachment.video.provider === 'YouTube' && */}
+			{children}
+		</a>
+	)
 }
 
 ButtonOrLink.propTypes = {
@@ -208,3 +197,5 @@ ButtonOrLink.propTypes = {
 ButtonOrLink.defaultProps = {
 	panOffsetThreshold: 5
 }
+
+export default React.forwardRef(ButtonOrLink)

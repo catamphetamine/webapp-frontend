@@ -11,7 +11,6 @@ import './PostPicture.css'
 
 export default function PostPicture({
 	attachment,
-	maxSize,
 	maxHeight,
 	expand,
 	spoilerLabel,
@@ -22,7 +21,6 @@ export default function PostPicture({
 	return (
 		<PostAttachment
 			attachment={attachment}
-			maxSize={maxSize}
 			maxHeight={maxHeight}
 			expand={expand}
 			spoilerLabel={spoilerLabel}
@@ -34,7 +32,6 @@ export default function PostPicture({
 PostPicture.propTypes = {
 	attachment: pictureAttachment.isRequired,
 	onClick: PropTypes.func,
-	maxSize: PropTypes.number,
 	maxHeight: PropTypes.number,
 	expand: PropTypes.bool,
 	spoilerLabel: PropTypes.string

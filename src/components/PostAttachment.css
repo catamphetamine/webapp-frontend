@@ -1,27 +1,22 @@
 @import "../styles/common";
 
-.post__attachment-thumbnail__clickable {
+.post__attachment-thumbnail {
+	/* `<button/>`s are `display: inline` by default. */
 	display: block;
-	/* Show :focused state for `<button/>`. */
-	/* Outline is not shown on `<a/>` too for some reason. */
-	&:focus {
-		.post__attachment-thumbnail__picture {
-			/* Won't be applied to `.rrui__picture--transparent-background`. */
-			--Picture-borderColor: var(--Picture-borderColor--focus);
-		}
-	}
 }
 
-.post__attachment-thumbnail__picture:not(.rrui__picture--transparent-background):hover {
-	box-shadow: var(--PostAttachment-shadow--hover);
+.post__attachment-thumbnail:not(.rrui__picture--transparent-background) {
 	/* Material Design Card elevation shadow. */
 	/* https://codepen.io/sdthornton/pen/wBZdXq */
 	transition: box-shadow 160ms cubic-bezier(.25,.8,.25,1);
+	&:hover {
+		box-shadow: var(--PostAttachment-shadow--hover);
+	}
 }
 
 /* Blur radius depends on the actual image dimensions. */
 /*
-.post__attachment-thumbnail__picture--spoiler {
+.post__attachment-thumbnail--spoiler {
 	.rrui__picture__image {
 		filter: blur(14px);
 	}
@@ -32,6 +27,8 @@
 	position: absolute;
 	width: 100%;
 	height: 100%;
+	left: 0;
+	top: 0;
 	display: flex;
 	align-items: center;
 	justify-content: center;

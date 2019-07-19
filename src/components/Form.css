@@ -54,3 +54,7 @@
 	margin-top: calc(var(--unit) * 0.5);
 	margin-bottom: 0;
 }
+
+.form__label {
+	color: var(--Content-color-400);
+}

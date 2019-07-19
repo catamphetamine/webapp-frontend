@@ -8,7 +8,7 @@
 }
 
 .rrui__video__play-icon-triangle {
-	fill : var(--rrui-white-color);
+	fill: rgba(255, 255, 255, 1);
 }
 
 .rrui__video__play-icon--center,

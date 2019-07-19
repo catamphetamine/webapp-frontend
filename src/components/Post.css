@@ -43,16 +43,6 @@
 	font-family: var(--Document-fontFamily--text);
 }
 
-/*
-.post__picture,
-.post__video .rrui__video,
-.post__attachment-thumbnail__picture {
-	background-color : var(--Picture-backgroundColor);
-	box-shadow : 0 0 0 var(--Picture-borderWidth) var(--Picture-borderColor);
-	cursor : pointer;
-}
-*/
-
 /* For play video icon. */
 .post__video .rrui__video {
 	&:hover {

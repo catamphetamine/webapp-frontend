@@ -30,7 +30,7 @@ export default class Post extends React.Component {
 			PropTypes.oneOf([false]),
 			PropTypes.number
 		]),
-		attachmentThumbnailSize: PropTypes.number,
+		attachmentThumbnailSize: PropTypes.number.isRequired,
 		onAttachmentClick: PropTypes.func,
 		onReply: PropTypes.func,
 		onVote: PropTypes.func,
@@ -52,6 +52,7 @@ export default class Post extends React.Component {
 	}
 
 	static defaultProps = {
+		attachmentThumbnailSize: 250,
 		messages: {
 			readMore: '...'
 		}
@@ -132,8 +133,8 @@ export default class Post extends React.Component {
 						postWithLinksExpanded: post,
 						postWithLinksExpandedForPost: this.props.post
 					}, () => {
-						// The post could shrink in height due to the re-generated preview.
-						// `onContentDidChange()` could be `virtual-scroller`'s `onItemHeightChange()`.
+						// The post height did change due to the re-generated preview.
+						// `onContentDidChange()` is gonna be `virtual-scroller`'s `onItemHeightChange()`.
 						if (onContentDidChange) {
 							onContentDidChange()
 						}
@@ -148,6 +149,17 @@ export default class Post extends React.Component {
 
 	componentWillUnmount() {
 		this._isMounted = false
+	}
+
+	componentDidUpdate(prevProps) {
+		const { expandAttachments, onContentDidChange } = this.props
+		if (expandAttachments !== prevProps.expandAttachments) {
+			// The post height has changed due to expanding or collapsing attachments.
+			// `onContentDidChange()` is gonna be `virtual-scroller`'s `onItemHeightChange()`.
+			if (onContentDidChange) {
+				onContentDidChange()
+			}
+		}
 	}
 
 	render() {

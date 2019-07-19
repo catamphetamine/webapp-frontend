@@ -1,4 +1,4 @@
-import getSocialText from '../getSocialText'
+// import getSocialText from '../getSocialText'
 import getAttachmentText from '../getAttachmentText'
 import getAttachmentMessage from '../getAttachmentMessage'
 
@@ -189,10 +189,10 @@ export function getContentText(content, softLimit, options = {}) {
 			if (options.skipUntitledAttachments) {
 				return
 			}
-			if (!options.messages) {
-				return
+			if (options.messages) {
+				return getAttachmentMessage(attachment, options.messages)
 			}
-			return getAttachmentMessage(attachment, options.messages)
+			return
 		default:
 			return getContent()
 	}

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import { FadeInOut, ActivityIndicator } from 'react-responsive-ui'
@@ -6,7 +6,7 @@ import { FadeInOut, ActivityIndicator } from 'react-responsive-ui'
 import { getViewportWidth } from '../utility/dom'
 import SlideshowPicture from './Slideshow.Picture'
 import ButtonOrLink from './ButtonOrLink'
-import Picture, { getAspectRatio } from './Picture'
+import Picture from './Picture'
 
 import {
 	VideoDuration,
@@ -20,173 +20,107 @@ import {
 
 import './PostAttachment.css'
 
-export default class PostAttachment extends React.Component {
-	static propTypes = {
-		attachment: PropTypes.oneOfType([
-			pictureAttachment,
-			videoAttachment
-		]).isRequired,
-		onClick: PropTypes.func,
-		spoilerLabel: PropTypes.string,
-		maxSize: PropTypes.number,
-		maxHeight: PropTypes.number,
-		exactSize: PropTypes.bool,
-		expand: PropTypes.bool,
-		useSmallestThumbnail: PropTypes.bool,
-		moreAttachmentsCount: PropTypes.number,
-		className: PropTypes.string
-	}
-
-	state = {
-		isRevealed: this.props.attachment.spoiler ? false : true
-	}
-
-	onClick = (event) => {
-		const {
-			attachment,
-			onClick
-		} = this.props
+export default function PostAttachment({
+	onClick,
+	attachment,
+	spoilerLabel,
+	expand,
+	maxSize,
+	maxWidth,
+	maxHeight,
+	width,
+	height,
+	useSmallestThumbnail,
+	moreAttachmentsCount,
+	className
+}) {
+	const [isRevealed, setIsRevealed] = useState(attachment.spoiler ? false : true)
+	const [isLoading, loadOnClick] = useLoadOnClick(attachment)
+	const picture = attachment.type === 'video' ? attachment.video.picture : attachment.picture
+	const isLandscape = picture.width >= picture.height
+	async function onPictureClick(event) {
+		await loadOnClick(event)
 		if (attachment.spoiler) {
-			this.setState({
-				isRevealed: true
-			})
+			setIsRevealed(true)
 		}
 		if (onClick) {
 			onClick(event)
 		}
 	}
-
-	render() {
-		const {
-			onClick,
-			attachment,
-			spoilerLabel,
-			expand,
-			maxSize,
-			maxHeight,
-			exactSize,
-			useSmallestThumbnail,
-			moreAttachmentsCount,
-			className
-		} = this.props
-		const {
-			isRevealed
-		} = this.state
-		return (
-			<AttachmentButton
-				attachment={attachment}
-				title={isRevealed ? attachment.title : spoilerLabel}
-				onClick={this.onClick}
-				style={expand ? EXPANDED_STYLE : (!exactSize && maxSize ? getStyleForMaxSize(attachment, maxSize, maxHeight) : undefined)}
-				className={classNames('post__attachment-thumbnail__clickable', className)}>
-				<AttachmentThumbnail
-					attachment={attachment}
-					smallestSize={useSmallestThumbnail}
-					spoilerLabel={spoilerLabel}
-					isRevealed={isRevealed}
-					maxSize={maxSize}
-					maxHeight={maxHeight}
-					exactSize={exactSize}
-					moreAttachmentsCount={moreAttachmentsCount}/>
-			</AttachmentButton>
-		)
-	}
-}
-
-class AttachmentButton extends React.Component {
-	static propTypes = {
-		attachment: PropTypes.object.isRequired,
-		onClick: PropTypes.func.isRequired,
-		title: PropTypes.string,
-		style: PropTypes.object,
-		className: PropTypes.string,
-		children: PropTypes.node.isRequired
-	}
-
-	state = {
-		isLoading: false
-	}
-
-	constructor() {
-		super()
-		this.onClick = this.onClick.bind(this)
-	}
-
-	async onClick(event) {
-		const {
-			attachment,
-			onClick
-		} = this.props
-		if (event.ctrlKey || event.altKey || event.shiftKey || event.metaKey) {
-			return
-		}
-		// Prevent hyperlink click.
-		event.preventDefault()
-		if (attachment.type === 'picture') {
-			// Preload the picture.
-			this.setState({
-				isLoading: true
-			})
-			try {
-				await SlideshowPicture.preload(attachment, getViewportWidth())
-			} catch (error) {
-				console.error(error)
-			}
-			// For testing/styling.
-			// await new Promise(_ => setTimeout(_, 30000000))
-			this.setState({
-				isLoading: false
-			})
-		}
-		onClick({
-			// Simulate `event` argument.
-			// Otherwise React would compain about not calling `event.persist()`.
-			preventDefault() {
-				this.defaultPrevented = true
-			},
-			stopPropagation() {}
-		})
-	}
-
-	render() {
-		const {
-			attachment,
-			title,
-			style,
-			className,
-			children
-		} = this.props
-		const {
-			isLoading
-		} = this.state
-
-		// <button
-		// 	type="button"
-		// 	className={classNames('rrui__button-reset', className)}>
-
-		return (
-			<ButtonOrLink
-				url={getAttachmentUrl(attachment)}
-				title={title}
-				onClick={this.onClick}
-				style={style}
-				className={className}>
-				{isLoading &&
-					<FadeInOut show fadeInInitially fadeInDuration={3000} fadeOutDuration={0}>
-						<div className="post__attachment-thumbnail__loading">
-							<ActivityIndicator className="post__attachment-thumbnail__loading-indicator"/>
-						</div>
-					</FadeInOut>
+	// ref={ref}
+	return (
+		<Picture
+			border
+			component={ButtonOrLink}
+			url={getAttachmentUrl(attachment)}
+			title={isRevealed ? attachment.title : spoilerLabel}
+			onClick={onPictureClick}
+			picture={picture}
+			width={expand ? undefined : width}
+			height={expand ? undefined : height}
+			maxWidth={expand ? picture.width : maxWidth || (maxSize && isLandscape ? maxSize : undefined)}
+			maxHeight={expand ? undefined : maxHeight || (maxSize && !isLandscape ? maxSize : undefined)}
+			useSmallestSize={expand ? undefined : useSmallestThumbnail}
+			blur={attachment.spoiler && !isRevealed ? BLUR_FACTOR : undefined}
+			className={classNames(
+				className,
+				'post__attachment-thumbnail', {
+					// 'rrui__picture-border': !(attachment.type === 'picture' && attachment.picture.transparentBackground)
+					// 'post__attachment-thumbnail--spoiler': attachment.spoiler && !isRevealed
+					'post__attachment-thumbnail--transparent': picture.transparentBackground
 				}
-				{children}
-			</ButtonOrLink>
-		)
-	}
+			)}>
+			{isLoading &&
+				<FadeInOut show fadeInInitially fadeInDuration={3000} fadeOutDuration={0}>
+					<div className="post__attachment-thumbnail__loading">
+						<ActivityIndicator className="post__attachment-thumbnail__loading-indicator"/>
+					</div>
+				</FadeInOut>
+			}
+			{attachment.spoiler && !isRevealed && spoilerLabel &&
+				<AttachmentSpoilerBar width={width} height={height}>
+					{spoilerLabel}
+				</AttachmentSpoilerBar>
+			}
+			{attachment.type === 'picture' && attachment.picture.type === 'image/gif' &&
+				<VideoDuration>gif</VideoDuration>
+			}
+			{attachment.type === 'video' &&
+				<VideoDuration duration={attachment.video.duration}/>
+			}
+			{moreAttachmentsCount > 0 &&
+				<div className="post__attachment-thumbnail__more-count">
+					+{moreAttachmentsCount + 1}
+				</div>
+			}
+		</Picture>
+	)
 }
+
+PostAttachment.propTypes = {
+	attachment: PropTypes.oneOfType([
+		pictureAttachment,
+		videoAttachment
+	]).isRequired,
+	onClick: PropTypes.func,
+	spoilerLabel: PropTypes.string,
+	maxSize: PropTypes.number,
+	maxWidth: PropTypes.number,
+	maxHeight: PropTypes.number,
+	width: PropTypes.number,
+	height: PropTypes.number,
+	expand: PropTypes.bool,
+	useSmallestThumbnail: PropTypes.bool,
+	moreAttachmentsCount: PropTypes.number,
+	className: PropTypes.string
+}
+
+// export default React.forwardRef(PostAttachment)
 
 const DEFAULT_FONT_SIZE = 16
 const MIN_FONT_SIZE = 8
 const MAX_FONT_SIZE_HEIGHT_FACTOR = 0.85
+const BLUR_FACTOR = 0.1
 
 function AttachmentSpoilerBar({ width, height, children: spoilerLabel, ...rest }) {
 	let fontSize = DEFAULT_FONT_SIZE
@@ -216,81 +150,31 @@ AttachmentSpoilerBar.propTypes = {
 	children: PropTypes.string.isRequired
 }
 
-const BLUR_FACTOR = 0.1
-
-function AttachmentThumbnail({
-	attachment,
-	isRevealed,
-	maxSize,
-	maxHeight,
-	exactSize,
-	smallestSize,
-	spoilerLabel,
-	moreAttachmentsCount
-}) {
-	const picture = attachment.type === 'video' ? attachment.video.picture : attachment.picture
-	const isLandscape = picture.width >= picture.height
-	let width
-	let height
-	if (exactSize) {
-		const aspectRatio = getAspectRatio(picture)
-		if (maxHeight) {
-			height = maxHeight
-			width = height * aspectRatio
-		} else {
-			if (aspectRatio >= 1) {
-				width = maxSize
-				height = width / aspectRatio
-			} else {
-				height = maxSize
-				width = height * aspectRatio
-			}
+function useLoadOnClick(attachment) {
+	const [isLoading, setIsLoading] = useState()
+	async function onClick(event) {
+		if (event.ctrlKey || event.altKey || event.shiftKey || event.metaKey) {
+			return
 		}
+		// Prevent hyperlink click.
+		event.preventDefault()
+		// "Persist" the event because the function is `async`.
+		event.persist()
+		if (attachment.type === 'picture') {
+			// Preload the picture.
+			setIsLoading(true)
+			try {
+				await SlideshowPicture.preload(attachment, getViewportWidth())
+			} catch (error) {
+				console.error(error)
+			}
+			// For testing/styling.
+			// await new Promise(_ => setTimeout(_, 30000000))
+			setIsLoading(false)
+		}
+		return event
 	}
-	return (
-		<React.Fragment>
-			<Picture
-				border
-				picture={picture}
-				width={width}
-				height={height}
-				maxWidth={!exactSize && isLandscape ? maxSize : undefined}
-				maxHeight={!exactSize && !isLandscape ? maxSize : undefined}
-				maxWidthWrapper={false}
-				smallestSize={smallestSize}
-				blur={attachment.spoiler && !isRevealed ? BLUR_FACTOR : undefined}
-				className={classNames('post__attachment-thumbnail__picture', {
-					// 'post__attachment-thumbnail__picture--spoiler': attachment.spoiler && !isRevealed
-				})}/>
-			{attachment.spoiler && !isRevealed && spoilerLabel &&
-				<AttachmentSpoilerBar width={width} height={height}>
-					{spoilerLabel}
-				</AttachmentSpoilerBar>
-			}
-			{attachment.type === 'picture' && attachment.picture.type === 'image/gif' &&
-				<VideoDuration>gif</VideoDuration>
-			}
-			{attachment.type === 'video' &&
-				<VideoDuration duration={attachment.video.duration}/>
-			}
-			{moreAttachmentsCount > 0 &&
-				<div className="post__attachment-thumbnail__more-count">
-					+{moreAttachmentsCount + 1}
-				</div>
-			}
-		</React.Fragment>
-	)
-}
-
-AttachmentThumbnail.propTypes = {
-	attachment: postAttachment.isRequired,
-	isRevealed: PropTypes.bool,
-	maxSize: PropTypes.number,
-	maxHeight: PropTypes.number,
-	exactSize: PropTypes.bool,
-	smallestSize: PropTypes.bool,
-	spoilerLabel: PropTypes.string,
-	moreAttachmentsCount: PropTypes.number
+	return [isLoading, onClick]
 }
 
 function getAttachmentUrl(attachment) {
@@ -306,24 +190,6 @@ function getAttachmentUrl(attachment) {
 	}
 }
 
-function getMaxWidth(video, maxSize, maxHeight) {
-	const picture = attachment.type === 'video' ? attachment.video.picture : attachment.picture
-	const size = attachment.type === 'video' ? attachment.video : attachment.picture
-	const aspectRatio = getAspectRatio(picture)
-	if (aspectRatio >= 1) {
-		return Math.min(maxSize || maxHeight * aspectRatio, size.width)
-	} else {
-		return Math.min(maxSize || maxHeight, size.height) / aspectRatio
-	}
-}
-
-export function getStyleForMaxSize(attachment, maxSize, maxHeight) {
-	return {
-		width: '100%',
-		maxWidth: getMaxWidth(attachment, maxSize, maxHeight) + 'px'
-	}
-}
-
-const EXPANDED_STYLE = {
-	width: '100%'
+export function getPicture(attachment) {
+	return attachment.type === 'video' ? attachment.video.picture : attachment.picture
 }

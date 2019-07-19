@@ -5,8 +5,16 @@ export function getImageSize(url) {
 		const image = new Image()
 		image.onload = () => resolve({ width: image.width, height: image.height })
 		// Won't trigger an "error" event if an image
-		// is returned with status 404 Not found.
-		image.onerror = reject
+		// is returned with status `404 Not found`.
+		image.onerror = (event) => {
+			if (event.path && event.path[0]) {
+				console.error(`Image not found: ${event.path[0].src}`)
+			}
+			const error = new Error('IMAGE_NOT_FOUND')
+			error.url = url
+			error.event = event
+			reject(error)
+		}
 		image.src = url
 	})
 }

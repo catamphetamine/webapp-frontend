@@ -1,7 +1,6 @@
 @import "../styles/common";
 
-.webpage__footer .application-menu
-{
+.webpage__footer__menu {
 	position : fixed;
 	left     : 0;
 	right    : 0;
@@ -12,8 +11,7 @@
 	border-top : 1px solid rgba(0,0,0,.15);
 }
 
-.webpage__footer
-{
+.webpage__footer {
 	margin-bottom : var(--footer-menu-height);
 	margin-top: calc(var(--unit) * 2);
 	@mixin s {
@@ -27,20 +25,11 @@
 	}
 }
 
-@mixin m {
-	.webpage__footer .application-menu {
-		display : none;
-	}
+@mixin m-plus {
 	.webpage__footer {
-		margin-bottom : 0;
+		margin-bottom: 0;
 	}
-}
-
-@mixin l-plus {
-	.webpage__footer .application-menu {
-		display : none;
-	}
-	.webpage__footer {
-		margin-bottom : 0;
+	.webpage__footer__menu {
+		display: none;
 	}
 }

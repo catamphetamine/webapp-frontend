@@ -4,6 +4,11 @@
 	margin-right: 0.2em;
 	width: 1em;
 	height: 1em;
+	/* For some reason the icon may shrink sometimes in iOS Safari.
+	   Perhaps something related to long links not fitting.
+	   Added `min-width` and `min-height` to test if it fixes that. */
+	min-width: 1em;
+	min-height: 1em;
 }
 
 .service-icon--monochrome [data-stroke="true"] {

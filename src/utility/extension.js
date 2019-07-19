@@ -1,6 +1,8 @@
-import { getObject, setObject } from './localStorage'
+import LocalStorage from './LocalStorage'
 import loadScript from './loadScript'
 import loadStylesheet from './loadStylesheet'
+
+const STORAGE = typeof window !== 'undefined' ? new LocalStorage() : undefined
 
 // ------------- Application API starts ---------------
 
@@ -21,7 +23,7 @@ export function installExtension(url) {
  * Can be called at application initialization time.
  */
 export function runExtensions() {
-	const extensions = getObject('extensions', [])
+	const extensions = STORAGE.get('extensions', [])
 	for (const extension of extensions) {
 		try {
 			runExtension(extension)
@@ -112,12 +114,12 @@ function defineExtensionApi(context) {
 			// 	license
 			// }
 			// Add extension to the list of extensions in `localStorage`.
-			const extensions = getObject('extensions', [])
+			const extensions = STORAGE.get('extensions', [])
 			extensions.push({
 				...extensionInfo,
 				url: scriptRunner.url
 			})
-			setObject('extensions', extensions)
+			STORAGE.set('extensions', extensions)
 			// Run the "on extension installation finished" callback.
 			scriptRunner.onLoad()
 		}

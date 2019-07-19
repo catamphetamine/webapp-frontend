@@ -8,6 +8,11 @@
 	/* If the `<img/>` image is blurred then `overflow: hidden`
 	   prevents it bleeding over the edges. */
 	overflow: hidden;
+	/* The container element is focusable. */
+	outline: none;
+}
+
+.rrui__picture--background {
 	background-color: var(--Picture-backgroundColor);
 }
 
@@ -19,28 +24,28 @@
 }
 */
 
-.rrui__picture--repeat-x
-{
+.rrui__picture--repeat-x {
 	height : 100%;
 	background-repeat : repeat;
 }
 
-.rrui__picture--border
-{
-	/* `padding` is for the border. */
+/*
+.rrui__picture-border {
 	padding: var(--Picture-borderWidth);
+	.rrui__picture {
+		box-shadow: 0 0 0 var(--Picture-borderWidth) var(--Picture-borderColor);
+	}
 }
+*/
 
-.rrui__picture--border:after
-{
-	position      : absolute;
-	left          : 0;
-	top           : 0;
-	right         : 0;
-	bottom        : 0;
-	content       : '';
-	border        : var(--Picture-borderWidth) solid var(--Picture-borderColor);
-	border-radius : inherit;
+.rrui__picture--border {
+	border: var(--Picture-borderWidth) solid var(--Picture-borderColor);
+	/* Show :focused state for `<button/>`. */
+	/* Outline is not shown on `<a/>` too for some reason. */
+	&:focus {
+		/* Won't be applied to `.rrui__picture--transparent-background`. */
+		--Picture-borderColor: var(--Picture-borderColor--focus);
+	}
 }
 
 .rrui__picture--transparent-background {
@@ -49,32 +54,43 @@
 
 .rrui__picture__image {
 	display: block;
+	width: 100%;
+	height: auto;
+	border-radius: inherit;
 	/* Remove `:focus` outline. */
 	outline: none;
 }
 
-.rrui__picture__loading-container
-{
-	position        : absolute;
-	width           : 100%;
-	height          : 100%;
-	display         : flex;
-	align-items     : center;
-	justify-content : center;
-	overflow        : hidden;
+.rrui__picture__image--blurred {
+	position: absolute;
+	top: 0;
+	left: 0;
 }
 
-.rrui__picture__loading
-{
-	width  : calc(var(--unit) * 2);
-	height : calc(var(--unit) * 2);
-	color  : rgba(255, 255, 255, 0.2);
+.rrui__picture__placeholder {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	overflow: hidden;
+}
+
+.rrui__picture__loading-indicator,
+.rrui__picture__loading-error {
+	width: calc(var(--unit) * 2);
+	height: calc(var(--unit) * 2);
+	color: var(--Content-color-700);
 	/* <ActivityIndicator/> uses `em`s by default. */
-	font-size : 6px;
+	font-size: 12px;
 }
 
-.rrui__picture__loading--error
-{
-	transform : scale(0.7);
-	cursor : pointer;
+/*.rrui__picture__loading-indicator {
+	color: var(--white-color);
+}*/
+
+.rrui__picture__loading-error {
+	transform: scale(0.7);
+	cursor: pointer;
+	/*color: var(--Content-color-700);*/
 }

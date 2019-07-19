@@ -193,7 +193,7 @@
 }
 
 .post__account-name {
-	color : var(--base-color-600);
+	color: var(--Clickable-color--text);
 }
 
 .post__account-picture {

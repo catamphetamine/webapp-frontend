@@ -495,7 +495,7 @@ class Slideshow extends React.Component {
 		}
 	}
 
-	// For `<img/>` with `object-fit: contain` (or `object-fit: scale-down`).
+	// For `<Picture/>` with `fit="contain"`.
 	getSlideWidth = () => {
 		return Math.min(
 			this.getSlideshowHeight() * this.getSlideAspectRatio(),

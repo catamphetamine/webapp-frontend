@@ -23,7 +23,7 @@ export default function PostVideo({
 				border
 				expand={expand}
 				video={video}
-				maxWidth={expand ? undefined : (maxSize || maxHeight ? getMaxWidth(video, maxSize, maxHeight) : undefined)}
+				maxWidth={expand ? getMaxSize(video).width : (maxSize || maxHeight ? getMaxWidth(video, maxSize, maxHeight) : undefined)}
 				spoilerLabel={spoilerLabel}
 				onClick={onClick}/>
 			{video.title &&

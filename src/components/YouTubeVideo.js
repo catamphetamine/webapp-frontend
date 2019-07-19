@@ -131,7 +131,17 @@ export default class YouTubeVideo extends React.Component {
 	}
 
 	render() {
-		return <div ref={this.node}/>
+		// const {
+		// 	video,
+		// 	width,
+		// 	height,
+		// 	autoPlay,
+		// 	...rest
+		// } = this.props
+		// The `<div/>` with `ref={this.node}` will be replaced by YouTube.
+		return (
+			<div ref={this.node}/>
+		)
 	}
 }
 

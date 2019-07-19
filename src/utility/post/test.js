@@ -1,6 +1,8 @@
 import './trimText.test'
 import './getPostText.test'
 import './trimWhitespace.test'
+import './censorWords.test'
+import './compileWordPatterns.test'
 import './findLastSentenceEnd.test'
 import './removeLeadingPostLink.test'
 import './searchContent.test'

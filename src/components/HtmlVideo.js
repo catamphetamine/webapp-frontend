@@ -34,6 +34,7 @@ export default class HtmlVideo extends React.Component {
 	render() {
 		const {
 			video,
+			preview,
 			width,
 			height,
 			tabIndex,
@@ -48,7 +49,7 @@ export default class HtmlVideo extends React.Component {
 				tabIndex={tabIndex}
 				width={width}
 				height={height}
-				poster={video.picture && video.picture.url}
+				poster={preview ? video.picture && video.picture.url : undefined}
 				autoPlay={autoPlay}
 				controls>
 				<source
@@ -61,6 +62,7 @@ export default class HtmlVideo extends React.Component {
 
 HtmlVideo.propTypes = {
 	video: video.isRequired,
+	preview: PropTypes.bool.isRequired,
 	tabIndex: PropTypes.number,
 	autoPlay: PropTypes.bool,
 	width: PropTypes.oneOfType([
@@ -71,4 +73,8 @@ HtmlVideo.propTypes = {
 		PropTypes.string,
 		PropTypes.number
 	])
+}
+
+HtmlVideo.defaultProps = {
+	preview: true
 }

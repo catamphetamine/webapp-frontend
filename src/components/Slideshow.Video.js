@@ -100,9 +100,9 @@ export default {
 				showPreview={wasExpanded ? false : true}
 				showPlayIcon={wasExpanded ? false : true}
 				canPlay={isShown}
-				fit="scale-down"
 				maxWidth={maxWidth}
 				maxHeight={maxHeight}
+				fit="scale-down"
 				tabIndex={tabIndex}
 				seekOnArrowKeys={slideshowMode ? false : undefined}
 				seekOnArrowKeysAtBorders={false}

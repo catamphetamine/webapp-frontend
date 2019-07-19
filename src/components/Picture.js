@@ -16,6 +16,11 @@ export const TRANSPARENT_PIXEL = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA
 const PAGE_LOADED_AT = Date.now()
 const DEV_MODE_WAIT_FOR_STYLES = 1000
 
+// Picture border width.
+// Could also be read from the CSS variable:
+// `parseInt(getComputedStyle(this.container.current).getPropertyValue('--Picture-borderWidth'))`.
+export const BORDER_WIDTH = 1
+
 /**
  * A `<Picture/>` is "responsive"
  * showing the size that suits most based on
@@ -25,62 +30,60 @@ const DEV_MODE_WAIT_FOR_STYLES = 1000
  * On server it renders an empty picture.
  * (because there's no way of getting the device pixel ratio on server).
  */
-export default class Picture extends React.PureComponent
-{
-	static propTypes =
-	{
-		maxWidth : PropTypes.number,
+export default class Picture extends React.PureComponent {
+	static propTypes = {
+		// Container component. Is `<div/>` by default.
+		component: PropTypes.elementType.isRequired,
+
+		// When a `<Picture/>` is a preview for a `<Video/>`
+		// then the `<Video/>` may supply its own `aspectRatio`
+		// so that there's no jump in width or height when a user clicks the preview
+		// and the `<Picture/>` is replaced by a `<Video/>`
+		// when the `<Video/>` is sized as `maxWidth`/`maxHeight`.
+		aspectRatio: PropTypes.number,
+
+		maxWidth: PropTypes.number,
 		maxHeight: PropTypes.number,
 
-		// `<button/>` containers require width being set on them directly
-		// and won't work as `<button><div style="max-width: ...">...</div></button>`.
-		maxWidthWrapper : PropTypes.bool.isRequired,
-
-		width : PropTypes.number,
-		height : PropTypes.number,
-
-		// Set to `true` to add border around the picture.
-		border : PropTypes.bool,
-
-		// Set to `true` when rendering the picture expanded to full width.
-		expand : PropTypes.bool,
-
-		// Can show a spinner while the initial image is loading.
-		// Will display the image over the loading indicator.
-		showLoadingIndicator : PropTypes.bool.isRequired,
-
-		// Can show a spinner while the initial image is loading.
-		// Will show the image only after it loads.
-		showLoadingPlaceholder : PropTypes.bool.isRequired,
+		width: PropTypes.number,
+		height: PropTypes.number,
 
 		// // `<img/>` fade in duration.
-		// fadeInDuration : PropTypes.number.isRequired,
+		// fadeInDuration: PropTypes.number.isRequired,
 
 		// Any "child" content will be displayed if no picture is present.
-		children : PropTypes.node,
+		children: PropTypes.node,
 
-		// The image sizing algorythm.
-		fit : PropTypes.oneOf([
+		// The image sizing algorithm.
+		fit: PropTypes.oneOf([
 			'cover',
-			'contain',
-			'scale-down',
-			'repeat-x'
+			'scale-down'
 		]).isRequired,
 
 		// Blurs the `<img/>`.
 		blur: PropTypes.number,
 
+		// If `picture` is absent then `children` are used.
 		picture: picture,
 
 		// If `true` then will only show the smallest size ever.
-		smallestSize: PropTypes.bool
+		useSmallestSize: PropTypes.bool,
+
+		// Set to `false` to not show "loading" background.
+		// Is `true` by default.
+		showLoadingPlaceholder: PropTypes.bool.isRequired,
+
+		// Set to `true` to show "loading" spinner while the image is being loaded.
+		showLoadingIndicator: PropTypes.bool,
+
+		// Set to `true` to show a border around the image.
+		border: PropTypes.bool
 	}
 
 	static defaultProps = {
-		showLoadingPlaceholder: false,
-		showLoadingIndicator: false,
+		component: 'div',
 		// fadeInDuration: 0,
-		maxWidthWrapper: true
+		showLoadingPlaceholder: true
 	}
 
 	state = {}
@@ -104,7 +107,7 @@ export default class Picture extends React.PureComponent
 		//
 		// It won't work though when loading styles dynamically
 		// (via javascript): by the time the component mounts
-		// the styles haven't yet been loaded so `this.getContainerWidth()`
+		// the styles haven't yet been loaded so `this.getWidth()`
 		// returns screen width and not the actual `<div/>` width,
 		// so, for example, for a 4K monitor and a small picture thumbnail
 		// it will still load the full-sized 4K image on page load.
@@ -144,80 +147,69 @@ export default class Picture extends React.PureComponent
 		if (prevProps.picture !== picture) {
 			this.refreshSize(true)
 		}
-		if (document.activeElement === this.container.current && this.image.current &&
-			!shouldShowImage(prevProps, prevState) && shouldShowImage(this.props, this.state)) {
-			this.image.current.focus()
-		}
 	}
 
 	focus = () => {
-		if (this.picture.current) {
-			this.picture.current.focus()
-		} else {
+		if (this.container.current.focus) {
 			this.container.current.focus()
 		}
 	}
 
-	getFit() {
+	addBorder(dimension) {
+		const { border } = this.props
+		if (border) {
+			return dimension + 2 * BORDER_WIDTH
+		}
+		return dimension
+	}
+
+	excludeBorder(dimension) {
+		const { border } = this.props
+		if (border) {
+			return dimension - 2 * BORDER_WIDTH
+		}
+		return dimension
+	}
+
+	getMaxWidth() {
 		const {
+			maxWidth,
+			maxHeight
+		} = this.props
+		if (maxWidth) {
+			if (maxHeight) {
+				return Math.min(maxWidth, maxHeight * this.getAspectRatio())
+			}
+			return maxWidth
+		} else {
+			return maxHeight * this.getAspectRatio()
+		}
+	}
+
+	getContainerStyle() {
+		const {
+			picture,
 			fit,
 			width,
 			height,
 			maxWidth,
 			maxHeight
 		} = this.props
-		if (fit) {
-			return fit
-		}
 		if (width || height) {
-			return 'exact'
+			return {
+				width: this.addBorder(width || (height * this.getAspectRatio())) + 'px',
+				height: this.addBorder(height || (width / this.getAspectRatio())) + 'px'
+			}
 		}
 		if (maxWidth || maxHeight) {
-			return 'exact-contain'
-		}
-		return 'width'
-	}
-
-	getContainerStyle() {
-		const {
-			picture,
-			width,
-			height,
-			maxWidth,
-			maxHeight
-		} = this.props
-		const fit = this.getFit()
-		switch (fit) {
-			case 'repeat-x':
-				return {
-					backgroundImage: `url(${ this.getUrl() || TRANSPARENT_PIXEL })`
-				}
-			case 'width':
-				return {
-					width: '100%',
-					paddingBottom: 100 / getAspectRatio(picture) + '%'
-				}
-			case 'exact-contain':
-				return {
-					paddingBottom: 100 / getAspectRatio(picture) + '%'
-				}
-			case 'exact':
-				return {
-					width: (width || (height * getAspectRatio(picture))) + 'px',
-					height: (height || (width / getAspectRatio(picture))) + 'px'
-				}
-			case 'contain':
-			case 'cover':
-			case 'scale-down':
-				// `maxWidth` and `maxHeight` aren't required for these three `fit` values
-				// because CSS can handle it natively via `object-fit`.
-				if (maxWidth || maxHeight) {
-					const maxSize = getMaxFitSize(picture, maxWidth, maxHeight, fit)
-					return {
-						maxWidth: maxSize.width,
-						maxHeight: maxSize.height
-					}
-				}
+			let _maxWidth = this.getMaxWidth()
+			if (fit === 'scale-down') {
+				_maxWidth = Math.min(_maxWidth, picture.width)
+			}
+			return {
+				width: '100%',
+				maxWidth: this.addBorder(_maxWidth) + 'px'
+			}
 		}
 	}
 
@@ -234,7 +226,8 @@ export default class Picture extends React.PureComponent
 		if (width || height) {
 			w = width
 			h = height
-		} else if (maxWidth || maxHeight) {
+		}
+		else if (maxWidth || maxHeight) {
 			w = maxWidth
 			h = maxHeight
 			const scale = maxWidth ? picture.width / maxWidth : picture.height / maxHeight
@@ -246,67 +239,37 @@ export default class Picture extends React.PureComponent
 					h *= scale
 				}
 			}
-		} else if (this.picture.current) {
+		}
+		else {
+			if (!this.picture.current) {
+				return 0
+			}
 			w = this.picture.current.offsetWidth
 			h = this.picture.current.offsetHeight
-		} else {
-			return 0
 		}
 		return Math.round(Math.min(w || h, h || w) * blurFactor)
 	}
 
 	render() {
 		const {
-			picture,
-			maxWidth,
-			maxHeight,
-			maxWidthWrapper
-		} = this.props
-		const fit = this.getFit()
-		switch (fit) {
-			case 'exact-contain':
-				// Setting `max-width` on the top-most container to make
-				// the whole thing downsize when the page width is not enough.
-				// Percentage `padding-bottom` is set on child element which sets aspect ratio.
-				// Setting `max-width` together with `padding-bottom` doesn't work:
-				// aspect ratio is not being inforced in that case.
-				// That's the reason the extra wrapper is introduced.
-				if (maxWidthWrapper) {
-					return (
-						<div style={{
-							maxWidth: (maxWidth ? Math.min(maxWidth, picture.width) : (Math.min(maxHeight, picture.height) * getAspectRatio(picture))) + 'px'
-						}}>
-							{this.render_(fit)}
-						</div>
-					)
-					return this.render_(fit)
-				}
-			default:
-				return this.render_(fit)
-		}
-	}
-
-	render_(fit) {
-		const {
-			border,
-			expand,
+			component: Component,
 			showLoadingPlaceholder,
-			showLoadingIndicator,
+			border,
+			fit,
 			// fadeInDuration,
 			blur,
-			tabIndex,
+			showLoadingIndicator,
 			style,
 			className,
 			children,
 			// Rest.
-			fit: _fit,
 			picture,
 			width,
 			height,
 			maxWidth,
 			maxHeight,
-			maxWidthWrapper,
-			smallestSize,
+			useSmallestSize,
+			aspectRatio,
 			...rest
 		} = this.props
 
@@ -315,72 +278,63 @@ export default class Picture extends React.PureComponent
 			initialImageLoadError
 		} = this.state
 
-		// The aspect ratio is also incorrect when loading styles
-		// dynamically (via javascript): by the time the component mounts
-		// `this.getContainerWidth()` returns screen width and not the actual
-		// `<div/>` width, so aspect ratio is unknown at mount in those cases.
-		// if (fit === 'width') {
-		// 	if (this._isMounted) {
-		// 		style = {
-		// 			...style,
-		// 			minHeight: `${this.getHeight()}px`
-		// 		}
-		// 	}
-		// }
-
-		const showImagePlaceholder = showLoadingPlaceholder && !initialImageLoaded
-		const showImage = shouldShowImage(this.props, this.state)
+		const imageStyle = fit === 'cover' ? { height: '100%', objectFit: fit } : undefined
 
 		return (
-			<div
+			<Component
 				ref={this.container}
-				tabIndex={showImage ? undefined : tabIndex}
 				style={style ? { ...style, ...this.getContainerStyle() } : this.getContainerStyle()}
 				className={classNames(className, 'rrui__picture', {
-					'rrui__picture--repeat-x': fit === 'repeat-x',
 					'rrui__picture--border': border && !picture.transparentBackground,
-					'rrui__pictureo--expanded': expand,
-					'rrui__picture--transparent-background': picture.transparentBackground
+					'rrui__picture--background': showLoadingPlaceholder && !picture.transparentBackground // && !initialImageLoaded (transparent PNGs may require some sort of a background after they've loaded)
 				})}
 				{...rest}>
 
-				{/* Excluding `fit: width` here because until the image loads
+				{/* Could exclude `width: 100%` here because until the image loads
 				the container height is 0 so it's collapsed vertically
 				and the aspect ratio is also incorrect when loading styles
 				dynamically (via javascript): by the time the component mounts
-				`this.getContainerWidth()` returns screen width and not the actual
+				`this.getWidth()` returns screen width and not the actual
 				`<div/>` width, so aspect ratio is unknown at mount in those cases. */}
-				{ ((showLoadingPlaceholder || showLoadingIndicator) && !initialImageLoaded) && fit !== 'width' &&
-					<div className="rrui__picture__loading-container">
+				{/* Placeholder must stretch the parent element vertically
+				    same as the `<img/>` does it (for maintaining aspect ratio). */}
+				{!initialImageLoaded &&
+					<div
+						style={{ width: '100%', paddingBottom: 100 / this.getAspectRatio() + '%' }}
+						className="rrui__picture__placeholder">
 						<FadeInOut show fadeInInitially fadeInDuration={3000} fadeOutDuration={3000}>
 							{initialImageLoadError ?
 								<Close
 									onClick={this.retryInitialImageLoad}
 									title="Retry"
-									className="rrui__picture__loading rrui__picture__loading--error"/>
+									className="rrui__picture__loading-error"/>
 								:
-								<ActivityIndicator className="post__attachment-thumbnail__loading-indicator"/>
+								(showLoadingIndicator ?
+									<ActivityIndicator className="rrui__picture__loading-indicator"/> :
+									<div/>
+								)
 							}
 						</FadeInOut>
 					</div>
 				}
 
-				{/*
-					<FadeInOut show fadeInInitially fadeInDuration={fadeInDuration} fadeOutDuration={0}>
-					</FadeInOut>
-				*/}
-
-				{ showImage &&
+				{initialImageLoaded &&
 					<img
 						ref={ this.picture }
-						tabIndex={tabIndex}
 						src={ typeof window === 'undefined' ? TRANSPARENT_PIXEL : (this.getUrl() || TRANSPARENT_PIXEL) }
-						style={ blur ? addBlur(getImageStyle(fit), this.calculateBlurRadius(blur)) : getImageStyle(fit) }
+						style={ imageStyle }
 						className="rrui__picture__image"/>
 				}
 
+				{initialImageLoaded && blur &&
+					<img
+						src={ typeof window === 'undefined' ? TRANSPARENT_PIXEL : (this.getUrl() || TRANSPARENT_PIXEL) }
+						style={ addBlur(imageStyle, this.calculateBlurRadius(blur)) }
+						className="rrui__picture__image rrui__picture__image--blurred"/>
+				}
+
 				{ children }
-			</div>
+			</Component>
 		)
 	}
 
@@ -392,17 +346,34 @@ export default class Picture extends React.PureComponent
 		}, this.refreshSize)
 	}
 
+	getAspectRatio() {
+		const { picture, aspectRatio } = this.props
+		const { size } = this.state
+		// When a `<Picture/>` is a preview for a `<Video/>`
+		// then the `<Video/>` may supply its own `aspectRatio`
+		// so that there's no jump in width or height when a user clicks the preview
+		// and the `<Picture/>` is replaced by a `<Video/>`
+		// when the `<Video/>` is sized as `maxWidth`/`maxHeight`.
+		if (aspectRatio) {
+			return aspectRatio
+		}
+		// If the `size` hasn't been selected yet
+		// (for example, `componentDidMount()` hasn't been called yet)
+		// then use the max size.
+		return getAspectRatio(size || picture)
+	}
+
 	getPreferredSize = () => {
 		const {
 			picture,
-			smallestSize
+			useSmallestSize
 		} = this.props
-		if (smallestSize) {
-			return picture.sizes && picture.sizes[0] || picture
+		if (useSmallestSize) {
+			return getMinSize(picture)
 		}
 		return getPreferredSize(
 			picture,
-			this.getWidth()
+			this.getPreferredImageWidth()
 		)
 	}
 
@@ -435,31 +406,21 @@ export default class Picture extends React.PureComponent
 		}
 	}
 
-	getContainerHeight = () => this.container.current.offsetHeight
-	getContainerWidth = () => this.container.current.offsetWidth
+	// `offsetWidth` and `offsetHeight` include border width.
+	getWidth = () => this.container.current.offsetWidth
+	getHeight = () => this.container.current.offsetHeight
 
-	// getContainerWidth = () => {
-	// 	return this.picture.current ? this.picture.current.offsetWidth : this.container.current.offsetWidth
-	// }
-
-	getWidth() {
-		const { picture } = this.props
-		return getWidth(
+	getPreferredImageWidth() {
+		const {
 			picture,
-			this.getFit(),
-			this.getContainerWidth(),
-			this.getContainerHeight()
-		)
-	}
-
-	getHeight() {
-		const { picture } = this.props
-		return getHeight(
-			picture,
-			this.getFit(),
-			this.getContainerWidth(),
-			this.getContainerHeight()
-		)
+			fit,
+			width,
+			height
+		} = this.props
+		if (fit === 'cover') {
+			return this.excludeBorder(Math.max(this.getWidth(), this.getHeight() * this.getAspectRatio()))
+		}
+		return this.excludeBorder(this.getWidth())
 	}
 
 	getUrl() {
@@ -536,11 +497,11 @@ function _getPreferredSize(sizes, width, options = {}) {
 	return preferredSize
 }
 
-// Self-test.
-const testSizes = [
-	{ width: 200, height: 163, type: 'image/jpeg' },
-	{ width: 248, height: 203, type: 'image/gif' }
-]
+// // Self-test.
+// const testSizes = [
+// 	{ width: 200, height: 163, type: 'image/jpeg' },
+// 	{ width: 248, height: 203, type: 'image/gif' }
+// ]
 
 // These tests are non-deterministic because they're using `window.devicePixelRatio`.
 // if (_getPreferredSize(testSizes, 220) !== testSizes[1] ||
@@ -548,86 +509,27 @@ const testSizes = [
 // 	console.error('Picture.getPreferredSize() test didn\'t pass')
 // }
 
-const IMAGE_STYLE_BASE =
-{
-	width  : '100%',
-	height : '100%',
-	borderRadius : 'inherit'
-}
-
-const IMAGE_STYLE_FIT_WIDTH =
-{
-	...IMAGE_STYLE_BASE,
-	position: 'absolute',
-	// width : 'auto',
-	height : 'auto',
-	objectFit : 'contain',
-	// maxWidth  : '100%',
-	// maxHeight : '100%'
-}
-
-const IMAGE_STYLE_COVER =
-{
-	...IMAGE_STYLE_BASE,
-	objectFit : 'cover'
-}
-
-const IMAGE_STYLE_CONTAIN =
-{
-	...IMAGE_STYLE_BASE,
-	objectFit : 'contain'
-}
-
-const IMAGE_STYLE_SCALE_DOWN =
-{
-	...IMAGE_STYLE_BASE,
-	objectFit : 'scale-down'
-}
-
-function getImageStyle(fit) {
-	switch (fit) {
-		case 'cover':
-			return IMAGE_STYLE_COVER
-		case 'contain':
-			return IMAGE_STYLE_CONTAIN
-		case 'scale-down':
-			return IMAGE_STYLE_SCALE_DOWN
-		case 'exact':
-			return IMAGE_STYLE_BASE
-		case 'exact-contain':
-		default:
-			return IMAGE_STYLE_FIT_WIDTH
-	}
-}
-
-class InteractiveResize
-{
+class InteractiveResize {
 	subscribers = new Set()
-
 	constructor() {
 		window.addEventListener('resize', this.onResize)
 	}
-
 	add(subscriber) {
 		this.subscribers.add(subscriber)
 	}
-
 	remove(subscriber) {
 		this.subscribers.delete(subscriber)
 	}
-
 	onResize = () => {
 		clearTimeout(this.debounceTimer)
 		this.debounceTimer = setTimeout(this.resize, 500)
 	}
-
 	resize = () => {
 		this.debounceTimer = undefined
 		for (const subscriber of this.subscribers) {
 			subscriber()
 		}
 	}
-
 	destroy() {
 		for (const subscriber of this.subscribers) {
 			this.unregister(subscriber)
@@ -664,107 +566,6 @@ export function isVector({ type }) {
 	return type === 'image/svg+xml' // || (!size && SVG_FILE_URL.test(picture.url))
 }
 
-function getWidth(picture, fit, containerWidth, containerHeight) {
-	switch (fit) {
-		case 'width':
-		case 'exact':
-		case 'exact-contain':
-			return containerWidth
-		case 'repeat-x':
-			return containerHeight * getAspectRatio(picture)
-		case 'cover':
-			return Math.max(containerWidth, containerHeight * getAspectRatio(picture))
-		case 'contain':
-			return Math.min(containerWidth, containerHeight * getAspectRatio(picture))
-		case 'scale-down':
-			// if (isVector(picture)) {
-			// 	// Fit vector images as "contain".
-			// 	return getWidth(picture, 'contain', containerWidth, containerHeight)
-			// }
-			return Math.min(containerWidth, picture.width)
-		default:
-			throw new Error(`Unknown picture fit: ${fit}.`)
-	}
-}
-
-function getHeight(picture, fit, containerWidth, containerHeight) {
-	switch (fit) {
-		case 'width':
-			return containerWidth / getAspectRatio(picture)
-		case 'exact':
-		case 'exact-contain':
-			return containerHeight
-		case 'repeat-x':
-			return containerHeight
-		case 'cover':
-			return Math.max(containerHeight, containerWidth / getAspectRatio(picture))
-		case 'contain':
-			return Math.min(containerHeight, containerWidth / getAspectRatio(picture))
-		case 'scale-down':
-			// if (isVector(picture)) {
-			// 	// Fit vector images as "contain".
-			// 	return getHeight(picture, fit, containerWidth, containerHeight)
-			// }
-			return Math.min(containerHeight, picture.height)
-		default:
-			throw new Error(`Unknown picture fit: ${fit}.`)
-	}
-}
-
-export function getMaxFitSize(size, maxWidth, maxHeight, fit) {
-	let widthFactor
-	let heightFactor
-	if (maxWidth) {
-		widthFactor = size.width / maxWidth
-	}
-	if (maxHeight) {
-		heightFactor = size.height / maxHeight
-	}
-	const sizeFactor = getMaxFitSizeFactor(
-		widthFactor || heightFactor,
-		heightFactor || widthFactor,
-		fit
-	)
-	if (sizeFactor !== undefined) {
-		return {
-			width: size.width * sizeFactor,
-			height: size.height * sizeFactor
-		}
-	}
-	return size
-}
-
-function getMaxFitSizeFactor(widthFactor, heightFactor, fit) {
-	// Works around Babel bug: Duplicate declaration "factor".
-	let factor
-	switch (fit) {
-		case 'scale-down':
-			factor = Math.max(widthFactor, heightFactor)
-			if (factor > 1) {
-				return 1 / factor
-			}
-			break
-		case 'contain':
-			factor = Math.max(widthFactor, heightFactor)
-			if (factor !== 1) {
-				return 1 / factor
-			}
-			break
-		case 'cover':
-			factor = Math.min(widthFactor, heightFactor)
-			if (factor !== 1) {
-				return 1 / factor
-			}
-			break
-		default:
-			factor = Math.max(widthFactor, heightFactor)
-			if (factor > 1) {
-				return 1 / factor
-			}
-			break
-	}
-}
-
 function addBlur(style, radius) {
 	return {
 		...style,
@@ -772,20 +573,13 @@ function addBlur(style, radius) {
 		filter: `blur(${radius}px)`,
 		// Works around the white edges bug.
 		// https://stackoverflow.com/questions/28870932/how-to-remove-white-border-from-blur-background-image
-		width: `calc(100% + ${2 * radius}px)`,
-		height: `calc(100% + ${2 * radius}px)`,
-		marginLeft: `-${radius}px`,
-		marginTop: `-${radius}px`
+		width: `calc(100% + ${4 * radius}px)`,
+		height: `calc(100% + ${4 * radius}px)`,
+		marginLeft: `-${4 * radius / 2}px`,
+		marginTop: `-${4 * radius / 2}px`
 	}
 }
 
-function shouldShowImage(props, state) {
-	const {
-		showLoadingPlaceholder,
-		fit
-	} = props
-	const {
-		initialImageLoaded
-	} = state
-	return !(showLoadingPlaceholder && !initialImageLoaded) && fit !== 'repeat-x'
+export function getMinSize(picture) {
+	return picture.sizes && picture.sizes[0] || picture
 }

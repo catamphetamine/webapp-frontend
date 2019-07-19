@@ -11,7 +11,7 @@ import './Header.css'
 
 export default function Header() {
 	return (
-		<nav className="webpage__header">
+		<nav className="webpage__header rrui__fixed-full-width">
 			<div className="container">
 				<div className="webpage__header__row">
 					{/*<Menu>

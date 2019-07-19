@@ -9,8 +9,6 @@
 	--Document-fontFamily--text: var(--Document-fontFamily);
 
 	/* Header. */
-	--Header-backgroundColor: var(--Content-backgroundColor);
-	--Header-color: var(--Content-color-800);
 	--Header-borderWidth: 1px;
 
 	/* Menu. */
@@ -19,12 +17,6 @@
 
 	/* MenuIcon. */
 	--MenuIcon-width: calc(var(--unit) * 1.75);
-
-	/* Clickable. */
-	--Clickable-color--text: var(--base-color-700);
-	--Clickable-color--textActive: var(--Clickable-color);
-	--Clickable-color: var(--base-color-600);
-	--Clickable-color--light: var(--base-color-500);
 
 	/* Picture. */
 	--Picture-backgroundColor: var(--Content-color-100);
@@ -35,14 +27,29 @@
 	--Notification-backgroundColor: var(--Content-color-900);
 	--Notification-borderColor: var(--Content-color-400);
 	--Notification-borderWidth: 1px;
-	--Notification-color--error: var(--Error-color);
+
+	/* Notification (error). */
+	--Notification-color--error: var(--white-color);
 	--Notification-backgroundColor--error: var(--Error-backgroundColor);
 	--Notification-borderColor--error: var(--Notification-borderColor);
 	--Notification-borderWidth--error: var(--Notification-borderWidth);
 
+	/* Notification (warning). */
+	--Notification-color--warning: var(--black-color);
+	--Notification-backgroundColor--warning: var(--Warning-backgroundColor);
+	--Notification-borderColor--warning: var(--Notification-borderColor);
+	--Notification-borderWidth--warning: var(--Notification-borderWidth);
+
+	/* Modal. */
+	--Modal-borderColor: transparent;
+	--Modal-borderWidth: 0px;
+
 	/* Error. */
-	--Error-color: var(--white-color);
 	--Error-backgroundColor: var(--critical-color-600);
+
+	/* Warning. */
+	--Warning-color: var(--black-color);
+	--Warning-backgroundColor: #EFEB00;
 
 	/* Content. */
 	--Content-color-900: initial;
@@ -83,18 +90,30 @@
 	--Document-backgroundColor: #eaeaea;
 
 	/* Header. */
+	--Header-color: var(--Content-color-800);
+	--Header-backgroundColor: var(--Content-backgroundColor);
 	--Header-borderColor: rgba(0,0,0,.11);
 
 	/* Menu. */
 	--Menu-color--active: var(--gray-color-650);
 
+	/* Clickable. */
+	--Clickable-color--text: var(--base-color-700);
+	--Clickable-color--textActive: var(--base-color-600);
+	--Clickable-color: var(--base-color-500);
+	--Clickable-color--active: var(--base-color-400);
+
 	/* Picture. */
 	--Picture-borderColor: rgba(0, 0, 0, 0.5);
 	--Picture-borderColor--focus: var(--base-color-700);
+	--Picture-filter: none;
+
+	/* Error. */
+	--Error-color: var(--critical-color-600);
 
 	/* Selection. */
 	--Selection-color: var(--white-color);
-	--Selection-backgroundColor: var(--base-color-600);
+	--Selection-backgroundColor: var(--Clickable-color);
 
 	/* Content. */
 	--Content-backgroundColor: var(--white-color);
@@ -118,7 +137,7 @@
 
 	/* PostVotes. */
 	--PostVotes-color--positive: #008800;
-	--PostVotes-color--negative: #cc0000;
+	--PostVotes-color--negative: #b50000;
 
 	/* PostQuote. */
 	--PostQuote-color: var(--base-color-700);
@@ -132,7 +151,7 @@
 	--PostInlineSpoiler-color--censoredContentActive: #f2dccb;
 
 	/* PostAttachment. */
-	--PostAttachment-shadowColor--hover: rgba(0,0,0,0.2);
+	--PostAttachment-shadowColor--hover: rgba(0,0,0,0.15);
 
 	/* CommentTree. */
 	--CommentTree-color: var(--Content-color-200);
@@ -159,6 +178,8 @@
 	--Document-backgroundColor: #1a1a1a;
 
 	/* Header. */
+	--Header-color: var(--Content-color-900);
+	--Header-backgroundColor: #262626;
 	--Header-borderColor: rgba(255,255,255,.07);
 
 	/* Menu. */
@@ -170,6 +191,9 @@
 	--Notification-borderColor: var(--HoverButton-borderColor);
 	--Notification-borderWidth: 1px;
 
+	/* Error. */
+	--Error-color: var(--critical-color-400);
+
 	/* Selection. */
 	--Selection-color: var(--Content-backgroundColor);
 	--Selection-backgroundColor: var(--base-color-400);
@@ -177,15 +201,15 @@
 	/* Content. */
 	/* https://refactoringui.com/previews/building-your-color-palette */
 	--Content-color-100: #333333;
-	--Content-color-200: #434343;
-	--Content-color-300: #595959;
-	--Content-color-400: #676767;
-	--Content-color-500: #828282;
-	--Content-color-600: #9d9d9d;
-	--Content-color-700: #b8b8b8;
-	--Content-color-800: #d4d4d4;
-	--Content-color-900: #f4f4f4;
-	--Content-backgroundColor: #262626;
+	--Content-color-200: #444444;
+	--Content-color-300: #555555;
+	--Content-color-400: #666666;
+	--Content-color-500: #777777;
+	--Content-color-600: #888888;
+	--Content-color-700: #989898;
+	--Content-color-800: #a0a0a0;
+	--Content-color-900: #b9b9b9;
+	--Content-backgroundColor: #383838;
 	/* The default "bold" font weight is too bold
 	   for white text on black background. */
 	--Content-fontWeight--bold: 500;
@@ -196,27 +220,33 @@
 	--ContentSection-shadowColor: rgba(0,0,0,.15);
 
 	/* Clickable. */
-	--Clickable-color--text: var(--base-color-600);
-	--Clickable-color--textActive: var(--base-color-500);
+	--Clickable-color: var(--base-color-400);
+	--Clickable-color--active: var(--base-color-500);
+	--Clickable-color--text: var(--base-color-300);
+	--Clickable-color--textActive: var(--base-color-400);
+
+	/* Modal. */
+	--Modal-borderColor: var(--Content-color-100);
+	--Modal-borderWidth: 1px;
 
 	/* Picture. */
 	--Picture-borderColor: var(--Content-color-100);
-	--Picture-borderColor--focus: #383838;
+	--Picture-borderColor--focus: #4c3525;
+	--Picture-filter: brightness(85%);
 
 	/* Post. */
 	--Post-color--secondary: var(--Content-color-600);
 
 	/* PostVotes. */
-	--PostVotes-color--positive: #17e017;
-	--PostVotes-color--negative: #f01515;
+	--PostVotes-color--positive: #83ff5a;
+	--PostVotes-color--negative: #ff5454;
 
 	/* PostQuote. */
-	/*--PostQuote-color: var(--base-color-600);*/
-	--PostQuote-color: #75cc59;
+	--PostQuote-color: #82c45f;
 
 	/* PostInlineSpoiler. */
-	--PostInlineSpoiler-color: #434343;
-	--PostInlineSpoiler-color--contentActive: #474747;
+	--PostInlineSpoiler-color: #494949;
+	--PostInlineSpoiler-color--contentActive: #4b4b4b;
 	--PostInlineSpoiler-color--censored: #62504f;
 	--PostInlineSpoiler-color--censoredContentActive: #645251;
 
