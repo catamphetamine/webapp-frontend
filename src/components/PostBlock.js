@@ -29,47 +29,50 @@ export default function PostBlock({
 	locale,
 	children: content
 }) {
+	function renderContent(content) {
+		if (typeof content === 'string') {
+			return content
+		}
+		return (
+			<PostInlineContent
+				url={url}
+				onReadMore={onReadMore}
+				readMoreLabel={readMoreLabel}
+				onAttachmentClick={onAttachmentClick}
+				serviceIcons={serviceIcons}>
+				{content}
+			</PostInlineContent>
+		)
+	}
 	if (Array.isArray(content) || typeof content === 'string') {
 		return (
 			<PostParagraph>
-				<PostInlineContent
-					url={url}
-					onReadMore={onReadMore}
-					readMoreLabel={readMoreLabel}
-					onAttachmentClick={onAttachmentClick}
-					serviceIcons={serviceIcons}>
-					{content}
-				</PostInlineContent>
+				{renderContent(content)}
 			</PostParagraph>
 		)
 	} else if (content.type === 'heading') {
 		return (
 			<PostSubheading>
-				<PostInlineContent
-					url={url}
-					onReadMore={onReadMore}
-					readMoreLabel={readMoreLabel}
-					onAttachmentClick={onAttachmentClick}
-					serviceIcons={serviceIcons}>
-					{content.content}
-				</PostInlineContent>
+				{renderContent(content.content)}
 			</PostSubheading>
 		)
 	} else if (content.type === 'list') {
-		return <PostList>{content.items}</PostList>
+		return (
+			<PostList>
+				{content.items}
+			</PostList>
+		)
 	} else if (content.type === 'quote') {
-		return <PostQuote>{content}</PostQuote>
+		return (
+			<PostQuote>
+				{content}
+			</PostQuote>
+		)
 	} else if (content.type === 'code') {
 		return (
-			<PostCode language={content.language}>
-				<PostInlineContent
-					url={url}
-					onReadMore={onReadMore}
-					readMoreLabel={readMoreLabel}
-					onAttachmentClick={onAttachmentClick}
-					serviceIcons={serviceIcons}>
-					{content.content}
-				</PostInlineContent>
+			<PostCode
+				language={content.language}>
+				{renderContent(content.content)}
 			</PostCode>
 		)
 	} else if (content.type === 'read-more') {
@@ -137,14 +140,11 @@ export default function PostBlock({
 		console.error(`Unsupported post content:\n`, content)
 		return (
 			<PostParagraph>
-				<PostInlineContent
-					url={url}
-					onReadMore={onReadMore}
-					readMoreLabel={readMoreLabel}
-					onAttachmentClick={onAttachmentClick}
-					serviceIcons={serviceIcons}>
-					{(Array.isArray(content.content) || content.content) ? content.content : JSON.stringify(content.content)}
-				</PostInlineContent>
+				{renderContent(
+					(Array.isArray(content.content) || content.content) ?
+						content.content :
+						JSON.stringify(content.content)
+				)}
 			</PostParagraph>
 		)
 	}
