@@ -61,7 +61,7 @@ export default function PostBlock({
 		return <PostQuote>{content}</PostQuote>
 	} else if (content.type === 'monospace') {
 		return (
-			<PostMonospace>
+			<PostMonospace language={content.language}>
 				<PostInlineContent
 					url={url}
 					onReadMore={onReadMore}

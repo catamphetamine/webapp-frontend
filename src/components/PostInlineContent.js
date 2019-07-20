@@ -121,7 +121,7 @@ function PostInlineContentElement({ children: content, ...rest }) {
 		)
 	} else if (content.type === 'monospace') {
 		return (
-			<PostMonospace inline>
+			<PostMonospace inline language={content.language}>
 				{_content}
 			</PostMonospace>
 		)
