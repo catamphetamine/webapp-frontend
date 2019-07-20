@@ -54,7 +54,7 @@ export default function PostCode({
 					PreTag={Pre}
 					useInlineStyles={false}
 					language={language}
-					realClassName={className}
+					realClassName={classNames(className, 'post__code--highlight')}
 					codeTagProps={codeTagProps}>
 					{children}
 				</SyntaxHighlighter>
