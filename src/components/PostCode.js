@@ -1,16 +1,16 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
-import { postMonospace } from '../PropTypes'
+import { postCode } from '../PropTypes'
 
-import './PostMonospace.css'
+import './PostCode.css'
 
 /**
  * Renders some code.
  * Could also highlight the syntax:
  * https://github.com/catamphetamine/captchan/issues/4#issuecomment-513475218
  */
-export default function PostMonospace({
+export default function PostCode({
 	inline,
 	language,
 	className,
@@ -18,13 +18,13 @@ export default function PostMonospace({
 }) {
 	const _className = classNames(
 		className,
-		'post__monospace'
+		'post__code'
 	)
 	if (inline) {
 		return (
 			<code className={classNames(
 				_className,
-				'post__monospace--inline',
+				'post__code--inline',
 				language && `language-${language}`
 			)}>
 				{children}
@@ -51,9 +51,9 @@ export default function PostMonospace({
 	)
 }
 
-PostMonospace.propTypes = {
+PostCode.propTypes = {
 	inline: PropTypes.bool,
 	language: PropTypes.string,
 	className: PropTypes.string,
-	children: postMonospace.isRequired
+	children: postCode.isRequired
 }

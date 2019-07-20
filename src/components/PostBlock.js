@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import PostSubheading from './PostSubheading'
 import PostParagraph from './PostParagraph'
 import PostList from './PostList'
-import PostMonospace from './PostMonospace'
+import PostCode from './PostCode'
 import PostQuote from './PostQuote'
 import PostPicture from './PostPicture'
 import PostVideo from './PostVideo'
@@ -59,9 +59,9 @@ export default function PostBlock({
 		return <PostList>{content.items}</PostList>
 	} else if (content.type === 'quote') {
 		return <PostQuote>{content}</PostQuote>
-	} else if (content.type === 'monospace') {
+	} else if (content.type === 'code') {
 		return (
-			<PostMonospace language={content.language}>
+			<PostCode language={content.language}>
 				<PostInlineContent
 					url={url}
 					onReadMore={onReadMore}
@@ -70,7 +70,7 @@ export default function PostBlock({
 					serviceIcons={serviceIcons}>
 					{content.content}
 				</PostInlineContent>
-			</PostMonospace>
+			</PostCode>
 		)
 	} else if (content.type === 'read-more') {
 		return (

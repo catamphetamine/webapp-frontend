@@ -1,10 +1,10 @@
-.post__monospace {
+.post__code {
 	border-radius: var(--border-radius);
 	border: 1px solid var(--Content-color-200);
 	background-color: var(--Content-color-100);
 }
 
-.post__monospace:not(.post__monospace--inline) {
+.post__code:not(.post__code--inline) {
 	line-height: var(--line-height);
 	margin-left: calc(-1 * var(--unit) * 0.5);
 	margin-right: calc(-1 * var(--unit) * 0.5);
@@ -14,12 +14,12 @@
 	margin-bottom: -1px;
 }
 
-.post__monospace--inline {
+.post__code--inline {
 	padding-left: 0.25em;
 	padding-right: 0.25em;
 }
 
-.post__monospace.post__block {
+.post__code.post__block {
 	margin-top: 0.5em;
 	&:first-child {
 		margin-top: 1em;
@@ -27,7 +27,7 @@
 }
 
 .post.content-section {
-	.post__monospace:not(.post__monospace--inline) {
+	.post__code:not(.post__code--inline) {
 		margin-left: calc(var(--ContentSection-padding--horizontal) * -1);
 		margin-right: calc(var(--ContentSection-padding--horizontal) * -1);
 		padding-left: var(--ContentSection-padding--horizontal);

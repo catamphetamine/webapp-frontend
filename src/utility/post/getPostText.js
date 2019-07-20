@@ -166,7 +166,7 @@ export function getContentText(content, softLimit, options = {}) {
 				return getHumanReadableLinkAddress(part.url)
 			}
 			return part.content
-		case 'monospace':
+		case 'code':
 			if (!part.inline && options.excludeCodeBlocks) {
 				if (options.messages && options.messages.code) {
 					return '(' + options.messages.code.toLowerCase() + ')'

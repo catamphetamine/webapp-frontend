@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import PostMonospace from './PostMonospace'
+import PostCode from './PostCode'
 import PostInlineQuote from './PostInlineQuote'
 import PostInlineSpoiler from './PostInlineSpoiler'
 import PostText from './PostText'
@@ -119,11 +119,11 @@ function PostInlineContentElement({ children: content, ...rest }) {
 				{_content}
 			</PostLink>
 		)
-	} else if (content.type === 'monospace') {
+	} else if (content.type === 'code') {
 		return (
-			<PostMonospace inline language={content.language}>
+			<PostCode inline language={content.language}>
 				{_content}
-			</PostMonospace>
+			</PostCode>
 		)
 	} else if (content.type === 'read-more') {
 		return (

@@ -512,7 +512,7 @@ const CONTENT_BLOCKS = {
 			return countIfFits(block.content)
 		}
 	},
-	'monospace': {
+	'code': {
 		countIfFits(block, countIfFits) {
 			return countIfFits(block.content)
 		}

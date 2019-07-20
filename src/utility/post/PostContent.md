@@ -130,14 +130,17 @@ Parsed content:
 * `service` is for cases when parsing links. For example, a YouTube video link may have `service` set to `youtube` to show YouTube icon before it.
 * `attachment` is for cases when parsing links. For example, a YouTube video link may have both `content` with the title of the video and `attachment` being a [`Video`](#video).
 
-### Monospace (inline)
+### Code (inline)
 
 ```js
 {
-	type: "monospace",
+	type: "code",
+	language: String?,
 	content: InlineContent
 }
 ```
+
+* `language` can be specified for syntax highlighting.
 
 ### Read more (inline)
 
@@ -169,14 +172,17 @@ A "Read more" button that is placed in the same paragraph as the trimmed text. I
 }
 ```
 
-### Monospace (block)
+### Code (block)
 
 ```js
 {
-	type: "monospace",
+	type: "code",
+	language: String?,
 	content: InlineContent
 }
 ```
+
+* `language` can be specified for syntax highlighting.
 
 ### Quote (block)
 

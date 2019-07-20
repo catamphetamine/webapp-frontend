@@ -196,8 +196,8 @@ export const postStyledText = shape({
 	]).isRequired
 })
 
-export const postMonospace = shape({
-	type: oneOf(['monospace']).isRequired,
+export const postCode = shape({
+	type: oneOf(['code']).isRequired,
 	censored: bool,
 	content: arrayOf(postInlineElement).isRequired
 })
