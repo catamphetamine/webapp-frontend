@@ -112,8 +112,8 @@
 	--Error-color: var(--critical-color-600);
 
 	/* Selection. */
-	--Selection-color: var(--white-color);
-	--Selection-backgroundColor: var(--Clickable-color);
+	--Selection-color: var(--Content-color-900);
+	--Selection-backgroundColor: var(--Clickable-color--active);
 
 	/* Content. */
 	--Content-backgroundColor: var(--white-color);
