@@ -5,6 +5,11 @@ import { postMonospace } from '../PropTypes'
 
 import './PostMonospace.css'
 
+/**
+ * Renders some code.
+ * Could also highlight the syntax:
+ * https://github.com/catamphetamine/captchan/issues/4#issuecomment-513475218
+ */
 export default function PostMonospace({
 	inline,
 	language,
