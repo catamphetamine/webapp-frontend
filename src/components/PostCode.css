@@ -51,7 +51,7 @@ tab-size: 2;*/
 hyphens: none;*/
 
 .dark {
-	.post__code--highlight {
+	.post__code--highlighted {
 		/**
 		 * prism.js tomorrow night eighties for JavaScript, CoffeeScript, CSS and HTML
 		 * Based on https://github.com/chriskempson/tomorrow-theme
@@ -135,7 +135,7 @@ hyphens: none;*/
 }
 
 .light {
-	.post__code--highlight {
+	.post__code--highlighted {
 		/*
 		 Solarized Color Schemes originally by Ethan Schoonover
 		 http://ethanschoonover.com/solarized
