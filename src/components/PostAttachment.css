@@ -5,7 +5,7 @@
 	display: block;
 }
 
-.post__attachment-thumbnail:not(.rrui__picture--transparent-background) {
+.post__attachment-thumbnail.rrui__picture--background {
 	/* Material Design Card elevation shadow. */
 	/* https://codepen.io/sdthornton/pen/wBZdXq */
 	transition: box-shadow 160ms cubic-bezier(.25,.8,.25,1);

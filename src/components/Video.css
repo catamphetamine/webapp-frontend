@@ -1,12 +1,7 @@
-/*
-http://embedresponsively.com/
-`padding-bottom` is in width percentage
-and that's how the embedded video's aspect ratio is set.
-*/
 .rrui__video {
 	display: block;
-	position: relative;
-	overflow: hidden;
+/*	position: relative;
+	overflow: hidden;*/
 }
 
 /*
@@ -96,4 +91,10 @@ and that's how the embedded video's aspect ratio is set.
 
 .rrui__video__duration--time {
 	font-size: 80%;
+}
+
+.rrui__video__player-container-inner {
+	/* Will be focused in case of an `<iframe/>` video player
+	   because `<iframe/>`s don't bubble events. */
+	outline: none;
 }

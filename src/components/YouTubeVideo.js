@@ -15,6 +15,8 @@ export default class YouTubeVideo extends React.Component {
 			height,
 			autoPlay
 		} = this.props
+		// `this.player` won't have the instance methods
+		// until it's in the "ready" state.
 		this.player = new YT.Player(this.node.current, {
 			width,
 			height,
@@ -30,6 +32,7 @@ export default class YouTubeVideo extends React.Component {
 	}
 
 	onReady = (event) => {
+		this.isReady = true
 		const { autoPlay } = this.props
 		if (autoPlay) {
 			event.target.playVideo()
@@ -37,32 +40,46 @@ export default class YouTubeVideo extends React.Component {
 	}
 
 	play() {
-		// state -> "playing" (1).
-		this.player.playVideo()
+		if (this.isReady) {
+			// state -> "playing" (1).
+			this.player.playVideo()
+		}
 	}
 
 	pause() {
-		// state -> "paused" (2) or "ended" (0).
-		this.player.pauseVideo()
+		if (this.isReady) {
+			// state -> "paused" (2) or "ended" (0).
+			this.player.pauseVideo()
+		}
 	}
 
 	stop() {
-		// Stops loading video stream.
-		// state -> ended (0), paused (2), video cued (5) or unstarted (-1).
-		this.player.stopVideo()
+		if (this.isReady) {
+			// Stops loading video stream.
+			// state -> ended (0), paused (2), video cued (5) or unstarted (-1).
+			this.player.stopVideo()
+		}
 	}
 
 	getCurrentTime() {
-		return this.player.getCurrentTime()
+		if (this.isReady) {
+			return this.player.getCurrentTime()
+		}
+		return 0
 	}
 
 	getDuration() {
-		return this.player.getDuration()
+		if (this.isReady) {
+			return this.player.getDuration()
+		}
+		return 0
 	}
 
 	seekTo(seconds) {
-		// const allowSeekAhead = true
-		this.player.seekTo(seconds, true)
+		if (this.isReady) {
+			// const allowSeekAhead = true
+			this.player.seekTo(seconds, true)
+		}
 	}
 
 	getNode() {
@@ -75,7 +92,9 @@ export default class YouTubeVideo extends React.Component {
 	}
 
 	getState() {
-		return this.player.getPlayerState()
+		if (this.isReady) {
+			return this.player.getPlayerState()
+		}
 	}
 
 	isPaused() {
@@ -103,27 +122,33 @@ export default class YouTubeVideo extends React.Component {
 	}
 
 	mute() {
-		this.player.mute()
+		if (this.isReady) {
+			this.player.mute()
+		}
 	}
 
 	unMute() {
-		this.player.unMute()
+		if (this.isReady) {
+			this.player.unMute()
+		}
 	}
 
 	isMuted() {
-		return this.player.isMuted()
+		if (this.isReady) {
+			return this.player.isMuted()
+		}
 	}
 
 	setVolume(volume) {
-		this.player.setVolume(volume * 100)
+		if (this.isReady) {
+			this.player.setVolume(volume * 100)
+		}
 	}
 
 	getVolume() {
-		return this.player.getVolume() / 100
-	}
-
-	getDuration() {
-		return this.player.getDuration()
+		if (this.isReady) {
+			return this.player.getVolume() / 100
+		}
 	}
 
 	focus = () => {

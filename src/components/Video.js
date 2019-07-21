@@ -1,10 +1,10 @@
-import React from 'react'
+import React, { useState, useRef, useEffect, useImperativeHandle, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 
 import { video } from '../PropTypes'
 import { getEmbeddedVideoUrl, getVideoUrl } from '../utility/video'
-import { requestFullScreen, exitFullScreen, onFullScreenChange } from '../utility/dom'
+import { requestFullScreen, exitFullScreen as _exitFullScreen } from '../utility/dom'
 
 import Picture, { getMaxFitSize } from './Picture'
 import VideoPlayIcon from './VideoPlayIcon'
@@ -16,260 +16,285 @@ import './Video.css'
 
 // Picture border width.
 // Could also be read from the CSS variable:
-// `parseInt(getComputedStyle(this.container.current).getPropertyValue('--Picture-borderWidth'))`.
+// `parseInt(getComputedStyle(container.current).getPropertyValue('--Picture-borderWidth'))`.
 export const BORDER_WIDTH = 1
 
-export default class Video extends React.Component {
-	state = {
-		showPreview: this.props.showPreview && !this.props.autoPlay,
-		autoPlay: this.props.autoPlay
-	}
+function Video({
+	video,
+	border,
+	preview,
+	autoPlay,
+	expand,
+	showPlayIcon,
+	width,
+	height,
+	maxWidth,
+	maxHeight,
+	fit,
+	onClick: _onClick,
+	seekStep,
+	seekOnArrowKeys,
+	seekOnArrowKeysAtBorders,
+	changeVolumeOnArrowKeys,
+	changeVolumeStep,
+	stopVideoOnStopPlaying,
+	spoilerLabel,
+	tabIndex,
+	style,
+	className,
+	...rest
+}, ref) {
+	const [showPreview, setShowPreview] = useState(preview && !autoPlay && !expand)
+	const [shouldStartPlaying, setShouldStartPlaying] = useState(autoPlay)
+	const previewRef = useRef()
+	const playerRef = useRef()
+	const playerContainerInnerRef = useRef()
+	const hasMounted = useRef()
+	const isFullScreen = useRef()
 
-	button = React.createRef()
-	video = React.createRef()
-	youTubeVideo = React.createRef()
-	iframeVideo = React.createRef()
-
-	componentDidMount() {
-		const { video } = this.props
+	useEffect(() => {
 		if (video.provider === 'YouTube') {
 			YouTubeVideo.loadApi()
 		}
-	}
-
-	componentWillUnmount() {
-		if (this.isFullScreen) {
-			this.exitFullScreen()
-		}
-	}
-
-	componentDidUpdate(prevProps) {
-		// On `showPreview` property change.
-		if (this.props.showPreview !== prevProps.showPreview) {
-			this.setState({
-				showPreview: this.props.showPreview
-			})
-		}
-		// On `autoPlay` property change.
-		if (this.props.autoPlay !== prevProps.autoPlay) {
-			this.setState({
-				autoPlay: this.props.autoPlay
-			})
-		}
-		// On `canPlay` property change.
-		if (this.props.canPlay !== prevProps.canPlay) {
-			if (!this.props.canPlay && this.props.showPreview) {
-				this.setState({
-					showPreview: true,
-					autoPlay: false
-				})
+		return () => {
+			if (isFullScreen.current) {
+				exitFullScreen()
 			}
 		}
-	}
+	}, [])
 
-	getPlayer() {
-		return this.video.current || this.youTubeVideo.current
-	}
-
-	spacebarTogglesPlay() {
-		return this.getPlayer() === this.video.current
-	}
-
-	focus = () => {
-		if (this.button.current) {
-			this.button.current.focus()
-		} else if (this.getPlayer() && this.getPlayer().focus) {
-			this.getPlayer().focus()
+	useEffect(() => {
+		// The initial call is ignored.
+		if (!hasMounted.current) {
+			return
+		}
+		if (shouldStartPlaying) {
+			focus()
+			play()
 		} else {
-			return false
-		}
-	}
-
-	// `<video/>` docs:
-	// https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement
-
-	play = () => {
-		if (this.getPlayer() && this.getPlayer().play) {
-			this.getPlayer().play()
-			return true
-		}
-	}
-
-	pause = () => {
-		if (this.getPlayer() && this.getPlayer().pause) {
-			this.getPlayer().pause()
-			return true
-		}
-	}
-
-	togglePlay() {
-		// // If rendering HTML5 `<video/>` which is focused
-		// // then it already handles play/pause of spacebar.
-		// if (this.video.current) {
-		// 	return true
-		// }
-		const isPaused = this.isPaused()
-		if (isPaused !== undefined) {
-			if (isPaused) {
-				this.getPlayer().play()
+			if (stopVideoOnStopPlaying) {
+				stop()
 			} else {
-				this.getPlayer().pause()
+				pause()
+			}
+		}
+	}, [shouldStartPlaying])
+
+	const [prevPreview, setPrevPreview] = useState(preview)
+	const [prevAutoPlay, setPrevAutoPlay] = useState(autoPlay)
+	const [prevExpand, setPrevExpand] = useState(expand)
+
+	useEffect(() => {
+		if (!hasMounted.current) {
+			hasMounted.current = true
+		} else {
+			function updateShowPreview() {
+				setShowPreview(preview && !autoPlay && !expand)
+			}
+			// On `preview` property change.
+			if (preview !== prevPreview) {
+				updateShowPreview()
+				setPrevPreview(preview)
+			}
+			// On `expand` property change.
+			if (expand !== prevExpand) {
+				updateShowPreview()
+				setPrevExpand(expand)
+			}
+			// On `autoPlay` property change.
+			if (autoPlay !== prevAutoPlay) {
+				updateShowPreview()
+				setShouldStartPlaying(autoPlay ? true : false)
+				setPrevAutoPlay(autoPlay)
+			}
+		}
+	})
+
+	useImperativeHandle(ref, () => ({
+		focus
+	}))
+
+	function play() {
+		if (playerRef.current && playerRef.current.play) {
+			playerRef.current.play()
+			return true
+		}
+	}
+
+	function pause() {
+		if (playerRef.current && playerRef.current.pause) {
+			playerRef.current.pause()
+			return true
+		}
+	}
+
+	function stop() {
+		if (playerRef.current) {
+			// Exit fullscreen on stop.
+			// For example, when watching slides in a slideshow
+			// and the current slide is video and it's in fullscreen mode
+			// and then the user pushes "Left" or "Right" key
+			// to move to another slide that next slide should be focused
+			// which wouldn't be possible until the fullscreen mode is exited from.
+			if (isFullScreen.current) {
+				exitFullScreen()
+			}
+			if (playerRef.current.stop) {
+				playerRef.current.stop()
+				return true
+			}
+			// `<HtmlVideo/>` doesn't have a `.stop()` method.
+			// Emulate `stop()` via `pause()` and `seekTo()`.
+			else {
+				return pause() && seekTo(0)
+			}
+		}
+	}
+
+	function togglePlay() {
+		if (isPaused() !== undefined) {
+			if (isPaused()) {
+				playerRef.current.play()
+			} else {
+				playerRef.current.pause()
 			}
 			return true
 		}
 	}
 
-	isPaused = () => {
-		if (this.getPlayer() && this.getPlayer().isPaused) {
-			return this.getPlayer().isPaused()
+	function isPaused() {
+		if (playerRef.current && playerRef.current.isPaused) {
+			return playerRef.current.isPaused()
 		}
 	}
 
-	hasStarted = () => {
-		if (this.getPlayer() && this.getPlayer().hasStarted) {
-			return this.getPlayer().hasStarted()
+	function hasStarted() {
+		if (playerRef.current && playerRef.current.hasStarted) {
+			return playerRef.current.hasStarted()
 		}
 	}
 
-	hasEnded = () => {
-		if (this.getPlayer() && this.getPlayer().hasEnded) {
-			return this.getPlayer().hasEnded()
+	function hasEnded() {
+		if (playerRef.current && playerRef.current.hasEnded) {
+			return playerRef.current.hasEnded()
 		}
 	}
 
-	seek(forward) {
-		const { seekStep } = this.props
+	function seek(forward) {
 		const delta = forward ? seekStep : -1 * seekStep
-		if (this.getPlayer() && this.getPlayer().getCurrentTime) {
-			return this.seekTo(this.getPlayer().getCurrentTime() + delta)
+		if (playerRef.current && playerRef.current.getCurrentTime) {
+			return seekTo(playerRef.current.getCurrentTime() + delta)
 		}
 	}
 
-	seekTo(seconds) {
-		if (this.getPlayer() && this.getPlayer().seekTo) {
-			this.getPlayer().seekTo(seconds)
+	function seekTo(seconds) {
+		if (playerRef.current && playerRef.current.seekTo) {
+			playerRef.current.seekTo(seconds)
 			return true
 		}
 	}
 
-	setVolume(volume) {
-		if (this.getPlayer() && this.getPlayer().setVolume) {
-			this.getPlayer().setVolume(volume)
+	function setVolume(volume) {
+		if (playerRef.current && playerRef.current.setVolume) {
+			playerRef.current.setVolume(volume)
 			return true
 		}
 	}
 
-	getVolume() {
-		if (this.getPlayer() && this.getPlayer().getVolume) {
-			return this.getPlayer().getVolume()
+	function getVolume() {
+		if (playerRef.current && playerRef.current.getVolume) {
+			return playerRef.current.getVolume()
 		}
 	}
 
-	getDuration() {
-		const { video } = this.props
+	function getDuration() {
 		// Even if `video` didn't contain `duration`
 		// YouTube player can return its duration.
-		if (this.getPlayer() && this.getPlayer().getDuration) {
-			return this.getPlayer().getDuration
+		if (playerRef.current && playerRef.current.getDuration) {
+			return playerRef.current.getDuration
 		}
 		return video.duration
 	}
 
-	changeVolume(up) {
-		const { changeVolumeStep } = this.props
+	function changeVolume(up) {
 		const delta = up ? changeVolumeStep : -1 * changeVolumeStep
-		const volume = this.getVolume()
+		const volume = getVolume()
 		if (volume !== undefined) {
-			return this.setVolume(Math.min(Math.max(0, volume + delta), 1))
+			return setVolume(Math.min(Math.max(0, volume + delta), 1))
 		}
 	}
 
-	mute() {
-		if (this.getPlayer() && this.getPlayer().mute) {
-			this.getPlayer().mute()
+	function mute() {
+		if (playerRef.current && playerRef.current.mute) {
+			playerRef.current.mute()
 			return true
 		}
 	}
 
-	unMute() {
-		if (this.getPlayer() && this.getPlayer().unMute) {
-			this.getPlayer().unMute()
+	function unMute() {
+		if (playerRef.current && playerRef.current.unMute) {
+			playerRef.current.unMute()
 			return true
 		}
 	}
 
-	isMuted() {
-		if (this.getPlayer() && this.getPlayer().isMuted) {
-			return this.getPlayer().isMuted()
+	function isMuted() {
+		if (playerRef.current && playerRef.current.isMuted) {
+			return playerRef.current.isMuted()
 		}
 	}
 
-	toggleMute() {
-		const isMuted = this.isMuted()
-		if (isMuted !== undefined) {
-			if (isMuted) {
-				return this.unMute()
+	function toggleMute() {
+		if (isMuted() !== undefined) {
+			if (isMuted()) {
+				return unMute()
 			} else {
-				return this.mute()
+				return mute()
 			}
 		}
 	}
 
-	showVideo = (callback) => {
-		const { showPreview } = this.state
+	function focus() {
 		if (showPreview) {
-			this.setState({
-				showPreview: false,
-				autoPlay: true
-			}, () => {
-				this.focus()
-				if (callback) {
-					callback()
-				}
-			})
+			previewRef.current.focus()
+		} else if (shouldFocusPlayer(video) &&
+			playerRef.current && playerRef.current.focus) {
+			playerRef.current.focus()
 		} else {
-			if (callback) {
-				callback()
-			}
+			playerContainerInnerRef.current.focus()
 		}
 	}
 
-	onClick = (event) => {
+	function onClick(event) {
 		if (event.ctrlKey || event.altKey || event.shiftKey || event.metaKey) {
 			return
 		}
 		// Handle click event.
-		const { onClick, expand } = this.props
-		const { showPreview } = this.state
 		if (expand) {
 			return
 		}
-		if (onClick) {
-			onClick(event)
+		// `<Slideshow/>` passes `onClick()` to prevent
+		// `<video/>` from toggling Pause/Play on click-and-drag.
+		if (_onClick) {
+			// `<Slideshow/>` calls `event.preventDefault()` here on click-and-drag.
+			_onClick(event)
 		}
 		if (showPreview && !event.defaultPrevented) {
 			event.preventDefault()
-			this.showVideo()
+			setShowPreview(false)
+			setShouldStartPlaying(true)
 		}
 	}
 
-	onKeyDown = (event) => {
-		const {
-			video,
-			seekOnArrowKeys,
-			seekOnArrowKeysAtBorders,
-			changeVolumeOnArrowKeys
-		} = this.props
-
+	function onKeyDown(event) {
 		if (event.ctrlKey || event.altKey || event.shiftKey || event.metaKey) {
 			return
 		}
-
 		switch (event.keyCode) {
 			// Pause/Play on Spacebar.
 			case 32:
-				if (!this.spacebarTogglesPlay()) {
-					if (this.togglePlay()) {
+				if (!videoPlayerHandlesTogglePlayOnSpacebar(video)) {
+					if (togglePlay()) {
 						event.preventDefault()
 					}
 				}
@@ -278,9 +303,9 @@ export default class Video extends React.Component {
 			// Seek backwards on Left Arrow key.
 			case 37:
 				if (seekOnArrowKeys &&
-					(seekOnArrowKeysAtBorders || this.hasStarted() === true)
+					(seekOnArrowKeysAtBorders || hasStarted() === true)
 				) {
-					if (this.seek(false)) {
+					if (seek(false)) {
 						event.preventDefault()
 					}
 				}
@@ -289,9 +314,9 @@ export default class Video extends React.Component {
 			// Seek forward on Right Arrow key.
 			case 39:
 				if (seekOnArrowKeys &&
-					(seekOnArrowKeysAtBorders || this.hasEnded() === false)
+					(seekOnArrowKeysAtBorders || hasEnded() === false)
 				) {
-					if (this.seek(true)) {
+					if (seek(true)) {
 						event.preventDefault()
 					}
 				}
@@ -299,14 +324,14 @@ export default class Video extends React.Component {
 
 			// Seek to start on Home key.
 			case 36:
-				if (this.seekTo(0)) {
+				if (seekTo(0)) {
 					event.preventDefault()
 				}
 				break
 
 			// Seek to end on End key.
 			case 35:
-				if (this.seekTo(video.duration)) {
+				if (seekTo(video.duration)) {
 					event.preventDefault()
 				}
 				break
@@ -314,7 +339,7 @@ export default class Video extends React.Component {
 			// Volume Up on Up Arrow key.
 			case 38:
 				if (changeVolumeOnArrowKeys) {
-					if (this.changeVolume(true)) {
+					if (changeVolume(true)) {
 						event.preventDefault()
 					}
 				}
@@ -323,7 +348,7 @@ export default class Video extends React.Component {
 			// Volume Down on Down Arrow key.
 			case 40:
 				if (changeVolumeOnArrowKeys) {
-					if (this.changeVolume(false)) {
+					if (changeVolume(false)) {
 						event.preventDefault()
 					}
 				}
@@ -331,19 +356,25 @@ export default class Video extends React.Component {
 
 			// Toggle mute on "M" key.
 			case 77:
-				if (this.toggleMute()) {
+				if (toggleMute()) {
 					event.preventDefault()
 				}
 				break
 
 			// Toggle fullscreen on "F" key.
 			case 70:
-				const node = (this.getPlayer() && this.getPlayer().getNode()) || this.iframeVideo.current
-				if (node) {
-					if (this.isFullScreen) {
-						this.exitFullScreen()
+				if (!showPreview) {
+					let node
+					// If focus is not inside the element being promoted to
+					// fullscreen then the focus is lost upon entering fullscreen.
+					if (shouldFocusPlayer(video)) {
+						node = playerRef.current && getPlayerNode(playerRef.current, video)
+					}
+					node = node || playerContainerInnerRef.current
+					if (isFullScreen.current) {
+						exitFullScreen()
 					} else {
-						this.enterFullScreen(node)
+						enterFullScreen(node)
 					}
 					event.preventDefault()
 				}
@@ -351,45 +382,31 @@ export default class Video extends React.Component {
 		}
 	}
 
-	enterFullScreen(node) {
+	function enterFullScreen(node) {
 		if (requestFullScreen(node)) {
-			this.isFullScreen = true
+			isFullScreen.current = true
 		}
 	}
 
-	exitFullScreen() {
-		exitFullScreen()
-		this.isFullScreen = false
+	function exitFullScreen() {
+		_exitFullScreen()
+		isFullScreen.current = false
 	}
 
-	onFullScreenChange() {}
-
-	addBorder(dimension) {
-		const { border } = this.props
+	function addBorder(dimension) {
 		if (border) {
 			return dimension + 2 * BORDER_WIDTH
 		}
 		return dimension
 	}
 
-	getAspectRatio() {
-		const { video } = this.props
-		return getAspectRatio(video)
-	}
-
-	getMaxWidth() {
-		const {
-			video,
-			maxWidth,
-			maxHeight,
-			fit
-		} = this.props
+	function getMaxWidth() {
 		const maxWidths = []
 		if (maxWidth) {
 			maxWidths.push(maxWidth)
 		}
 		if (maxHeight) {
-			maxWidths.push(maxHeight * this.getAspectRatio())
+			maxWidths.push(maxHeight * getAspectRatio(video))
 		}
 		if (fit === 'scale-down') {
 			maxWidths.push(getMaxSize(video).width)
@@ -399,178 +416,95 @@ export default class Video extends React.Component {
 		}
 	}
 
-	getContainerStyle() {
-		const {
-			video,
-			width,
-			height,
-			maxWidth,
-			maxHeight,
-			fit
-		} = this.props
+	function getContainerStyle() {
 		if (width || height) {
 			return {
-				width: this.addBorder(width || (height * this.getAspectRatio())) + 'px',
-				height: this.addBorder(height || (width / this.getAspectRatio())) + 'px'
+				width: addBorder(width || (height * getAspectRatio(video))) + 'px',
+				height: addBorder(height || (width / getAspectRatio(video))) + 'px'
 			}
 		}
 		if (maxWidth || maxHeight) {
 			return {
 				width: '100%',
-				maxWidth: this.addBorder(this.getMaxWidth()) + 'px'
+				maxWidth: addBorder(getMaxWidth()) + 'px'
 			}
 		}
 	}
 
-	render() {
-		const {
-			border,
-			video,
-			showPlayIcon,
-			expand,
-			width,
-			height,
-			maxWidth,
-			maxHeight,
-			onClick,
-			tabIndex,
-			style,
-			className
-		} = this.props
-
-		const {
-			showPreview: _showPreview
-		} = this.state
-
-		const showPreview = _showPreview && !expand
-
-		const _className = classNames(className, 'rrui__video', {
-			'rrui__video--preview': showPreview,
-			// 'rrui__video--aspect-ratio': fit === 'width',
-			'rrui__video--border': border,
-			// 'rrui__video--expanded': expand
-		})
-
-		if (showPreview) {
-			return (
-				<Picture
-					ref={this.button}
-					border={border}
-					picture={video.picture}
-					component={ButtonOrLink}
-					url={getUrl(video)}
-					onClick={this.onClick}
-					aria-label={this.props['aria-label']}
-					tabIndex={tabIndex}
-					width={expand ? undefined : width}
-					height={expand ? undefined : height}
-					maxWidth={expand ? getMaxSize(video).width : this.getMaxWidth()}
-					maxHeight={expand ? undefined : maxHeight}
-					aspectRatio={video.width ? this.getAspectRatio() : undefined}
-					aria-hidden
-					style={style}
-					className={classNames(_className, 'rrui__button-reset', 'rrui__video__preview')}>
-					{showPlayIcon &&
-						<VideoPlayIcon className="rrui__video__play-icon--center"/>
+	if (showPreview) {
+		return (
+			<Picture
+				{...rest}
+				ref={previewRef}
+				border={border}
+				picture={video.picture}
+				component={ButtonOrLink}
+				url={getUrl(video)}
+				onClick={onClick}
+				tabIndex={tabIndex}
+				width={expand ? undefined : width}
+				height={expand ? undefined : height}
+				maxWidth={expand ? getMaxSize(video).width : getMaxWidth()}
+				maxHeight={expand ? undefined : maxHeight}
+				aria-hidden
+				style={style}
+				className={classNames(
+					className,
+					'rrui__video',
+					'rrui__video__preview',
+					'rrui__button-reset', {
+						'rrui__video--border': border
 					}
-					{!showPlayIcon &&
-						<VideoDuration duration={video.duration}/>
-					}
-				</Picture>
-			)
-		}
-
-		return this.renderVideo({
-			onKeyDown: this.onKeyDown,
-			style: style ? { ...style, ...this.getContainerStyle() } : this.getContainerStyle(),
-			className: _className
-		})
+				)}>
+				{showPlayIcon &&
+					<VideoPlayIcon className="rrui__video__play-icon--center"/>
+				}
+				{!showPlayIcon &&
+					<VideoDuration duration={video.duration}/>
+				}
+			</Picture>
+		)
 	}
 
-	renderVideo(rest) {
-		const {
-			expand,
-			video,
-			tabIndex
-		} = this.props
-
-		const {
-			autoPlay
-		} = this.state
-
-		if (!video.provider) {
-			// `onClick` is used to prevent Chrome Video player
-			// triggering "pause"/"play" on click while dragging.
-			//
-			// `<video/>` can maintain its aspect ratio during layout
-			// but only after the video file has loaded, and there's a
-			// very short period of time at the start of `<video/>` layout
-			// when it doesn't maintain aspect ratio. This results in
-			// `<Post/>`s having `<video/>`s changing their height after
-			// such `<Post/>`s have been mounted which results in
-			// `virtual-scroller` jumping while scrolling.
-			// Therefore using an `<AspectRatioWrapper/>` here too
-			// to preserve aspect ratio.
-			return (
-				<AspectRatioWrapper {...rest} aspectRatio={this.getAspectRatio()}>
-					<HtmlVideo
-						width="100%"
-						height="100%"
-						preview={expand ? false : true}
-						ref={this.video}
-						onClick={this.onClick}
-						tabIndex={tabIndex}
-						video={video}
-						autoPlay={autoPlay}/>
-				</AspectRatioWrapper>
-			)
-		}
-
-		if (video.provider === 'YouTube' && YouTubeVideo.hasApiLoaded()) {
-			// `<video/>` can maintain its aspect ratio during layout
-			// while `<iframe/>` can't, so using the `paddingBottom` trick here
-			// to preserve aspect ratio.
-			return (
-				<AspectRatioWrapper {...rest} aspectRatio={this.getAspectRatio()}>
-					<YouTubeVideo
-						ref={this.youTubeVideo}
-						tabIndex={tabIndex}
-						video={video}
-						width="100%"
-						height="100%"
-						autoPlay={autoPlay}/>
-				</AspectRatioWrapper>
-			)
-		}
-
-		if (video.provider === 'Vimeo' || video.provider === 'YouTube') {
-			// https://developers.google.com/web/updates/2017/09/autoplay-policy-changes
-			// `allowFullScreen` property is for legacy browsers support.
-			//
-			// `<video/>` can maintain its aspect ratio during layout
-			// while `<iframe/>` can't, so using the `paddingBottom` trick here
-			// to preserve aspect ratio.
-			return (
-				<AspectRatioWrapper {...rest} aspectRatio={this.getAspectRatio()}>
-					<iframe
-						ref={this.iframeVideo}
-						src={getEmbeddedVideoUrl(video.id, video.provider, {
-							autoPlay,
-							startAt: video.startAt
-						})}
-						width="100%"
-						height="100%"
-						frameBorder={0}
-						allow="autoplay; fullscreen"
-						allowFullScreen/>
-				</AspectRatioWrapper>
-			)
-		}
-
-		console.error(`Unsupported video provider: ${video.provider}`)
-		return null
-	}
+	// `<video/>` can maintain its aspect ratio during layout
+	// but only after the video file has loaded, and there's a
+	// very short period of time at the start of `<video/>` layout
+	// when it doesn't maintain aspect ratio. This results in
+	// `<Post/>`s having `<video/>`s changing their height after
+	// such `<Post/>`s have been mounted which results in
+	// `virtual-scroller` jumping while scrolling.
+	// Therefore using an `<AspectRatioWrapper/>` here too
+	// to preserve aspect ratio.
+	return (
+		<AspectRatioWrapper
+			{...rest}
+			innerRef={playerContainerInnerRef}
+			onKeyDown={onKeyDown}
+			aspectRatio={getAspectRatio(video)}
+			innerTabIndex={!shouldFocusPlayer(video) ? tabIndex : -1}
+			innerClassName="rrui__video__player-container-inner"
+			style={style ? { ...style, ...getContainerStyle() } : getContainerStyle()}
+			className={classNames(
+				className,
+				'rrui__video', {
+					'rrui__video--border': !shouldFocusPlayer(video) && border
+				}
+			)}>
+			<VideoPlayer
+				ref={playerRef}
+				video={video}
+				preview={showPreview}
+				autoPlay={shouldStartPlaying}
+				tabIndex={shouldFocusPlayer(video) ? tabIndex : undefined}
+				onClick={onClick}
+				className={classNames({
+					'rrui__video--border': shouldFocusPlayer(video) && border
+				})}/>
+		</AspectRatioWrapper>
+	)
 }
+
+Video = React.forwardRef(Video)
 
 Video.propTypes = {
 	video: video.isRequired,
@@ -579,14 +513,14 @@ Video.propTypes = {
 	maxWidth: PropTypes.number,
 	maxHeight: PropTypes.number,
 	fit: PropTypes.oneOf(['scale-down']),
-	showPreview: PropTypes.bool.isRequired,
+	preview: PropTypes.bool.isRequired,
+	stopVideoOnStopPlaying: PropTypes.bool,
 	seekOnArrowKeys: PropTypes.bool.isRequired,
 	seekOnArrowKeysAtBorders: PropTypes.bool.isRequired,
 	seekStep: PropTypes.number.isRequired,
 	changeVolumeOnArrowKeys: PropTypes.bool.isRequired,
 	changeVolumeStep: PropTypes.number.isRequired,
 	autoPlay: PropTypes.bool.isRequired,
-	canPlay: PropTypes.bool.isRequired,
 	showPlayIcon: PropTypes.bool,
 	onClick: PropTypes.func,
 	tabIndex: PropTypes.number,
@@ -597,14 +531,119 @@ Video.propTypes = {
 }
 
 Video.defaultProps = {
-	showPreview: true,
+	preview: true,
 	seekOnArrowKeys: true,
 	seekOnArrowKeysAtBorders: true,
 	seekStep: 5,
 	changeVolumeOnArrowKeys: true,
 	changeVolumeStep: 0.1,
-	autoPlay: false,
-	canPlay: true
+	autoPlay: false
+}
+
+export default Video
+
+function VideoPlayer({
+	video,
+	preview,
+	autoPlay,
+	tabIndex,
+	onClick
+}, ref) {
+	if (!video.provider) {
+		// `onClick` is used to prevent Chrome Video player
+		// triggering "pause"/"play" on click while dragging.
+		return (
+			<HtmlVideo
+				width="100%"
+				height="100%"
+				preview={preview}
+				ref={ref}
+				onClick={onClick}
+				tabIndex={tabIndex}
+				video={video}
+				autoPlay={autoPlay}/>
+		)
+	}
+
+	if (video.provider === 'YouTube' && YouTubeVideo.hasApiLoaded()) {
+		// `<video/>` can maintain its aspect ratio during layout
+		// while `<iframe/>` can't, so using the `paddingBottom` trick here
+		// to preserve aspect ratio.
+		return (
+			<YouTubeVideo
+				ref={ref}
+				tabIndex={tabIndex}
+				video={video}
+				width="100%"
+				height="100%"
+				autoPlay={autoPlay}/>
+		)
+	}
+
+	if (video.provider === 'Vimeo' || video.provider === 'YouTube') {
+		// https://developers.google.com/web/updates/2017/09/autoplay-policy-changes
+		// `allowFullScreen` property is for legacy browsers support.
+		//
+		// `<video/>` can maintain its aspect ratio during layout
+		// while `<iframe/>` can't, so using the `paddingBottom` trick here
+		// to preserve aspect ratio.
+		return (
+			<iframe
+				ref={ref}
+				src={getEmbeddedVideoUrl(video.id, video.provider, {
+					autoPlay,
+					startAt: video.startAt
+				})}
+				width="100%"
+				height="100%"
+				frameBorder={0}
+				allow="autoplay; fullscreen"
+				allowFullScreen/>
+		)
+	}
+
+	console.error(`Unsupported video provider: ${video.provider}`)
+	return null
+}
+
+VideoPlayer = React.forwardRef(VideoPlayer)
+
+VideoPlayer.propTypes = {
+	video: video.isRequired,
+	preview: PropTypes.bool,
+	autoPlay: PropTypes.bool,
+	tabIndex: PropTypes.number,
+	onClick: PropTypes.func
+}
+
+function getPlayerNode(playerRef, video) {
+	if (video.provider === 'Vimeo') {
+		return playerRef
+	}
+	if (video.provider === 'YouTube') {
+		// YouTube video could be shown in a YouTube player
+		// or as an `<iframe/>` (as a fallback).
+		if (playerRef instanceof YouTubeVideo) {
+			return playerRef.getNode()
+		}
+		return playerRef
+	}
+	if (!video.provider) {
+		return playerRef.getNode()
+	}
+}
+
+function shouldFocusPlayer(video) {
+	// HTML `<video/>` player is focusable
+	// and it doesn't consume `keydown` events.
+	// `<iframes/>` aren't interactive elements
+	// and also they don't bubble `keydown` events.
+	return !video.provider
+}
+
+function videoPlayerHandlesTogglePlayOnSpacebar(video) {
+	// HTML `<video/>` player already handles toggling play/pause on Spacebar.
+	return !video.provider
 }
 
 export function getUrl(video) {
@@ -674,16 +713,32 @@ function formatTwoPositions(number) {
 	return number
 }
 
-function AspectRatioWrapper({ aspectRatio, children, ...rest }) {
+function AspectRatioWrapper({ innerRef, innerTabIndex, innerClassName, aspectRatio, children, ...rest }, ref) {
+	const aspectRatioStyle = useMemo(() => ({
+		position: 'relative',
+		width: '100%',
+		paddingBottom: 100 / aspectRatio + '%'
+	}), [aspectRatio])
 	return (
-		<div {...rest}>
-			<div style={{ width: '100%', paddingBottom: 100 / aspectRatio + '%' }}>
-				<div style={ASPECT_RATIO_WRAPPER_INNER_STYLE}>
+		<div ref={ref} {...rest}>
+			<div style={aspectRatioStyle}>
+				<div
+					ref={innerRef}
+					tabIndex={innerTabIndex}
+					style={ASPECT_RATIO_WRAPPER_INNER_STYLE}
+					className={innerClassName}>
 					{children}
 				</div>
 			</div>
 		</div>
 	)
+}
+
+AspectRatioWrapper = React.forwardRef(AspectRatioWrapper)
+
+AspectRatioWrapper.propTypes = {
+	aspectRatio: PropTypes.number.isRequired,
+	children: PropTypes.node.isRequired
 }
 
 const ASPECT_RATIO_WRAPPER_INNER_STYLE = {

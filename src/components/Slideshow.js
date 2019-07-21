@@ -300,32 +300,45 @@ class Slideshow extends React.Component {
 	}
 
 	showSlide = (i) => {
-		if (i === this.state.i) {
+		const { i: iPrevious } = this.state
+		if (i === iPrevious) {
 			return
 		}
-		const direction = i > this.state.i ? 'next' : 'previous'
+		const direction = i > iPrevious ? 'next' : 'previous'
 		this.markPicturesShown(i)
+		// this.onHideSlide()
 		this.setState({
 			i,
 			// Reset slide display mode.
 			scale: this.getScaleForSlide(i),
 			expandedSlideIndex: undefined
 		}, () => {
-			this.onShowSlide(i)
+			// this.onShowSlide()
 			this.focus(direction)
 		})
 	}
 
-	onShowSlide(i) {
-		const plugin = this.getPluginForSlide(this.getCurrentSlide())
-		if (plugin.onShowSlide) {
-			plugin.onShowSlide(
-				this.getCurrentSlide(),
-				this.currentSlideRef.current,
-				this.props
-			)
-		}
-	}
+	// onHideSlide() {
+	// 	const plugin = this.getPluginForSlide(this.getCurrentSlide())
+	// 	if (plugin.onHideSlide) {
+	// 		plugin.onHideSlide(
+	// 			this.getCurrentSlide(),
+	// 			this.currentSlideRef.current,
+	// 			this.props
+	// 		)
+	// 	}
+	// }
+
+	// onShowSlide() {
+	// 	const plugin = this.getPluginForSlide(this.getCurrentSlide())
+	// 	if (plugin.onShowSlide) {
+	// 		plugin.onShowSlide(
+	// 			this.getCurrentSlide(),
+	// 			this.currentSlideRef.current,
+	// 			this.props
+	// 		)
+	// 	}
+	// }
 
 	getScaleForSlide(i) {
 		const { children: slides } = this.props

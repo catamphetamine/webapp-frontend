@@ -79,11 +79,11 @@ export default {
 	canRender(slide) {
 		return slide.type === 'video'
 	},
-	onShowSlide(slide, ref, props) {
-		if (props.slideshowMode) {
-			ref.showVideo(() => ref.play())
-		}
-	},
+	// onShowSlide(slide, ref, props) {
+	// 	if (props.slideshowMode) {
+	// 		ref.showVideo(() => ref.play())
+	// 	}
+	// },
 	render({
 		ref,
 		slide,
@@ -101,14 +101,14 @@ export default {
 				ref={ref}
 				video={slide.video}
 				onClick={onClick}
-				autoPlay={wasExpanded ? true : false}
-				showPreview={wasExpanded ? false : true}
-				showPlayIcon={wasExpanded ? false : true}
-				canPlay={isShown}
+				autoPlay={isShown && (slideshowMode || wasExpanded)}
+				stopVideoOnStopPlaying
+				showPlayIcon
 				maxWidth={maxWidth}
 				maxHeight={maxHeight}
 				fit="scale-down"
 				tabIndex={tabIndex}
+				preview={slideshowMode ? false : undefined}
 				seekOnArrowKeys={slideshowMode ? false : undefined}
 				seekOnArrowKeysAtBorders={false}
 				style={style}
