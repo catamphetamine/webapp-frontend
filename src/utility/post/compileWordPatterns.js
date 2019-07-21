@@ -26,6 +26,7 @@ function compileWordPattern(filter, language, includesWordStart, includesWordEnd
 	}
 }
 
+const DEFAULT_LETTER_PATTERN = '[^\\s\\.,!?:;()0-9-]'
 function getLetter(language) {
 	switch (language) {
 		case 'en':
@@ -35,17 +36,21 @@ function getLetter(language) {
 		case 'ru':
 			return '[а-яё]'
 		default:
-			return '[^\\s\\.,!?:;()0-9-]'
+			return DEFAULT_LETTER_PATTERN
 	}
 }
 
 function getNonLetter(language) {
-	switch (language) {
-		case 'en':
-			return '[^a-z]'
-		case 'ru':
-			return '[^а-яё]'
-		default:
-			throw new Error(`Unknown language: ${language}`)
+	return invertPattern(getLetter(language)) ||
+		invertPattern(DEFAULT_LETTER_PATTERN)
+}
+
+// Matches "[abc]" and "[^abc]".
+const LETTER_REGEXP = /^\[(\^)?([^\]]+)\]/
+function invertPattern(pattern) {
+	// Invert the letter pattern.
+	const match = pattern.match(LETTER_REGEXP)
+	if (match) {
+		return `[${match[1] ? '' : '^'}${match[2]}]`
 	}
 }
