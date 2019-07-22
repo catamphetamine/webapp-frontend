@@ -1,4 +1,6 @@
 import React from 'react'
+import PropTypes from 'prop-types'
+import classNames from 'classnames'
 
 import Menu from './Menu'
 
@@ -19,41 +21,40 @@ import PersonIconFill from '../../assets/images/icons/menu/person-fill.svg'
 
 import './ApplicationMenu.css'
 
-export default class ApplicationMenu extends React.Component {
-	getMenuItems() {
-		return [{
-			title: 'Feed',
-			url: '/feed',
-			icon: FeedIconOutline,
-			iconActive: FeedIconFill
-		}, {
-			title: 'Discover',
-			url: '/discover',
-			icon: SearchIconOutline,
-			iconActive: SearchIconFill
-		}, {
-			title: 'Post',
-			url: '/post',
-			icon: AddIconOutline,
-			iconActive: AddIconFill
-		}, {
-			title: 'Messages',
-			url: '/messages',
-			icon: MessageIconOutline,
-			iconActive: MessageIconFill
-		}, {
-			title: 'Profile',
-			url: '/profile',
-			icon: PersonIconOutline,
-			iconActive: PersonIconFill
-		}]
-	}
+export default function ApplicationMenu({ className }) {
+	const menuItems = [{
+		title: 'Feed',
+		url: '/feed',
+		icon: FeedIconOutline,
+		iconActive: FeedIconFill
+	}, {
+		title: 'Discover',
+		url: '/discover',
+		icon: SearchIconOutline,
+		iconActive: SearchIconFill
+	}, {
+		title: 'Post',
+		url: '/post',
+		icon: AddIconOutline,
+		iconActive: AddIconFill
+	}, {
+		title: 'Messages',
+		url: '/messages',
+		icon: MessageIconOutline,
+		iconActive: MessageIconFill
+	}, {
+		title: 'Profile',
+		url: '/profile',
+		icon: PersonIconOutline,
+		iconActive: PersonIconFill
+	}]
+	return (
+		<Menu className={classNames(className, 'application-menu')}>
+			{menuItems}
+		</Menu>
+	)
+}
 
-	render() {
-		return (
-			<Menu className="application-menu">
-				{this.getMenuItems()}
-			</Menu>
-		)
-	}
+ApplicationMenu.propTypes = {
+	className: PropTypes.string
 }

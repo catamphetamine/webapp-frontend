@@ -8,7 +8,7 @@
 	z-index : 1;
 	color : var(--Header-color);
 	background-color : var(--Header-backgroundColor);
-	border-top : 1px solid var(--Header-borderColor);
+	border-bottom : 1px solid var(--Header-borderColor);
 }
 
 .webpage__header__row {
@@ -43,8 +43,5 @@
 	}
 	@mixin s {
 		display: none;
-	}
-	.menu {
-		margin-right: calc(var(--unit) / 2);
 	}
 }

@@ -94,3 +94,9 @@
 .rrui__modal__contents {
 	box-shadow: 0 0 0 var(--Modal-borderWidth) var(--Modal-borderColor);
 }
+
+/* Remove this rule after a new version of
+   `react-responsive-ui@>0.14.148` is released. */
+.rrui__fixed-full-width {
+	top: auto;
+}

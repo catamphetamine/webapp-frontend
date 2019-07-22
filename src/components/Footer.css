@@ -5,10 +5,10 @@
 	left     : 0;
 	right    : 0;
 	bottom   : 0;
-
+  justify-content: space-evenly;
 	height : var(--footer-menu-height);
 	background-color : var(--white-color);
-	border-top : 1px solid rgba(0,0,0,.15);
+	border-top : 1px solid var(--Header-borderColor);
 }
 
 .webpage__footer {

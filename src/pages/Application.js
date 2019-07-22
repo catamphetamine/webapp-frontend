@@ -77,7 +77,7 @@ export default class App extends Component {
 					</Slideshow>
 				}
 
-				<div className="webpage">
+				<div className="webpage document--background">
 					<Header/>
 
 					<div className="webpage__content">
