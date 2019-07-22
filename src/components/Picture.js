@@ -246,13 +246,18 @@ function Picture({
 	function onImageChange(newSize) {
 		if (!size) {
 			preloadImage(newSize.url).then(
-				() => {},
-				(error) => console.error(error)
-			).then(() => {
-				if (isMounted.current) {
-					setInitialImageLoaded(true)
+				() => {
+					if (isMounted.current) {
+						setInitialImageLoaded(true)
+					}
+				},
+				(error) => {
+					console.error(error)
+					if (isMounted.current) {
+						setInitialImageLoadError(true)
+					}
 				}
-			})
+			)
 		}
 	}
 
