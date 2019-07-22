@@ -1538,12 +1538,12 @@ class Slideshow extends React.Component {
 	renderSlide(slide, j, isSlideshowBeingOpenedWithThisSlide) {
 		const { slideshowMode } = this.props
 		const { i } = this.state
-		const isShown = j === i
+		const isCurrentSlide = j === i
 		return this.getPluginForSlide(slide).render({
-			ref: isShown ? this.currentSlideRef : undefined,
-			tabIndex: isShown ? 0 : -1,
+			ref: isCurrentSlide ? this.currentSlideRef : undefined,
+			tabIndex: isCurrentSlide ? 0 : -1,
 			slide,
-			isShown,
+			isCurrentSlide,
 			autoPlay: isSlideshowBeingOpenedWithThisSlide,
 			slideshowMode,
 			onClick: this.onSlideClick,

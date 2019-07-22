@@ -87,7 +87,7 @@ export default {
 	render({
 		ref,
 		slide,
-		isShown,
+		isCurrentSlide,
 		autoPlay,
 		slideshowMode,
 		onClick,
@@ -101,7 +101,7 @@ export default {
 				ref={ref}
 				video={slide.video}
 				onClick={onClick}
-				autoPlay={isShown && (slideshowMode || autoPlay)}
+				autoPlay={isCurrentSlide && (slideshowMode || autoPlay)}
 				stopVideoOnStopPlaying
 				showPlayIcon
 				maxWidth={maxWidth}
