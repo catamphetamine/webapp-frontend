@@ -11,14 +11,24 @@
 	min-height: 1em;
 }
 
-.service-icon--monochrome [data-stroke="true"] {
-	color: inherit;
+.service-icon {
+	--color: var(--Content-color-900);
+	--backgroundColor: var(--Content-backgroundColor);
+	color: var(--color);
 }
 
-.service-icon--monochrome [data-fill="true"] {
-	color: white;
+.service-icon--monochrome {
+	--color: inherit;
+}
+
+.service-icon--monochrome [data-stroke] {
+	color: var(--color);
+}
+
+.service-icon--monochrome [data-fill] {
+	color: var(--backgroundColor);
 }
 
 .service-icon--monochrome [data-fill="gradient"] {
-	fill: color;
+	fill: currentColor;
 }
