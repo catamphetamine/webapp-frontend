@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 
-import AnonymousIcon from 'webapp-frontend/assets/images/icons/anonymous.svg'
+import AnonymousIcon from '../../assets/images/icons/anonymous.svg'
 
 import './CountryFlag.css'
 

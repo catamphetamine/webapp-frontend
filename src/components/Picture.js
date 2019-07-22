@@ -314,7 +314,7 @@ function Picture({
 				<img
 					ref={imageRef}
 					src={typeof window === 'undefined' ? TRANSPARENT_PIXEL : (size && size.url || TRANSPARENT_PIXEL)}
-					style={imageStyle}
+					style={blur ? addHiddenStyle(imageStyle) : imageStyle}
 					className="rrui__picture__image"/>
 			}
 
@@ -538,6 +538,20 @@ function addBlur(style, radius) {
 		marginLeft: `-${4 * radius / 2}px`,
 		marginTop: `-${4 * radius / 2}px`
 	}
+}
+
+const HIDDEN_STYLE = {
+	opacity: 0
+}
+
+function addHiddenStyle(style) {
+	if (style) {
+		return {
+			...style,
+			...HIDDEN_STYLE
+		}
+	}
+	return HIDDEN_STYLE
 }
 
 export function getMinSize(picture) {

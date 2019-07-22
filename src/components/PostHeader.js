@@ -59,19 +59,19 @@ export default class PostHeader extends React.Component {
 			<header className="post__header">
 				<div className="post__header-top">
 					<div className="post__summary">
-						{post.account &&
+						{post.author &&
 							<div className="post__summary__account">
-								<Link to={accountLink(post.account)}>
+								<Link to={accountLink(post.author)}>
 									<AccountPicture
-										account={post.account}
+										account={post.author}
 										className="post__account-picture"/>
 								</Link>
 								<div className="post__account-name-and-date">
 									<Link
-										to={accountLink(post.account)}
+										to={accountLink(post.author)}
 										rel="author"
 										className="post__account-name">
-										{post.account.name}
+										{post.author.name}
 									</Link>
 									<PostDate
 										date={post.createdAt}
@@ -80,7 +80,7 @@ export default class PostHeader extends React.Component {
 								</div>
 							</div>
 						}
-						{!post.account &&
+						{!post.author &&
 							<div className="post__summary-item">
 								<PostDate
 									date={post.createdAt}

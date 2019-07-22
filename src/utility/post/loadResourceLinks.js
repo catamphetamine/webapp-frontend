@@ -33,11 +33,11 @@ export default function loadResourceLinks(post, {
 	const postWithLinksExpanded = cloneDeep(post)
 	const promises = [
 		loadTwitterLinks(postWithLinksExpanded.content, {
-			messages: messages.contentType
+			messages: messages && messages.contentType
 		}),
 		loadYouTubeLinks(postWithLinksExpanded.content, {
 			youTubeApiKey,
-			messages: messages.post
+			messages: messages && messages.post
 		})
 	]
 	// `lynxchan` doesn't provide `width` and `height`

@@ -34,7 +34,7 @@
     "react-responsive-ui": "^0.14.148",
     "react-syntax-highlighter": "^11.0.2",
     "react-time-ago": "^5.0.3",
-    "react-website": "^3.1.29",
+    "react-website": "^3.1.31",
     "redux": "^4.0.1",
     "scroll-into-view-if-needed": "^2.2.20",
     "smooth-scroll-into-view-if-needed": "^1.1.23"
@@ -70,7 +70,7 @@
     "postcss-mixins": "^6.2.0",
     "postcss-nested": "^4.1.0",
     "postcss-simple-vars": "^5.0.1",
-    "react-hot-loader": "^4.3.12",
+    "react-hot-loader": "^4.12.8",
     "source-map-support": "^0.5.4",
     "style-loader": "^0.23.1",
     "svg-react-loader": "^0.4.6",
