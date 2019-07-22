@@ -88,7 +88,7 @@ export default {
 		ref,
 		slide,
 		isShown,
-		wasExpanded,
+		autoPlay,
 		slideshowMode,
 		onClick,
 		maxWidth,
@@ -101,7 +101,7 @@ export default {
 				ref={ref}
 				video={slide.video}
 				onClick={onClick}
-				autoPlay={isShown && (slideshowMode || wasExpanded)}
+				autoPlay={isShown && (slideshowMode || autoPlay)}
 				stopVideoOnStopPlaying
 				showPlayIcon
 				maxWidth={maxWidth}

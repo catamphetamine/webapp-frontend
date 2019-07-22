@@ -311,7 +311,7 @@ class Slideshow extends React.Component {
 			i,
 			// Reset slide display mode.
 			scale: this.getScaleForSlide(i),
-			expandedSlideIndex: undefined
+			slideshowIsBeingOpenedWithSlideIndex: undefined
 		}, () => {
 			// this.onShowSlide()
 			this.focus(direction)
@@ -1304,7 +1304,7 @@ class Slideshow extends React.Component {
 		const {
 			i,
 			slidesShown,
-			expandedSlideIndex,
+			slideshowIsBeingOpenedWithSlideIndex,
 			showControls
 		} = this.state
 
@@ -1377,7 +1377,7 @@ class Slideshow extends React.Component {
 								className={classNames('rrui__slideshow__slide', {
 									'rrui__slideshow__slide--current': i === j
 								})}>
-								{slidesShown[j] && this.renderSlide(slide, j, expandedSlideIndex === j)}
+								{slidesShown[j] && this.renderSlide(slide, j, slideshowIsBeingOpenedWithSlideIndex === j)}
 							</li>
 						))}
 					</ul>
@@ -1535,7 +1535,7 @@ class Slideshow extends React.Component {
 		)
 	}
 
-	renderSlide(slide, j, wasExpanded) {
+	renderSlide(slide, j, isSlideshowBeingOpenedWithThisSlide) {
 		const { slideshowMode } = this.props
 		const { i } = this.state
 		const isShown = j === i
@@ -1544,7 +1544,7 @@ class Slideshow extends React.Component {
 			tabIndex: isShown ? 0 : -1,
 			slide,
 			isShown,
-			wasExpanded,
+			autoPlay: isSlideshowBeingOpenedWithThisSlide,
 			slideshowMode,
 			onClick: this.onSlideClick,
 			maxWidth: this.getSlideshowWidth(),
@@ -1556,7 +1556,7 @@ class Slideshow extends React.Component {
 
 	state = {
 		scale: this.getScaleForSlide(this.props.i),
-		expandedSlideIndex: !this.props.inline && this.props.i
+		slideshowIsBeingOpenedWithSlideIndex: !this.props.inline && this.props.i
 	}
 }
 
