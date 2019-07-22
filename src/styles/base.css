@@ -55,6 +55,16 @@ body {
 	/* Always shows the vertical scrollbar so that
 	   it doesn't appear/disappear on different pages. */
 	overflow-y: scroll;
+	color: var(--Content-color-900);
+	background-color: var(--Content-backgroundColor);
+}
+
+/* Set `<body/>` background color
+   in order to show correct color when scrolling
+   past top/bottom of the page on touch devices. */
+.document--background {
+	color: var(--Document-color);
+	background-color: var(--Document-backgroundColor);
 }
 
 a {
