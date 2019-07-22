@@ -30,8 +30,6 @@ export default function PostCode({
 		inline && 'post__code--inline',
 		inline && language && `language-${language}`
 	)
-	// `SyntaxHighlighter` seems to only support block-level code.
-	// https://github.com/conorhastings/react-syntax-highlighter/issues/201
 	if (language && typeof children === 'string') {
 		if (SyntaxHighlighter.supportedLanguages.includes(language)) {
 			return (
@@ -78,7 +76,7 @@ PostCode.propTypes = {
 
 // Fixes `className` bug.
 // https://github.com/conorhastings/react-syntax-highlighter/issues/200
-// Fixes "`<pre/>` is always rendered" bug.
+// Fixes "`<pre/>` is always rendered" issue.
 // https://github.com/conorhastings/react-syntax-highlighter/issues/201
 function Pre({ inline, realClassName, children }) {
 	const Component = inline ? 'span' : 'pre'
