@@ -7,21 +7,6 @@ import { postCode } from '../PropTypes'
 
 import './PostCode.css'
 
-// Reset the styles on `<pre/>`.
-// https://github.com/conorhastings/react-syntax-highlighter/issues/199
-const PRE_STYLE_FIX = {
-	display: undefined,
-	overflowX: undefined,
-	overflowY: undefined,
-	padding: undefined,
-	color: undefined,
-	backgroundColor: undefined,
-	fontFamily: undefined,
-	textShadow: undefined,
-	margin: undefined,
-	borderRadius: undefined
-}
-
 /**
  * Renders some code.
  * Could also highlight the syntax:
@@ -47,10 +32,11 @@ export default function PostCode({
 	)
 	// `SyntaxHighlighter` seems to only support block-level code.
 	// https://github.com/conorhastings/react-syntax-highlighter/issues/201
-	if (!inline && language && typeof children === 'string') {
+	if (language && typeof children === 'string') {
 		if (SyntaxHighlighter.supportedLanguages.includes(language)) {
 			return (
 				<SyntaxHighlighter
+					inline={inline}
 					PreTag={Pre}
 					useInlineStyles={false}
 					language={language}
@@ -92,10 +78,19 @@ PostCode.propTypes = {
 
 // Fixes `className` bug.
 // https://github.com/conorhastings/react-syntax-highlighter/issues/200
-function Pre({ realClassName, children }) {
+// Fixes "`<pre/>` is always rendered" bug.
+// https://github.com/conorhastings/react-syntax-highlighter/issues/201
+function Pre({ inline, realClassName, children }) {
+	const Component = inline ? 'span' : 'pre'
 	return (
-		<pre className={realClassName}>
+		<Component className={realClassName}>
 			{children}
-		</pre>
+		</Component>
 	)
+}
+
+Pre.propTypes = {
+	inline: PropTypes.bool,
+	realClassName: PropTypes.string,
+	children: PropTypes.node.isRequired
 }
