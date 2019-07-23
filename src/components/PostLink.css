@@ -14,7 +14,12 @@
 .service-icon {
 	--color: var(--Content-color-900);
 	--backgroundColor: var(--Content-backgroundColor);
+	--whiteColor: #ffffff;
 	color: var(--color);
+}
+
+.dark .service-icon {
+	--whiteColor: #e0e0e0;
 }
 
 .service-icon--monochrome {
