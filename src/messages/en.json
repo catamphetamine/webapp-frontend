@@ -71,6 +71,10 @@
 		"500": {
 			"title": "Error"
 		},
+		"503": {
+			"title": "Offline",
+			"description": "Couldn't connect to the server"
+		},
 		"requestedURL": "Page URL"
 	},
 	"slideshow": {
