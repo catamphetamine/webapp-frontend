@@ -10,6 +10,10 @@ import Picture, { getMaxFitSize } from './Picture'
 import VideoPlayIcon from './VideoPlayIcon'
 import HtmlVideo from './HtmlVideo'
 import YouTubeVideo from './YouTubeVideo'
+import YouTubeVideo, {
+	loadYouTubeVideoPlayerApi,
+	hasYouTubeVideoPlayerApiLoaded
+} from './YouTubeVideo'
 import ButtonOrLink from './ButtonOrLink'
 
 import './Video.css'
@@ -56,7 +60,7 @@ function Video({
 
 	useEffect(() => {
 		if (video.provider === 'YouTube') {
-			YouTubeVideo.loadApi()
+			loadYouTubeVideoPlayerApi()
 		}
 		return () => {
 			if (isFullScreen.current) {
@@ -603,7 +607,7 @@ function VideoPlayer({
 		)
 	}
 
-	if (video.provider === 'YouTube' && YouTubeVideo.hasApiLoaded()) {
+	if (video.provider === 'YouTube' && hasYouTubeVideoPlayerApiLoaded()) {
 		// `<video/>` can maintain its aspect ratio during layout
 		// while `<iframe/>` can't, so using the `paddingBottom` trick here
 		// to preserve aspect ratio.

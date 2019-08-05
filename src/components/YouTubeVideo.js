@@ -186,7 +186,7 @@ YouTubeVideo.propTypes = {
 // https://developers.google.com/youtube/iframe_api_reference
 let apiStatus
 let apiPromise
-YouTubeVideo.loadApi = () => {
+export function loadYouTubeVideoPlayerApi() {
 	switch (apiStatus) {
 		case 'LOADED':
 			return Promise.resolve()
@@ -214,7 +214,7 @@ YouTubeVideo.loadApi = () => {
 	return apiPromise
 }
 
-YouTubeVideo.hasApiLoaded = () => {
+export function hasYouTubeVideoPlayerApiLoaded() {
 	return typeof YT !== 'undefined' && YT.Player !== undefined
 }
 

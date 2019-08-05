@@ -19,6 +19,7 @@ import Header from '../components/Header'
 import Footer from '../components/Footer'
 import DeviceInfo from '../components/DeviceInfo'
 import Slideshow from '../components/Slideshow'
+import { loadYouTubeVideoPlayerApi } from '../components/YouTubeVideo'
 
 import { closeSlideshow } from '../redux/slideshow'
 
@@ -43,6 +44,11 @@ import './Application.css'
 export default class App extends Component {
 	static propTypes = {
 		children : PropTypes.node.isRequired
+	}
+
+	componentDidMount() {
+		// Load YouTube video player API.
+		loadYouTubeVideoPlayerApi()
 	}
 
 	render() {
