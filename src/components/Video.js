@@ -9,7 +9,6 @@ import { requestFullScreen, exitFullScreen as _exitFullScreen } from '../utility
 import Picture, { getMaxFitSize } from './Picture'
 import VideoPlayIcon from './VideoPlayIcon'
 import HtmlVideo from './HtmlVideo'
-import YouTubeVideo from './YouTubeVideo'
 import YouTubeVideo, {
 	loadYouTubeVideoPlayerApi,
 	hasYouTubeVideoPlayerApiLoaded
