@@ -23,6 +23,7 @@ function Video({
 	video,
 	border,
 	preview,
+	playable,
 	autoPlay,
 	expand,
 	showPlayIcon,
@@ -44,8 +45,8 @@ function Video({
 	className,
 	...rest
 }, ref) {
-	const [showPreview, setShowPreview] = useState(preview && !autoPlay && !expand)
-	const [shouldStartPlaying, setShouldStartPlaying] = useState(autoPlay)
+	const [shouldStartPlaying, setShouldStartPlaying] = useState(playable && autoPlay)
+	const [showPreview, setShowPreview] = useState(preview && !shouldStartPlaying && !expand)
 	const previewRef = useRef()
 	const playerRef = useRef()
 	const playerContainerInnerRef = useRef()
@@ -81,6 +82,7 @@ function Video({
 	}, [shouldStartPlaying])
 
 	const [prevPreview, setPrevPreview] = useState(preview)
+	const [prevPlayable, setPrevPlayable] = useState(playable)
 	const [prevAutoPlay, setPrevAutoPlay] = useState(autoPlay)
 	const [prevExpand, setPrevExpand] = useState(expand)
 
@@ -89,7 +91,7 @@ function Video({
 			hasMounted.current = true
 		} else {
 			function updateShowPreview() {
-				setShowPreview(preview && !autoPlay && !expand)
+				setShowPreview(preview && !(playable && autoPlay) && !expand)
 			}
 			// On `preview` property change.
 			if (preview !== prevPreview) {
@@ -101,10 +103,16 @@ function Video({
 				updateShowPreview()
 				setPrevExpand(expand)
 			}
+			// On `playable` property change.
+			if (playable !== prevPlayable) {
+				updateShowPreview()
+				setShouldStartPlaying(playable && autoPlay ? true : false)
+				setPrevPlayable(playable)
+			}
 			// On `autoPlay` property change.
 			if (autoPlay !== prevAutoPlay) {
 				updateShowPreview()
-				setShouldStartPlaying(autoPlay ? true : false)
+				setShouldStartPlaying(playable && autoPlay ? true : false)
 				setPrevAutoPlay(autoPlay)
 			}
 		}
@@ -520,6 +528,7 @@ Video.propTypes = {
 	seekStep: PropTypes.number.isRequired,
 	changeVolumeOnArrowKeys: PropTypes.bool.isRequired,
 	changeVolumeStep: PropTypes.number.isRequired,
+	playable: PropTypes.bool.isRequired,
 	autoPlay: PropTypes.bool.isRequired,
 	showPlayIcon: PropTypes.bool,
 	onClick: PropTypes.func,
@@ -537,6 +546,7 @@ Video.defaultProps = {
 	seekStep: 5,
 	changeVolumeOnArrowKeys: true,
 	changeVolumeStep: 0.1,
+	playable: true,
 	autoPlay: false
 }
 
