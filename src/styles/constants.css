@@ -91,3 +91,7 @@
 		--header-height: calc(var(--unit) * 3);
 	}
 }
+
+.dark {
+	--white-color: #e0e0e0;
+}

@@ -12,26 +12,21 @@
 }
 
 .service-icon {
-	--color: var(--Content-color-900);
-	--backgroundColor: var(--Content-backgroundColor);
-	--whiteColor: #ffffff;
-	color: var(--color);
-}
-
-.dark .service-icon {
-	--whiteColor: #e0e0e0;
+	color: var(--Content-color-900);
 }
 
 .service-icon--monochrome {
-	--color: inherit;
+	color: inherit;
 }
 
 .service-icon--monochrome [data-stroke] {
-	color: var(--color);
+	/* `!important` overrides `color` set via `style="color:var(--white-color)"`. */
+	/* For example, see `steam.svg`. */
+	color: inherit !important;
 }
 
 .service-icon--monochrome [data-fill] {
-	color: var(--backgroundColor);
+	color: var(--Content-backgroundColor);
 }
 
 .service-icon--monochrome [data-fill="gradient"] {
