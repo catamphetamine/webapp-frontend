@@ -52,6 +52,7 @@ function Video({
 	const playerContainerInnerRef = useRef()
 	const hasMounted = useRef()
 	const isFullScreen = useRef()
+	const playState = useRef(Promise.resolve())
 
 	useEffect(() => {
 		if (video.provider === 'YouTube') {
@@ -71,12 +72,12 @@ function Video({
 		}
 		if (shouldStartPlaying) {
 			focus()
-			play()
+			setPlayState(play)
 		} else {
 			if (stopVideoOnStopPlaying) {
-				stop()
+				setPlayState(stop)
 			} else {
-				pause()
+				setPlayState(pause)
 			}
 		}
 	}, [shouldStartPlaying])
@@ -85,6 +86,28 @@ function Video({
 	const [prevPlayable, setPrevPlayable] = useState(playable)
 	const [prevAutoPlay, setPrevAutoPlay] = useState(autoPlay)
 	const [prevExpand, setPrevExpand] = useState(expand)
+
+	function setPlayState(newStateTransition) {
+		playState.current = playState.current
+			.then(newStateTransition)
+			.catch((error) => {
+				// When a new player is created with `autoPlay={true}`
+				// it is initially being played without calling `play()`
+				// so `playState` is not the `.play()` promise.
+				// So, when a `<Slideshow/>` changes the current slide
+				// `pause()` is called on a video which might not have
+				// started playing yet causing the error.
+				// An ideal code would emulate `autoPlay={true}` using
+				// `useEffect()` but that would be too much hassle,
+				// so just ignoring these "DOMException" errors.
+				// ("The play() request was interrupted by a call to pause()")
+				if (error.name === 'AbortError') {
+					// Ignore
+				} else {
+					throw error
+				}
+			})
+	}
 
 	useEffect(() => {
 		if (!hasMounted.current) {
@@ -124,7 +147,12 @@ function Video({
 
 	function play() {
 		if (playerRef.current && playerRef.current.play) {
-			playerRef.current.play()
+			const result = playerRef.current.play()
+			// HTML `<video/>` `.play()` returns a `Promise`.
+			// https://developers.google.com/web/updates/2017/06/play-request-was-interrupted
+			if (result && typeof result.then === 'function') {
+				return result
+			}
 			return true
 		}
 	}
@@ -162,11 +190,10 @@ function Video({
 	function togglePlay() {
 		if (isPaused() !== undefined) {
 			if (isPaused()) {
-				playerRef.current.play()
+				return play()
 			} else {
-				playerRef.current.pause()
+				return pause()
 			}
-			return true
 		}
 	}
 
@@ -302,7 +329,8 @@ function Video({
 			// Pause/Play on Spacebar.
 			case 32:
 				if (!videoPlayerHandlesTogglePlayOnSpacebar(video)) {
-					if (togglePlay()) {
+					if (isPaused() !== undefined) {
+						setPlayState(togglePlay)
 						event.preventDefault()
 					}
 				}
