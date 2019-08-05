@@ -1,64 +1,89 @@
-import React from 'react'
+import React, { useRef, useImperativeHandle } from 'react'
 import PropTypes from 'prop-types'
 
 import { video } from '../PropTypes'
 
-export default class HtmlVideo extends React.Component {
-	node = React.createRef()
-	focus = () => this.node.current.focus()
+function HtmlVideo(props, ref) {
+	const player = useRef()
+	const volumeBeforeMute = useRef()
 	// `<video/>` docs:
 	// https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement
-	getPlayer = () => this.node.current
-	play = () => this.getPlayer().play()
-	pause = () => this.getPlayer().pause()
-	isPaused = () => this.getPlayer().paused
-	getCurrentTime = () => this.getPlayer().currentTime
-	seekTo = (seconds) => this.getPlayer().currentTime = seconds
-	hasStarted = () => this.getCurrentTime() > 0
-	hasEnded = () => this.getPlayer().ended
-	setVolume = (volume) => this.getPlayer().volume = volume
-	getVolume = () => this.getPlayer().volume
-	isMuted = () => this.getVolume() === 0
-	mute = () => {
-		this.volumeBeforeMute = this.getVolume()
-		this.setVolume(0)
+	const getPlayer = () => player.current
+	const focus = () => getPlayer().focus()
+	const play = () => getPlayer().play()
+	const pause = () => getPlayer().pause()
+	const isPaused = () => getPlayer().paused
+	const getCurrentTime = () => getPlayer().currentTime
+	const seekTo = (seconds) => getPlayer().currentTime = seconds
+	const hasStarted = () => getCurrentTime() > 0
+	const hasEnded = () => getPlayer().ended
+	const setVolume = (volume) => getPlayer().volume = volume
+	const getVolume = () => getPlayer().volume
+	const isMuted = () => getVolume() === 0
+	const mute = () => {
+		volumeBeforeMute.current = getVolume()
+		setVolume(0)
 	}
-	unMute = () => {
-		this.setVolume(this.volumeBeforeMute === undefined ? 1 : this.volumeBeforeMute)
-	}
-
-	getNode() {
-		return this.node.current
+	const unMute = () => {
+		setVolume(volumeBeforeMute.current === undefined ? 1 : volumeBeforeMute.current)
 	}
 
-	render() {
-		const {
-			video,
-			preview,
-			width,
-			height,
-			tabIndex,
-			autoPlay,
-			...rest
-		} = this.props
+	useImperativeHandle(ref, () => ({
+		getNode: getPlayer,
+		focus,
+		play,
+		pause,
+		isPaused,
+		getCurrentTime,
+		seekTo,
+		hasStarted,
+		hasEnded,
+		setVolume,
+		getVolume,
+		isMuted,
+		mute,
+		unMute
+	}))
 
-		return (
-			<video
-				{...rest}
-				ref={this.node}
-				tabIndex={tabIndex}
-				width={width}
-				height={height}
-				poster={preview ? video.picture && video.picture.url : undefined}
-				autoPlay={autoPlay}
-				controls>
-				<source
-					src={video.url}
-					type={video.type}/>
-			</video>
-		)
-	}
+	const {
+		video,
+		preview,
+		width,
+		height,
+		tabIndex,
+		autoPlay,
+		...rest
+	} = props
+
+	// // Manually starting autoplay instead of using `<video autoPlay={autoPlay}/>`
+	// // because this way it returns the promise for managing player state correctly.
+	// // https://developers.google.com/web/updates/2017/06/play-request-was-interrupted
+	// useEffect(() => {
+	// 	if (autoPlay) {
+	// 		play()
+	// 	}
+	// })
+
+	return (
+		<video
+			{...rest}
+			ref={player}
+			tabIndex={tabIndex}
+			width={width}
+			height={height}
+			poster={preview ? video.picture && video.picture.url : undefined}
+			autoPlay={autoPlay}
+			controls>
+			<source
+				src={video.url}
+				type={video.type}/>
+		</video>
+	)
 }
+
+HtmlVideo = React.forwardRef(HtmlVideo)
+
+export default HtmlVideo
 
 HtmlVideo.propTypes = {
 	video: video.isRequired,
