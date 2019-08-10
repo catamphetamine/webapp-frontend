@@ -27,6 +27,8 @@ import {
 	ContentSectionHeader
 } from '../components/ContentSection'
 
+import getSortedAttachments from '../utility/post/getSortedAttachments'
+
 import './AccountProfile.css'
 
 @meta(({ account: { account } }) => ({
@@ -62,9 +64,20 @@ export default class Profile extends React.Component {
 		openSlideshow: PropTypes.func.isRequired
 	}
 
-	onAttachmentClick = (attachment, i, attachments) => {
+	onAttachmentClick = (attachment, post) => {
 		const { openSlideshow } = this.props
-		openSlideshow(attachments, i)
+		const attachments = getSortedAttachments(post)
+		const i = attachments.indexOf(attachment)
+		// If an attachment is either an uploaded one or an embedded one
+		// then it will be in `post.attachments`.
+		// If an attachment is only attached to a `link`
+		// (for example, an inline-level YouTube video link)
+		// then it won't be included in `post.attachments`.
+		if (i >= 0) {
+			openSlideshow(attachments, i)
+		} else {
+			openSlideshow([attachment], 0)
+		}
 	}
 
 	render() {
@@ -107,7 +120,7 @@ export default class Profile extends React.Component {
 									</ContentSectionHeader>*/}
 									<Post
 										post={post}
-										onAttachmentClick={this.onAttachmentClick}/>
+										onAttachmentClick={(attachment) => this.onAttachmentClick(attachment, post)}/>
 								</ContentSection>
 							))}
 						</div>

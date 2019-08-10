@@ -173,7 +173,7 @@
 
 .post--compact.post--anonymous {
 	.post__header {
-		margin-top: calc(-1 * var(--post-text-vertical-space-adjustment));
+		margin-top: calc(-1 * var(--Post-textLineHeightBottomSpace));
 	}
 }
 
@@ -182,7 +182,7 @@
    doesn't have such extra visual spacing. Therefore reduce it for text. */
 .post--compact.post--anonymous:not(.post--empty):not(.post--titled) {
 	.post__header {
-		margin-bottom: calc(-1 * var(--post-text-vertical-space-adjustment));
+		margin-bottom: calc(-1 * var(--Post-textLineHeightBottomSpace));
 	}
 }
 
@@ -205,7 +205,14 @@
 
 .post__heading {
 	margin-top: 0.5em;
-	margin-bottom: 0.5em;
+	/* `padding-bottom` should be used instead of `margin-bottom` here
+	   so that `margin-bottom` doesn't collapse with `margin-top`
+	   of the first paragraph of `post.content`, because when
+	   `<Post stretch/>` property is used `.post` becomes `display: flex`
+	   and margins no longer collapse. */
+	/*margin-bottom: 0.5em;*/
+	/* No margin bottom seems ok. */
+	margin-bottom: 0;
 	font-weight: 400;
 }
 
@@ -213,11 +220,13 @@
 	margin-bottom: -0.1em;
 }
 
+/*
 .post--starts-with-text {
 	.post__heading {
-		margin-bottom: calc(0.5em - 0.2em);
+		--PostHeading-marginBottom: 0em;
 	}
 }
+*/
 
 .post__date-link {
 	outline: none;

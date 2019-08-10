@@ -1,0 +1,18 @@
+.post__quote-marker {
+	display: flex;
+	align-items: center;
+	position: absolute;
+	left: 0;
+	top: 0;
+	height: 100%;
+	color: var(--PostQuoteMarker-color);
+	&:before {
+		display: block;
+		content: '';
+		width: var(--PostQuoteMarker-width);
+		height: calc(100% - 2 * var(--PostQuoteMarker-padding));
+		min-height: 1.3em;
+		background-color: currentColor;
+		opacity: var(--PostQuoteMarker-opacity);
+	}
+}

@@ -30,7 +30,7 @@ export default function loadResourceLinks(post, {
 }) {
 	// Clone the post so that the original `post` is only
 	// changed after the modified post has rendered.
-	const postWithLinksExpanded = cloneDeep(post)
+	const postWithLinksExpanded = clonePost(post)
 	const promises = [
 		loadTwitterLinks(postWithLinksExpanded.content, {
 			messages: messages && messages.contentType
@@ -79,7 +79,8 @@ export default function loadResourceLinks(post, {
 		})
 		// Snapshot the `post` in its current state for re-rendering
 		// because other resource loaders will be modifying `post` too.
-		post = cloneDeep(post)
+		// (`content` will be modified and new `attachments` will be added)
+		post = clonePost(post)
 		// Update the post in state.
 		onUpdatePost(post, () => updatePostObject(post))
 	}
@@ -92,6 +93,29 @@ export default function loadResourceLinks(post, {
 			updatePost(postWithLinksExpanded)
 		}
 	})
+}
+
+/**
+ * Clones a post so that the original post content
+ * could be modified and new attachments added
+ * without affecting the snapshot.
+ * Doesn't use straight `cloneDeep(post)`
+ * just because I prefer keeping cloned properties explicit.
+ * @param  {object} post
+ * @return {object}
+ */
+function clonePost(post) {
+	return {
+		// `contentPreview` will be re-generated
+		// so it's copied "by reference".
+		...post,
+		// `content` will be changed at arbitrary deep levels
+		// so it's cloned deeply.
+		content: cloneDeep(post.content),
+		// New attachments will be added
+		// so `attachments` are copied "shallowly".
+		attachments: post.attachments && post.attachments.slice()
+	}
 }
 
 // `lynxchan` doesn't provide `width` and `height`

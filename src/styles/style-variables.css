@@ -6,7 +6,10 @@
 	--Document-color: var(--Content-color-900);
 	--Document-backgroundColor: var(--Content-backgroundColor);
 	--Document-fontFamily: Roboto, sans-serif;
-	--Document-fontFamily--text: var(--Document-fontFamily);
+
+	/* Text. */
+	--Text-maxWidth: 44em;
+	--Text-fontFamily: var(--Document-fontFamily);
 
 	/* Header. */
 	--Header-borderWidth: 1px;
@@ -56,12 +59,27 @@
 	--Content-backgroundColor--active: initial;
 	--Content-fontWeight--bold: bolder;
 
+	/* Post. */
+	--Post-padding--horizontal: var(--ContentSection-padding--horizontal);
+	@mixin xl-plus {
+		--Post-padding--horizontal: calc(var(--unit) * 2);
+	}
+
+	/* PostThumbnail. */
+	/* Default thumnail size. Will be overridden on `<body/>` after parsing chan response. */
+	--PostThumbnail-maxWidth: 220px;
+	/* This variable wouldn't work if set on `:root` for some reason:
+	   changing `var(--Post-padding--horizontal)` wouldn't have any effect. */
+	--PostThumbnail-marginRight: var(--Post-padding--horizontal);
+
 	/* PostQuote. */
 	--PostQuote-color: initial;
 	--PostQuote-backgroundColor: initial;
 	--PostQuote-borderColor: transparent;
 	--PostQuote-backgroundColor--hover: var(--PostQuote-backgroundColor);
 	--PostQuote-borderColor--hover: var(--PostQuote-borderColor);
+	--PostQuote-paddingLeft: var(--Post-padding--horizontal);
+	--PostQuote-paddingRight: var(--Post-padding--horizontal);
 
 	/* PostQuoteMarker. */
 	--PostQuoteMarker-color: currentColor;
@@ -74,11 +92,11 @@
 	--HoverButton-borderColor--pushedFocus: var(--HoverButton-borderColor--pushedActive);
 
 	/* CommentTree. */
-	--CommentTree-padding: var(--ContentSection-padding--horizontal);
+	--CommentTree-padding: var(--Post-padding--horizontal);
 	--CommentTree-borderWidth: 1px;
 	/* Approximate offset top so that it points to the first line of text in a comment. */
 	--CommentTree-branchContentTop: 1.6em;
-	--CommentTree-branchTop: calc(var(--ContentSection-padding--vertical) + var(--CommentTree-branchContentTop));
+	--CommentTree-branchTop: calc(var(--Post-padding--vertical) + var(--CommentTree-branchContentTop));
 	@mixin upto-xs {
 		--CommentTree-branchContentTop: 1.9em;
 	}
@@ -175,11 +193,11 @@
 /* Dark Mode. */
 .dark {
 	/* Document. */
-	--Document-backgroundColor: #1a1a1a;
+	--Document-backgroundColor: #272727;
 
 	/* Header. */
 	--Header-color: var(--Content-color-900);
-	--Header-backgroundColor: #262626;
+	--Header-backgroundColor: var(--Content-color-100);
 	--Header-borderColor: rgba(255,255,255,.07);
 
 	/* Menu. */
@@ -188,7 +206,7 @@
 	/* Notification. */
 	--Notification-color: var(--Content-color-900);
 	--Notification-backgroundColor: var(--Content-backgroundColor);
-	--Notification-borderColor: var(--HoverButton-borderColor);
+	--Notification-borderColor: var(--Content-color-400);
 	--Notification-borderWidth: 1px;
 
 	/* Error. */
@@ -246,16 +264,16 @@
 
 	/* PostInlineSpoiler. */
 	--PostInlineSpoiler-color: #494949;
-	--PostInlineSpoiler-color--contentActive: #4b4b4b;
+	--PostInlineSpoiler-color--contentActive: #454545;
 	--PostInlineSpoiler-color--censored: #62504f;
-	--PostInlineSpoiler-color--censoredContentActive: #645251;
+	--PostInlineSpoiler-color--censoredContentActive: #5c4a49;
 
 	/* PostAttachment. */
 	--PostAttachment-shadowColor--hover: rgba(100,100,100,0.2);
 
 	/* CommentTree. */
 	--CommentTree-color: var(--Content-color-800);
-	--CommentTree-color--branch: var(--Content-color-800);
+	--CommentTree-color--branch: var(--CommentTree-color);
 	--CommentTree-backgroundColor--hover: var(--Content-color-100);
 	--CommentTree-color--hover: var(--base-color-800);
 

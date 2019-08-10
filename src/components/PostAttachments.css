@@ -1,12 +1,10 @@
 .post__attachments {
-	/*margin-top : calc(var(--post-content-vertical-spacing) - var(--post-attachments-spacing));*/
 }
 
 /* Textual content has some inherent top spacing due to line height.
    Other content (attachment thumbnails, embedded pictures and videos)
    doesn't have such extra visual spacing. Therefore add a bit of top spacing here. */
 .post--anonymous.post--empty .post__attachments {
-  /*margin-top: 0.6em;*/
 }
 
 .post__attachment-thumbnails {
@@ -18,8 +16,8 @@
 .post__attachment-thumbnail {
 	--PostAttachment-shadow--hover: 0 0 0.25em var(--PostAttachment-shadowColor--hover), 0 0 0.1em var(--PostAttachment-shadowColor--hover);
 	position: relative;
-	margin-top: var(--post-content-vertical-spacing);
-	margin-right: var(--post-content-vertical-spacing);
+	margin-top: var(--PostContent-margin);
+	margin-right: var(--PostContent-margin);
 }
 
 /*

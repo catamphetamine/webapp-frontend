@@ -29,7 +29,7 @@ export default class PostLink extends React.Component {
 		const { attachment, onAttachmentClick } = this.props
 		if (attachment && attachment.type === 'video') {
 			event.preventDefault()
-			onAttachmentClick(attachment, 0, [attachment])
+			onAttachmentClick(attachment)
 		}
 	}
 

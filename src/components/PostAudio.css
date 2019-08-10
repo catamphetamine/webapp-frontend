@@ -1,5 +1,5 @@
 .post__audio {
-	margin-top: var(--post-content-vertical-spacing);
+	margin-top: var(--PostContent-margin);
 
 	h1 {
 		margin-top: 0.4em;

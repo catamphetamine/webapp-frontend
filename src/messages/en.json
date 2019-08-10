@@ -1,7 +1,8 @@
 {
 	"languageName": "English",
 	"notifications": {
-		"title": "Notifications"
+		"title": "Notifications",
+		"empty": "No new notifications"
 	},
 	"darkMode": "Night mode",
 	"settings": {

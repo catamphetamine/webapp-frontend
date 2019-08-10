@@ -10,6 +10,8 @@ import PostAttachments from './PostAttachments'
 import PostFooter, { hasFooter } from './PostFooter'
 
 import loadResourceLinks from '../utility/post/loadResourceLinks'
+import getNonEmbeddedAttachments from '../utility/post/getNonEmbeddedAttachments'
+import getContentBlocks from '../utility/post/getContentBlocks'
 
 import './Post.css'
 import './PostQuoteBlock.css'
@@ -46,8 +48,10 @@ export default class Post extends React.Component {
 		// in `/catalog.json` API response (which is a bug).
 		// http://lynxhub.com/lynxchan/res/722.html#q984
 		fixAttachmentThumbnailSizes: PropTypes.bool,
+		showPostThumbnailWhenThereAreMultipleAttachments: PropTypes.bool,
 		messages: postMessages.isRequired,
 		genericMessages: PropTypes.object,
+		stretch: PropTypes.bool,
 		className: PropTypes.string
 	}
 
@@ -86,31 +90,41 @@ export default class Post extends React.Component {
 		const {
 			showPreview,
 			postWithLinksExpanded,
-			postWithLinksExpandedForPost
+			post: originalPost
 		} = this.state
-		return postWithLinksExpandedForPost === post ? postWithLinksExpanded : post
-	}
-
-	getNonEmbeddedAttachments() {
-		const attachments = this.getPost().attachments || []
-		const nonEmbeddedAttachments = attachments.filter((attachment) => {
-			if (!attachment.id) {
-				return true
-			}
-			return !getParagraphs(this.getPost().content).find((paragraph) => {
-				return typeof paragraph === 'object' &&
-					paragraph.type === 'attachment' &&
-					paragraph.attachmentId === attachment.id
-			})
-		})
-		if (nonEmbeddedAttachments.length === attachments.length) {
-			return attachments
-		}
-		return nonEmbeddedAttachments
+		// This condition is only for cases when `post` property changes.
+		return post === originalPost ? postWithLinksExpanded : post
 	}
 
 	componentDidMount() {
 		this._isMounted = true
+		this.expandLinks()
+	}
+
+	componentWillUnmount() {
+		this._isMounted = false
+	}
+
+	componentDidUpdate(prevProps) {
+		const {
+			post,
+			expandAttachments,
+			onContentDidChange
+		} = this.props
+		if (post !== prevProps.post) {
+			// If `post` property has changed then re-expand links.
+			this.expandLinks()
+		}
+		if (expandAttachments !== prevProps.expandAttachments) {
+			// The post height has changed due to expanding or collapsing attachments.
+			// `onContentDidChange()` is gonna be `virtual-scroller`'s `onItemHeightChange()`.
+			if (onContentDidChange) {
+				onContentDidChange()
+			}
+		}
+	}
+
+	expandLinks() {
 		const {
 			post,
 			youTubeApiKey,
@@ -126,12 +140,13 @@ export default class Post extends React.Component {
 			messages: genericMessages,
 			commentLengthLimit,
 			fixAttachmentThumbnailSizes,
-			onUpdatePost: (post, callback) => {
+			onUpdatePost: (postWithLinksExpanded, callback) => {
 				if (this._isMounted) {
 					// Re-render the post and update it in state.
 					this.setState({
-						postWithLinksExpanded: post,
-						postWithLinksExpandedForPost: this.props.post
+						postWithLinksExpanded,
+						// `post` is stored in `state` for cases when `post` property changes.
+						post
 					}, () => {
 						// The post height did change due to the re-generated preview.
 						// `onContentDidChange()` is gonna be `virtual-scroller`'s `onItemHeightChange()`.
@@ -147,21 +162,6 @@ export default class Post extends React.Component {
 		})
 	}
 
-	componentWillUnmount() {
-		this._isMounted = false
-	}
-
-	componentDidUpdate(prevProps) {
-		const { expandAttachments, onContentDidChange } = this.props
-		if (expandAttachments !== prevProps.expandAttachments) {
-			// The post height has changed due to expanding or collapsing attachments.
-			// `onContentDidChange()` is gonna be `virtual-scroller`'s `onItemHeightChange()`.
-			if (onContentDidChange) {
-				onContentDidChange()
-			}
-		}
-	}
-
 	render() {
 		const {
 			header,
@@ -175,12 +175,14 @@ export default class Post extends React.Component {
 			maxAttachmentThumbnails,
 			attachmentThumbnailSize,
 			useSmallestThumbnailsForAttachments,
+			showPostThumbnailWhenThereAreMultipleAttachments,
 			serviceIcons,
 			onAttachmentClick,
 			onReply,
 			onVote,
 			onMoreActions,
 			messages,
+			stretch,
 			className
 		} = this.props
 
@@ -190,7 +192,6 @@ export default class Post extends React.Component {
 
 		const post = this.getPost()
 
-		const attachments = post.attachments || []
 		const postContent = showPreview && post.contentPreview ? post.contentPreview : post.content
 
 		return (
@@ -201,7 +202,8 @@ export default class Post extends React.Component {
 					'post--starts-with-text': post.content && (typeof post.content === 'string' || typeof post.content[0] === 'string' || Array.isArray(post.content[0])),
 					'post--anonymous': !post.account,
 					'post--empty': !post.content,
-					'post--compact': compact
+					'post--compact': compact,
+					'post--stretch': stretch
 				})}>
 				<PostHeader
 					post={post}
@@ -216,13 +218,13 @@ export default class Post extends React.Component {
 					onVote={onVote}/>
 				{postContent &&
 					<div className="post__content">
-						{getParagraphs(postContent).map((content, i) => (
+						{getContentBlocks(postContent).map((content, i) => (
 							<PostBlock
 								key={i}
 								url={url}
 								onReadMore={this.onExpandContent}
 								readMoreLabel={messages.readMore}
-								attachments={attachments}
+								attachments={post.attachments}
 								attachmentThumbnailSize={attachmentThumbnailSize}
 								expandAttachments={expandAttachments}
 								spoilerLabel={messages.spoiler}
@@ -235,6 +237,8 @@ export default class Post extends React.Component {
 					</div>
 				}
 				<PostAttachments
+					post={post}
+					showPostThumbnailWhenThereAreMultipleAttachments={showPostThumbnailWhenThereAreMultipleAttachments}
 					expandFirstPictureOrVideo={expandFirstPictureOrVideo}
 					useSmallestThumbnails={useSmallestThumbnailsForAttachments}
 					maxAttachmentThumbnails={maxAttachmentThumbnails}
@@ -242,8 +246,11 @@ export default class Post extends React.Component {
 					expandAttachments={expandAttachments}
 					spoilerLabel={messages.spoiler}
 					onAttachmentClick={onAttachmentClick}>
-					{this.getNonEmbeddedAttachments()}
+					{getNonEmbeddedAttachments(post)}
 				</PostAttachments>
+				{stretch &&
+					<div className="post__stretch"/>
+				}
 				<PostFooter
 					post={post}
 					badges={footerBadges}
@@ -252,14 +259,4 @@ export default class Post extends React.Component {
 			</article>
 		);
 	}
-}
-
-function getParagraphs(content) {
-	if (content === undefined || content === null) {
-		return []
-	}
-	if (typeof content === 'string') {
-		return [content]
-	}
-	return content
 }

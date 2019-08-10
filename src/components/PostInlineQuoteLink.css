@@ -1,0 +1,7 @@
+.post__inline-quote-link:hover,
+.post__inline-quote-link:active {
+	--PostQuote-borderColor: var(--PostQuote-borderColor--hover);
+	--PostQuote-backgroundColor: var(--PostQuote-backgroundColor--hover);
+	/* Overrides the default `a:active` color for `.post__quote-blocks--link`. */
+	color: var(--PostQuote-color);
+}

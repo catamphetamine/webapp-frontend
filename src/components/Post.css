@@ -1,13 +1,17 @@
 @import "../styles/common";
 
+:root {
+	--Post-padding--vertical: 1em;
+	--Post-padding--verticalCompact: 0.9em;
+}
+
 .post {
-	--post-attachments-spacing : calc(var(--unit) / 2);
-	--post-content-vertical-spacing: 0.6em;
+	--PostContent-margin: 0.6em;
 
 	/* Textual content has some inherent bottom spacing due to line height.
 	   Other content (attachment thumbnails, embedded pictures and videos)
 	   doesn't have such extra visual spacing. Therefore reduce it for text. */
-	--post-text-vertical-space-adjustment: 0.25em;
+	--Post-textLineHeightBottomSpace: 0.25em;
 
 	/* Long hyperlinks can overflow post on small screens.
 	   (for example, on mobile devices)
@@ -30,17 +34,22 @@
 	}
 }
 
-.post.content-section {
-	--ContentSection-padding--vertical: 1em;
+.post--compact {
+	--Post-padding--vertical: var(--Post-padding--verticalCompact)
 }
 
-.post--compact.content-section {
-	--ContentSection-padding--vertical: 0.9em;
+.post--stretch {
+	display: flex;
+	flex-direction: column;
+}
+
+.post__stretch {
+	flex: auto;
 }
 
 .post__content {
-	/*margin-bottom: calc(-1 * var(--post-content-vertical-spacing));*/
-	font-family: var(--Document-fontFamily--text);
+	/*margin-bottom: calc(-1 * var(--PostContent-margin));*/
+	font-family: var(--Text-fontFamily);
 }
 
 /* For play video icon. */

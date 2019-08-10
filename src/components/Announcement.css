@@ -4,7 +4,7 @@
 	display: flex;
 	align-items: center;
 	width: 100%;
-	top: var(--header-height);
+	top: var(--Header-height);
 	padding-left: var(--unit);
 	padding-right: var(--unit);
 	padding-top: calc(var(--unit) * 0.5);

@@ -2,6 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 
+import { sortByThumbnailHeightDescending } from '../utility/post/getSortedAttachments'
+
 import {
 	// TRANSPARENT_PIXEL,
 	// getAspectRatio as getPictureAspectRatio
@@ -36,15 +38,13 @@ import PostFile, {
 	EXAMPLE_3 as FILE_EXAMPLE_3
 } from './PostFile'
 
-import PostAttachment, {
-	getPicture
-} from './PostAttachment'
-
-import { getMinSize } from './Picture'
+import PostAttachment from './PostAttachment'
 
 import {
 	postAttachment
 } from '../PropTypes'
+
+import getPostThumbnail from '../utility/post/getPostThumbnail'
 
 import './PostAttachments.css'
 
@@ -52,6 +52,7 @@ import './PostAttachments.css'
 const TEST = false
 
 export default function PostAttachments({
+	post,
 	expandFirstPictureOrVideo,
 	expandAttachments,
 	attachmentThumbnailSize,
@@ -59,6 +60,7 @@ export default function PostAttachments({
 	spoilerLabel,
 	onAttachmentClick,
 	maxAttachmentThumbnails,
+	showPostThumbnailWhenThereAreMultipleAttachments,
 	children: attachments
 }) {
 	if (TEST) {
@@ -115,9 +117,13 @@ export default function PostAttachments({
 	function createOnAttachmentClick(i) {
 		return (event) => {
 			event.preventDefault()
-			onAttachmentClick(allPicturesAndVideos[i], i, allPicturesAndVideos)
+			onAttachmentClick(allPicturesAndVideos[i])
 		}
 	}
+
+	// `<Post/>`s with no `content` don't have a "post thumbnail" shown:
+	// they just show all attachments.
+	const postThumbnailCandidate = getPostThumbnail(post, { showPostThumbnailWhenThereAreMultipleAttachments })
 
 	return (
 		<div className="post__attachments">
@@ -165,12 +171,11 @@ export default function PostAttachments({
 								key={`picture-or-video-${i}`}
 								attachment={pictureOrVideo}
 								useSmallestThumbnail={useSmallestThumbnails}
-								width={useSmallestThumbnails ? getMinSize(getPicture(pictureOrVideo)).width : undefined}
-								height={useSmallestThumbnails ? getMinSize(getPicture(pictureOrVideo)).height : undefined}
 								maxSize={attachmentThumbnailSize}
 								spoilerLabel={spoilerLabel}
 								onClick={onAttachmentClick ? createOnAttachmentClick(i + (titlePictureOrVideo ? 1 : 0)) : undefined}
-								moreAttachmentsCount={i === picturesAndVideos.length - 1 ? picturesAndVideosMoreCount : undefined}/>
+								moreAttachmentsCount={i === picturesAndVideos.length - 1 ? picturesAndVideosMoreCount : undefined}
+								className={pictureOrVideo === postThumbnailCandidate ? 'post__attachment-thumbnail--post-thumbnail-candidate' : undefined}/>
 						)
 					})}
 				</div>
@@ -193,6 +198,7 @@ export default function PostAttachments({
 }
 
 PostAttachments.propTypes = {
+	post: PropTypes.object,
 	onAttachmentClick: PropTypes.func,
 	expandFirstPictureOrVideo: PropTypes.bool.isRequired,
 	expandAttachments: PropTypes.bool,
@@ -370,19 +376,6 @@ const POSITION_ABSOLUTE = {
 // 	return maxExtent
 // }
 
-function getAttachmentThumbnailHeight(attachment) {
-	switch (attachment.type) {
-		case 'picture':
-			return getMinSize(attachment.picture).height
-		case 'video':
-			return getMinSize(attachment.video.picture).height
-		default:
-			console.error(`Unknown attachment type: ${attachment.type}`)
-			console.log(attachment)
-			return 0
-	}
-}
-
 // /**
 //  * Sorts attachments by their aspect ratio ascending (the tallest ones first).
 //  * Mutates the original array (could add `.slice()` but not required).
@@ -398,16 +391,6 @@ function getAttachmentThumbnailHeight(attachment) {
 // 		return getAttachmentAspectRatio(a) - getAttachmentAspectRatio(b)
 // 	})
 // }
-
-function sortByThumbnailHeightDescending(attachments) {
-	// A minor optimization.
-	if (attachments.length === 1) {
-		return attachments
-	}
-	return attachments.sort((a, b) => {
-		return getAttachmentThumbnailHeight(b) - getAttachmentThumbnailHeight(a)
-	})
-}
 
 function sortPostAttachments(attachments) {
 	return sortByThumbnailHeightDescending(attachments)

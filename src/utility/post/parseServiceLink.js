@@ -1,5 +1,5 @@
 const WWW_REGEXP = /^www\./
-const WIKIPEDIA_REGEXP = /^[a-z]+\.wikipedia\.org$/
+const WIKIPEDIA_REGEXP = /^[a-z]+\.(m\.)?wikipedia\.org$/
 // const SUBDOMAIN_REGEXP = /^[^.]+\.wikipedia\.org$/
 const ABSOLUTE_URL_REGEXP = /^(https?|ftp):/
 
@@ -33,6 +33,12 @@ export default function parseServiceLink(url) {
 	let hostname = url.hostname.replace(WWW_REGEXP, '')
 	if (WIKIPEDIA_REGEXP.test(hostname)) {
 		hostname = 'wikipedia.org'
+	}
+	// Special case for links from Google search results.
+	if (hostname === 'google.com') {
+		if (url.pathname === '/url' && url.searchParams.get('url')) {
+			return parseServiceLink(url.searchParams.get('url'))
+		}
 	}
 	const service = SERVICES[hostname]
 	if (service) {

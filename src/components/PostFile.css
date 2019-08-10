@@ -1,7 +1,7 @@
 .post__file {
 	display: flex;
 	align-items: center;
-	margin-top: var(--post-content-vertical-spacing);
+	margin-top: var(--PostContent-margin);
 }
 
 .post__file-icon {

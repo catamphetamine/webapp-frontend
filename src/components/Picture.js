@@ -6,6 +6,8 @@ import { ActivityIndicator, FadeInOut } from 'react-responsive-ui'
 
 import { picture } from '../PropTypes'
 
+import { getMinSize } from '../utility/picture'
+
 import './Picture.css'
 
 import Close from '../../assets/images/icons/close.svg'
@@ -49,14 +51,25 @@ function Picture({
 	...rest
 }, ref) {
 	border = border && !picture.transparentBackground
+	if (useSmallestSize && !width && !height) {
+		width = getMinSize(picture).width
+		height = getMinSize(picture).height
+	}
+
+	const initialImageSize = useRef(getInitialImageSize(
+		picture,
+		width,
+		height,
+		fit,
+		useSmallestSize
+	))
 
 	const containerRef = useRef()
 	const imageRef = useRef()
 	const isMounted = useRef()
-	const [size, setSize] = useState()
-	const [initialImageLoaded, setInitialImageLoaded] = useState()
-	const [initialImageLoadError, setInitialImageLoadError] = useState()
-	const [prevPicture, setPrevPicture] = useState()
+	const cancelLoadingImage = useRef()
+	const [size, setSize] = useState(initialImageSize.current)
+	const [imageStatus, setImageStatus] = useState()
 
 	useEffect(() => {
 		if (!window.interactiveResize) {
@@ -81,21 +94,26 @@ function Picture({
 			refreshSize()
 			window.interactiveResize.add(refreshSize)
 		}
-		if (process.env.NODE_ENV === 'production') {
-			setUpSizing()
+		if (size) {
+			loadImage(size)
+			window.interactiveResize.add(refreshSize)
 		} else {
-			const elapsed = Date.now() - PAGE_LOADED_AT
-			if (elapsed < DEV_MODE_WAIT_FOR_STYLES) {
-				setTimeout(
-					() => {
-						if (isMounted.current) {
-							setUpSizing()
-						}
-					},
-					DEV_MODE_WAIT_FOR_STYLES - elapsed
-				)
-			} else {
+			if (process.env.NODE_ENV === 'production') {
 				setUpSizing()
+			} else {
+				const elapsed = Date.now() - PAGE_LOADED_AT
+				if (elapsed < DEV_MODE_WAIT_FOR_STYLES) {
+					setTimeout(
+						() => {
+							if (isMounted.current) {
+								setUpSizing()
+							}
+						},
+						DEV_MODE_WAIT_FOR_STYLES - elapsed
+					)
+				} else {
+					setUpSizing()
+				}
 			}
 		}
 		return () => {
@@ -105,27 +123,12 @@ function Picture({
 	}, [])
 
 	useEffect(() => {
-		if (!isMounted.current) {
-			isMounted.current = true
+		if (isMounted.current) {
+			refreshSize(true)
 		} else {
-			if (picture !== prevPicture) {
-				if (prevPicture !== null) {
-					refreshSize(true)
-				}
-				setPrevPicture(picture)
-			}
+			isMounted.current = true
 		}
-	})
-
-	useEffect(() => {
-		// The initial `undefined` case is ignored.
-		if (size === undefined) {
-			return
-		}
-		if (!size) {
-			refreshSize()
-		}
-	}, [size])
+	}, [picture])
 
 	useImperativeHandle(ref, () => ({
 		focus() {
@@ -152,19 +155,19 @@ function Picture({
 	function getMaxWidth() {
 		if (maxWidth) {
 			if (maxHeight) {
-				return Math.min(maxWidth, maxHeight * getAspectRatio(size || picture))
+				return Math.min(maxWidth, maxHeight * getImageAspectRatio())
 			}
 			return maxWidth
 		} else {
-			return maxHeight * getAspectRatio(size || picture)
+			return maxHeight * getImageAspectRatio()
 		}
 	}
 
 	function getContainerStyle() {
 		if (width || height) {
 			return {
-				width: addBorder(width || (height * getAspectRatio(size || picture))) + 'px',
-				height: addBorder(height || (width / getAspectRatio(size || picture))) + 'px'
+				width: addBorder(width || (height * getImageAspectRatio())) + 'px',
+				height: addBorder(height || (width / getImageAspectRatio())) + 'px'
 			}
 		}
 		if (maxWidth || maxHeight) {
@@ -209,11 +212,9 @@ function Picture({
 		return Math.round(Math.min(w || h, h || w) * blurFactor)
 	}
 
-	function retryInitialImageLoad(event) {
+	function retryImageLoad(event) {
 		event.stopPropagation()
-		// Setting `size` to `null` instead of `undefined` for `useEffect()`.
-		setSize(null)
-		setInitialImageLoadError(undefined)
+		refreshSize(true)
 	}
 
 	function getPicturePreferredSize() {
@@ -228,7 +229,7 @@ function Picture({
 
 	function getPreferredImageWidth() {
 		if (fit === 'cover') {
-			return excludeBorder(Math.max(getWidth(), getHeight() * getAspectRatio(size || picture)))
+			return excludeBorder(Math.max(getWidth(), getHeight() * getImageAspectRatio()))
 		}
 		return excludeBorder(getWidth())
 	}
@@ -238,27 +239,39 @@ function Picture({
 		if (force ||
 			!size ||
 			(preferredSize && preferredSize.width > size.width)) {
-			onImageChange(preferredSize)
 			setSize(preferredSize)
+			loadImage(preferredSize)
 		}
 	}
 
-	function onImageChange(newSize) {
-		if (!size) {
-			preloadImage(newSize.url).then(
-				() => {
-					if (isMounted.current) {
-						setInitialImageLoaded(true)
-					}
-				},
-				(error) => {
-					console.error(error)
-					if (isMounted.current) {
-						setInitialImageLoadError(true)
-					}
-				}
-			)
+	function loadImage(newSize) {
+		if (cancelLoadingImage.current) {
+			cancelLoadingImage.current()
 		}
+		let wasCancelled
+		setImageStatus(undefined)
+		preloadImage(newSize.url).then(
+			() => {
+				if (wasCancelled) {
+					return
+				}
+				cancelLoadingImage.current = undefined
+				if (isMounted.current) {
+					setImageStatus(1)
+				}
+			},
+			(error) => {
+				console.error(error)
+				if (wasCancelled) {
+					return
+				}
+				cancelLoadingImage.current = undefined
+				if (isMounted.current) {
+					setImageStatus(-1)
+				}
+			}
+		)
+		cancelLoadingImage.current = () => wasCancelled = true
 	}
 
 	// `offsetWidth` and `offsetHeight` include border width.
@@ -268,6 +281,16 @@ function Picture({
 
 	function getHeight() {
 		return containerRef.current.offsetHeight
+	}
+
+	// When a thumbnail is shown, aspect ratio is more precise
+	// when calculated using the thumbnail dimensions
+	// rather than the original image dimensions
+	// because width and height in pixels are rounded when
+	// generating a thumbnail, so thumbnail's aspect ratio
+	// should be calculated from thumbnail's width and height.
+	function getImageAspectRatio() {
+		return getAspectRatio(size || picture)
 	}
 
 	const imageStyle = fit === 'cover' ? { height: '100%', objectFit: fit } : undefined
@@ -282,22 +305,23 @@ function Picture({
 				'rrui__picture--background': showLoadingPlaceholder && !picture.transparentBackground
 			})}>
 
-			{/* Could exclude `width: 100%` here because until the image loads
-			the container height is 0 so it's collapsed vertically
-			and the aspect ratio is also incorrect when loading styles
-			dynamically (via javascript): by the time the component mounts
-			`getWidth()` returns screen width and not the actual
-			`<div/>` width, so aspect ratio is unknown at mount in those cases. */}
 			{/* Placeholder must stretch the parent element vertically
-			    same as the `<img/>` does it (for maintaining aspect ratio). */}
-			{!initialImageLoaded &&
-				<div
-					style={{ width: '100%', paddingBottom: 100 / getAspectRatio(size || picture) + '%' }}
-					className="rrui__picture__placeholder">
+			    for maintaining the aspect ratio of the picture.
+			    Otherwise `.rrui__picture`'s height would be `0`
+			    until the image file header has been parsed
+			    and that would result in "jumpiness" of the layout
+			    and would also cause bugs in a `virtual-scroller`.
+			    https://github.com/catamphetamine/virtual-scroller#images */}
+			{!(width || height) &&
+				<div style={{ width: '100%', paddingBottom: 100 / getImageAspectRatio() + '%' }}/>
+			}
+
+			{imageStatus !== 1 &&
+				<div className="rrui__picture__status">
 					<FadeInOut show fadeInInitially fadeInDuration={3000} fadeOutDuration={3000}>
-						{initialImageLoadError ?
+						{imageStatus === -1 ?
 							<Close
-								onClick={retryInitialImageLoad}
+								onClick={retryImageLoad}
 								title="Retry"
 								className="rrui__picture__loading-error"/>
 							:
@@ -310,7 +334,7 @@ function Picture({
 				</div>
 			}
 
-			{initialImageLoaded &&
+			{imageStatus !== -1 &&
 				<img
 					ref={imageRef}
 					src={typeof window === 'undefined' ? TRANSPARENT_PIXEL : (size && size.url || TRANSPARENT_PIXEL)}
@@ -318,7 +342,7 @@ function Picture({
 					className="rrui__picture__image"/>
 			}
 
-			{initialImageLoaded && blur &&
+			{imageStatus !== -1 && blur &&
 				<img
 					src={typeof window === 'undefined' ? TRANSPARENT_PIXEL : (size && size.url || TRANSPARENT_PIXEL)}
 					style={addBlur(imageStyle, calculateBlurRadius(blur))}
@@ -554,6 +578,26 @@ function addHiddenStyle(style) {
 	return HIDDEN_STYLE
 }
 
-export function getMinSize(picture) {
-	return picture.sizes && picture.sizes[0] || picture
+function getInitialImageSize(picture, width, height, fit, useSmallestSize) {
+	let initialSize
+	if (useSmallestSize) {
+		return getMinSize(picture)
+	}
+	if (width || height) {
+		const aspectRatio = getAspectRatio(picture)
+		width = width || aspectRatio * height
+		height = height || width / aspectRatio
+		let imageWidth
+		switch (fit) {
+			case 'cover':
+				// If `width`/`height` aren't proportional
+				// then choose the largest proportional `width`.
+				if (height > width / aspectRatio) {
+					imageWidth = aspectRatio * height
+				}
+			default:
+				imageWidth = width
+		}
+		return getPreferredSize(picture, imageWidth)
+	}
 }

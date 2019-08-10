@@ -295,6 +295,16 @@ describe('parseServiceLink', () => {
 		)
 	})
 
+	it('should parse google search results links', () => {
+		expectToEqual(
+			parseServiceLink('https://www.google.com/url?sa=t&source=web&rct=j&url=https://ru.m.wikipedia.org/wiki/%25D0%2598%25D0%25B2%25D0%25B0%25D0%25BD-%25D1%2587%25D0%25B0%25D0%25B9&ved=0ahUKEwjo9KLm_PbjAhUHdJoKHRiVBF4QmhMIezAP&usg=AOvVaw0PbzzgnvDpGIltgVvJWQzj'),
+			{
+				service: 'wikipedia',
+				text: 'Иван-чай'
+			}
+		)
+	})
+
 	it('should parse google docs links', () => {
 		expectToEqual(
 			parseServiceLink('https://docs.google.com/spreadsheets/d/1CXMrCVI3GfwHu8wObTixAlpA3ftjs87lkX017SaVl6I/edit#gid=0'),

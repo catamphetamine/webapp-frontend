@@ -85,11 +85,6 @@ function Video({
 		}
 	}, [shouldStartPlaying])
 
-	const [prevPreview, setPrevPreview] = useState(preview)
-	const [prevPlayable, setPrevPlayable] = useState(playable)
-	const [prevAutoPlay, setPrevAutoPlay] = useState(autoPlay)
-	const [prevExpand, setPrevExpand] = useState(expand)
-
 	function setPlayState(newStateTransition) {
 		playState.current = playState.current
 			.then(newStateTransition)
@@ -112,37 +107,43 @@ function Video({
 			})
 	}
 
+	function updateShowPreview() {
+		setShowPreview(preview && !(playable && autoPlay) && !expand)
+	}
+
+	// On `preview` property change.
 	useEffect(() => {
-		if (!hasMounted.current) {
-			hasMounted.current = true
-		} else {
-			function updateShowPreview() {
-				setShowPreview(preview && !(playable && autoPlay) && !expand)
-			}
-			// On `preview` property change.
-			if (preview !== prevPreview) {
-				updateShowPreview()
-				setPrevPreview(preview)
-			}
-			// On `expand` property change.
-			if (expand !== prevExpand) {
-				updateShowPreview()
-				setPrevExpand(expand)
-			}
-			// On `playable` property change.
-			if (playable !== prevPlayable) {
-				updateShowPreview()
-				setShouldStartPlaying(playable && autoPlay ? true : false)
-				setPrevPlayable(playable)
-			}
-			// On `autoPlay` property change.
-			if (autoPlay !== prevAutoPlay) {
-				updateShowPreview()
-				setShouldStartPlaying(playable && autoPlay ? true : false)
-				setPrevAutoPlay(autoPlay)
-			}
+		if (hasMounted.current) {
+			updateShowPreview()
 		}
-	})
+	}, [preview])
+
+	// On `expand` property change.
+	useEffect(() => {
+		if (hasMounted.current) {
+			updateShowPreview()
+		}
+	}, [expand])
+
+	// On `playable` property change.
+	useEffect(() => {
+		if (hasMounted.current) {
+			updateShowPreview()
+			setShouldStartPlaying(playable && autoPlay ? true : false)
+		}
+	}, [playable])
+
+	// On `autoPlay` property change.
+	useEffect(() => {
+		if (hasMounted.current) {
+			updateShowPreview()
+			setShouldStartPlaying(playable && autoPlay ? true : false)
+		}
+	}, [autoPlay])
+
+	useEffect(() => {
+		hasMounted.current = true
+	}, [])
 
 	useImperativeHandle(ref, () => ({
 		focus

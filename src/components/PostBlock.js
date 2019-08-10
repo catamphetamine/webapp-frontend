@@ -85,7 +85,7 @@ export default function PostBlock({
 			</PostParagraph>
 		)
 	} else if (content.type === 'attachment') {
-		const attachment = attachments.filter(_ => _.id === content.attachmentId)[0]
+		const attachment = attachments.find(_ => _.id === content.attachmentId)
 		if (!attachment) {
 			console.error(`Attachment not found: ${content.attachmentId}`)
 			return null
@@ -101,7 +101,7 @@ export default function PostBlock({
 						onClick={onAttachmentClick ?
 							(event) => {
 								event.preventDefault()
-								onAttachmentClick(attachment, 0, [attachment])
+								onAttachmentClick(attachment)
 							} :
 							undefined
 						}/>
@@ -116,7 +116,7 @@ export default function PostBlock({
 						onClick={onAttachmentClick ?
 							(event) => {
 								event.preventDefault()
-								onAttachmentClick(attachment, 0, [attachment])
+								onAttachmentClick(attachment)
 							} :
 							undefined
 						}/>

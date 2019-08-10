@@ -1,5 +1,9 @@
 @import "../styles/common";
 
+@mixin m-plus {
+	--Header-height: calc(var(--unit) * 3);
+}
+
 /* Stretches the page to 100% height */
 .webpage
 {
@@ -22,7 +26,7 @@
 	flex-grow   : 1;
 	flex-basis  : auto;
 
-	margin-top : var(--header-height);
+	margin-top : var(--Header-height);
 }
 
 .rrui__slideshow

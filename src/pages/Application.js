@@ -69,7 +69,7 @@ export default class App extends Component {
 				{/* Pop-up messages */}
 				<Snackbar/>
 
-				{/* Detects touch device. */}
+				{/* Detects touch capability and screen size. */}
 				<DeviceInfo/>
 
 				{/* Picture Slideshow */}

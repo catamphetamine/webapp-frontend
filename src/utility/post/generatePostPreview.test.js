@@ -263,7 +263,7 @@ describe('getPostText', () => {
 				}]
 			},
 			{
-				limit: 280
+				limit: 600
 			},
 			[
 				{
@@ -296,7 +296,7 @@ describe('getPostText', () => {
 				}]
 			},
 			{
-				limit: 320
+				limit: 600
 			},
 			[
 				{
@@ -347,7 +347,7 @@ describe('getPostText', () => {
 				]
 			},
 			{
-				limit: 490
+				limit: 1200
 			},
 			[
 				{

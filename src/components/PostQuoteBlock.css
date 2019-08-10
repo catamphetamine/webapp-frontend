@@ -1,6 +1,10 @@
-.post__quote-block {
-	padding-left: 0.5em;
+.post__quote-blocks {
+	/* `.post__quote-blocks` is not `display: block` because
+	   "inline quotes" are surrounded with `<br/>`s.
+	   Instead, `display: block` is emulated via `width: 100%` (somewhere below)
+	   and making it `display: inline-block`. */
 	position: relative;
+	display: inline-block;
 	color: var(--PostQuote-color);
 	background-color: var(--PostQuote-backgroundColor);
 	/*
@@ -11,46 +15,35 @@
 	border-bottom: 1px solid var(--PostQuote-borderColor);
 }
 
-.post__inline-quote--link:hover,
-.post__inline-quote--link:active {
-	--PostQuote-borderColor: var(--PostQuote-borderColor--hover);
-	--PostQuote-backgroundColor: var(--PostQuote-backgroundColor--hover);
-	/* Overrides the default `a:active` color for `.post__inline-quote--link`. */
-	color: var(--PostQuote-color);
+/* `<PostQuoteMarker/>`-related padding. */
+.post__quote-blocks {
+	padding-left: 0;
+	margin-left: calc(var(--PostQuote-paddingLeft) * -1);
+	margin-right: calc(var(--PostQuote-paddingRight) * -1);
+	width: calc(100% + var(--PostQuote-paddingLeft) + var(--PostQuote-paddingRight));
+}
+.post__quote-block {
+	/* `position: relative` is for the quote marker to only span through
+	   this inline quote block in cases when there're multiple
+	   `.post__quote-block`s inside a `.post__quote-blocks`
+	   in order for the quote marker to only span vertically for its "sub-block".
+	   This is the case when there're `post-link`s having multiple `quotes`. */
+	position: relative;
+	/* `display: block` is used here because by default the multiple
+	   `.post__quote-block`s inside a `.post__quote-blocks`
+	   are not separated with `<br/>`s. */
+	display: block;
+	/* `padding-left` is set on `.post__quote-block`
+	   because there can be cases when there're multiple
+	   `.post__quote-block`s inside a `.post__quote-blocks`
+	   and each of those "sub-blocks" has `position: relative`
+	   in order for the quote marker to only span vertically for its "sub-block". */
+	padding-left: var(--PostQuote-paddingLeft);
+	padding-right: var(--PostQuote-paddingRight);
 }
 
-.post__quote-block__marker {
-	color: var(--PostQuoteMarker-color);
-}
-
-.post__quote-block__marker {
-	display: flex;
-	align-items: center;
-	position: absolute;
-	left: 0;
-	top: 0;
-	height: 100%;
-
-	&:before {
-		display: block;
-		content: '';
-		width: var(--PostQuoteMarker-width);
-		height: calc(100% - 2 * var(--PostQuoteMarker-padding));
-		min-height: 1.3em;
-		background-color: currentColor;
-		opacity: var(--PostQuoteMarker-opacity);
-	}
-}
-
-.post.content-section {
-	.post__quote-block {
-		padding-left: 0;
-		margin-left: calc(var(--ContentSection-padding--horizontal) * -1);
-		margin-right: calc(var(--ContentSection-padding--horizontal) * -1);
-		width: calc(100% + 2 * var(--ContentSection-padding--horizontal));
-	}
-	.post__quote-block__content {
-		padding-left: var(--ContentSection-padding--horizontal);
-		padding-right: var(--ContentSection-padding--horizontal);
-	}
+.post__quote-block--inline {
+	/* `display: inline` wouldn't work: it would only apply
+	   `padding-left` to the first line of text. */
+	display: inline-block;
 }

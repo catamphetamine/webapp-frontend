@@ -32,7 +32,7 @@
 	padding-bottom : var(--ContentSection-padding--vertical);
 	color : var(--Content-color-900);
 	background-color : var(--Content-backgroundColor);
-	border-radius : var(--border-radius);
+	/*border-radius : var(--border-radius);*/
 	/*box-shadow : var(--ContentSection-shadow);*/
   box-shadow: 0 0.0005rem 0.1rem 0 var(--ContentSection-shadowColor), 0 0.1rem 0.75rem 0 var(--ContentSection-shadowColor);
 
@@ -101,8 +101,8 @@
 /*.content-section__errors--top
 {
 	margin        : calc(-1 * var(--ContentSection-padding--vertical));
-	margin-bottom : var(--content-section-padding);
-	padding       : var(--content-section-padding);
+	margin-bottom : var(--ContentSection-padding);
+	padding       : var(--ContentSection-padding);
 }*/
 
 /*.content-section--no-padding

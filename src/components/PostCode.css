@@ -1,15 +1,20 @@
 .post__code {
-	border-radius: var(--border-radius);
+	/*border-radius: var(--border-radius);*/
 	border: 1px solid var(--Content-color-200);
 	background-color: var(--Content-color-100);
+	/* "Prism" syntax highlighter doesn't seem to
+	   force line breaks on long lines, so `overflow: auto`
+	   is required to not stretch the page width beyond `100%`. */
+	overflow-x: auto;
 }
 
 .post__code:not(.post__code--inline) {
+	--PostCode-padding-horizontal: var(--PostQuote-paddingLeft);
 	line-height: var(--line-height);
-	margin-left: calc(-1 * var(--unit) * 0.5);
-	margin-right: calc(-1 * var(--unit) * 0.5);
-	padding-left: calc(var(--unit) * 0.5);
-	padding-right: calc(var(--unit) * 0.5);
+	margin-left: calc(-1 * var(--PostCode-padding-horizontal));
+	margin-right: calc(-1 * var(--PostCode-padding-horizontal));
+	padding-left: var(--PostCode-padding-horizontal);
+	padding-right: var(--PostCode-padding-horizontal);
 	margin-top: -1px;
 	margin-bottom: -1px;
 }
@@ -28,15 +33,15 @@
 
 .post.content-section {
 	.post__code:not(.post__code--inline) {
-		margin-left: calc(var(--ContentSection-padding--horizontal) * -1);
-		margin-right: calc(var(--ContentSection-padding--horizontal) * -1);
-		padding-left: var(--ContentSection-padding--horizontal);
-		padding-right: var(--ContentSection-padding--horizontal);
+		margin-left: calc(var(--Post-padding--horizontal) * -1);
+		margin-right: calc(var(--Post-padding--horizontal) * -1);
+		padding-left: var(--Post-padding--horizontal);
+		padding-right: var(--Post-padding--horizontal);
 		padding-top: 0.5em;
 		padding-bottom: 0.5em;
 		border-left: none;
 		border-right: none;
-		width: calc(100% + 2 * var(--ContentSection-padding--horizontal));
+		width: calc(100% + 2 * var(--Post-padding--horizontal));
 		border-radius: 0;
 	}
 }

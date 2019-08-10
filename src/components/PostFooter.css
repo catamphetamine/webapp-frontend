@@ -5,7 +5,7 @@
 	font-weight: lighter;
 	color: var(--Post-color--secondary);
 
-	--post-footer-badge-spacing: calc(var(--unit) * 1.5);
+	--PostFooterBadge-margin: calc(var(--unit) * 1.5);
 }
 
 .post--compact {
@@ -40,7 +40,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	margin-right: var(--post-footer-badge-spacing);
+	margin-right: var(--PostFooterBadge-margin);
 	&:last-child {
 		margin-right: 0;
 	}
@@ -59,12 +59,12 @@
 }
 
 .post__footer .post__badge-button {
-	margin-top: calc(-1 * var(--post-footer-badge-spacing) / 6);
-	margin-bottom: calc(-1 * var(--post-footer-badge-spacing) / 6);
-	margin-left: calc(-1 * var(--post-footer-badge-spacing) / 3);
-	margin-right: calc(-1 * var(--post-footer-badge-spacing) / 3);
-	padding-top: calc(var(--post-footer-badge-spacing) / 6);
-	padding-bottom: calc(var(--post-footer-badge-spacing) / 6);
-	padding-left: calc(var(--post-footer-badge-spacing) / 3);
-	padding-right: calc(var(--post-footer-badge-spacing) / 3);
+	margin-top: calc(-1 * var(--PostFooterBadge-margin) / 6);
+	margin-bottom: calc(-1 * var(--PostFooterBadge-margin) / 6);
+	margin-left: calc(-1 * var(--PostFooterBadge-margin) / 3);
+	margin-right: calc(-1 * var(--PostFooterBadge-margin) / 3);
+	padding-top: calc(var(--PostFooterBadge-margin) / 6);
+	padding-bottom: calc(var(--PostFooterBadge-margin) / 6);
+	padding-left: calc(var(--PostFooterBadge-margin) / 3);
+	padding-right: calc(var(--PostFooterBadge-margin) / 3);
 }

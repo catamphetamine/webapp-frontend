@@ -23,7 +23,7 @@ import {
 
 import {
 	isTouchDevice,
-	isMediumScreenOrLarger
+	isMediumScreenSizeOrLarger
 } from './DeviceInfo'
 
 import PicturePlugin from './Slideshow.Picture'
@@ -147,10 +147,14 @@ class Slideshow extends React.Component {
 	constructor(props) {
 		super(props)
 
-		const { i, children: slides } = this.props
+		const { i, inline, children: slides } = this.props
 
-		this.state.i = i
-		this.state.slidesShown = new Array(slides.length)
+		this.state = {
+			i,
+			slidesShown: new Array(slides.length),
+			scale: this.getScaleForSlide(i),
+			slideIndexAtWhichTheSlideshowIsBeingOpened: inline ? undefined : i
+		}
 
 		this.markPicturesShown(i)
 	}
@@ -311,7 +315,7 @@ class Slideshow extends React.Component {
 			i,
 			// Reset slide display mode.
 			scale: this.getScaleForSlide(i),
-			slideshowIsBeingOpenedWithSlideIndex: undefined
+			slideIndexAtWhichTheSlideshowIsBeingOpened: undefined
 		}, () => {
 			// this.onShowSlide()
 			this.focus(direction)
@@ -343,6 +347,11 @@ class Slideshow extends React.Component {
 	getScaleForSlide(i) {
 		const { children: slides } = this.props
 		const slide = slides[i]
+		// This error handling case is specifically for `new Slideshow()`
+		// case when `this.state` is `undefined`.
+		if (!slide) {
+			throw new Error(`Slide #${i} not found`)
+		}
 		const plugin = this.getPluginForSlide(slide)
 		const minInitialScale = plugin.minInitialScale
 		if (!minInitialScale) {
@@ -1275,7 +1284,7 @@ class Slideshow extends React.Component {
 	}
 
 	isSmallScreen() {
-		return !isMediumScreenOrLarger()
+		return !isMediumScreenSizeOrLarger()
 	}
 
 	showsControls() {
@@ -1304,7 +1313,7 @@ class Slideshow extends React.Component {
 		const {
 			i,
 			slidesShown,
-			slideshowIsBeingOpenedWithSlideIndex,
+			slideIndexAtWhichTheSlideshowIsBeingOpened,
 			showControls
 		} = this.state
 
@@ -1377,7 +1386,7 @@ class Slideshow extends React.Component {
 								className={classNames('rrui__slideshow__slide', {
 									'rrui__slideshow__slide--current': i === j
 								})}>
-								{slidesShown[j] && this.renderSlide(slide, j, slideshowIsBeingOpenedWithSlideIndex === j)}
+								{slidesShown[j] && this.renderSlide(slide, j, slideIndexAtWhichTheSlideshowIsBeingOpened === j)}
 							</li>
 						))}
 					</ul>
@@ -1552,11 +1561,6 @@ class Slideshow extends React.Component {
 			style: this.getScaleStyle(j)
 			// shouldUpscaleSmallSlides: this.shouldUpscaleSmallSlides()
 		})
-	}
-
-	state = {
-		scale: this.getScaleForSlide(this.props.i),
-		slideshowIsBeingOpenedWithSlideIndex: !this.props.inline && this.props.i
 	}
 }
 

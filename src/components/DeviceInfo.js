@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import throttle from 'lodash/throttle'
 
 import {
@@ -8,6 +9,7 @@ import {
 
 let _isTouchDevice = false
 let screenSize
+let screenWidth
 
 export default class DeviceInfo extends React.Component {
 	componentDidMount() {
@@ -24,7 +26,12 @@ export default class DeviceInfo extends React.Component {
 	onWindowResize = throttle((event) => this.onResize(), 100)
 
 	onResize = () => {
+		const { onScreenWidthChange } = this.props
+		screenWidth = getViewportWidth()
 		screenSize = getScreenSize(getViewportWidth() * getViewportHeight())
+		if (onScreenWidthChange) {
+			onScreenWidthChange(screenWidth)
+		}
 	}
 
 	onTouchStart = () => {
@@ -35,6 +42,24 @@ export default class DeviceInfo extends React.Component {
 	render() {
 		return null
 	}
+}
+
+DeviceInfo.propTypes = {
+	onScreenWidthChange: PropTypes.func
+}
+
+// Must be equal to `$screen-xl-min` in `grid.mixins.css`
+const SCREEN_WIDTH_XL = 1765
+
+// Must be equal to `$screen-l-min` in `grid.mixins.css`
+const SCREEN_WIDTH_L = 1261
+
+export function isLargeScreenOrLarger(screenWidth) {
+	return screenWidth >= SCREEN_WIDTH_L
+}
+
+export function isExtraLargeScreenOrLarger(screenWidth) {
+	return screenWidth >= SCREEN_WIDTH_XL
 }
 
 // http://iosres.com/
@@ -57,10 +82,10 @@ export function isTouchDevice() {
 	return _isTouchDevice
 }
 
-export function isLargeScreenOrLarger() {
+export function isLargeScreenSizeOrLarger(screenSize) {
 	return screenSize === 'L'
 }
 
-export function isMediumScreenOrLarger() {
-	return screenSize === 'M' || isLargeScreenOrLarger()
+export function isMediumScreenSizeOrLarger() {
+	return screenSize === 'M' || isLargeScreenSizeOrLarger()
 }

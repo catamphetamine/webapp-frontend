@@ -1,7 +1,7 @@
 @import "../styles/common";
 
 .post__video {
-	margin-top: var(--post-content-vertical-spacing);
+	margin-top: var(--PostContent-margin);
 }
 
 .post__video-title {
@@ -13,6 +13,6 @@
 
 .post__video:last-child {
 	.post__video-title {
-		margin-bottom: calc(-1 * var(--post-text-vertical-space-adjustment));
+		margin-bottom: calc(-1 * var(--Post-textLineHeightBottomSpace));
 	}
 }

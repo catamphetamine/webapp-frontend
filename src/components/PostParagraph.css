@@ -2,11 +2,11 @@
 	/* Textual content has some inherent bottom spacing due to line height.
 	   Other content (attachment thumbnails, embedded pictures and videos)
 	   doesn't have such extra visual spacing. Therefore reduce it for text. */
-	margin-top: calc(var(--post-content-vertical-spacing) - var(--post-text-vertical-space-adjustment));
-	margin-bottom: calc(-1 * var(--post-text-vertical-space-adjustment));
+	margin-top: calc(var(--PostContent-margin) - var(--Post-textLineHeightBottomSpace));
+	margin-bottom: calc(-1 * var(--Post-textLineHeightBottomSpace));
 }
 
 .post__paragraph + .post__paragraph,
 .post__paragraph + .post__block {
-	margin-top: var(--post-content-vertical-spacing);
+	margin-top: var(--PostContent-margin);
 }

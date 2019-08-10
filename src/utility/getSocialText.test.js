@@ -24,7 +24,7 @@ describe('getSocialText', () => {
 					}
 				}]
 			}),
-			'Zooey Deschanel (@zooeydeschanel): My favorite cat from tonight\'s episode- a true winner. #newgirl'
+			'Zooey Deschanel (@zooeydeschanel): «My favorite cat from tonight\'s episode- a true winner. #newgirl»'
 		)
 	})
 
@@ -47,7 +47,7 @@ describe('getSocialText', () => {
 					}
 				}]
 			}),
-			'Zooey Deschanel: My favorite cat from tonight\'s episode- a true winner. #newgirl'
+			'Zooey Deschanel: «My favorite cat from tonight\'s episode- a true winner. #newgirl»'
 		)
 	})
 

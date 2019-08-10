@@ -4,10 +4,23 @@
 	--MenuIcon-padding: calc(var(--MenuIcon-width) / 3.5);
 	display: flex;
 	margin: 0;
-	margin-left: calc(-1 * var(--MenuIcon-padding));
-	margin-right: calc(-1 * var(--MenuIcon-padding));
 	padding: 0;
 	list-style: none;
+	/* "Negative" margins when set directly on `.menu`
+	   cause issues when used on left/right side:
+	   they stretch page width beyond `100%`
+	   if `padding-left`/`padding-right` is set on `.menu`.
+	   Instead, "negative" margins are set on `<li/>`s below. */
+	/*
+	margin-left: calc(-1 * var(--MenuIcon-padding));
+	margin-right: calc(-1 * var(--MenuIcon-padding));
+	*/
+	> li:first-child {
+		margin-left: calc(-1 * var(--MenuIcon-padding));
+	}
+	> li:last-child {
+		margin-right: calc(-1 * var(--MenuIcon-padding));
+	}
 }
 
 .menu-item-container {
@@ -48,7 +61,6 @@
 }
 
 .menu-item--xl {
-	padding: 0;
 	.menu-item__icon {
 		width: calc(var(--MenuIcon-width) + var(--MenuIcon-padding));
 		height: calc(var(--MenuIcon-width) + var(--MenuIcon-padding));
@@ -56,12 +68,11 @@
 }
 
 .menu-item--xxl {
-	padding: 0;
 	.menu-item__icon {
-		width: calc(var(--MenuIcon-width) + var(--MenuIcon-padding) + var(--MenuIcon-width) / 7);
-		height: calc(var(--MenuIcon-width) + var(--MenuIcon-padding) + var(--MenuIcon-width) / 7);
-		margin-left: calc(-1 * var(--MenuIcon-width) / 7);
-		margin-right: calc(-1 * var(--MenuIcon-width) / 7);
+		width: calc(var(--MenuIcon-width) + var(--MenuIcon-padding) + var(--MenuIcon-width) / 4);
+		height: calc(var(--MenuIcon-width) + var(--MenuIcon-padding) + var(--MenuIcon-width) / 4);
+		margin-left: calc(-1 * var(--MenuIcon-width) / 6);
+		margin-right: calc(-1 * var(--MenuIcon-width) / 6);
 	}
 }
 

@@ -1,7 +1,8 @@
 {
 	"languageName": "Русский",
 	"notifications": {
-		"title": "Уведомления"
+		"title": "Уведомления",
+		"empty": "Нет новых уведомлений"
 	},
 	"darkMode": "Ночной режим",
 	"settings": {

@@ -4,6 +4,7 @@ import classNames from 'classnames'
 import { FadeInOut, ActivityIndicator } from 'react-responsive-ui'
 
 import { getViewportWidth } from '../utility/dom'
+import { getThumbnailSize } from '../utility/post/attachment'
 import SlideshowPicture from './Slideshow.Picture'
 import ButtonOrLink from './ButtonOrLink'
 import Picture from './Picture'
@@ -36,7 +37,7 @@ export default function PostAttachment({
 }) {
 	const [isRevealed, setIsRevealed] = useState(attachment.spoiler ? false : true)
 	const [isLoading, loadOnClick] = useLoadOnClick(attachment)
-	const picture = attachment.type === 'video' ? attachment.video.picture : attachment.picture
+	const picture = getPicture(attachment)
 	const isLandscape = picture.width >= picture.height
 	async function onPictureClick(event) {
 		await loadOnClick(event)
@@ -46,6 +47,10 @@ export default function PostAttachment({
 		if (onClick) {
 			onClick(event)
 		}
+	}
+	if (useSmallestThumbnail && !width && !height) {
+		width = getThumbnailSize(attachment).width
+		height = getThumbnailSize(attachment).height
 	}
 	// ref={ref}
 	return (
@@ -190,6 +195,11 @@ function getAttachmentUrl(attachment) {
 	}
 }
 
-export function getPicture(attachment) {
-	return attachment.type === 'video' ? attachment.video.picture : attachment.picture
+function getPicture(attachment) {
+	switch (attachment.type) {
+		case 'picture':
+			return attachment.picture
+		case 'video':
+			return attachment.video.picture
+	}
 }

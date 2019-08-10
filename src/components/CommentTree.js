@@ -228,6 +228,7 @@ export default class CommentTree extends React.Component {
 			parentComment,
 			component: Component,
 			getComponentProps,
+			className,
 			// Rest.
 			initialState,
 			onStateChange,
@@ -266,6 +267,10 @@ export default class CommentTree extends React.Component {
 				<Component
 					{...rest}
 					{...componentProps}
+					className={classNames(className, {
+						'comment-tree__comment--expanded': showReplies,
+						'comment-tree__comment--nested': parentComment
+					})}
 					comment={comment}
 					parentComment={parentComment}
 					postRef={this.post}

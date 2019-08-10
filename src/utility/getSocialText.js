@@ -3,6 +3,10 @@
 import getAttachmentTextWithoutSocial from './getAttachmentTextWithoutSocial'
 import getAttachmentMessage from './getAttachmentMessage'
 
+// These may be passed as `options`.
+const LEFT_QUOTE = '«'
+const RIGHT_QUOTE = '»'
+
 /**
  * Generates a text-only representation of a `social`.
  * @param  {object} social
@@ -32,7 +36,7 @@ function getSocialAuthorText(social) {
 
 function getSocialContentText(social, messages) {
 	if (social.content) {
-		return social.content
+		return `${LEFT_QUOTE}${social.content}${RIGHT_QUOTE}`
 	}
 	if (social.attachments) {
 		for (const attachment of social.attachments) {

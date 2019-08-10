@@ -3,21 +3,14 @@ import { trim } from './trimWhitespace'
 import searchContent from './searchContent'
 import findLastSentenceEnd from './findLastSentenceEnd'
 import splitContent from './splitContent'
+import countCharacters, {
+	AVERAGE_LINE_CHARACTERS,
+	NEW_LINE_COST
+} from './countTextBlockCharacters'
+import countIfNonTextPostBlockFits from './countIfNonTextPostBlockFits'
+import getContentBlocks from './getContentBlocks'
 
-const NEW_LINE_COST = 30
 const NEW_PARAGRAPH_COST = 60
-const EMBEDDED_ATTACHMENT_COST = 100
-const EMBEDDED_PICTURE_COST = 200
-const EMBEDDED_VIDEO_COST = 200
-const EMBEDDED_AUDIO_COST = 100
-
-// Is used to compensate for long posts with short lines.
-// Example:
-// "Ratings:
-//  8/10
-//  9/10
-//  ..."
-const AVERAGE_LINE_CHARACTERS = 80
 
 // If the total content length doesn't exceed
 // `(1 + FIT_FACTOR) * limit` then preview is not neccessary.
@@ -146,24 +139,13 @@ class PreviewGenerator {
 					}
 				}
 			} else {
-				const blockType = CONTENT_BLOCKS[block.type]
-				if (blockType) {
-					let _block = block
-					if (block.type === 'attachment') {
-						_block = this.getAttachmentById(block.attachmentId)
+				const result = countIfNonTextPostBlockFits(block, this, this.countIfFits)
+				if (result) {
+					if (result === true) {
+						trimmedBlock = block
+					} else {
+						trimmedBlock = result
 					}
-					if (_block) {
-						const result = blockType.countIfFits(_block, this.countIfFits)
-						if (result) {
-							if (result === true) {
-								trimmedBlock = block
-							} else {
-								trimmedBlock = result
-							}
-						}
-					}
-				} else {
-					console.error(`Unsupported post block type: ${block.type}`)
 				}
 			}
 			if (trimmedBlock) {
@@ -195,20 +177,10 @@ class PreviewGenerator {
 							restContentExceedsThreshold = true
 						}
 					} else {
-						const blockType = CONTENT_BLOCKS[block.type]
 						restContentExceedsThreshold = true
-						if (blockType) {
-							let _block = block
-							if (block.type === 'attachment') {
-								_block = this.getAttachmentById(block.attachmentId)
-							}
-							if (_block) {
-								if (blockType.countIfFits(_block, countIfFits) === true) {
-									restContentExceedsThreshold = false
-								}
-							}
-						} else {
-							console.error(`Unsupported post block type: ${block.type}`)
+						const result = countIfNonTextPostBlockFits(block, this, this.countIfFits)
+						if (result === true) {
+							restContentExceedsThreshold = false
 						}
 					}
 					if (restContentExceedsThreshold) {
@@ -224,12 +196,18 @@ class PreviewGenerator {
 				}
 				// Add "Read more" button and return the preview.
 				const hadNewLinesAtTheEnd = trimmedBlock && typeof trimmedBlock !== 'string' && trim(trimmedBlock, 'right')
+				let isEmpty
 				if (trimmedBlock && !hadNewLinesAtTheEnd) {
 					// Append "Read more" button to the end of the last paragraph.
 					this.preview[this.preview.length - 1] = addReadMore(trimmedBlock)
 				} else {
+					isEmpty = this.preview.length === 0
 					// Append "Read more" button in a new paragraph.
 					this.preview.push({ type: 'read-more' })
+				}
+				// A preview can't be empty.
+				if (isEmpty) {
+					this.preview.unshift(getContentBlocks(this.content)[0])
 				}
 				return this.preview
 			}
@@ -425,16 +403,6 @@ class PreviewGenerator {
 		}
 		return startFromIndex
 	}
-
-	getAttachmentById(id) {
-		const attachment = this.attachments.find(_ => _.id === id)
-		if (!attachment) {
-			console.error(`Attachment ${id} not found`)
-			console.error(this.content)
-			console.error(this.attachments)
-		}
-		return attachment
-	}
 }
 
 function addReadMore(content) {
@@ -447,132 +415,10 @@ function addReadMore(content) {
 	// return content.concat({ type: 'read-more' })
 }
 
-function countCharacters(content, mode, getCharactersFromLineStart, setCharactersFromLineStart) {
-	if (mode === 'points' && !getCharactersFromLineStart) {
-		let charactersFromLineStart = 0
-		getCharactersFromLineStart = () => charactersFromLineStart
-		setCharactersFromLineStart = (count) => charactersFromLineStart = count
-	}
-	if (Array.isArray(content)) {
-		let count = 0
-		for (const part of content) {
-			// Calculate characters count.
-			let characterCount = countCharacters(part, mode, getCharactersFromLineStart, setCharactersFromLineStart)
-			// Compensate for short lines of text.
-			if (mode === 'points') {
-				if (part === '\n') {
-					if (getCharactersFromLineStart() < AVERAGE_LINE_CHARACTERS) {
-						characterCount += AVERAGE_LINE_CHARACTERS - getCharactersFromLineStart()
-					}
-					setCharactersFromLineStart(0)
-				}
-			}
-			// Count in characters count.
-			count += characterCount
-		}
-		return count
-	} else if (typeof content === 'string') {
-		if (content === '\n') {
-			if (mode === 'points') {
-				return NEW_LINE_COST
-			} else if (mode === 'characters') {
-				return 0
-			}
-		}
-		if (mode === 'points') {
-			setCharactersFromLineStart(getCharactersFromLineStart() + content.length)
-		}
-		return content.length
-	} else if (content.content) {
-		return countCharacters(content.content, mode, getCharactersFromLineStart, setCharactersFromLineStart)
-	} else if (content.type === 'emoji') {
-		return 0
-	} else {
-		console.error(`No "content" is present for an inline-level paragraph part:`)
-		console.error(content)
-	}
-}
-
 function trimTextAtIndex(text, index, type) {
 	text = text.slice(0, index)
 	if (type === 'any' || type === 'whitespace') {
 		text += '…'
 	}
 	return text
-}
-
-const CONTENT_BLOCKS = {
-	'attachment': {
-		countIfFits(attachment, countIfFits) {
-			return countIfFits(getAttachmentCharacterPoints(attachment), 1)
-		}
-	},
-	'heading': {
-		countIfFits(block, countIfFits) {
-			return countIfFits(block.content)
-		}
-	},
-	'code': {
-		countIfFits(block, countIfFits) {
-			return countIfFits(block.content)
-		}
-	},
-	'list': {
-		countIfFits(block, countIfFits) {
-			const trimmedItems = []
-			for (const item of block.items) {
-				if (!countIfFits(item)) {
-					break
-				}
-				trimmedItems.push(item)
-				if (!countIfFits('\n')) {
-					break
-				}
-			}
-			if (trimmedItems.length === block.items.length) {
-				return true
-			} else if (trimmedItems.length > 0 && trimmedItems.length < block.items.length) {
-				return {
-					...block,
-					items: trimmedItems
-				}
-			}
-		}
-	},
-	'quote': {
-		countIfFits(block, countIfFits) {
-			return countIfFits(block.source) && countIfFits(block.content)
-		}
-	}
-}
-
-function getAttachmentCharacterPoints(attachment) {
-	switch (attachment.type) {
-		case 'picture':
-			return EMBEDDED_PICTURE_COST
-		case 'video':
-			return EMBEDDED_VIDEO_COST
-		case 'audio':
-			return EMBEDDED_AUDIO_COST
-		case 'social':
-			const social = attachment.social
-			let points = EMBEDDED_ATTACHMENT_COST
-			if (social.author.id) {
-				points += countCharacters(social.author.id, 'points')
-			}
-			if (social.author.name) {
-				points += countCharacters(social.author.name, 'points')
-			}
-			if (social.content) {
-				points += countCharacters(social.content, 'points')
-			}
-			if (social.attachments) {
-				for (const attachment of social.attachments) {
-					points += getAttachmentCharacterPoints(attachment)
-				}
-			}
-			return points
-		default:
-			return EMBEDDED_ATTACHMENT_COST
-	}
 }

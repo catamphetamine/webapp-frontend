@@ -1,12 +1,15 @@
 @import "../styles/common";
 
-.rrui__picture
-{
+.rrui__picture {
 	position: relative;
 	border-radius: inherit;
 	user-select: none;
 	/* If the `<img/>` image is blurred then `overflow: hidden`
 	   prevents it bleeding over the edges. */
+	/* `overflow: hidden` also prevents the possible overflow
+	   of `.rrui__picture` with `<img/>` when there're several
+	   `sizes` each of which have `width` and `height` rounded
+	   and therefore have slightly different aspect ratios. */
 	overflow: hidden;
 	/* The container element is focusable. */
 	outline: none;
@@ -53,6 +56,9 @@
 }
 
 .rrui__picture__image {
+	/* Setting `position: relative` so that it's rendered above `.rrui__picture__status`
+	   so that the clickable element is the `<img/>` and not the `<div/>`. */
+	position: relative;
 	display: block;
 	width: 100%;
 	height: auto;
@@ -67,10 +73,19 @@
 	left: 0;
 }
 
-.rrui__picture__placeholder {
+.rrui__picture__status {
 	width: 100%;
 	height: 100%;
 	overflow: hidden;
+}
+
+/* Placeholder stretches the `.rrui__picture`
+   so the `<img/>` and the status indicator
+   are `position: absolute`. */
+.rrui__picture__status,
+.rrui__picture__image {
+	position: absolute;
+	top: 0;
 }
 
 .rrui__picture__loading-indicator,

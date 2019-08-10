@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 
+import PostQuoteMarker from './PostQuoteMarker'
 import PostAttachments from './PostAttachments'
 
 import { social } from '../PropTypes'
@@ -10,6 +11,7 @@ import Instagram from '../../assets/images/icons/services/instagram.svg'
 import Twitter from '../../assets/images/icons/services/twitter.svg'
 
 import './PostSocial.css'
+import './PostQuoteBlock.css'
 
 export default function PostSocial({
 	social,
@@ -25,8 +27,10 @@ export default function PostSocial({
 		</span>
 	)
 	return (
-		<article className="post__social post__quote-block post__quote-block__content">
-			<div className="post__quote-block__marker"/>
+		<article className="post__social">
+			<div className="post__social__quote-marker-wrapper">
+				<PostQuoteMarker/>
+			</div>
 			<header className="post__social__header">
 				{social.author.picture &&
 					<Link to={social.author.url}>

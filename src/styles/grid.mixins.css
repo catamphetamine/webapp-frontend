@@ -1,3 +1,4 @@
+/* If changing these values also change them in `../components/DeviceInfo.js`. */
 $screen-xxs-max : 587px; /* 14 * 42 - 1 */
 $screen-xs-min : 588px; /* 14 * 42 */
 $screen-xs-max : 700px; /* 14 * 50 */
@@ -87,8 +88,20 @@ $screen-xl-min : 1765px;
   }
 }
 
+@define-mixin m-l {
+  @media all and (min-width: $screen-m-min) and (max-width: $screen-l-max) {
+    @mixin-content;
+  }
+}
+
 @define-mixin l-plus {
   @media all and (min-width: $screen-l-min) {
+    @mixin-content;
+  }
+}
+
+@define-mixin xl-plus {
+  @media all and (min-width: $screen-xl-min) {
     @mixin-content;
   }
 }

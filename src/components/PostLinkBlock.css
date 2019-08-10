@@ -1,6 +1,6 @@
 .post__link-block {
 	display: block;
-	margin-top: var(--post-content-vertical-spacing);
+	margin-top: var(--PostContent-margin);
 	padding: var(--unit);
 	color: inherit;
 	background-color: #fcfcfc;

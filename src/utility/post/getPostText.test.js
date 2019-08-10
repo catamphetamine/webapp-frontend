@@ -316,7 +316,7 @@ describe('getPostText', () => {
 					video: 'Video'
 				}
 			},
-			'Abc\n\nVideo Title\n\nDef\n\nPicture Title\n\nGhi'
+			'Abc\n\n«Video Title»\n\nDef\n\n«Picture Title»\n\nGhi'
 		)
 	})
 
@@ -450,7 +450,7 @@ describe('getPostText', () => {
 				},
 				skipUntitledAttachments: true
 			},
-			'Abc\n\nDef\n\nPicture Title\n\nGhi'
+			'Abc\n\nDef\n\n«Picture Title»\n\nGhi'
 		)
 	})
 
@@ -488,7 +488,7 @@ describe('getPostText', () => {
 				},
 				skipAttachments: true
 			},
-			'Video Title'
+			'«Video Title»'
 		)
 	})
 
@@ -603,7 +603,7 @@ describe('getPostText', () => {
 					video: 'Video'
 				}
 			},
-			'Abc\n\nZooey Deschanel (@zooeydeschanel): My favorite cat from tonight\'s episode- a true winner. #newgirl'
+			'Abc\n\nZooey Deschanel (@zooeydeschanel): «My favorite cat from tonight\'s episode- a true winner. #newgirl»'
 		)
 	})
 
