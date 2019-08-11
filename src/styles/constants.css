@@ -64,7 +64,10 @@
 	/* Some magic number seen on the Internet. */
 	--line-height : 1.52947;
 
-	--Header-height : 0;
+	--Header-height: 0px;
+	@mixin m-plus {
+		--Header-height: calc(var(--unit) * 3);
+	}
 
 	/*
 	Mobile font size must be at least 16px

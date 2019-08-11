@@ -6,16 +6,21 @@
 	left  : 0;
 	right : 0;
 	z-index : 1;
+	height: var(--Header-height);
 	color : var(--Header-color);
 	background-color : var(--Header-backgroundColor);
 	border-bottom : 1px solid var(--Header-borderColor);
+
+	.container {
+    height: 100%;
+	}
 }
 
 .webpage__header__row {
-	display : flex;
-	justify-content : space-between;
-	align-items : center;
-	height : var(--Header-height);
+  height: 100%;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 }
 
 .menu-button {

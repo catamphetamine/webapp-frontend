@@ -1,9 +1,5 @@
 @import "../styles/common";
 
-@mixin m-plus {
-	--Header-height: calc(var(--unit) * 3);
-}
-
 /* Stretches the page to 100% height */
 .webpage
 {
