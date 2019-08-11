@@ -26,6 +26,20 @@ const MIME_TYPES = {
 }
 
 /**
+ * An index to look up file extension by MIME-type.
+ * @type {Object}
+ */
+const EXTENSIONS = {}
+for (const extension of Object.keys(MIME_TYPES)) {
+	const mimeType = MIME_TYPES[extension]
+	// There may be duplicates.
+	// Example: ".jpg" and ".jpeg" — will skip ".jpeg".
+	if (!EXTENSIONS[mimeType]) {
+		EXTENSIONS[mimeType] = extension
+	}
+}
+
+/**
  * Gets MIME type by file URL (or filesystem path, or filename).
  * @param  {string} url File URL, or filesystem path, or filename, or just the "ext" part (dot extension).
  * @return {string} [mimeType] MIME type
@@ -39,4 +53,13 @@ export default function getMimeType(url) {
 	}
 	const extension = url.slice(dotIndex + 1, endIndex)
 	return MIME_TYPES[extension]
+}
+
+/**
+ * Look up file extension by MIME-type.
+ * @param {string} mimeType — MIME type.
+ * @return {string} [extension]
+ */
+export function getExtension(mimeType) {
+	return EXTENSIONS[mimeType]
 }

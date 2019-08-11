@@ -122,24 +122,58 @@ function clonePost(post) {
 // neither for the picture not for the thumbnail
 // in `/catalog.json` API response (which is a bug).
 // http://lynxhub.com/lynxchan/res/722.html#q984
+const EXT_REGEXP = /\.[a-z]+$/
 function fixPostAttachmentThumbnailSizes(attachments) {
 	return Promise.all(attachments.map(async (attachment) => {
 		switch (attachment.type) {
 			case 'picture':
-				const [
-					originalSize,
-					thumbnailSize
-				] = await Promise.all([
-					getImageSize(attachment.picture.url),
-					getImageSize(attachment.picture.sizes[0].url)
-				])
-				attachment.picture = {
-					...attachment.picture,
-					...originalSize,
-					sizes: [{
-						...attachment.picture.sizes[0],
-						...thumbnailSize
-					}]
+				// Not using `Promise.all` here because the URLs
+				// aren't guaranteed to be valid.
+				// (the original image URL is not always guessed)
+				//
+				// Load the thumbnail first for better UX.
+				let thumbnailSize
+				const thumbnailSizeUrl = attachment.picture.sizes[0].url
+				try {
+					thumbnailSize = await getImageSize(thumbnailSizeUrl)
+				} catch (error) {
+					console.error(error)
+				}
+				if (thumbnailSize) {
+					attachment.picture = {
+						...attachment.picture,
+						sizes: [{
+							...attachment.picture.sizes[0],
+							...thumbnailSize
+						}]
+					}
+				}
+				// Images from `kohlchan.net` before moving to `lynxchan` in May 2019
+				// have incorrect URLs: they don't have the extension part.
+				// For example:
+				// Exists: https://kohlchan.net/.media/82b9c3a866f6233f1c0253d3eb819ea5-imagepng
+				// Not exists: https://kohlchan.net/.media/82b9c3a866f6233f1c0253d3eb819ea5-imagepng.png
+				let originalSize
+				let originalSizeUrl = attachment.picture.url
+				try {
+					originalSize = await getImageSize(originalSizeUrl)
+				} catch (error) {
+					console.error(error)
+					try {
+						// Try an image with no file extension.
+						// (kohlchan.net workaround).
+						originalSizeUrl = attachment.picture.url.replace(EXT_REGEXP, '')
+						originalSize = await getImageSize(originalSizeUrl)
+					} catch (error) {
+						console.error(error)
+					}
+				}
+				if (originalSize) {
+					attachment.picture = {
+						...attachment.picture,
+						...originalSize,
+						url: originalSizeUrl
+					}
 				}
 				break
 		}
