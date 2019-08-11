@@ -64,19 +64,16 @@
 	/* Some magic number seen on the Internet. */
 	--line-height : 1.52947;
 
-	--Header-height: 0px;
-	@mixin m-plus {
-		--Header-height: calc(var(--unit) * 3);
-	}
+	--Header-height: calc(var(--unit) * 3);
 
 	/*
-	Mobile font size must be at least 16px
+	Mobile font size must be at least `16px`
 	to prevent automatic zoom on input focus.
 	*/
-	--font-size-xxs: 16px;
-	--font-size-xs: 18px;
-	--font-size-s: 19px;
-	--font-size-m: 20px;
+	--Document-fontSize--xxs: 16px;
+	--Document-fontSize--xs: 18px;
+	--Document-fontSize--s: 19px;
+	--Document-fontSize--m: 20px;
 
 	--preloading-screen-z-index : 10;
 	--slideshow-z-index : 1;

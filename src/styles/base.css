@@ -28,19 +28,19 @@ body
 html, body {
 	font-family : var(--Document-fontFamily);
 	@mixin xxs {
-		font-size : var(--font-size-xxs);
+		font-size : var(--Document-fontSize--xxs);
 	}
 	@mixin xs {
-		font-size : var(--font-size-xs);
+		font-size : var(--Document-fontSize--xs);
 	}
 	@mixin s {
-		font-size : var(--font-size-s);
+		font-size : var(--Document-fontSize--s);
 	}
 	@mixin m {
-		font-size : var(--font-size-m);
+		font-size : var(--Document-fontSize--m);
 	}
 	@mixin l-plus {
-		font-size : var(--font-size-m);
+		font-size : var(--Document-fontSize--m);
 	}
 }
 

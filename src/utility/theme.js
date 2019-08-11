@@ -53,7 +53,7 @@ export function parseThemeCSS(style) {
  * @return {string}
  * @example
  * // Outputs: '16px'
- * getCSSVariableValue('--font-size')
+ * getCSSVariableValue('--Document-fontSize--xxs')
  */
 export function getCSSVariableValue(name) {
 	// `getPropertyValue()` works in IE for some reason.
@@ -64,7 +64,7 @@ export function getCSSVariableValue(name) {
  * Resets a previously set CSS variable.
  * @param  {string} name
  * @example
- * resetCSSVariable('--font-size')
+ * resetCSSVariable('--Document-fontSize--xxs')
  */
 export function resetCSSVariable(name) {
 	// `removeProperty()` works in IE for some reason.
@@ -77,7 +77,7 @@ export function resetCSSVariable(name) {
  * @param  {string} value
  * @return
  * @example
- * setCSSVariableValue('--font-size', '16px')
+ * setCSSVariableValue('--Document-fontSize--xxs', '16px')
  */
 export function setCSSVariable(name, value) {
 	// `setProperty()` works in IE for some reason.
