@@ -126,13 +126,20 @@ function fixPostAttachmentThumbnailSizes(attachments) {
 	return Promise.all(attachments.map(async (attachment) => {
 		switch (attachment.type) {
 			case 'picture':
+				const [
+					originalSize,
+					thumbnailSize
+				] = await Promise.all([
+					getImageSize(attachment.picture.url),
+					getImageSize(attachment.picture.sizes[0].url)
+				])
 				attachment.picture = {
 					...attachment.picture,
-					...(await getImageSize(attachment.picture.url))
-				}
-				attachment.picture.sizes[0] = {
-					...attachment.picture.sizes[0],
-					...(await getImageSize(attachment.picture.sizes[0].url))
+					...originalSize,
+					sizes: [{
+						...attachment.picture.sizes[0],
+						...thumbnailSize
+					}]
 				}
 				break
 		}
