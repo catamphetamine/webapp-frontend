@@ -142,6 +142,8 @@ export default class Post extends React.Component {
 			// `fixAttachmentThumbnailSizes` gets the correct image sizes
 			// but for some reason React doesn't apply the `style` changes to the DOM.
 			// https://github.com/facebook/react/issues/16357
+			// `<PostAttachment/>` does pass the correct `style` to `<ButtonOrLink/>`
+			// but the `style` doesn't get applied in the DOM.
 			fixAttachmentThumbnailSizes,
 			onUpdatePost: (postWithLinksExpanded, callback) => {
 				if (this._isMounted) {
