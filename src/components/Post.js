@@ -139,6 +139,9 @@ export default class Post extends React.Component {
 			onPostContentChange,
 			messages: genericMessages,
 			commentLengthLimit,
+			// `fixAttachmentThumbnailSizes` gets the correct image sizes
+			// but for some reason React doesn't apply the `style` changes to the DOM.
+			// https://github.com/facebook/react/issues/16357
 			fixAttachmentThumbnailSizes,
 			onUpdatePost: (postWithLinksExpanded, callback) => {
 				if (this._isMounted) {
