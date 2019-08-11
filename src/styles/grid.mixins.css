@@ -9,6 +9,8 @@ $screen-m-max : 1260px; /* 14 * 90 */
 $screen-l-min : 1261px; /* "l" is for "1280x1024" monitors (scrollbar is about 17px in width). */
 $screen-l-max : 1764px; /* $screen-s-max * 2 */
 $screen-xl-min : 1765px;
+$screen-xl-max : 2559px;
+$screen-xxl-min : 2560px; /* "xxl" is for "1440p" monitors (resolution: 2560 × 1440). */
 
 @define-mixin xxs {
   @media all and (max-width: $screen-xxs-max) {
@@ -41,7 +43,7 @@ $screen-xl-min : 1765px;
 }
 
 @define-mixin xl {
-  @media all and (min-width: $screen-xl-min) {
+  @media all and (min-width: $screen-xl-min) and (max-width: $screen-xl-max) {
     @mixin-content;
   }
 }
@@ -100,8 +102,20 @@ $screen-xl-min : 1765px;
   }
 }
 
+@define-mixin l-xl {
+  @media all and (min-width: $screen-l-min) and (max-width: $screen-xl-max) {
+    @mixin-content;
+  }
+}
+
 @define-mixin xl-plus {
   @media all and (min-width: $screen-xl-min) {
+    @mixin-content;
+  }
+}
+
+@define-mixin xxl-plus {
+  @media all and (min-width: $screen-xxl-min) {
     @mixin-content;
   }
 }
