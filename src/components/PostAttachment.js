@@ -4,7 +4,6 @@ import classNames from 'classnames'
 import { FadeInOut, ActivityIndicator } from 'react-responsive-ui'
 
 import { getViewportWidth } from '../utility/dom'
-import { getThumbnailSize } from '../utility/post/attachment'
 import SlideshowPicture from './Slideshow.Picture'
 import ButtonOrLink from './ButtonOrLink'
 import Picture from './Picture'
@@ -48,11 +47,6 @@ export default function PostAttachment({
 			onClick(event)
 		}
 	}
-	if (useSmallestThumbnail && !width && !height) {
-		width = getThumbnailSize(attachment).width
-		height = getThumbnailSize(attachment).height
-	}
-	// ref={ref}
 	return (
 		<Picture
 			border
