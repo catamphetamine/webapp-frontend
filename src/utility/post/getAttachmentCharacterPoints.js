@@ -1,4 +1,4 @@
-import { AVERAGE_LINE_CHARACTERS } from './countTextBlockCharacters'
+import countTextBlockCharacters, { AVERAGE_LINE_CHARACTERS } from './countTextBlockCharacters'
 
 const EMBEDDED_ATTACHMENT_COST = AVERAGE_LINE_CHARACTERS * 3
 const EMBEDDED_PICTURE_COST = AVERAGE_LINE_CHARACTERS * 6
@@ -17,13 +17,13 @@ export default function getAttachmentCharacterPoints(attachment) {
 			const social = attachment.social
 			let points = EMBEDDED_ATTACHMENT_COST
 			if (social.author.id) {
-				points += countCharacters(social.author.id, 'points')
+				points += countTextBlockCharacters(social.author.id, 'points')
 			}
 			if (social.author.name) {
-				points += countCharacters(social.author.name, 'points')
+				points += countTextBlockCharacters(social.author.name, 'points')
 			}
 			if (social.content) {
-				points += countCharacters(social.content, 'points')
+				points += countTextBlockCharacters(social.content, 'points')
 			}
 			if (social.attachments) {
 				for (const attachment of social.attachments) {
