@@ -166,6 +166,10 @@ function fixPostAttachmentThumbnailSizes(attachments) {
 						originalSize = await getImageSize(originalSizeUrl)
 					} catch (error) {
 						console.error(error)
+						// Original image URL not guessed.
+						// Use thumbnail image as a stub.
+						originalSize = thumbnailSize
+						originalSizeUrl = thumbnailSizeUrl
 					}
 				}
 				if (originalSize) {
