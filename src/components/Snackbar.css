@@ -7,6 +7,7 @@
 }
 
 .rrui__snackbar {
+	border-radius: var(--Notification-borderRadius);
 	box-shadow: 0 0 0 var(--Notification-borderWidth) var(--Notification-borderColor);
 	@mixin xxs {
 		--rrui-snackbar-height: calc(var(--unit) * 3);

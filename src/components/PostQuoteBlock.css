@@ -11,8 +11,16 @@
 	margin-top: -1px;
 	margin-bottom: -1px;
 	*/
-	border-top: 1px solid var(--PostQuote-borderColor);
-	border-bottom: 1px solid var(--PostQuote-borderColor);
+	border-top: var(--PostQuote-borderWidth) solid var(--PostQuote-borderColor);
+	border-bottom: var(--PostQuote-borderWidth) solid var(--PostQuote-borderColor);
+}
+
+/* `--PostQuote-spacing` is used in `captchan` in
+   "Neon Genesis Evangelion" theme to add some spacing
+   between consequtive post quotes because otherwise
+   they'd look like a single post quote. */
+.post__quote-blocks + br + .post__quote-blocks {
+	margin-top: var(--PostQuote-spacing);
 }
 
 /* `<PostQuoteMarker/>`-related padding. */

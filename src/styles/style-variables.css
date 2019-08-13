@@ -13,6 +13,8 @@
 
 	/* Header. */
 	--Header-borderWidth: 1px;
+	--Header-color--textHover: var(--Clickable-color--text);
+	--Header-color--textActive: var(--Clickable-color--textActive);
 
 	/* Menu. */
 	--Menu-color: initial;
@@ -76,10 +78,12 @@
 	--PostQuote-color: initial;
 	--PostQuote-backgroundColor: initial;
 	--PostQuote-borderColor: transparent;
+	--PostQuote-borderWidth: 1px;
 	--PostQuote-backgroundColor--hover: var(--PostQuote-backgroundColor);
 	--PostQuote-borderColor--hover: var(--PostQuote-borderColor);
 	--PostQuote-paddingLeft: var(--Post-padding--horizontal);
 	--PostQuote-paddingRight: var(--Post-padding--horizontal);
+	--PostQuote-spacing: 0px;
 
 	/* PostQuoteMarker. */
 	--PostQuoteMarker-color: currentColor;
@@ -88,8 +92,10 @@
 	--PostQuoteMarker-padding: 0.2em;
 
 	/* HoverButton. */
+	--HoverButton-color: inherit;
 	--HoverButton-backgroundColor--pushed: var(--HoverButton-backgroundColor--active);
 	--HoverButton-borderColor--pushedFocus: var(--HoverButton-borderColor--pushedActive);
+	--HoverButton-backgroundColor--pushedActive: var(--HoverButton-backgroundColor--active);
 
 	/* CommentTree. */
 	--CommentTree-padding: var(--Post-padding--horizontal);
@@ -208,6 +214,7 @@
 	--Notification-backgroundColor: var(--Content-backgroundColor);
 	--Notification-borderColor: var(--Content-color-400);
 	--Notification-borderWidth: 1px;
+	--Notification-borderRadius: 0px;
 
 	/* Error. */
 	--Error-color: var(--critical-color-400);
@@ -279,8 +286,8 @@
 
 	/* HoverButton. */
 	--HoverButton-color--active: var(--base-color-300);
-	--HoverButton-color--pushed: var(--base-color-600);
-	--HoverButton-color--pushedActive: var(--base-color-500);
+	--HoverButton-color--pushed: var(--base-color-400);
+	--HoverButton-color--pushedActive: var(--HoverButton-color--active);
 	--HoverButton-backgroundColor: var(--gray-color-transparent);
 	--HoverButton-backgroundColor--active: var(--Content-color-200);
 	--HoverButton-borderColor: var(--Content-color-200);
