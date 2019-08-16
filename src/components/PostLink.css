@@ -1,7 +1,7 @@
 .post__link-icon {
 	position: relative;
 	top: 0.15em;
-	margin-right: 0.2em;
+	/*margin-right: 0.2em;*/
 	width: 1em;
 	height: 1em;
 	/* For some reason the icon may shrink sometimes in iOS Safari.
@@ -18,11 +18,8 @@
 /* https://snook.ca/archives/html_and_css/icon-wrap-after-text */
 .post__link-icon__wrap-fix {
 	white-space: nowrap;
-}
-
-.post__link-icon {
 	/* This "negative" margin compensates the width added by "&nbsp;". */
-	margin-right: -0.05em;
+	/*margin-right: -0.2em;*/
 }
 
 .service-icon {
