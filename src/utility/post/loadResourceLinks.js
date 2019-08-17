@@ -158,6 +158,22 @@ function fixPostAttachmentThumbnailSizes(attachments) {
 							...thumbnailSize
 						}]
 					}
+					// `fixAttachmentThumbnailSizes` gets the correct image sizes
+					// but for some reason React doesn't apply the `style` changes to the DOM.
+					// It's most likely a bug in React.
+					// https://github.com/facebook/react/issues/16357
+					// `<PostAttachment/>` does pass the correct `style` to `<ButtonOrLink/>`
+					// but the `style` doesn't get applied in the DOM.
+					// This is a workaround for that bug: applies the changes to the DOM
+					// that aren't applied by React (React will apply the changes on subsequent updates).
+					// There also might be several elements corresponding to the attachment
+					// in cases when `.post__thumbnail` is rendered, so using `document.querySelectorAll()`.
+					const thumbnails = document.querySelectorAll(`.post__attachment-thumbnail img[src="${thumbnailSizeUrl}"]`)
+					for (const thumbnail of thumbnails) {
+						const borderWidth = parseInt(getComputedStyle(thumbnail.parentNode).borderWidth)
+						thumbnail.parentNode.style.width = thumbnailSize.width + 2 * borderWidth + 'px'
+						thumbnail.parentNode.style.height = thumbnailSize.height + 2 * borderWidth + 'px'
+					}
 				}
 				// Not fetching the "original images" because that would be extra bandwidth.
 				/*
@@ -193,22 +209,6 @@ function fixPostAttachmentThumbnailSizes(attachments) {
 					}
 				}
 				*/
-				// `fixAttachmentThumbnailSizes` gets the correct image sizes
-				// but for some reason React doesn't apply the `style` changes to the DOM.
-				// It's most likely a bug in React.
-				// https://github.com/facebook/react/issues/16357
-				// `<PostAttachment/>` does pass the correct `style` to `<ButtonOrLink/>`
-				// but the `style` doesn't get applied in the DOM.
-				// This is a workaround for that bug: applies the changes to the DOM
-				// that aren't applied by React (React will apply the changes on subsequent updates).
-				// There also might be several elements corresponding to the attachment
-				// in cases when `.post__thumbnail` is rendered, so using `document.querySelectorAll()`.
-				const thumbnails = document.querySelectorAll(`.post__attachment-thumbnail img[src="${thumbnailSizeUrl}"]`)
-				for (const thumbnail of thumbnails) {
-					const borderWidth = parseInt(getComputedStyle(thumbnail.parentNode).borderWidth)
-					thumbnail.parentNode.style.width = thumbnailSize.width + 2 * borderWidth + 'px'
-					thumbnail.parentNode.style.height = thumbnailSize.height + 2 * borderWidth + 'px'
-				}
 				break
 		}
 	})).then(() => true)
