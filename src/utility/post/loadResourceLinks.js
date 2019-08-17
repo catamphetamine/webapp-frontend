@@ -176,6 +176,20 @@ function fixPostAttachmentThumbnailSizes(attachments) {
 					}
 				}
 				// Not fetching the "original images" because that would be extra bandwidth.
+				// Instead assuming the "original image" is big enough.
+				const originalSize = {}
+				const aspectRatio = thumbnailSize.width / thumbnailSize.height
+				if (thumbnailSize.width > thumbnailSize.height) {
+					originalSize.width = 1280
+					originalSize.height = Math.round(originalSize.width / aspectRatio)
+				} else {
+					originalSize.height = 1024
+					originalSize.width = Math.round(originalSize.height * aspectRatio)
+				}
+				attachment.picture = {
+					...attachment.picture,
+					...originalSize
+				}
 				/*
 				// Images from `kohlchan.net` before moving to `lynxchan` in May 2019
 				// have incorrect URLs: they don't have the extension part.
