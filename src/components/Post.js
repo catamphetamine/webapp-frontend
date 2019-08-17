@@ -42,7 +42,7 @@ export default class Post extends React.Component {
 		initialExpandContent: PropTypes.bool,
 		onExpandContent: PropTypes.func,
 		onContentDidChange: PropTypes.func,
-		onPostContentChange: PropTypes.func,
+		updateLinkedPost: PropTypes.func,
 		// `lynxchan` doesn't provide `width` and `height`
 		// neither for the picture not for the thumbnail
 		// in `/catalog.json` API response (which is a bug).
@@ -105,18 +105,28 @@ export default class Post extends React.Component {
 		this._isMounted = false
 	}
 
-	componentDidUpdate(prevProps) {
+	componentDidUpdate(prevProps, prevState) {
 		const {
 			post,
 			expandAttachments,
 			onContentDidChange
 		} = this.props
+		const {
+			postWithLinksExpanded
+		} = this.state
 		if (post !== prevProps.post) {
 			// If `post` property has changed then re-expand links.
 			this.expandLinks()
 		}
 		if (expandAttachments !== prevProps.expandAttachments) {
 			// The post height has changed due to expanding or collapsing attachments.
+			// `onContentDidChange()` is gonna be `virtual-scroller`'s `onItemHeightChange()`.
+			if (onContentDidChange) {
+				onContentDidChange()
+			}
+		}
+		if (postWithLinksExpanded !== prevState.postWithLinksExpanded) {
+			// The post height did change due to the re-generated preview.
 			// `onContentDidChange()` is gonna be `virtual-scroller`'s `onItemHeightChange()`.
 			if (onContentDidChange) {
 				onContentDidChange()
@@ -129,39 +139,30 @@ export default class Post extends React.Component {
 			post,
 			youTubeApiKey,
 			onContentDidChange,
-			onPostContentChange,
+			updateLinkedPost,
 			commentLengthLimit,
 			genericMessages,
 			fixAttachmentThumbnailSizes
 		} = this.props
 		loadResourceLinks(post, {
 			youTubeApiKey,
-			onPostContentChange,
+			updateLinkedPost,
 			messages: genericMessages,
 			commentLengthLimit,
 			// `fixAttachmentThumbnailSizes` gets the correct image sizes
 			// but for some reason React doesn't apply the `style` changes to the DOM.
+			// It's most likely a bug in React.
 			// https://github.com/facebook/react/issues/16357
 			// `<PostAttachment/>` does pass the correct `style` to `<ButtonOrLink/>`
 			// but the `style` doesn't get applied in the DOM.
 			fixAttachmentThumbnailSizes,
-			onUpdatePost: (postWithLinksExpanded, callback) => {
+			onContentChange: (postWithLinksExpanded) => {
 				if (this._isMounted) {
-					// Re-render the post and update it in state.
 					this.setState({
 						postWithLinksExpanded,
 						// `post` is stored in `state` for cases when `post` property changes.
 						post
-					}, () => {
-						// The post height did change due to the re-generated preview.
-						// `onContentDidChange()` is gonna be `virtual-scroller`'s `onItemHeightChange()`.
-						if (onContentDidChange) {
-							onContentDidChange()
-						}
-						callback()
 					})
-				} else {
-					callback()
 				}
 			}
 		})
