@@ -21,6 +21,7 @@ import AccountSummary from '../components/AccountSummary'
 import AccountActions from '../components/AccountActions'
 import AccountTabs from '../components/AccountTabs'
 import Post from '../components/Post'
+import { isSlideSupported } from '../components/Slideshow'
 
 import {
 	ContentSection,
@@ -66,7 +67,7 @@ export default class Profile extends React.Component {
 
 	onAttachmentClick = (attachment, post) => {
 		const { openSlideshow } = this.props
-		const attachments = getSortedAttachments(post)
+		const attachments = getSortedAttachments(post).filter(isSlideSupported)
 		const i = attachments.indexOf(attachment)
 		// If an attachment is either an uploaded one or an embedded one
 		// then it will be in `post.attachments`.

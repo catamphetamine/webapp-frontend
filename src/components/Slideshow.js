@@ -1207,10 +1207,9 @@ class Slideshow extends React.Component {
 
 	getPluginForSlide(slide = this.getCurrentSlide()) {
 		const { plugins } = this.props
-		for (const plugin of plugins) {
-			if (plugin.canRender(slide)) {
-				return plugin
-			}
+		const plugin = getPluginForSlide(slide, plugins)
+		if (plugin) {
+			return plugin
 		}
 		console.error('No plugin found for slide')
 		console.error(slide)
@@ -1651,5 +1650,19 @@ function clickTheLinkOnSpacebar(event) {
 		case 32:
 			event.preventDefault()
 			event.target.click()
+	}
+}
+
+function getPluginForSlide(slide, plugins) {
+	for (const plugin of plugins) {
+		if (plugin.canRender(slide)) {
+			return plugin
+		}
+	}
+}
+
+export function isSlideSupported(slide) {
+	if (getPluginForSlide(slide, Slideshow.defaultProps.plugins)) {
+		return true
 	}
 }
