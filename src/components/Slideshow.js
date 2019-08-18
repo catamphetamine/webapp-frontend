@@ -1547,7 +1547,11 @@ class Slideshow extends React.Component {
 		const { slideshowMode } = this.props
 		const { i } = this.state
 		const isCurrentSlide = j === i
-		return this.getPluginForSlide(slide).render({
+		const plugin = this.getPluginForSlide(slide)
+		if (!plugin) {
+			return null
+		}
+		return plugin.render({
 			ref: isCurrentSlide ? this.currentSlideRef : undefined,
 			tabIndex: isCurrentSlide ? 0 : -1,
 			slide,
