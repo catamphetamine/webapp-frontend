@@ -47,7 +47,7 @@ export default class Post extends React.Component {
 		// neither for the picture not for the thumbnail
 		// in `/catalog.json` API response (which is a bug).
 		// http://lynxhub.com/lynxchan/res/722.html#q984
-		fixAttachmentThumbnailSizes: PropTypes.bool,
+		fixAttachmentPictureSizes: PropTypes.bool,
 		showPostThumbnailWhenThereAreMultipleAttachments: PropTypes.bool,
 		messages: postMessages.isRequired,
 		genericMessages: PropTypes.object,
@@ -142,20 +142,20 @@ export default class Post extends React.Component {
 			updateLinkedPost,
 			commentLengthLimit,
 			genericMessages,
-			fixAttachmentThumbnailSizes
+			fixAttachmentPictureSizes
 		} = this.props
 		loadResourceLinks(post, {
 			youTubeApiKey,
 			updateLinkedPost,
 			messages: genericMessages,
 			commentLengthLimit,
-			// `fixAttachmentThumbnailSizes` gets the correct image sizes
+			// `fixAttachmentPictureSizes` gets the correct image sizes
 			// but for some reason React doesn't apply the `style` changes to the DOM.
 			// It's most likely a bug in React.
 			// https://github.com/facebook/react/issues/16357
 			// `<PostAttachment/>` does pass the correct `style` to `<ButtonOrLink/>`
 			// but the `style` doesn't get applied in the DOM.
-			fixAttachmentThumbnailSizes,
+			fixAttachmentPictureSizes,
 			onContentChange: (postWithLinksExpanded) => {
 				if (this._isMounted) {
 					this.setState({
@@ -180,6 +180,7 @@ export default class Post extends React.Component {
 			expandAttachments,
 			maxAttachmentThumbnails,
 			attachmentThumbnailSize,
+			fixAttachmentPictureSizes,
 			useSmallestThumbnailsForAttachments,
 			showPostThumbnailWhenThereAreMultipleAttachments,
 			serviceIcons,
@@ -251,7 +252,8 @@ export default class Post extends React.Component {
 					attachmentThumbnailSize={attachmentThumbnailSize}
 					expandAttachments={expandAttachments}
 					spoilerLabel={messages.spoiler}
-					onAttachmentClick={onAttachmentClick}>
+					onAttachmentClick={onAttachmentClick}
+					fixAttachmentPictureSizes={fixAttachmentPictureSizes}>
 					{getNonEmbeddedAttachments(post)}
 				</PostAttachments>
 				{stretch &&

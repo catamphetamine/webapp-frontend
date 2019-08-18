@@ -7,6 +7,7 @@ import { getViewportWidth } from '../utility/dom'
 import SlideshowPicture from './Slideshow.Picture'
 import ButtonOrLink from './ButtonOrLink'
 import Picture from './Picture'
+import { getOriginalPictureSizeAndUrl } from '../utility/fixPictureSize'
 
 import {
 	VideoDuration,
@@ -32,10 +33,11 @@ export default function PostAttachment({
 	height,
 	useSmallestThumbnail,
 	moreAttachmentsCount,
+	fixAttachmentPictureSize,
 	className
 }) {
 	const [isRevealed, setIsRevealed] = useState(attachment.spoiler ? false : true)
-	const [isLoading, loadOnClick] = useLoadOnClick(attachment)
+	const [isLoading, loadOnClick] = useLoadOnClick(attachment, fixAttachmentPictureSize)
 	const picture = getPicture(attachment)
 	const isLandscape = picture.width >= picture.height
 	async function onPictureClick(event) {
@@ -111,6 +113,7 @@ PostAttachment.propTypes = {
 	expand: PropTypes.bool,
 	useSmallestThumbnail: PropTypes.bool,
 	moreAttachmentsCount: PropTypes.number,
+	fixAttachmentPictureSize: PropTypes.bool,
 	className: PropTypes.string
 }
 
@@ -149,7 +152,7 @@ AttachmentSpoilerBar.propTypes = {
 	children: PropTypes.string.isRequired
 }
 
-function useLoadOnClick(attachment) {
+function useLoadOnClick(attachment, fixAttachmentPictureSize) {
 	const [isLoading, setIsLoading] = useState()
 	async function onClick(event) {
 		if (event.ctrlKey || event.altKey || event.shiftKey || event.metaKey) {
@@ -162,6 +165,13 @@ function useLoadOnClick(attachment) {
 		if (attachment.type === 'picture') {
 			// Preload the picture.
 			setIsLoading(true)
+			// `lynxchan` doesn't provide `width` and `height`
+			// neither for the picture not for the thumbnail
+			// in `/catalog.json` API response (which is a bug).
+			// http://lynxhub.com/lynxchan/res/722.html#q984
+			if (fixAttachmentPictureSize) {
+				await getOriginalPictureSizeAndUrl(attachment)
+			}
 			try {
 				await SlideshowPicture.preload(attachment, getViewportWidth())
 			} catch (error) {

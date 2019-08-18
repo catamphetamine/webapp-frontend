@@ -61,6 +61,7 @@ export default function PostAttachments({
 	onAttachmentClick,
 	maxAttachmentThumbnails,
 	showPostThumbnailWhenThereAreMultipleAttachments,
+	fixAttachmentPictureSizes,
 	children: attachments
 }) {
 	if (TEST) {
@@ -175,6 +176,7 @@ export default function PostAttachments({
 								spoilerLabel={spoilerLabel}
 								onClick={onAttachmentClick ? createOnAttachmentClick(i + (titlePictureOrVideo ? 1 : 0)) : undefined}
 								moreAttachmentsCount={i === picturesAndVideos.length - 1 ? picturesAndVideosMoreCount : undefined}
+								fixAttachmentPictureSizes={fixAttachmentPictureSizes}
 								className={pictureOrVideo === postThumbnailCandidate ? 'post__attachment-thumbnail--post-thumbnail-candidate' : undefined}/>
 						)
 					})}
@@ -209,6 +211,7 @@ PostAttachments.propTypes = {
 		PropTypes.oneOf([false]),
 		PropTypes.number
 	]).isRequired,
+	fixAttachmentPictureSizes: PropTypes.bool,
 	children: PropTypes.arrayOf(postAttachment)
 }
 
