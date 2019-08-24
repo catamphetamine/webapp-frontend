@@ -35,7 +35,7 @@ This CSS class can be used for styling such special case.
 	position: absolute;
 	left: calc(-1 * var(--CommentTree-padding));
 	height: 100%;
-	border-left: var(--CommentTree-borderWidth) solid var(--CommentTree-color);
+	border-left: var(--CommentTree-borderWidth) var(--CommentTree-borderStyle) var(--CommentTree-color);
 	pointer-events: none;
 }
 
@@ -88,8 +88,9 @@ This CSS class can be used for styling such special case.
 	width: var(--CommentTree-padding);
 	height: calc(var(--CommentTree-padding) * 2);
 	margin-top: calc(-1 * var(--CommentTree-padding));
-	border: var(--CommentTree-borderWidth) solid var(--CommentTree-color--branch);
-	border-left-color: var(--CommentTree-color);
+	border: var(--CommentTree-borderWidth) var(--CommentTree-borderStyle) var(--CommentTree-color);
+	border-bottom-color: var(--CommentTree-color--branch);
+	border-bottom-style: var(--CommentTree-borderStyle--branch);
 	border-right: none;
 	box-sizing: border-box;
 	pointer-events: none;

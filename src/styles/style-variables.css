@@ -100,6 +100,8 @@
 	/* CommentTree. */
 	--CommentTree-padding: var(--Post-padding--horizontal);
 	--CommentTree-borderWidth: 1px;
+	--CommentTree-borderStyle: dashed;
+	--CommentTree-borderStyle--branch: solid;
 	/* Approximate offset top so that it points to the first line of text in a comment. */
 	--CommentTree-branchContentTop: 1.6em;
 	--CommentTree-branchTop: calc(var(--Post-padding--vertical) + var(--CommentTree-branchContentTop));
@@ -178,10 +180,10 @@
 	--PostAttachment-shadowColor--hover: rgba(0,0,0,0.15);
 
 	/* CommentTree. */
-	--CommentTree-color: var(--Content-color-200);
-	--CommentTree-color--branch: var(--Content-color-300);
-	--CommentTree-backgroundColor--hover: var(--Content-color-100);
-	--CommentTree-color--hover: var(--base-color-700);
+	--CommentTree-color--branch: var(--CommentTree-color);
+  --CommentTree-color: var(--base-color-300);
+	--CommentTree-color--hover: var(--base-color-400);
+	--CommentTree-backgroundColor--hover: rgba(0,0,0,0.044);
 
 	/* HoverButton. */
 	--HoverButton-color--active: initial;
@@ -279,10 +281,10 @@
 	--PostAttachment-shadowColor--hover: rgba(100,100,100,0.2);
 
 	/* CommentTree. */
-	--CommentTree-color: var(--Content-color-800);
+  --CommentTree-color: var(--base-color-800);
 	--CommentTree-color--branch: var(--CommentTree-color);
 	--CommentTree-backgroundColor--hover: var(--Content-color-100);
-	--CommentTree-color--hover: var(--base-color-800);
+	--CommentTree-color--hover: var(--base-color-700);
 
 	/* HoverButton. */
 	--HoverButton-color--active: var(--base-color-300);
