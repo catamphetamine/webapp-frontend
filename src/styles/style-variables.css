@@ -181,7 +181,7 @@
 
 	/* CommentTree. */
 	--CommentTree-color--branch: var(--CommentTree-color);
-  --CommentTree-color: var(--base-color-300);
+	--CommentTree-color: var(--base-color-300);
 	--CommentTree-color--hover: var(--base-color-400);
 	--CommentTree-backgroundColor--hover: rgba(0,0,0,0.044);
 
