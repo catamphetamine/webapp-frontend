@@ -5,8 +5,6 @@
 	   and making it `display: inline-block`. */
 	position: relative;
 	display: inline-block;
-	color: var(--PostQuote-color);
-	background-color: var(--PostQuote-backgroundColor);
 	/*
 	margin-top: -1px;
 	margin-bottom: -1px;
@@ -15,12 +13,23 @@
 	border-bottom: var(--PostQuote-borderWidth) solid var(--PostQuote-borderColor);
 }
 
+.post__quote-block {
+	color: var(--PostQuote-color);
+	background-color: var(--PostQuote-backgroundColor);
+}
+
 /* `--PostQuote-spacing` is used in `captchan` in
    "Neon Genesis Evangelion" theme to add some spacing
    between consequtive post quotes because otherwise
    they'd look like a single post quote. */
 .post__quote-blocks + br + .post__quote-blocks {
 	margin-top: var(--PostQuote-spacing);
+}
+.post__quote-block {
+	margin-top: var(--PostQuote-spacing);
+	&:first-child {
+		margin-top: 0;
+	}
 }
 
 /* `<PostQuoteMarker/>`-related padding. */
