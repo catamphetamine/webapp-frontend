@@ -15,6 +15,7 @@
 			"large": "Крупный"
 		}
 	},
+	"menu": "Меню",
 	"deletedComment": "Удалённое сообщение",
 	"hiddenComment": "Скрытое сообщение",
 	"quotedComment": "Сообщение",
@@ -40,6 +41,7 @@
 		"reply": "Ответить",
 		"spoiler": "Спойлер",
 		"expandAttachments": "Раскрыть картинки",
+		"collapseAttachments": "Свернуть картинки",
 		"viewAttachments": "Посмотреть картинки",
 		"videoNotFound": "Видео не найдено"
 	},

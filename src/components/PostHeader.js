@@ -88,6 +88,11 @@ export default class PostHeader extends React.Component {
 									locale={locale}/>
 							</div>
 						}
+						{!post.author && onReply &&
+							<div className="post__summary-item-separator">
+								·
+							</div>
+						}
 						{onReply &&
 							<div className="post__summary-item">
 								<button

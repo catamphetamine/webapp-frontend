@@ -17,11 +17,18 @@
 	flex-wrap: wrap;
 }
 
+/*
 .post__summary-item {
 	margin-right: calc(var(--unit) * 1.5);
 	&:last-child {
 		margin-right: 0;
 	}
+}
+*/
+
+.post__summary-item-separator {
+	margin-left: calc(var(--unit) * 0.75);
+	margin-right: calc(var(--unit) * 0.75);
 }
 
 .post__summary__account {

@@ -96,6 +96,7 @@
 	--HoverButton-backgroundColor--pushed: var(--HoverButton-backgroundColor--active);
 	--HoverButton-borderColor--pushedFocus: var(--HoverButton-borderColor--pushedActive);
 	--HoverButton-backgroundColor--pushedActive: var(--HoverButton-backgroundColor--active);
+	--HoverButton-borderRadius: 0px;
 
 	/* CommentTree. */
 	--CommentTree-padding: var(--Post-padding--horizontal);

@@ -557,11 +557,17 @@ function addBlur(style, radius) {
 		filter: `blur(${radius}px)`,
 		// Works around the white edges bug.
 		// https://stackoverflow.com/questions/28870932/how-to-remove-white-border-from-blur-background-image
-		width: `calc(100% + ${4 * radius}px)`,
-		height: `calc(100% + ${4 * radius}px)`,
-		marginLeft: `-${4 * radius / 2}px`,
-		marginTop: `-${4 * radius / 2}px`
+		// For some reason it will still add a white inner shadow
+		// if the `<img/>` has a `border` — seems to be a bug in a web browser.
+		width: `calc(100% + ${getBlurMargin(radius)}px)`,
+		height: `calc(100% + ${getBlurMargin(radius)}px)`,
+		marginLeft: `-${getBlurMargin(radius) / 2}px`,
+		marginTop: `-${getBlurMargin(radius) / 2}px`
 	}
+}
+
+function getBlurMargin(blurRadius) {
+	return 4 * blurRadius
 }
 
 const HIDDEN_STYLE = {

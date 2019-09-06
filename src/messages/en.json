@@ -15,6 +15,7 @@
 			"large": "Large"
 		}
 	},
+	"menu": "Menu",
 	"deletedComment": "Deleted comment",
 	"hiddenComment": "Hidden comment",
 	"quotedComment": "Comment",
@@ -40,6 +41,7 @@
 		"reply": "Reply",
 		"spoiler": "Spoiler",
 		"expandAttachments": "Expand attachments",
+		"collapseAttachments": "Collapse attachments",
 		"viewAttachments": "View attachments",
 		"videoNotFound": "Video not found"
 	},

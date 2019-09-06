@@ -1,6 +1,6 @@
 .hover-button {
 	color: inherit;
-	border-radius: var(--border-radius);
+	border-radius: var(--HoverButton-borderRadius);
 }
 
 .hover-button:hover,

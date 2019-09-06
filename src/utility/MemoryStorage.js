@@ -1,7 +1,16 @@
 export default class MemoryStorage {
 	data = {}
+	constructor(options = {}) {
+		this.options = options
+	}
 	get(key, defaultValue) {
-		return this.data[key] || defaultValue
+		const item = this.data[key] || defaultValue
+		if (this.options.emulateSerialize) {
+			if (item !== undefined) {
+				return JSON.parse(JSON.stringify(item))
+			}
+		}
+		return item
 	}
 	set(key, value) {
 		this.data[key] = value

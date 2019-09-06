@@ -30,7 +30,6 @@
 	z-index: var(--slideshow-z-index);
 }
 
-
 @mixin upto-s {
 	:root {
 		--Header-height: 0px;

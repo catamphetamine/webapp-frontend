@@ -16,7 +16,7 @@ const id = oneOfType([
 	string
 ])
 
-const date = instanceOf(Date)
+export const date = instanceOf(Date)
 
 const pictureType = oneOf([
 	'image/svg+xml',
@@ -372,20 +372,25 @@ export const postAttachment = oneOfType([
 	fileAttachment
 ])
 
+export const postContent = oneOfType([
+	string,
+	arrayOf(postBlock)
+])
+
+export const censoredText = oneOfType([
+	string,
+	arrayOf(oneOfType([
+		string,
+		postSpoiler
+	]))
+])
+
 export const post = shape({
 	id: id.isRequired,
 	title: string,
-	titleCensored: oneOfType([
-		string,
-		arrayOf(oneOfType([
-			string,
-			postSpoiler
-		]))
-	]),
-	content: oneOfType([
-		string,
-		arrayOf(postBlock)
-	]),
+	titleCensored: censoredText,
+	content: postContent,
+	createdAt: date,
 	account: accountShape, //.isRequired,
 	// commentsCount: number,
 	replies: arrayOf(object), // .arrayOf(post)
