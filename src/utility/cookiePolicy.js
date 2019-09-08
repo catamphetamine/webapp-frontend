@@ -1,4 +1,4 @@
-import { getCookie, setCookie } from './cookie'
+import { getCookie, setCookie } from './cookies'
 
 let ON_COOKIES_ACCEPTED = []
 
