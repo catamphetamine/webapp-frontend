@@ -22,9 +22,7 @@ export default class MemoryStorage {
 	clear() {
 		this.data = {}
 	}
-	forEach(func) {
-		for (const key of Object.keys(this.data)) {
-			func(key)
-		}
+	keys() {
+		return Object.keys(this.data)
 	}
 }

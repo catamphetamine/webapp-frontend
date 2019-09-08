@@ -47,13 +47,14 @@ export function addStorageListener(key, listener) {
 	})
 }
 
-export function forEach(func) {
+function getKeys() {
+	const keys = []
 	let i = 0
 	while (i < localStorage.length) {
-		const key = localStorage.key(i)
-		func(key)
+		keys.push(localStorage.key(i))
 		i++
 	}
+	return keys
 }
 
 class LocalStorage {
@@ -66,8 +67,8 @@ class LocalStorage {
 	delete(key) {
 		return deleteObject(key)
 	}
-	forEach(func) {
-		forEach(func)
+	keys() {
+		return getKeys()
 	}
 }
 
