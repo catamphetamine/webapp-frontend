@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import PropTypes from 'prop-types'
 import { Select } from 'react-responsive-ui'
 
@@ -13,10 +13,12 @@ export default function LanguageSettings({
 	onChange,
 	languages
 }) {
-	const options = Object.keys(languages).map((language) => ({
-		value: language,
-		label: languages[language]
-	}))
+	const options = useMemo(() => {
+		return Object.keys(languages).map((language) => ({
+			value: language,
+			label: languages[language]
+		}))
+	}, [languages])
 	return (
 		<ContentSection>
 			<ContentSectionHeader lite>

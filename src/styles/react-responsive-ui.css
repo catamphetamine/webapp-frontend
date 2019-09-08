@@ -21,6 +21,8 @@
 
 .dark {
 	--rrui-input-field-label-color: var(--Content-color-600);
+	--rrui-checkbox-fill-color: var(--Content-color-600);
+	--rrui-switch-knob-background-color: var(--Content-backgroundColor);
 }
 
 .rrui__input-field {

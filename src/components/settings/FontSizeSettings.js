@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useCallback, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import { Select } from 'react-responsive-ui'
 
@@ -17,15 +17,17 @@ export default function FontSizeSettings({
 	value,
 	onChange
 }) {
-	function saveFontSize(fontSize) {
+	const saveFontSize = useCallback((fontSize) => {
 		applyFontSize(fontSize)
 		onChange(fontSize)
-	}
+	}, [onChange])
 
-	const options = FONT_SIZES.map((fontSize) => ({
-		value: fontSize,
-		label: messages.settings.fontSize[fontSize]
-	}))
+	const options = useMemo(() => {
+		return FONT_SIZES.map((fontSize) => ({
+			value: fontSize,
+			label: messages.settings.fontSize[fontSize]
+		}))
+	}, [messages])
 
 	return (
 		<ContentSection>
