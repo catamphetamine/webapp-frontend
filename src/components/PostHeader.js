@@ -73,14 +73,16 @@ export default class PostHeader extends React.Component {
 										className="post__account-name">
 										{post.author.name}
 									</Link>
-									<PostDate
-										date={post.createdAt}
-										link={url}
-										locale={locale}/>
+									{post.createdAt &&
+										<PostDate
+											date={post.createdAt}
+											link={url}
+											locale={locale}/>
+									}
 								</div>
 							</div>
 						}
-						{!post.author &&
+						{!post.author && post.createdAt &&
 							<div className="post__summary-item">
 								<PostDate
 									date={post.createdAt}
@@ -88,7 +90,7 @@ export default class PostHeader extends React.Component {
 									locale={locale}/>
 							</div>
 						}
-						{!post.author && onReply &&
+						{!post.author && post.createdAt && onReply &&
 							<div className="post__summary-item-separator">
 								·
 							</div>
