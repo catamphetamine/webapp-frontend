@@ -77,7 +77,12 @@ function enableAutoDarkMode(onSetDarkMode) {
 			darkMode(true)
 		}
 	}
-	darkModeWatcher.addEventListener('change', darkModeListener)
+	// Old browsers don't support `.addEventListener()`.
+	if (darkModeWatcher.addEventListener) {
+		darkModeWatcher.addEventListener('change', darkModeListener)
+	} else {
+		darkModeWatcher.addListener(darkModeListener)
+	}
 
 	// Watch "light" mode.
 	const lightModeWatcher = window.matchMedia('(prefers-color-scheme: light)')
@@ -86,7 +91,12 @@ function enableAutoDarkMode(onSetDarkMode) {
 			darkMode(false)
 		}
 	}
-	lightModeWatcher.addEventListener('change', lightModeListener)
+	// Old browsers don't support `.addEventListener()`.
+	if (lightModeWatcher.addEventListener) {
+		lightModeWatcher.addEventListener('change', lightModeListener)
+	} else {
+		lightModeWatcher.addListener(lightModeListener)
+	}
 
 	if (isDarkMode) {
 		darkMode(true)
@@ -97,7 +107,17 @@ function enableAutoDarkMode(onSetDarkMode) {
 	}
 
 	return () => {
-		darkModeWatcher.removeEventListener('change', darkModeListener)
-		lightModeWatcher.removeEventListener('change', lightModeListener)
+		// Old browsers don't support `.removeEventListener()`.
+		if (darkModeWatcher.removeEventListener) {
+			darkModeWatcher.removeEventListener('change', darkModeListener)
+		} else {
+			darkModeWatcher.removeListener(darkModeListener)
+		}
+		// Old browsers don't support `.removeEventListener()`.
+		if (lightModeWatcher.removeEventListener) {
+			lightModeWatcher.removeEventListener('change', lightModeListener)
+		} else {
+			lightModeWatcher.removeListener(lightModeListener)
+		}
 	}
 }
