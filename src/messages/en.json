@@ -43,7 +43,8 @@
 		"expandAttachments": "Expand attachments",
 		"collapseAttachments": "Collapse attachments",
 		"viewAttachments": "View attachments",
-		"videoNotFound": "Video not found"
+		"videoNotFound": "Video not found",
+		"linkTo": "link to {0}"
 	},
 	"form": {
 		"error": {

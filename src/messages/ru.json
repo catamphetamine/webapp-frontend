@@ -43,7 +43,8 @@
 		"expandAttachments": "Раскрыть картинки",
 		"collapseAttachments": "Свернуть картинки",
 		"viewAttachments": "Посмотреть картинки",
-		"videoNotFound": "Видео не найдено"
+		"videoNotFound": "Видео не найдено",
+		"linkTo": "ссылка на {0}"
 	},
 	"form": {
 		"error": {
