@@ -16,9 +16,6 @@
 		}
 	},
 	"menu": "Menu",
-	"deletedComment": "Deleted comment",
-	"hiddenComment": "Hidden comment",
-	"quotedComment": "Comment",
 	"contentType": {
 		"picture": "Picture",
 		"video": "Video",
@@ -44,7 +41,7 @@
 		"collapseAttachments": "Collapse attachments",
 		"viewAttachments": "View attachments",
 		"videoNotFound": "Video not found",
-		"linkTo": "link to {0}"
+		"linkTo": "Link to {0}"
 	},
 	"form": {
 		"error": {

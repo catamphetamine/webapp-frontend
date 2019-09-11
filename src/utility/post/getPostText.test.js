@@ -607,6 +607,26 @@ describe('getPostText', () => {
 		)
 	})
 
+	it('should replace code with (code) when `excludeCodeBlocks` is `true`', () => {
+		getPostTextTest(
+			{
+				content: [
+					[{
+						type: 'code',
+						content: 'Abc'
+					}]
+				]
+			},
+			{
+				messages: {
+					code: 'Code'
+				},
+				excludeCodeBlocks: true
+			},
+			'(code)'
+		)
+	})
+
 	it('should return on new line', () => {
 		getPostTextTest(
 			{
@@ -660,9 +680,7 @@ describe('getPostText', () => {
 			},
 			{
 				messages: {
-					post: {
-						linkTo: 'link to {0}'
-					}
+					linkTo: 'link to {0}'
 				}
 			},
 			'(link to google.com)'

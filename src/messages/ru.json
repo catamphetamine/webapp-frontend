@@ -16,9 +16,6 @@
 		}
 	},
 	"menu": "Меню",
-	"deletedComment": "Удалённое сообщение",
-	"hiddenComment": "Скрытое сообщение",
-	"quotedComment": "Сообщение",
 	"contentType": {
 		"picture": "Картинка",
 		"video": "Видео",
@@ -44,7 +41,7 @@
 		"collapseAttachments": "Свернуть картинки",
 		"viewAttachments": "Посмотреть картинки",
 		"videoNotFound": "Видео не найдено",
-		"linkTo": "ссылка на {0}"
+		"linkTo": "Ссылка на {0}"
 	},
 	"form": {
 		"error": {
