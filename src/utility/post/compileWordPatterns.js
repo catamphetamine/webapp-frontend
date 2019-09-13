@@ -7,18 +7,18 @@ function compileWordPattern(filter, language, includesWordStart, includesWordEnd
 		filter = filter.slice('^'.length)
 		return [].concat(
 			compileWordPattern('^' + filter, language, false, includesWordEnd),
-			compileWordPattern(getNonLetter(language) + filter, language, true, includesWordEnd)
+			compileWordPattern('[' + getNonLetter(language) + ']' + filter, language, true, includesWordEnd)
 		)
 	}
 	if (includesWordEnd === undefined && filter[filter.length - 1] === '$') {
 		filter = filter.slice(0, filter.length - '$'.length)
 		return [].concat(
 			compileWordPattern(filter + '$', language, includesWordStart, false),
-			compileWordPattern(filter + getNonLetter(language), language, includesWordStart, true)
+			compileWordPattern(filter + '[' + getNonLetter(language) + ']', language, includesWordStart, true)
 		)
 	}
 	// Replace letters.
-	filter = filter.replace(/\./g, getLetter(language))
+	filter = filter.replace(/\./g, '[' + getLetter(language) + ']')
 	return {
 		includesWordStart,
 		includesWordEnd,
@@ -26,31 +26,36 @@ function compileWordPattern(filter, language, includesWordStart, includesWordEnd
 	}
 }
 
-const DEFAULT_LETTER_PATTERN = '[^\\s\\.,!?:;()0-9-]'
+export const LETTER = {
+	en: 'a-z',
+	de: 'a-zäöüß',
+	ru: 'а-яё',
+	default: '^\\s\\.,!?:;()0-9-'
+}
+
 function getLetter(language) {
 	switch (language) {
 		case 'en':
-			return '[a-z]'
+			return LETTER.en
 		case 'de':
-			return '[a-zäöüß]'
+			return LETTER.de
 		case 'ru':
-			return '[а-яё]'
+			return LETTER.ru
 		default:
-			return DEFAULT_LETTER_PATTERN
+			return LETTER.default
 	}
 }
 
 function getNonLetter(language) {
-	return invertPattern(getLetter(language)) ||
-		invertPattern(DEFAULT_LETTER_PATTERN)
+	return invertPattern(getLetter(language))
 }
 
-// Matches "[abc]" and "[^abc]".
-const LETTER_REGEXP = /^\[(\^)?([^\]]+)\]/
+// Matches "abc" and "^abc".
+const LETTER_REGEXP = /^(\^)?([^\]]+)/
 function invertPattern(pattern) {
 	// Invert the letter pattern.
 	const match = pattern.match(LETTER_REGEXP)
 	if (match) {
-		return `[${match[1] ? '' : '^'}${match[2]}]`
+		return `${match[1] ? '' : '^'}${match[2]}`
 	}
 }
