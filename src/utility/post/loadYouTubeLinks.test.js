@@ -87,7 +87,8 @@ export function loadYouTubeLinksTestWithApiKey(youTubeApiKey) {
 						type: 'link',
 						service: 'youtube',
 						url: 'https://www.youtube.com/watch?v=6CPXGQ0zoJE',
-						content: 'youtube.com/watch?v=6CPXGQ0zoJE'
+						content: 'youtube.com/watch?v=6CPXGQ0zoJE',
+						contentGenerated: true
 					},
 					' def'
 				]
