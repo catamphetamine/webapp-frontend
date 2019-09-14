@@ -61,7 +61,7 @@
 	user-select: none;
 }
 
-.post__votes + .post__header-badges {
+.post__header-badges + .post__votes {
 	margin-left: var(--unit);
 }
 

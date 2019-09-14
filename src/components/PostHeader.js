@@ -109,6 +109,27 @@ export default class PostHeader extends React.Component {
 					<div className="post__actions">
 						{(hasBadges || hasVotes) &&
 							<div className="post__actions-except-more">
+								{hasBadges &&
+									<div className="post__header-badges">
+										{badges.map(({ name, title, icon, getIcon, getIconProps }) => {
+											const Icon = getIcon ? getIcon(post, locale) : icon
+											const props = getIconProps && getIconProps(post, locale)
+											// `title` doesn't work on SVGs for some reason
+											// (perhaps because SVGs don't have background)
+											// so I moved `title` to a `<div/>`.
+											return (
+												<div
+													key={name}
+													title={title && title(post, locale)}
+													className="post__header-badge-container">
+													<Icon
+														{...props}
+														className={`post__header-badge post__header-badge--${name}`}/>
+												</div>
+											)
+										})}
+									</div>
+								}
 								{hasVotes &&
 									<div className="post__votes">
 										<button
@@ -131,27 +152,6 @@ export default class PostHeader extends React.Component {
 											onClick={this.onUpVoteClick}>
 											<LeftArrowIcon className="post__vote-icon post__vote-icon--up"/>
 										</button>
-									</div>
-								}
-								{hasBadges &&
-									<div className="post__header-badges">
-										{badges.map(({ name, title, icon, getIcon, getIconProps }) => {
-											const Icon = getIcon ? getIcon(post, locale) : icon
-											const props = getIconProps && getIconProps(post, locale)
-											// `title` doesn't work on SVGs for some reason
-											// (perhaps because SVGs don't have background)
-											// so I moved `title` to a `<div/>`.
-											return (
-												<div
-													key={name}
-													title={title && title(post, locale)}
-													className="post__header-badge-container">
-													<Icon
-														{...props}
-														className={`post__header-badge post__header-badge--${name}`}/>
-												</div>
-											)
-										})}
 									</div>
 								}
 							</div>
