@@ -2,18 +2,9 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 
-import AnonymousIcon from '../../assets/images/icons/anonymous.svg'
-
 import './CountryFlag.css'
 
 export default function CountryFlag({ country, name, flagsPath, className }) {
-	if (country === 'ZZ') {
-		return (
-			<AnonymousIcon
-				title={name}
-				className={classNames('country-flag--anonymous', className)}/>
-		)
-	}
 	// Screen readers will pronounce `alt` but will skip `title` on images.
 	return (
 		<img
