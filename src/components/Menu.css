@@ -33,11 +33,18 @@
 	justify-content: center;
 	width: 100%;
 	height: 100%;
+	/*
 	padding-left: var(--MenuIcon-padding);
 	padding-right: var(--MenuIcon-padding);
+	*/
+	--rrui-button-side-padding: var(--MenuIcon-padding);
 	color: var(--Menu-color);
 	&:active {
 		color: var(--Menu-color--active);
+	}
+	.rrui__button__busy {
+		/* Replace with `--rrui-button-busy-indicator-width` in some future. */
+		height: 1px;
 	}
 }
 

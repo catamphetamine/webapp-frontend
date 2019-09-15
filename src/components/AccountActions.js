@@ -1,11 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { Button } from 'react-responsive-ui'
 import classNames from 'classnames'
 
 import { accountShape } from '../PropTypes'
 import _translate from '../translate'
+
+import Button from './Button'
 
 // import MessageIcon from '../../assets/images/icons/message.svg'
 // import PersonAddIcon from '../../assets/images/icons/person-add.svg'

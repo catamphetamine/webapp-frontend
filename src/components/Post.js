@@ -35,6 +35,7 @@ export default class Post extends React.Component {
 		attachmentThumbnailSize: PropTypes.number.isRequired,
 		onAttachmentClick: PropTypes.func,
 		onReply: PropTypes.func,
+		vote: PropTypes.bool,
 		onVote: PropTypes.func,
 		url: PropTypes.string,
 		locale: PropTypes.string,
@@ -186,6 +187,7 @@ export default class Post extends React.Component {
 			serviceIcons,
 			onAttachmentClick,
 			onReply,
+			vote,
 			onVote,
 			onMoreActions,
 			messages,
@@ -219,9 +221,9 @@ export default class Post extends React.Component {
 					header={header}
 					badges={headerBadges}
 					onMoreActions={onMoreActions}
-					moreActionsLabel={messages.moreActions}
-					replyLabel={messages.reply}
+					messages={messages}
 					onReply={onReply}
+					vote={vote}
 					onVote={onVote}/>
 				{postContent &&
 					<div className="post__content">

@@ -4,6 +4,8 @@ import { connect } from 'react-redux'
 import { Link } from 'react-website'
 import classNames from 'classnames'
 
+import Button from './Button'
+
 import './Menu.css'
 
 @connect(({ found }) => ({
@@ -77,13 +79,12 @@ class MenuItem extends React.Component {
 		return (
 			<li>
 				{onClick &&
-					<button
-						type="button"
+					<Button
 						title={title}
 						onClick={onClick}
-						className={classNames('rrui__button-reset', className)}>
+						className={classNames('menu-item__button', className)}>
 						{children}
-					</button>
+					</Button>
 				}
 				{url &&
 					<Link

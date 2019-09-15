@@ -1670,3 +1670,7 @@ export function isSlideSupported(slide) {
 		return true
 	}
 }
+
+export async function preloadPicture(slide) {
+	await PicturePlugin.preload(slide, getViewportWidth())
+}
