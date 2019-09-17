@@ -6,11 +6,11 @@ import { Link } from 'react-website'
 import AccountPicture from './AccountPicture'
 import PostInlineContent from './PostInlineContent'
 import PostDate from './PostDate'
+import PostMoreActions, { moreActionsType } from './PostMoreActions'
 import Button from './Button'
 import { accountLink } from './AccountLink'
 import { post, postBadge } from '../PropTypes'
 
-import EllipsisIcon from '../../assets/images/icons/ellipsis.svg'
 import LeftArrowIcon from '../../assets/images/icons/left-arrow-minimal.svg'
 
 import './PostHeader.css'
@@ -22,7 +22,7 @@ export default function PostHeader({
 	header: Header,
 	badges,
 	messages,
-	onMoreActions,
+	moreActions,
 	onReply,
 	vote,
 	onVote
@@ -142,13 +142,11 @@ export default function PostHeader({
 							}
 						</div>
 					}
-					{onMoreActions &&
-						<Button
-							title={messages.moreActions}
-							onClick={onMoreActions}
-							className="hover-button post__more-actions">
-							<EllipsisIcon className="post__more-actions-icon"/>
-						</Button>
+					{moreActions &&
+						<PostMoreActions
+							title={messages.moreActions.title}>
+							{moreActions}
+						</PostMoreActions>
 					}
 				</div>
 			</div>
@@ -175,7 +173,7 @@ PostHeader.propTypes = {
 	url: PropTypes.string,
 	locale: PropTypes.string,
 	header: PropTypes.func,
-	onMoreActions: PropTypes.func,
+	moreActions: moreActionsType,
 	messages: PropTypes.object.isRequired,
 	onReply: PropTypes.func,
 	vote: PropTypes.bool,

@@ -34,7 +34,9 @@
 		"commentsCount": "Комментариев",
 		"repliesCount": "Ответов",
 		"readMore": "Показать\u00a0полностью",
-		"moreActions": "Действия",
+		"moreActions": {
+			"title": "Действия"
+		},
 		"upvote": "Нравится",
 		"downvote": "Не нравится",
 		"alreadyVoted": "Вы уже голосовали",

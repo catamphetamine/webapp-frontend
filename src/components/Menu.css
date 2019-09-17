@@ -38,13 +38,10 @@
 	padding-right: var(--MenuIcon-padding);
 	*/
 	--rrui-button-side-padding: var(--MenuIcon-padding);
+	--rrui-button-busy-indicator-width: 1px;
 	color: var(--Menu-color);
 	&:active {
 		color: var(--Menu-color--active);
-	}
-	.rrui__button__busy {
-		/* Replace with `--rrui-button-busy-indicator-width` in some future. */
-		height: 1px;
 	}
 }
 

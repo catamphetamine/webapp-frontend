@@ -1,0 +1,42 @@
+.post__more-actions__toggler {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	/* Units don't scale on smaller screen sizes, so using `em`s instead. */
+	/*
+	width: calc(var(--unit) * 1.5);
+	height: calc(var(--unit) * 1.5);
+	margin-left: calc(-1 * var(--unit) / 3);
+	margin-right: calc(-1 * var(--unit) / 3);
+	padding-left: calc(var(--unit) / 3);
+	padding-right: calc(var(--unit) / 3);
+	*/
+	width: 1em;
+	height: 1em;
+	margin-left: -0.25em;
+	margin-right: -0.25em;
+	padding-left: 0.25em;
+	padding-right: 0.25em;
+	box-sizing: content-box;
+}
+
+.post__more-actions__toggler-icon {
+	width: 100%;
+	/* `<OnClick/>`'s `filter` is set up to ignore clicks on `<button/>`s.
+	   `<svg/>` is required to ignore clicks in order for them to be registered by `<button/>`. */
+	pointer-events: none;
+	opacity: 0.6;
+}
+
+.post__more-actions__toggler:active {
+	.post__more-actions__toggler-icon {
+		opacity: initial;
+	}
+}
+
+.post__more-actions__menu {
+	.rrui__expandable {
+		right: calc(var(--unit) * -1);
+		margin-top: calc(var(--unit) / 2);
+	}
+}

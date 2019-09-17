@@ -8,6 +8,7 @@ import PostHeader from './PostHeader'
 import PostBlock from './PostBlock'
 import PostAttachments from './PostAttachments'
 import PostFooter, { hasFooter } from './PostFooter'
+import { moreActionsType } from './PostMoreActions'
 
 import loadResourceLinks from '../utility/post/loadResourceLinks'
 import getNonEmbeddedAttachments from '../utility/post/getNonEmbeddedAttachments'
@@ -39,7 +40,7 @@ export default class Post extends React.Component {
 		onVote: PropTypes.func,
 		url: PropTypes.string,
 		locale: PropTypes.string,
-		onMoreActions: PropTypes.func,
+		moreActions: moreActionsType,
 		initialExpandContent: PropTypes.bool,
 		onExpandContent: PropTypes.func,
 		onContentDidChange: PropTypes.func,
@@ -189,7 +190,7 @@ export default class Post extends React.Component {
 			onReply,
 			vote,
 			onVote,
-			onMoreActions,
+			moreActions,
 			messages,
 			stretch,
 			className
@@ -220,7 +221,7 @@ export default class Post extends React.Component {
 					locale={locale}
 					header={header}
 					badges={headerBadges}
-					onMoreActions={onMoreActions}
+					moreActions={moreActions}
 					messages={messages}
 					onReply={onReply}
 					vote={vote}

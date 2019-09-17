@@ -34,7 +34,9 @@
 		"commentsCount": "Comments",
 		"repliesCount": "Replies",
 		"readMore": "Show\u00a0more",
-		"moreActions": "More actions",
+		"moreActions": {
+			"title": "More actions"
+		},
 		"upvote": "Like",
 		"downvote": "Dislike",
 		"alreadyVoted": "You have already voted",

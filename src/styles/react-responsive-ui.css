@@ -15,6 +15,7 @@
 	--rrui-gray-color         : var(--Content-color-400);
 	--rrui-gray-color-light   : var(--Content-color-300);
 	--rrui-gray-color-lightest: var(--Content-color-200);
+	--rrui-list-item-background-color-focus : var(--Content-color-100);
 	--rrui-error-color        : var(--Error-color);
 	--rrui-input-height: calc(var(--unit) * 2.5);
 }
