@@ -15,7 +15,10 @@
 	--rrui-gray-color         : var(--Content-color-400);
 	--rrui-gray-color-light   : var(--Content-color-300);
 	--rrui-gray-color-lightest: var(--Content-color-200);
+	--rrui-list-item-height : calc(var(--rrui-unit) * 3.5);
+	--rrui-list-vertical-padding : calc(var(--rrui-unit) * 0.5);
 	--rrui-list-item-background-color-focus : var(--Content-color-100);
+	--rrui-expandable-menu-item-side-padding : calc(var(--rrui-unit) * 1.5);
 	--rrui-error-color        : var(--Error-color);
 	--rrui-input-height: calc(var(--unit) * 2.5);
 }
