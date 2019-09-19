@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import { ExpandableMenu, List, Divider } from 'react-responsive-ui'
 
@@ -9,12 +9,13 @@ import EllipsisIcon from '../../assets/images/icons/ellipsis.svg'
 import './PostMoreActions.css'
 
 export default function PostMoreActions({ title, children }) {
-	const buttonProps = useMemo(() => ({ title }), [title])
 	return (
 		<ExpandableMenu
 			alignment="right"
-			button={MenuButton}
-			buttonProps={buttonProps}
+      aria-label={title}
+      buttonTitle={title}
+			toggleElement={TOGGLE_ELEMENT}
+			buttonClassName="hover-button post__more-actions__toggler"
 			className="post__more-actions__menu">
 			{children.map(({ divider, onClick, label }, i) => (
 				<List.Item key={i} onClick={onClick}>
@@ -25,23 +26,19 @@ export default function PostMoreActions({ title, children }) {
 	)
 }
 
-export const moreActionsType = PropTypes.arrayOf(PropTypes.shape({
-	divider: PropTypes.bool,
-	label: PropTypes.string,
-	onClick: PropTypes.func
-}))
+export const moreActionsType = PropTypes.arrayOf(PropTypes.oneOfType([
+	PropTypes.shape({
+		label: PropTypes.string.isRequired,
+		onClick: PropTypes.func.isRequired
+	}),
+	PropTypes.shape({
+		divider: PropTypes.bool.isRequired
+	})
+]))
 
 PostMoreActions.propTypes = {
 	title: PropTypes.string,
 	children: moreActionsType
 }
 
-const MenuButton = React.forwardRef((props, ref) => (
-	<button
-		{...props}
-		ref={ref}
-		type="button"
-		className="rrui__button-reset hover-button post__more-actions__toggler">
-		<EllipsisIcon className="post__more-actions__toggler-icon"/>
-	</button>
-))
+const TOGGLE_ELEMENT = <EllipsisIcon className="post__more-actions__toggler-icon"/>
