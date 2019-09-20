@@ -54,6 +54,7 @@
 		}
 	},
 	"actions": {
+		"edit": "Edit",
 		"post": "Post",
 		"save": "Save",
 		"add": "Add",

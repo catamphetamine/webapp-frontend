@@ -149,14 +149,11 @@ export default class UploadablePicture extends Component
 	onError(error)
 	{
 		const { onError, notify } = this.props
-
 		console.error(error)
-
 		if (onError) {
 			return onError(error)
 		}
-
-		notify(error.message, { type: 'error' })
+		notify(error.message, { type: 'critical' })
 	}
 
 	async upload(file)

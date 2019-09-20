@@ -33,24 +33,22 @@
 	--Notification-borderColor: var(--Content-color-400);
 	--Notification-borderWidth: 1px;
 
-	/* Notification (error). */
-	--Notification-color--error: var(--white-color);
-	--Notification-backgroundColor--error: var(--Error-backgroundColor);
-	--Notification-borderColor--error: var(--Notification-borderColor);
-	--Notification-borderWidth--error: var(--Notification-borderWidth);
+	/* Notification (critical). */
+	--Notification-color--critical: var(--white-color);
+	--Notification-backgroundColor--critical: var(--Critical-backgroundColor);
+	--Notification-borderWidth--critical: 0;
 
 	/* Notification (warning). */
 	--Notification-color--warning: var(--black-color);
 	--Notification-backgroundColor--warning: var(--Warning-backgroundColor);
-	--Notification-borderColor--warning: var(--Notification-borderColor);
-	--Notification-borderWidth--warning: var(--Notification-borderWidth);
+	--Notification-borderWidth--warning: 0;
 
 	/* Modal. */
 	--Modal-borderColor: transparent;
 	--Modal-borderWidth: 0px;
 
-	/* Error. */
-	--Error-backgroundColor: var(--critical-color-600);
+	/* Critical. */
+	--Critical-backgroundColor: var(--critical-color-600);
 
 	/* Warning. */
 	--Warning-color: var(--black-color);
@@ -135,8 +133,8 @@
 	--Picture-borderColor--focus: var(--base-color-700);
 	--Picture-filter: none;
 
-	/* Error. */
-	--Error-color: var(--critical-color-600);
+	/* Critical. */
+	--Critical-color: var(--critical-color-600);
 
 	/* Selection. */
 	--Selection-color: var(--Content-color-900);
@@ -219,8 +217,8 @@
 	--Notification-borderWidth: 1px;
 	--Notification-borderRadius: 0px;
 
-	/* Error. */
-	--Error-color: var(--critical-color-400);
+	/* Critical. */
+	--Critical-color: var(--critical-color-400);
 
 	/* Selection. */
 	--Selection-color: var(--Content-backgroundColor);

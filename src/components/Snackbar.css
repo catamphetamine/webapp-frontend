@@ -23,8 +23,8 @@
 	border-color: var(--Notification-color);
 }
 
-.rrui__snackbar--error {
-	color: var(--Notification-color--error);
-	background-color: var(--Notification-backgroundColor--error);
-	box-shadow: 0 0 0 var(--Notification-borderWidth--error) var(--Notification-borderColor--error);
+.rrui__snackbar--critical {
+	color: var(--Notification-color--critical);
+	background-color: var(--Notification-backgroundColor--critical);
+	box-shadow: 0 0 0 var(--Notification-borderWidth--critical) var(--Notification-borderColor--critical);
 }

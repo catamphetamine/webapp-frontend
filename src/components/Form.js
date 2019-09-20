@@ -22,7 +22,7 @@ export class Form extends React.Component {
 	onError = (error) => {
 		const { notify } = this.props
 		console.error(error)
-		notify(error.message, { type: 'error' })
+		notify(error.message, { type: 'critical' })
 	}
 
 	render() {
