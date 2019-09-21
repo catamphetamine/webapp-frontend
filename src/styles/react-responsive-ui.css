@@ -7,20 +7,24 @@
 
 :root {
 	--rrui-unit               : var(--unit);
+
 	--rrui-white-color        : var(--Content-backgroundColor);
 	--rrui-black-color        : var(--Content-color-900);
 	--rrui-accent-color       : var(--Clickable-color);
 	--rrui-accent-color-light : var(--Clickable-color--active);
-	--rrui-input-field-label-color-focus: var(--Clickable-color--text);
 	--rrui-gray-color         : var(--Content-color-400);
 	--rrui-gray-color-light   : var(--Content-color-300);
 	--rrui-gray-color-lightest: var(--Content-color-200);
-	--rrui-list-item-height : calc(var(--rrui-unit) * 3.5);
-	--rrui-list-vertical-padding : calc(var(--rrui-unit) * 0.5);
-	--rrui-list-item-background-color-focus : var(--Content-color-100);
-	--rrui-expandable-menu-item-side-padding : calc(var(--rrui-unit) * 1.5);
 	--rrui-error-color        : var(--Critical-color);
+
 	--rrui-input-height: calc(var(--unit) * 2.5);
+	--rrui-list-item-height: calc(var(--rrui-unit) * 3.5);
+	--rrui-list-vertical-padding: calc(var(--rrui-unit) * 0.5);
+	--rrui-list-item-background-color-focus: var(--Content-color-100);
+	--rrui-expandable-menu-item-side-padding: calc(var(--rrui-unit) * 1.5);
+	--rrui-input-field-background-color: transparent;
+	--rrui-input-field-label-color-focus: var(--Clickable-color--text);
+	--rrui-checkbox-fill-color: var(--Content-backgroundColor);
 	/*--rrui-button-transition: none;*/
 }
 
@@ -28,10 +32,6 @@
 	--rrui-input-field-label-color: var(--Content-color-600);
 	--rrui-checkbox-fill-color: var(--Content-color-600);
 	--rrui-switch-knob-background-color: var(--Content-backgroundColor);
-}
-
-.rrui__input-field {
-	background-color: transparent;
 }
 
 .rrui__tooltip--after-show {
