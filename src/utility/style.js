@@ -40,7 +40,7 @@ export function applyDarkMode(shouldSwitchIntoDarkMode) {
  * to determine whether the app should switch itself
  * into dark mode or light mode.
  * @param {boolean} enableAutoDarkMode
- * @param {func} onSetDarkMode
+ * @param {func} [onSetDarkMode] — Is required if `enableAutoDarkMode` is `true`.
  */
 let disableAutoDarkMode
 export function autoDarkMode(value, onSetDarkMode) {
