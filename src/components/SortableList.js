@@ -2,12 +2,13 @@ import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import PropTypes from 'prop-types'
 
 /**
- * A similar demo:
- * https://codepen.io/bsehovac/pen/zyvger
  * Demo:
  * https://codepen.io/catamphetamine/pen/qBWxEQX
  *
- * `ItemComponent` must accept `dragging: boolean` and `style: object` properties.
+ * `ItemComponent` receives properties:
+ * `dragging: boolean` — Is `true` when some item is being dragged.
+ * `dragged: boolean` — Is `true` when this item is being dragged.
+ * `style: object` — The `style` that must be set on the item root element.
  */
 export default function SortableList({
 	value: items,
@@ -15,6 +16,7 @@ export default function SortableList({
 	component: Component,
 	itemComponent: ItemComponent,
 	itemComponentProps,
+	handleDataAttribute,
 	animationDuration,
 	animationEasing,
 	...rest
@@ -52,7 +54,7 @@ export default function SortableList({
 		if (items.length === 1) {
 			return
 		}
-		const item = getItem(list.current, node)
+		const item = getItem(list.current, node, handleDataAttribute)
 		if (!item) {
 			return
 		}
@@ -245,7 +247,8 @@ export default function SortableList({
 				<ItemComponent
 					{...itemComponentProps}
 					key={i}
-					dragging={dragging}
+					dragging={dragging ? true : false}
+					dragged={dragging && dragging.initialPosition === position}
 					style={(dragging || willEndDragging) ? getItemStyle(
 						position === draggedItemPosition.current.previous,
 						itemShiftsY.current[position],
