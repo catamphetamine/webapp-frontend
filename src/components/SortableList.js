@@ -7,13 +7,14 @@ import PropTypes from 'prop-types'
  * Demo:
  * https://codepen.io/catamphetamine/pen/qBWxEQX
  *
- * `ItemComponent` must accept `dragging: boolean` property.
+ * `ItemComponent` must accept `dragging: boolean` and `style: object` properties.
  */
 export default function SortableList({
 	value: items,
 	onChange,
 	component: Component,
 	itemComponent: ItemComponent,
+	itemComponentProps,
 	animationDuration,
 	animationEasing,
 	...rest
@@ -21,12 +22,18 @@ export default function SortableList({
 	const list = useRef()
 	const [dragging, setDragging] = useState()
 	const [willEndDragging, setWillEndDragging] = useState()
-	const [initialItems, _] = useState(items)
-	const [itemsOrder, setItemsOrder] = useState(items.map((item, i) => i))
 	const touchId = useRef()
 	const dragMoveHandler = useRef()
 	const draggedItemPosition = useRef()
 	const itemShiftsY = useRef()
+
+	const itemsOrder = useRef()
+	const prevItems = useRef()
+	if (items !== prevItems.current) {
+		prevItems.current = items
+		// Reset items order.
+		itemsOrder.current = items.map((item, i) => i)
+	}
 
 	useEffect(() => {
 		// Don't know why is this here.
@@ -168,16 +175,16 @@ export default function SortableList({
 		setDragging()
 		setWillEndDragging(true)
 		const newItemsOrder = getNewItemsOrder(
-			itemsOrder,
+			itemsOrder.current,
 			draggedItemPosition.current.previous,
 			draggedItemPosition.current.new
 		)
 		setTimeout(() => {
 			setWillEndDragging(false)
-			setItemsOrder(newItemsOrder)
-			onChange(newItemsOrder.map(i => initialItems[i]))
+			itemsOrder.current = newItemsOrder
+			onChange(newItemsOrder.map(i => items[i]))
 		}, animationDuration)
-	}, [itemsOrder])
+	}, [itemsOrder.current])
 
 	const onMouseUp = useCallback((event) => {
 		if (event.which !== 1) {
@@ -234,8 +241,9 @@ export default function SortableList({
 			ref={list}
 			onTouchStart={onTouchStart}
 			onMouseDown={onMouseDown}>
-			{itemsOrder.map((i, position) => (
+			{itemsOrder.current.map((i, position) => (
 				<ItemComponent
+					{...itemComponentProps}
 					key={i}
 					dragging={dragging}
 					style={(dragging || willEndDragging) ? getItemStyle(
@@ -257,6 +265,7 @@ SortableList.propTypes = {
 	onChange: PropTypes.func.isRequired,
 	component: PropTypes.elementType.isRequired,
 	itemComponent: PropTypes.elementType.isRequired,
+	itemComponentProps: PropTypes.object,
 	animationDuration: PropTypes.number.isRequired,
 	animationEasing: PropTypes.string.isRequired
 }
@@ -290,11 +299,31 @@ SortableList.defaultProps = {
 	animationEasing: 'ease-out'
 }
 
-// Supports "handle" element inside a list item.
-function getItem(list, node) {
+// Interactive elements aren't draggable.
+const IGNORE_CLICKS_INSIDE_TAGS = [
+	'a',
+	'button',
+	'input',
+	'textarea',
+	'select'
+]
+
+/**
+ * Returns the list item that has been clicked (along with its index).
+ * @param {Element} list
+ * @param {Element} node — The DOM Element that has been clicked.
+ * @param {string} [handleDataAttribute] — Drag handle data attribute.
+ * @return {any[]} [result] — An array having shape `[item, i]`.
+ */
+function getItem(list, node, handleDataAttribute) {
+	let handle
 	let childNode
 	while (node) {
 		if (node === list) {
+			// Clicked outside of a handle.
+			if (handleDataAttribute && !handle) {
+				return
+			}
 			if (childNode) {
 				let i = 0
 				while (i < node.childNodes.length) {
@@ -305,6 +334,12 @@ function getItem(list, node) {
 				}
 			}
 			break
+		}
+		if (IGNORE_CLICKS_INSIDE_TAGS.indexOf(node.tagName.toLowerCase()) >= 0) {
+			return
+		}
+		if (node.dataset[handleDataAttribute]) {
+			handle = node
 		}
 		childNode = node
 		node = node.parentElement
