@@ -2,11 +2,12 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 
+import removeLeadingPostLink from 'social-components/commonjs/utility/post/removeLeadingPostLink'
+
 import Post from './Post'
 import { RepliesCountBadge } from './Post.badges'
 
 import { post } from '../PropTypes'
-import removeLeadingPostLink from '../utility/post/removeLeadingPostLink'
 import scrollIntoView from '../utility/scrollIntoView'
 
 import './CommentTree.css'

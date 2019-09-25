@@ -28,7 +28,7 @@ import {
 	ContentSectionHeader
 } from '../components/ContentSection'
 
-import getSortedAttachments from '../utility/post/getSortedAttachments'
+import getSortedAttachments from 'social-components/commonjs/utility/post/getSortedAttachments'
 
 import './AccountProfile.css'
 

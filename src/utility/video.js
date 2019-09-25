@@ -1,30 +1,29 @@
-import YouTube from './video-youtube'
-import Vimeo from './video-vimeo'
+// import getYouTubeVideoByUrl from 'social-components/commonjs/services/YouTube/getVideoByUrl'
+import getYouTubeEmbeddedVideoUrl from 'social-components/commonjs/services/YouTube/getEmbeddedVideoUrl'
+import getYouTubeVideoUrl from 'social-components/commonjs/services/YouTube/getVideoUrl'
 
-const VIDEO_PROVIDERS = {
-	YouTube,
-	Vimeo
-}
+// import getVimeoVideoByUrl from 'social-components/commonjs/services/Vimeo/getVideoByUrl'
+import getVimeoEmbeddedVideoUrl from 'social-components/commonjs/services/Vimeo/getEmbeddedVideoUrl'
+import getVimeoVideoUrl from 'social-components/commonjs/services/Vimeo/getVideoUrl'
 
-// parseVideoLink('https://vimeo.com/289902998').then(_ => console.log(_))
-// parseVideoLink('https://www.youtube.com/watch?v=P3DGwyl0mJQ').then(_ => console.log(_))
-export async function parseVideoLink(url, options) {
-	for (const provider of Object.keys(VIDEO_PROVIDERS)) {
-		const result = await VIDEO_PROVIDERS[provider].parse(url, options)
-		if (result) {
-			return result
-		}
+export function getEmbeddedVideoUrl(id, provider, options) {
+	switch (provider) {
+		case 'YouTube':
+			return getYouTubeEmbeddedVideoUrl(id, options)
+		case 'Vimeo':
+			return getVimeoEmbeddedVideoUrl(id, options)
+		default:
+			throw new RangeError(`Unknown video provider: ${provider}`)
 	}
 }
 
-// export async function getVideoPicture(id, provider) {
-// 	return await VIDEO_PROVIDERS[provider].getPicture(id)
-// }
-
-export function getEmbeddedVideoUrl(id, provider, options) {
-	return VIDEO_PROVIDERS[provider].getEmbeddedVideoUrl(id, options)
-}
-
 export function getVideoUrl(id, provider, options) {
-	return VIDEO_PROVIDERS[provider].getVideoUrl(id, options)
+	switch (provider) {
+		case 'YouTube':
+			return getYouTubeVideoUrl(id, options)
+		case 'Vimeo':
+			return getVimeoVideoUrl(id, options)
+		default:
+			throw new RangeError(`Unknown video provider: ${provider}`)
+	}
 }

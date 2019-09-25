@@ -22,7 +22,7 @@ import GitHubIcon from '../../assets/images/icons/services/github.svg'
 
 import LinkIcon from '../../assets/images/icons/external.svg'
 
-import getHumanReadableLinkAddress from '../utility/post/getHumanReadableLinkAddress'
+import getHumanReadableLinkAddress from 'social-components/commonjs/utility/post/getHumanReadableLinkAddress'
 
 export default class PostLink extends React.Component {
 	onClick = (event) => {

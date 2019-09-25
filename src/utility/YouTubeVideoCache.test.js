@@ -1,9 +1,9 @@
-import { archiveVideo, unarchiveVideo } from './video-youtube-cache'
+import { archiveVideo, unarchiveVideo } from './YouTubeVideoCache'
 
 import { describe, it } from './mocha'
 import expectToEqual from './expectToEqual'
 
-describe('video-youtube-cache', () => {
+describe('YouTubeVideoCache', () => {
 	it('should archive/unarchive YouTube video', () => {
 		const video = {
 			"width": 1920,

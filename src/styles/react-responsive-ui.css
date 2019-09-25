@@ -26,6 +26,7 @@
 	--rrui-input-field-label-color-focus: var(--Clickable-color--text);
 	--rrui-checkbox-fill-color: var(--Content-backgroundColor);
 	/*--rrui-button-transition: none;*/
+	--rrui-button-transition: none;
 }
 
 .dark {

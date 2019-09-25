@@ -1,4 +1,4 @@
-import { PREVIEW_PICTURE_SIZES, getPictureSizeURL } from './video-youtube'
+import { PREVIEW_PICTURE_SIZES, getPictureSizeUrl } from 'social-components/commonjs/services/YouTube/getVideo'
 import { LocalStorageCache } from './LRUCache'
 import { areCookiesAccepted } from './cookiePolicy'
 
@@ -88,7 +88,7 @@ function unarchivePictureSize(size, videoId) {
 		size = {
 			width: standardSize.width,
 			height: standardSize.height,
-			url: getPictureSizeURL(videoId, standardSize.name)
+			url: getPictureSizeUrl(videoId, standardSize.name)
 		}
 	} else {
 		const [

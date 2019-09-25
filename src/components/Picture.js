@@ -6,7 +6,7 @@ import { ActivityIndicator, FadeInOut } from 'react-responsive-ui'
 
 import { picture } from '../PropTypes'
 
-import { getMinSize } from '../utility/picture'
+import getMinSize from 'social-components/commonjs/utility/picture/getMinSize'
 
 import './Picture.css'
 

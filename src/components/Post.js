@@ -10,9 +10,12 @@ import PostAttachments from './PostAttachments'
 import PostFooter, { hasFooter } from './PostFooter'
 import { moreActionsType } from './PostMoreActions'
 
-import loadResourceLinks from '../utility/post/loadResourceLinks'
-import getNonEmbeddedAttachments from '../utility/post/getNonEmbeddedAttachments'
-import getContentBlocks from '../utility/post/getContentBlocks'
+import loadResourceLinks from 'social-components/commonjs/utility/post/loadResourceLinks'
+import getNonEmbeddedAttachments from 'social-components/commonjs/utility/post/getNonEmbeddedAttachments'
+import getContentBlocks from 'social-components/commonjs/utility/post/getContentBlocks'
+
+import getYouTubeVideoByUrlCached from '../utility/getYouTubeVideoByUrlCached'
+import { fixAttachmentPictureSizes } from '../utility/fixPictureSize'
 
 import './Post.css'
 import './PostQuoteBlock.css'
@@ -144,20 +147,32 @@ export default class Post extends React.Component {
 			updateLinkedPost,
 			commentLengthLimit,
 			genericMessages,
-			fixAttachmentPictureSizes
+			fixAttachmentPictureSizes: shouldFixAttachmentPictureSizes
 		} = this.props
 		loadResourceLinks(post, {
 			youTubeApiKey,
+			getYouTubeVideoByUrl: getYouTubeVideoByUrlCached,
 			updateLinkedPost,
 			messages: genericMessages,
 			commentLengthLimit,
+			// `lynxchan` doesn't provide `width` and `height`
+			// neither for the picture not for the thumbnail
+			// in `/catalog.json` API response (which is a bug).
+			// http://lynxhub.com/lynxchan/res/722.html#q984
+			//
 			// `fixAttachmentPictureSizes` gets the correct image sizes
 			// but for some reason React doesn't apply the `style` changes to the DOM.
 			// It's most likely a bug in React.
 			// https://github.com/facebook/react/issues/16357
 			// `<PostAttachment/>` does pass the correct `style` to `<ButtonOrLink/>`
 			// but the `style` doesn't get applied in the DOM.
-			fixAttachmentPictureSizes,
+			//
+			loadPost: shouldFixAttachmentPictureSizes ? (post) => {
+				if (post.attachments) {
+					return fixAttachmentPictureSizes(post.attachments)
+				}
+				return []
+			} : undefined,
 			onContentChange: (postWithLinksExpanded) => {
 				if (this._isMounted) {
 					this.setState({
@@ -182,7 +197,6 @@ export default class Post extends React.Component {
 			expandAttachments,
 			maxAttachmentThumbnails,
 			attachmentThumbnailSize,
-			fixAttachmentPictureSizes,
 			useSmallestThumbnailsForAttachments,
 			showPostThumbnailWhenThereAreMultipleAttachments,
 			serviceIcons,
@@ -255,8 +269,7 @@ export default class Post extends React.Component {
 					attachmentThumbnailSize={attachmentThumbnailSize}
 					expandAttachments={expandAttachments}
 					spoilerLabel={messages.spoiler}
-					onAttachmentClick={onAttachmentClick}
-					fixAttachmentPictureSizes={fixAttachmentPictureSizes}>
+					onAttachmentClick={onAttachmentClick}>
 					{getNonEmbeddedAttachments(post)}
 				</PostAttachments>
 				{stretch &&
