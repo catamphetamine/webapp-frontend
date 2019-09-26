@@ -54,7 +54,10 @@ module.exports =
 					sourceMap     : true
 				}
 			}, {
-				loader : 'postcss-loader'
+				loader: 'postcss-loader',
+				options: {
+					sourceMap: true
+				}
 			}]
 		},
 		{
