@@ -10,9 +10,16 @@
 		display: block;
 		content: '';
 		width: var(--PostQuoteMarker-width);
-		height: calc(100% - 2 * var(--PostQuoteMarker-padding));
+		height: calc(100% - 2 * var(--PostQuoteMarker-padding) + 2 * var(--PostQuote-borderWidth));
 		min-height: 1.3em;
 		background-color: currentColor;
 		opacity: var(--PostQuoteMarker-opacity);
 	}
+}
+
+.post__quote-marker--generated {
+	--PostQuoteMarker-color: var(--PostQuoteMarker-color--generated);
+	--PostQuoteMarker-width: var(--PostQuoteMarker-width--generated);
+	--PostQuoteMarker-padding: var(--PostQuoteMarker-padding--generated);
+	--PostQuoteMarker-opacity: var(--PostQuoteMarker-opacity--generated);
 }

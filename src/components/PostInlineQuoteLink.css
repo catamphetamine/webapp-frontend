@@ -1,7 +1,15 @@
 .post__inline-quote-link:hover,
 .post__inline-quote-link:active {
-	--PostQuote-borderColor: var(--PostQuote-borderColor--hover);
+	/*--PostQuote-borderColor: var(--PostQuote-borderColor--hover);*/
 	--PostQuote-backgroundColor: var(--PostQuote-backgroundColor--hover);
+	/*--PostQuote-borderColor--generated: var(--PostQuote-borderColor--generated--hover);*/
+	--PostQuote-backgroundColor--generated: var(--PostQuote-backgroundColor--generated--hover);
 	/* Overrides the default `a:active` color for `.post__quote-blocks--link`. */
 	color: var(--PostQuote-color);
+}
+
+/* Due to the presence of a `<br/>` sequential
+   inline quotes' vertical margins don't "collapse". */
+.post__inline-quote-link + br + .post__inline-quote-link .post__inline-quote {
+	margin-top: 0;
 }

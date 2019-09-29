@@ -59,12 +59,12 @@
 }
 
 .post__footer .post__badge-button {
-	margin-top: calc(-1 * var(--PostFooterBadge-margin) / 6);
-	margin-bottom: calc(-1 * var(--PostFooterBadge-margin) / 6);
+	margin-top: calc(-1 * var(--PostFooterBadge-margin) / 12);
+	margin-bottom: calc(-1 * var(--PostFooterBadge-margin) / 12);
 	margin-left: calc(-1 * var(--PostFooterBadge-margin) / 3);
-	margin-right: calc(-1 * var(--PostFooterBadge-margin) / 3);
-	padding-top: calc(var(--PostFooterBadge-margin) / 6);
-	padding-bottom: calc(var(--PostFooterBadge-margin) / 6);
+	margin-right: calc(-1 * var(--PostFooterBadge-margin) / 3.5);
+	padding-top: calc(var(--PostFooterBadge-margin) / 12);
+	padding-bottom: calc(var(--PostFooterBadge-margin) / 12);
 	padding-left: calc(var(--PostFooterBadge-margin) / 3);
-	padding-right: calc(var(--PostFooterBadge-margin) / 3);
+	padding-right: calc(var(--PostFooterBadge-margin) / 3.5);
 }
