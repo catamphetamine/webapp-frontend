@@ -43,6 +43,12 @@
 	--PostQuote-backgroundColor: var(--PostQuote-backgroundColor--generated);
 	--PostQuote-borderWidth: var(--PostQuote-borderWidth--generated);
 	--PostQuote-borderColor: var(--PostQuote-borderColor--generated);
+	.post__quote-marker {
+		--PostQuoteMarker-color: var(--PostQuoteMarker-color--generated);
+		--PostQuoteMarker-width: var(--PostQuoteMarker-width--generated);
+		--PostQuoteMarker-padding: var(--PostQuoteMarker-padding--generated);
+		--PostQuoteMarker-opacity: var(--PostQuoteMarker-opacity--generated);
+	}
 }
 
 /* Due to the presence of a `<br/>` sequential

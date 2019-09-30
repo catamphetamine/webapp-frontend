@@ -19,7 +19,7 @@ export default function PostQuoteBlock({
 			'post__quote-block--generated': generated,
 			'post__quote-block--inline': inline
 		})}>
-			<PostQuoteMarker className={generated ? 'post__quote-marker--generated' : undefined}/>
+			<PostQuoteMarker/>
 			{/* Set the content to "> " for copy-pasting quotes. */}
 			{/* It won't be visible due to `font-size: 0`. */}
 			<span className="post__quote-block__prefix">

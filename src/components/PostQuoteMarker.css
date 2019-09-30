@@ -16,10 +16,3 @@
 		opacity: var(--PostQuoteMarker-opacity);
 	}
 }
-
-.post__quote-marker--generated {
-	--PostQuoteMarker-color: var(--PostQuoteMarker-color--generated);
-	--PostQuoteMarker-width: var(--PostQuoteMarker-width--generated);
-	--PostQuoteMarker-padding: var(--PostQuoteMarker-padding--generated);
-	--PostQuoteMarker-opacity: var(--PostQuoteMarker-opacity--generated);
-}
