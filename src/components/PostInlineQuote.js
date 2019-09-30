@@ -9,12 +9,11 @@ import './PostInlineQuote.css'
 
 export default function PostInlineQuote({ generated, kind, children }) {
 	return (
-		<span className={classNames('post__inline-quote', {
+		<span className={classNames('post__inline-quote', kind && `post__inline-quote--${kind}`, {
 			'post__inline-quote--generated': generated
 		})}>
 			<PostQuoteBlock
 				inline
-				kind={kind}
 				generated={generated}>
 				{children}
 			</PostQuoteBlock>
