@@ -187,10 +187,10 @@
 	--PostVotes-color--negative: #b50000;
 
 	/* PostQuote. */
-	--PostQuote-backgroundColor: #dfffcb;
 	--PostQuote-color: #268000;
-	--PostQuote-borderWidth--generated: 1px;
-	--PostQuote-borderColor--generated: #268000;
+	--PostQuote-backgroundColor: #dfffcb;
+	--PostQuote-borderWidth: 1px;
+	--PostQuote-borderColor: #c9f6ac;
 	--PostQuote-marginTop: 2px;
 
 	/* PostQuote (generated). */
