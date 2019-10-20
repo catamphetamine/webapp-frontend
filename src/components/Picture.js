@@ -302,7 +302,7 @@ function Picture({
 			style={style ? { ...style, ...getContainerStyle() } : getContainerStyle()}
 			className={classNames(className, 'rrui__picture', {
 				'rrui__picture--border': border,
-				'rrui__picture--background': showLoadingPlaceholder && !picture.transparentBackground
+				'rrui__picture--non-transparent-background': showLoadingPlaceholder && !picture.transparentBackground
 			})}>
 
 			{/* Placeholder must stretch the parent element vertically

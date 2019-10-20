@@ -111,6 +111,9 @@
 	--PostQuoteMarker-padding--generated: var(--PostQuoteMarker-padding--standalone);
 	--PostQuoteMarker-color--generated: currentColor;
 
+	/* PostAttachment. */
+	--PostAttachment-focusOutlineWidth: 2px;
+
 	/* HoverButton. */
 	--HoverButton-color: inherit;
 	--HoverButton-backgroundColor--pushed: var(--HoverButton-backgroundColor--active);

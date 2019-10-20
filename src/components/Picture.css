@@ -15,7 +15,7 @@
 	outline: none;
 }
 
-.rrui__picture--background {
+.rrui__picture--non-transparent-background {
 	background-color: var(--Picture-backgroundColor);
 }
 
