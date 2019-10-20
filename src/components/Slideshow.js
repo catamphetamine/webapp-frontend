@@ -362,7 +362,7 @@ class Slideshow extends React.Component {
 		const maxSize = plugin.getMaxSize(slide)
 		const widthRatio = maxSize.width / maxWidth
 		const heightRatio = maxSize.height / maxHeight
-		const ratio = Math.max(widthRatio, heightRatio)
+		const ratio = Math.min(widthRatio, heightRatio)
 		if (ratio < minInitialScale) {
 			// return Math.min(1 / ratio, initialUpscaleFactor)
 			return minInitialScale / ratio
