@@ -86,8 +86,8 @@ This CSS class can be used for styling such special case.
 	position: absolute;
 	left: calc(-1 * var(--CommentTree-padding));
 	width: var(--CommentTree-padding);
-	height: calc(var(--CommentTree-padding) * 2);
-	margin-top: calc(-1 * var(--CommentTree-padding));
+	height: calc(var(--CommentTree-padding) * 1.5);
+	margin-top: calc(-1 * var(--CommentTree-padding) * 0.5);
 	border: var(--CommentTree-borderWidth) var(--CommentTree-borderStyle) var(--CommentTree-color);
 	border-bottom-color: var(--CommentTree-color--branch);
 	border-bottom-style: var(--CommentTree-borderStyle--branch);
