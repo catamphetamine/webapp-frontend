@@ -112,7 +112,7 @@
 	--PostQuoteMarker-color--generated: currentColor;
 
 	/* PostAttachment. */
-	--PostAttachment-focusOutlineWidth: 0px;
+	/*--PostAttachment-focusOutlineWidth: 2px;*/
 
 	/* HoverButton. */
 	--HoverButton-color: inherit;
@@ -155,7 +155,7 @@
 
 	/* Picture. */
 	--Picture-borderColor: rgba(0, 0, 0, 0.5);
-	--Picture-borderColor--focus: var(--base-color-600);
+	--Picture-borderColor--focus: var(--base-color-700);
 	--Picture-filter: none;
 
 	/* Critical. */
@@ -301,7 +301,7 @@
 
 	/* Picture. */
 	--Picture-borderColor: var(--Content-color-100);
-	--Picture-borderColor--focus: #a25b31;
+	--Picture-borderColor--focus: #743f20;
 	/*--Picture-borderColor--focus: var(--Content-color-500);*/
 	--Picture-filter: brightness(85%);
 
