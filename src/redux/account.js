@@ -1,4 +1,4 @@
-import { ReduxModule } from 'react-website'
+import { ReduxModule } from 'react-pages'
 
 const redux = new ReduxModule()
 
@@ -26,9 +26,7 @@ export const uploadPicture = redux.action
 	(file) => (http) => http.post(`api://images/upload`, { file })
 )
 
-// export const setNewBackgroundPicture = redux.simpleAction
-// (
-// 	picture => picture,
+// export const setNewBackgroundPicture = redux.simpleAction(
 // 	(state, picture) => ({
 // 		...state,
 // 		// uploadingNewBackgroundPicture : false,
@@ -36,9 +34,7 @@ export const uploadPicture = redux.action
 // 	})
 // )
 
-// export const setNewAccountPicture = redux.simpleAction
-// (
-// 	picture => picture,
+// export const setNewAccountPicture = redux.simpleAction(
 // 	(state, picture) => ({
 // 		...state,
 // 		// uploadingNewAccountPicture : false,

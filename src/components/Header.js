@@ -1,6 +1,6 @@
 import React from 'react'
 import { MenuIcon } from 'react-responsive-ui'
-import { Link } from 'react-website'
+import { Link } from 'react-pages'
 
 import ApplicationMenu from './ApplicationMenu'
 

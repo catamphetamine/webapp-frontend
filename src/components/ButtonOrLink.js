@@ -1,7 +1,7 @@
 import React, { useRef } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
-import { Link } from 'react-website'
+import { Link } from 'react-pages'
 
 import _openLinkInNewTab from '../utility/openLinkInNewTab'
 

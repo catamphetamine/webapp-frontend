@@ -1,40 +1,33 @@
-import React from 'react'
+import React, { useCallback } from 'react'
+import PropTypes from 'prop-types'
 import { Form as Form_ } from 'easy-react-form'
 export { Field, Submit } from 'easy-react-form'
-import { connect } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 
 import { notify } from '../redux/notifications'
 
 import './Form.css'
 
-@connect(({ notifications }) => ({
-	notification: notifications.notification
-}), {
-	notify
-}, null, {
-	withRef: true
-})
-export class Form extends React.Component {
-	form = React.createRef()
-
-	focus = (field) => this.form.current.focus(field)
-
-	onError = (error) => {
-		const { notify } = this.props
+export function Form({
+	notify,
+	...rest
+}, ref) {
+	const dispatch = useDispatch()
+	const notification = useSelector(({ notifications }) => notifications.notification)
+	const onError = useCallback((error) => {
 		console.error(error)
-		notify(error.message, { type: 'critical' })
-	}
+		dispatch(notify(error.message, { type: 'critical' }))
+	}, [dispatch])
+	return (
+		<Form_
+			ref={ref}
+			onError={onError}
+			{...rest}/>
+	)
+}
 
-	render() {
-		const {
-			notify,
-			...rest
-		} = this.props
-		return (
-			<Form_
-				ref={this.form}
-				onError={this.onError}
-				{...rest}/>
-		)
-	}
+Form = React.forwardRef(Form)
+
+Form.propTypes = {
+	notify: PropTypes.func.isRequired
 }

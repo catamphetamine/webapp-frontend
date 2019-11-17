@@ -1,7 +1,7 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
-import { meta, preload, Link } from 'react-website'
+import { useDispatch, useSelector } from 'react-redux'
+import { Link } from 'react-pages'
 import classNames from 'classnames'
 
 import {
@@ -32,7 +32,68 @@ import getSortedAttachments from 'social-components/commonjs/utility/post/getSor
 
 import './AccountProfile.css'
 
-@meta(({ account: { account } }) => ({
+export default function Profile() {
+	const dispatch = useDispatch()
+	const account = useSelector(({ account }) => account.account)
+	const posts = useSelector(({ account }) => account.posts)
+	const onAttachmentClick = useCallback((attachment, post) => {
+		const attachments = getSortedAttachments(post).filter(isSlideSupported)
+		const i = attachments.indexOf(attachment)
+		// If an attachment is either an uploaded one or an embedded one
+		// then it will be in `post.attachments`.
+		// If an attachment is only attached to a `link`
+		// (for example, an inline-level YouTube video link)
+		// then it won't be included in `post.attachments`.
+		if (i >= 0) {
+			dispatch(openSlideshow(attachments, i))
+		} else {
+			dispatch(openSlideshow([attachment], 0))
+		}
+	}, [dispatch])
+	if (!account) {
+		return null
+	}
+	return (
+		<section className="account-profile">
+			{/* Background picture, account picture, account name. */}
+			<AccountHeader account={account}/>
+
+			{/* Account summary and action buttons on the left side. */}
+			<div className="container">
+				<div className="row">
+					<div className="col-12 col-l-4 col-xl-3">
+						{/* Account blocked notice */}
+						{ account.blockedAt &&
+							<AccountBlockedNotice account={account} />
+						}
+
+						<AccountSummary account={account}/>
+						<AccountActions account={account}/>
+					</div>
+
+					<div className="col-12 col-l-8 col-xl-6">
+						{/* Tabs */}
+						<AccountTabs account={account}/>
+
+						{/* Page content */}
+						{posts && posts.map((post) => (
+							<ContentSection key={post.id} className="account-profile__post-section">
+								{/*<ContentSectionHeader>
+									Craft
+								</ContentSectionHeader>*/}
+								<Post
+									post={post}
+									onAttachmentClick={(attachment) => onAttachmentClick(attachment, post)}/>
+							</ContentSection>
+						))}
+					</div>
+				</div>
+			</div>
+		</section>
+	)
+}
+
+Profile.meta = ({ account: { account } }) => ({
 	title: account && account.name,
 	description: account && account.description,
 	type: 'profile',
@@ -45,89 +106,25 @@ import './AccountProfile.css'
 		height: account.picture.height,
 		type: account.picture.type
 	}
-}))
-@preload(async ({ dispatch, params }) => {
+})
+
+Profile.load = async ({ dispatch, params }) => {
 	// `id` could be an `id` and it could be an `idAlias`.
 	const account = await dispatch(getAccount(params.id))
 	// Get the list of account's posts.
 	await dispatch(getAccountPosts(account.id))
-})
-@connect(({ account }) => ({
-	account: account.account,
-	posts: account.posts
-}), {
-	openSlideshow
-})
-export default class Profile extends React.Component {
-	static propTypes = {
-		account: accountShapeProfile,
-		posts: PropTypes.arrayOf(post),
-		openSlideshow: PropTypes.func.isRequired
-	}
+}
 
-	onAttachmentClick = (attachment, post) => {
-		const { openSlideshow } = this.props
-		const attachments = getSortedAttachments(post).filter(isSlideSupported)
-		const i = attachments.indexOf(attachment)
-		// If an attachment is either an uploaded one or an embedded one
-		// then it will be in `post.attachments`.
-		// If an attachment is only attached to a `link`
-		// (for example, an inline-level YouTube video link)
-		// then it won't be included in `post.attachments`.
-		if (i >= 0) {
-			openSlideshow(attachments, i)
-		} else {
-			openSlideshow([attachment], 0)
-		}
-	}
+Profile.propTypes = {
+	account: accountShapeProfile,
+	posts: PropTypes.arrayOf(post),
+	dispatch: PropTypes.func.isRequired
+}
 
-	render() {
-		const {
-			account,
-			posts
-		} = this.props
+function AccountBlockedNotice({ account }) {
+	return 'Blocked'
+}
 
-		if (!account) {
-			return null
-		}
-
-		const editing = false
-
-		return (
-			<section className="account-profile">
-				{/* Background picture, account picture, account name. */}
-				<AccountHeader account={account}/>
-
-				{/* Account summary and action buttons on the left side. */}
-				<div className="container">
-					<div className="row">
-						<div className="col-12 col-l-4 col-xl-3">
-							{/* Account blocked notice */}
-							{ account.blockedAt && this.render_account_blocked_notice() }
-
-							<AccountSummary account={account}/>
-							<AccountActions account={account}/>
-						</div>
-
-						<div className="col-12 col-l-8 col-xl-6">
-							{/* Tabs */}
-							<AccountTabs account={account}/>
-
-							{/* Page content */}
-							{posts && posts.map((post) => (
-								<ContentSection key={post.id} className="account-profile__post-section">
-									{/*<ContentSectionHeader>
-										Craft
-									</ContentSectionHeader>*/}
-									<Post
-										post={post}
-										onAttachmentClick={(attachment) => this.onAttachmentClick(attachment, post)}/>
-								</ContentSection>
-							))}
-						</div>
-					</div>
-				</div>
-			</section>
-		)
-	}
+AccountBlockedNotice.propTypes = {
+	account: accountShapeProfile.isRequired
 }

@@ -1,4 +1,4 @@
-import { createConfig } from './react-website.common'
+import { createConfig } from './react-pages.common'
 
 import routes  from './routes'
 import * as reducers from './redux'
@@ -10,7 +10,7 @@ export { default as icon } from '../assets/images/icon.png'
 export default createConfig({
 	routes,
 	reducers,
-	transformURL(url, server) {
+	transformUrl(url, { server }) {
 		// Pass all `api://` requests to the API server.
 		if (configuration.api && url.indexOf('api://') === 0) {
 			//
@@ -32,5 +32,13 @@ export default createConfig({
 			// Transform to an absolute URL.
 			return configuration.api + '/' + url.slice('api://'.length)
 		}
+	},
+	meta: {
+		site_name   : 'WebApp',
+		title       : 'WebApp',
+		description : 'A generic web application boilerplate',
+		image       : 'https://www.google.ru/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png',
+		locale      : 'ru_RU',
+		locales     : ['ru_RU', 'en_US']
 	}
 })

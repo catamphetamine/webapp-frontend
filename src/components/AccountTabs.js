@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
-import { Link } from 'react-website'
+import { useSelector } from 'react-redux'
+import { Link } from 'react-pages'
 import classNames from 'classnames'
 
 import { accountLink } from './AccountLink'
@@ -11,42 +11,35 @@ import _translate from '../translate'
 
 import './AccountTabs.css'
 
-@connect(({ found }) => ({
-	location: found.resolvedMatch.location
-}))
-export default class AccountTabs extends React.Component
-{
-	static propTypes = {
-		account: accountShape.isRequired,
-		location: locationShape.isRequired
-	}
+export default function AccountTabs({ account }) {
+	const location = useSelector(({ found }) => found.resolvedMatch.location)
 
-	render()
-	{
-		const { account, location } = this.props
+	// Extract "content type" from URL.
+	// E.g. `/alice/photos` -> `photos`.
+	const contentType = getContentType(location)
 
-		// Extract "content type" from URL.
-		// E.g. `/alice/photos` -> `photos`.
-		const contentType = getContentType(location)
+	return (
+		<ul className="account-tabs">
+			{TABS.map((tab) => (
+				<li
+					key={tab}
+					className="account-tabs__tab">
+					<Link
+						to={`${accountLink(account)}${tab === 'feed' ? '' : '/' + tab}`}
+						className={ classNames('account-tabs__tab-link', {
+							'account-tabs__tab-link--active' : tab === 'feed' ? !contentType : contentType === tab
+						}) }>
+						{translate(`account.tabs.${tab}`)}
+					</Link>
+				</li>
+			))}
+		</ul>
+	)
+}
 
-		return (
-			<ul className="account-tabs">
-				{TABS.map((tab) => (
-					<li
-						key={tab}
-						className="account-tabs__tab">
-						<Link
-							to={`${accountLink(account)}${tab === 'feed' ? '' : '/' + tab}`}
-							className={ classNames('account-tabs__tab-link', {
-								'account-tabs__tab-link--active' : tab === 'feed' ? !contentType : contentType === tab
-							}) }>
-							{translate(`account.tabs.${tab}`)}
-						</Link>
-					</li>
-				))}
-			</ul>
-		)
-	}
+AccountTabs.propTypes = {
+	account: accountShape.isRequired,
+	location: locationShape.isRequired
 }
 
 const messages =

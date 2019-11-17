@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Link } from 'react-website'
+import { Link } from 'react-pages'
 import classNames from 'classnames'
 
 import './PostLink.css'

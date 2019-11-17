@@ -1,15 +1,15 @@
-import React, { Component } from 'react'
+import React, { useEffect, useCallback } from 'react'
 import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
-import { meta, Loading } from 'react-website'
+import { useDispatch, useSelector } from 'react-redux'
+import { Loading } from 'react-pages'
 
 // Not importing `Tooltip.css` because
 // it's already loaded as part of `react-responsive-ui`.
 // import 'react-time-ago/Tooltip.css'
-import 'react-website/components/Loading.css'
+import 'react-pages/components/Loading.css'
 // Not importing `LoadingIndicator.css` because
 // it's already loaded as part of `react-responsive-ui`.
-// import 'react-website/components/LoadingIndicator.css'
+// import 'react-pages/components/LoadingIndicator.css'
 
 // `react-time-ago` English language.
 import '../components/TimeAgo.en'
@@ -25,74 +25,52 @@ import { closeSlideshow } from '../redux/slideshow'
 
 import './Application.css'
 
-@meta(() => ({
-	site_name   : 'WebApp',
-	title       : 'WebApp',
-	description : 'A generic web application boilerplate',
-	image       : 'https://www.google.ru/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png',
-	locale      : 'ru_RU',
-	locales     : ['ru_RU', 'en_US']
-}))
-@connect(({ slideshow }) => ({
-	slideshowIndex: slideshow.index,
-	slideshowIsOpen: slideshow.isOpen,
-	slideshowPictures: slideshow.pictures,
-	slideshowMode: slideshow.slideshowMode
-}), {
-	closeSlideshow
-})
-export default class App extends Component {
-	static propTypes = {
-		children : PropTypes.node.isRequired
-	}
-
-	componentDidMount() {
-		// Load YouTube video player API.
+export default function App({ children }) {
+	const dispatch = useDispatch()
+	const onCloseSlideshow = useCallback(() => dispatch(closeSlideshow()), [dispatch])
+	const slideshowIndex = useSelector(({ slideshow }) => slideshow.index)
+	const slideshowIsOpen = useSelector(({ slideshow }) => slideshow.isOpen)
+	const slideshowPictures = useSelector(({ slideshow }) => slideshow.pictures)
+	const slideshowMode = useSelector(({ slideshow }) => slideshow.slideshowMode)
+	useEffect(() => {
+		// Load YouTube video player API on application initialization.
 		loadYouTubeVideoPlayerApi()
-	}
+	}, [])
+	return (
+		<React.Fragment>
+			{/* Page loading indicator */}
+			<Loading/>
 
-	render() {
-		const {
-			slideshowIndex,
-			slideshowIsOpen,
-			slideshowPictures,
-			slideshowMode,
-			closeSlideshow,
-			children
-		} = this.props
+			{/* Pop-up messages */}
+			<Snackbar/>
 
-		return (
-			<React.Fragment>
-				{/* Page loading indicator */}
-				<Loading/>
+			{/* Detects touch capability and screen size. */}
+			<DeviceInfo/>
 
-				{/* Pop-up messages */}
-				<Snackbar/>
+			{/* Picture Slideshow */}
+			{slideshowPictures &&
+				<Slideshow
+					i={slideshowIndex}
+					isOpen={slideshowIsOpen}
+					slideshowMode={slideshowMode}
+					onClose={onCloseSlideshow}>
+					{slideshowPictures}
+				</Slideshow>
+			}
 
-				{/* Detects touch capability and screen size. */}
-				<DeviceInfo/>
+			<div className="webpage document--background">
+				<Header/>
 
-				{/* Picture Slideshow */}
-				{slideshowPictures &&
-					<Slideshow
-						i={slideshowIndex}
-						isOpen={slideshowIsOpen}
-						slideshowMode={slideshowMode}
-						onClose={closeSlideshow}>
-						{slideshowPictures}
-					</Slideshow>
-				}
-
-				<div className="webpage document--background">
-					<Header/>
-
-					<div className="webpage__content">
-						{ children }
-					</div>
-
-					<Footer/>
+				<div className="webpage__content">
+					{ children }
 				</div>
-			</React.Fragment>
-		)
-	}
+
+				<Footer/>
+			</div>
+		</React.Fragment>
+	)
+}
+
+App.propTypes = {
+	children: PropTypes.node.isRequired
 }

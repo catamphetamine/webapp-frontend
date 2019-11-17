@@ -1,4 +1,4 @@
-import { Redirect } from 'react-website'
+import { Redirect } from 'react-pages'
 
 import Application from './pages/Application'
 import AccountProfile from './pages/AccountProfile'

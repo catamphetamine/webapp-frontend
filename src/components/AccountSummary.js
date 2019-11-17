@@ -1,7 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
-import { Link } from 'react-website'
+import { Link } from 'react-pages'
 import { Button, TextInput } from 'react-responsive-ui'
 import { Form, Field, Submit } from 'easy-react-form'
 import classNames from 'classnames'

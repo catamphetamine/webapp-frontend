@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
-import { Link } from 'react-website'
+import { Link } from 'react-pages'
 
 import AccountPicture from './AccountPicture'
 import PostInlineContent from './PostInlineContent'

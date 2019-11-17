@@ -1,9 +1,8 @@
-import { ReduxModule } from 'react-website'
+import { ReduxModule } from 'react-pages'
 
 const redux = new ReduxModule()
 
-export const uploadPicture = redux.action
-(
+export const uploadPicture = redux.action(
 	(file) => (http) => http.post(`/images/upload`, { file })
 )
 

@@ -1,31 +1,25 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
-import { Link } from 'react-website'
+import { useSelector } from 'react-redux'
+import { Link } from 'react-pages'
 import classNames from 'classnames'
 
 import Button from './Button'
 
 import './Menu.css'
 
-@connect(({ found }) => ({
-  pathname: found.resolvedMatch.location.pathname
-}))
-export default class Menu extends React.Component {
-	render() {
-		const {
-			pathname,
-			className,
-			children
-		} = this.props
-		return (
-			<ul className={classNames('menu', className)}>
-				{children.map((properties, i) => (
-					<MenuItem key={i} {...properties} pathname={pathname}/>
-				))}
-			</ul>
-		)
-	}
+export default function Menu({
+	className,
+	children
+}) {
+	const pathname = useSelector(({ found }) => found.resolvedMatch.location.pathname)
+	return (
+		<ul className={classNames('menu', className)}>
+			{children.map((properties, i) => (
+				<MenuItem key={i} {...properties} pathname={pathname}/>
+			))}
+		</ul>
+	)
 }
 
 const menuItemShape = {

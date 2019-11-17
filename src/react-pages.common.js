@@ -1,6 +1,12 @@
 import Container from './Container'
 
-export function createConfig({ reducers, routes, container, transformURL, ...rest }) {
+export function createConfig({
+	reducers,
+	routes,
+	container,
+	transformUrl,
+	...rest
+}) {
 	return {
 		...rest,
 
@@ -24,9 +30,9 @@ export function createConfig({ reducers, routes, container, transformURL, ...res
 
 		// Pass all API requests to the API server.
 		http: {
-			transformURL: (url, server) => {
-				if (transformURL) {
-					const _url = transformURL(url, server)
+			transformUrl: (url, server) => {
+				if (transformUrl) {
+					const _url = transformUrl(url, server)
 					if (_url !== undefined) {
 						return _url
 					}
@@ -45,7 +51,7 @@ export function onError(error, { path, url, redirect, dispatch, getState, server
 	const redirectToErrorPage = (errorPagePath) => {
 		// Prevents infinite redirection loop or double redirection.
 		// For example, a double redirection in case of `/unauthenticated`.
-		// (e.g. when two parallel `Promise`s load inside `@preload()`
+		// (e.g. when two parallel `Promise`s load inside `load()`
 		//  and both get Status 401 HTTP Response).
 		// Or, for example, an infinite redirection loop in case of `/error`
 		// when there're overall page rendering bugs, etc.

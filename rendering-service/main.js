@@ -1,4 +1,4 @@
-import settings, { icon } from '../src/react-website'
+import settings, { icon } from '../src/react-pages'
 import configuration from '../configuration'
 
 import startRenderingService from './start'

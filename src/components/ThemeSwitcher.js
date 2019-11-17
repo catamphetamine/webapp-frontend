@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import { Select } from 'react-responsive-ui'
 
@@ -13,7 +13,7 @@ import {
 	supportsCSSVariables
 } from '../utility/theme'
 
-export default class ThemeSwitcher extends Component {
+export default class ThemeSwitcher extends React.Component {
 	static propTypes = {
 		localStorageKey: PropTypes.string.isRequired,
 		onSetTheme: PropTypes.func

@@ -16,35 +16,24 @@ const DEFAULT_ACCOUNT_PICTURE =
 	height: 1
 }
 
-export default class AccountPicture extends React.Component
+export default function AccountPicture({
+	picture,
+	account,
+	className,
+	...rest
+}) {
+	return (
+		<Picture
+			{...rest}
+			picture={ picture || account.picture || DEFAULT_ACCOUNT_PICTURE }
+			className={ classNames('account-picture', className) }/>
+	)
+}
+
+AccountPicture.propTypes =
 {
-	static propTypes =
-	{
-		picture   : PropTypes.object,
-		account   : PropTypes.object.isRequired,
-		style     : PropTypes.object,
-		className : PropTypes.string,
-
-		// These two are for `upload picture` to work
-		picture   : PropTypes.object
-	}
-
-	render()
-	{
-		const
-		{
-			picture,
-			account,
-			className,
-			...rest
-		}
-		= this.props
-
-		return (
-			<Picture
-				{...rest}
-				picture={ picture || account.picture || DEFAULT_ACCOUNT_PICTURE }
-				className={ classNames('account-picture', className) }/>
-		)
-	}
+	picture   : PropTypes.object,
+	account   : PropTypes.object.isRequired,
+	style     : PropTypes.object,
+	className : PropTypes.string
 }
