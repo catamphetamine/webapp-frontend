@@ -12,6 +12,7 @@
 	--Text-fontFamily: var(--Document-fontFamily);
 
 	/* Header. */
+	--Header-height: calc(var(--unit) * 3);
 	--Header-borderWidth: 1px;
 	--Header-color--textHover: var(--Clickable-color--text);
 	--Header-color--textActive: var(--Clickable-color--textActive);
@@ -132,6 +133,15 @@
 	@mixin upto-xs {
 		--CommentTree-branchContentTop: 1.9em;
 	}
+
+	/* Slideshow. */
+	--SlideshowSlide-boxShadow: 0 10px 38px rgba(0,0,0,0.2), 0 6px 12px rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.35);
+	--SlideshowSlide-backgroundColor: var(--Content-backgroundColor);
+	--SlideshowSlide-backgroundColor--video: black;
+	--SlideshowProgressDot-borderWidth: 1px;
+	--SlideshowProgressDot-borderColor: rgba(0, 0, 0, 0.5);
+	--SlideshowProgressDot-opacity: 0.8;
+	--Slideshow-zIndex: 1;
 }
 
 /* Light mode. */
@@ -227,6 +237,7 @@
 	--CommentTree-color: var(--base-color-300);
 	--CommentTree-color--hover: var(--base-color-400);
 	--CommentTree-backgroundColor--hover: rgba(0,0,0,0.044);
+	--CommentTreeBranch-paddingLeft--firstLevel: 0;
 
 	/* HoverButton. */
 	--HoverButton-color--active: initial;

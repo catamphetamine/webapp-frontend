@@ -16,6 +16,10 @@ export default class CommentTree extends React.Component {
 	static propTypes = {
 		flat: PropTypes.bool,
 		comment: post.isRequired,
+		parentComment: post,
+		// This flag is only for correctly styling root-level dialogue chains:
+		// they require some left padding for eligibility on mobile devices.
+		isFirstLevelTree: PropTypes.bool,
 		component: PropTypes.func.isRequired,
 		getComponentProps: PropTypes.func,
 		// `state` is a recursive structure.
@@ -227,6 +231,7 @@ export default class CommentTree extends React.Component {
 			flat,
 			comment,
 			parentComment,
+			isFirstLevelTree,
 			component: Component,
 			getComponentProps,
 			className,
@@ -256,7 +261,12 @@ export default class CommentTree extends React.Component {
 		}) : undefined
 		return (
 			<div className={classNames('comment-tree', {
-				'comment-tree--nested': parentComment && !flat
+				'comment-tree--nested': parentComment && !flat,
+				// If comments don't have any side padding
+				// then the root replies branch line would be ineligible
+				// because it would be drawn at the very screen edge (mobile devices).
+				// This CSS class can be used for styling such special case.
+				'comment-tree--first-level': isFirstLevelTree
 			})}>
 				{parentComment && !flat &&
 					<div className="comment-tree__branch-marker"/>
@@ -282,7 +292,8 @@ export default class CommentTree extends React.Component {
 				{showReplies && _isMiddleDialogueChainLink &&
 					<div className="comment-tree__dialogue-chain-marker"/>
 				}
-				{/* If there's only a single reply then there won't be the actual reply "tree" rendered. */}
+				{/* If there's only a single reply then there won't be the actual
+			      reply "tree" rendered: a "dialogue chain" will be rendered instead. */}
 				{showReplies && _isMiddleDialogueChainLink &&
 					<CommentTree
 						{...rest}
@@ -293,17 +304,12 @@ export default class CommentTree extends React.Component {
 						comment={removeLeadingPostLink(comment.replies[0], comment)}
 						parentComment={comment}
 						component={Component}
+						isFirstLevelTree={isFirstLevelTree}
 						getComponentProps={getComponentProps}/>
 				}
 				{/* If there're more than a single reply then show the replies tree. */}
 				{showReplies && !_isMiddleDialogueChainLink &&
-					<div className={classNames('comment-tree__replies', {
-						// If comments don't have any side padding
-						// then the root replies branch line would be ineligible
-						// because it would be drawn at the very screen edge.
-						// This CSS class can be used for styling such special case.
-						'comment-tree__replies--root': !parentComment
-					})}>
+					<div className="comment-tree__replies">
 						{/* Comment tree branch which is also a "Show"/"Hide" replies tree toggler. */}
 						<button
 							type="button"
@@ -321,6 +327,7 @@ export default class CommentTree extends React.Component {
 								comment={removeLeadingPostLink(reply, comment)}
 								parentComment={comment}
 								component={Component}
+								isFirstLevelTree={!parentComment}
 								getComponentProps={getComponentProps}/>
 						))}
 					</div>

@@ -29,7 +29,7 @@ function HtmlVideo(props, ref) {
 	}
 
 	useImperativeHandle(ref, () => ({
-		getNode: getPlayer,
+		getDOMNode: getPlayer,
 		focus,
 		play,
 		pause,

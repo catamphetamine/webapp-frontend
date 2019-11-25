@@ -5,26 +5,43 @@ import { ReduxModule } from 'react-pages'
 // `node_modules/react-pages` packages being used.
 const redux = new ReduxModule('SLIDESHOW')
 
+const SLIDESHOW_PROPERTIES = [
+	'slides',
+	'index',
+	'mode',
+	'thumbnailImage'
+]
+
 const onOpenSlideshow = redux.simpleAction(
-	(state, args) => ({
-		...state,
-		...args,
-		isOpen: true
-	})
+	(state, properties) => {
+		const newState = {
+			...state,
+			isOpen: true
+		}
+		for (const key of Object.keys(properties)) {
+			if (SLIDESHOW_PROPERTIES.includes(key)) {
+				newState[key] = properties[key]
+			}
+		}
+		return newState
+	}
 )
 
-export const openSlideshow = (pictures, index, options) => {
-	return onOpenSlideshow({ pictures, index, ...options })
+export const openSlideshow = (slides, index, options) => {
+	return onOpenSlideshow({ slides, index, ...options })
 }
 
 export const closeSlideshow = redux.simpleAction(
-	(state, event) => ({
-		...state,
-		pictures: undefined,
-		index: undefined,
-		slideshowMode: undefined,
-		isOpen: false
-	})
+	(state) => {
+		const newState = {
+			...state,
+			isOpen: false
+		}
+		for (const key of SLIDESHOW_PROPERTIES) {
+			newState[key] = undefined
+		}
+		return newState
+	}
 )
 
 export default redux.reducer()

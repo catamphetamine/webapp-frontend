@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import { FadeInOut, ActivityIndicator } from 'react-responsive-ui'
 
-import { preloadPicture } from './Slideshow'
 import ButtonOrLink from './ButtonOrLink'
+import { preloadPictureSlide } from './Slideshow.Picture'
+import SlideshowSize from './Slideshow.Size'
 import Picture from './Picture'
 import { getOriginalPictureSizeAndUrl } from '../utility/fixPictureSize'
 
@@ -35,8 +36,9 @@ export default function PostAttachment({
 	fixAttachmentPictureSize,
 	className
 }) {
+	const thumbnailElement = useRef()
 	const [isRevealed, setIsRevealed] = useState(attachment.spoiler ? false : true)
-	const [isLoading, loadOnClick] = useLoadOnClick(attachment, fixAttachmentPictureSize)
+	const [isLoading, loadOnClick] = useLoadOnClick(attachment, fixAttachmentPictureSize, thumbnailElement)
 	const picture = getPicture(attachment)
 	const isLandscape = picture.width >= picture.height
 	async function onPictureClick(event) {
@@ -51,6 +53,7 @@ export default function PostAttachment({
 	return (
 		<Picture
 			border
+			imageRef={thumbnailElement}
 			component={ButtonOrLink}
 			url={getAttachmentUrl(attachment)}
 			title={isRevealed ? attachment.title : spoilerLabel}
@@ -151,9 +154,10 @@ AttachmentSpoilerBar.propTypes = {
 	children: PropTypes.string.isRequired
 }
 
-function useLoadOnClick(attachment, fixAttachmentPictureSize) {
+// `thumbnailElement` could be used in `Slideshow.OpenCloseTransition.js`.
+function useLoadOnClick(attachment, fixAttachmentPictureSize, thumbnailElement) {
 	const [isLoading, setIsLoading] = useState()
-	async function onClick(event) {
+	const onClick = useCallback(async (event) => {
 		if (event.ctrlKey || event.altKey || event.shiftKey || event.metaKey) {
 			return
 		}
@@ -172,7 +176,7 @@ function useLoadOnClick(attachment, fixAttachmentPictureSize) {
 				await getOriginalPictureSizeAndUrl(attachment)
 			}
 			try {
-				await preloadPicture(attachment)
+				await preloadPictureSlide(attachment)
 			} catch (error) {
 				console.error(error)
 			}
@@ -181,7 +185,7 @@ function useLoadOnClick(attachment, fixAttachmentPictureSize) {
 			setIsLoading(false)
 		}
 		return event
-	}
+	}, [attachment, fixAttachmentPictureSize, thumbnailElement, setIsLoading])
 	return [isLoading, onClick]
 }
 

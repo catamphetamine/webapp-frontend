@@ -44,10 +44,12 @@ function Picture({
 	component: Component,
 	showLoadingPlaceholder,
 	showLoadingIndicator,
+	pixelRatioMultiplier,
 	blur,
 	style,
 	className,
 	children,
+	imageRef,
 	...rest
 }, ref) {
 	border = border && !picture.transparentBackground
@@ -65,7 +67,8 @@ function Picture({
 	))
 
 	const containerRef = useRef()
-	const imageRef = useRef()
+	// `imageRef` property shouldn't change, otherwise hooks order will change.
+	imageRef = imageRef || useRef()
 	const isMounted = useRef()
 	const cancelLoadingImage = useRef()
 	const [size, setSize] = useState(initialImageSize.current)
@@ -135,6 +138,9 @@ function Picture({
 			if (containerRef.current.focus) {
 				return containerRef.current.focus()
 			}
+		},
+		getDOMNode() {
+			return containerRef.current
 		}
 	}))
 
@@ -223,7 +229,7 @@ function Picture({
 		}
 		return getPreferredSize(
 			picture,
-			getPreferredImageWidth()
+			getPreferredImageWidth() * pixelRatioMultiplier
 		)
 	}
 
@@ -316,9 +322,15 @@ function Picture({
 				<div style={{ width: '100%', paddingBottom: 100 / getImageAspectRatio() + '%' }}/>
 			}
 
+			{/* Image "status" screen is displayed below the `<img/>`.
+			    This way, as the image loads, it hides the "loading" status below itself. */}
 			{imageStatus !== 1 &&
 				<div className="rrui__picture__status">
-					<FadeInOut show fadeInInitially fadeInDuration={3000} fadeOutDuration={3000}>
+					<FadeInOut
+						show
+						fadeInInitially
+						fadeInDuration={imageStatus === -1 ? 0 : 3000}
+						fadeOutDuration={imageStatus === -1 ? 0 : 3000}>
 						{imageStatus === -1 ?
 							<Close
 								onClick={retryImageLoad}
@@ -342,6 +354,7 @@ function Picture({
 					className="rrui__picture__image"/>
 			}
 
+			{/* Maybe there could be a single <img/> instead of a blurred one and a non-blurred one. */}
 			{imageStatus !== -1 && blur &&
 				<img
 					src={typeof window === 'undefined' ? TRANSPARENT_PIXEL : (size && size.url || TRANSPARENT_PIXEL)}
@@ -379,6 +392,9 @@ Picture.propTypes = {
 	// Any "child" content will be displayed if no picture is present.
 	children: PropTypes.node,
 
+	// `imageRef` property shouldn't change, otherwise hooks order will change.
+	imageRef: PropTypes.object,
+
 	// The image sizing algorithm.
 	fit: PropTypes.oneOf([
 		'cover',
@@ -394,6 +410,9 @@ Picture.propTypes = {
 	// If `true` then will only show the smallest size ever.
 	useSmallestSize: PropTypes.bool,
 
+	// Is a small hack for `<Slideshow/>` scaling.
+	pixelRatioMultiplier: PropTypes.number.isRequired,
+
 	// Set to `false` to not show "loading" background.
 	// Is `true` by default.
 	showLoadingPlaceholder: PropTypes.bool.isRequired,
@@ -408,7 +427,8 @@ Picture.propTypes = {
 Picture.defaultProps = {
 	component: 'div',
 	// fadeInDuration: 0,
-	showLoadingPlaceholder: true
+	showLoadingPlaceholder: true,
+	pixelRatioMultiplier: 1
 }
 
 export default Picture
@@ -605,5 +625,22 @@ function getInitialImageSize(picture, width, height, fit, useSmallestSize) {
 				imageWidth = width
 		}
 		return getPreferredSize(picture, imageWidth)
+	}
+}
+
+export function getFitSize(picture, availableWidth, availableHeight) {
+	if (availableWidth > picture.width) {
+		availableWidth = picture.width
+	}
+	if (availableHeight > picture.height) {
+		availableHeight = picture.height
+	}
+	const aspectRatio = getAspectRatio(picture)
+	const maxWidth = availableHeight * aspectRatio
+	if (availableWidth > maxWidth) {
+		return [maxWidth, availableHeight]
+	} else {
+		const maxHeight = availableWidth / aspectRatio
+		return [availableWidth, maxHeight]
 	}
 }

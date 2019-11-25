@@ -30,8 +30,8 @@ export default function App({ children }) {
 	const onCloseSlideshow = useCallback(() => dispatch(closeSlideshow()), [dispatch])
 	const slideshowIndex = useSelector(({ slideshow }) => slideshow.index)
 	const slideshowIsOpen = useSelector(({ slideshow }) => slideshow.isOpen)
-	const slideshowPictures = useSelector(({ slideshow }) => slideshow.pictures)
-	const slideshowMode = useSelector(({ slideshow }) => slideshow.slideshowMode)
+	const slideshowSlides = useSelector(({ slideshow }) => slideshow.slides)
+	const slideshowMode = useSelector(({ slideshow }) => slideshow.mode)
 	useEffect(() => {
 		// Load YouTube video player API on application initialization.
 		loadYouTubeVideoPlayerApi()
@@ -48,13 +48,14 @@ export default function App({ children }) {
 			<DeviceInfo/>
 
 			{/* Picture Slideshow */}
-			{slideshowPictures &&
+			{slideshowSlides &&
 				<Slideshow
 					i={slideshowIndex}
 					isOpen={slideshowIsOpen}
-					slideshowMode={slideshowMode}
-					onClose={onCloseSlideshow}>
-					{slideshowPictures}
+					mode={slideshowMode}
+					onClose={onCloseSlideshow}
+					animateOpenCloseOnPanOut>
+					{slideshowSlides}
 				</Slideshow>
 			}
 

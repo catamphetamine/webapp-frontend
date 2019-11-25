@@ -47,8 +47,8 @@ export default {
 	// 			return false
 	// 	}
 	// },
-	onKeyDown(event, slide, ref) {
-		const video = ref.current
+	onKeyDown(event, slide) {
+		// const video = currentSlideElementRef.current
 		switch (event.keyCode) {
 			// Capture Spacebar (Play/Pause).
 			case 32:
@@ -80,7 +80,7 @@ export default {
 		return slide.type === 'video'
 	},
 	// onShowSlide(slide, ref, props) {
-	// 	if (props.slideshowMode) {
+	// 	if (props.mode === 'flow') {
 	// 		ref.showVideo(() => ref.play())
 	// 	}
 	// },
@@ -89,7 +89,7 @@ export default {
 		slide,
 		isCurrentSlide,
 		autoPlay,
-		slideshowMode,
+		mode,
 		onClick,
 		maxWidth,
 		maxHeight,
@@ -102,15 +102,15 @@ export default {
 				video={slide.video}
 				onClick={onClick}
 				playable={isCurrentSlide}
-				autoPlay={slideshowMode || autoPlay}
+				autoPlay={mode === 'flow' || autoPlay}
 				stopVideoOnStopPlaying
 				showPlayIcon
 				maxWidth={maxWidth}
 				maxHeight={maxHeight}
 				fit="scale-down"
 				tabIndex={tabIndex}
-				preview={slideshowMode ? false : undefined}
-				seekOnArrowKeys={slideshowMode ? false : undefined}
+				preview={mode === 'flow' ? false : undefined}
+				seekOnArrowKeys={mode === 'flow' ? false : undefined}
 				seekOnArrowKeysAtBorders={false}
 				style={style}
 				className="rrui__slideshow__video"/>

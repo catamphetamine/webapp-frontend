@@ -2,10 +2,16 @@ import React from 'react'
 
 import Picture, {
 	preloadImage,
+	getFitSize,
 	getPreferredSize,
 	getAspectRatio,
 	isVector
 } from './Picture'
+
+import {
+	getViewportWidth,
+	getViewportHeight
+} from '../utility/dom'
 
 import Search from '../../assets/images/icons/menu/search-outline.svg'
 
@@ -13,7 +19,7 @@ import Search from '../../assets/images/icons/menu/search-outline.svg'
 // import GoogleIcon from '../../assets/images/icons/services/google-monochrome.svg'
 
 export default {
-	changeSlideOnClick: true,
+	allowChangeSlideOnClick: true,
 	getMaxSize(slide) {
 		return slide.picture
 	},
@@ -39,9 +45,9 @@ export default {
 	canRender(slide) {
 		return slide.type === 'picture'
 	},
-	preload(slide, width) {
-		return preloadImage(getPreferredSize(slide.picture, width).url)
-	},
+	// preload(slide, width, height) {
+	// 	return preloadImage(getPreferredSize(slide.picture, getFitSize(slide.picture, width, height)).url)
+	// },
 	render({
 		ref,
 		slide,
@@ -49,6 +55,7 @@ export default {
 		tabIndex,
 		maxWidth,
 		maxHeight,
+		scale,
 		style
 	}) {
 		return (
@@ -61,6 +68,7 @@ export default {
 				showLoadingPlaceholder={false}
 				maxWidth={maxWidth}
 				maxHeight={maxHeight}
+				pixelRatioMultiplier={scale}
 				fit="scale-down"
 				style={style}
 				className="rrui__slideshow__picture"/>
@@ -89,3 +97,21 @@ export default {
 // 	left: '22%',
 // 	top: '22%'
 // }
+
+/**
+ * Preloads a picture slide.
+ * @param  {object} slide
+ * @param  {object} slideshow
+ * @return {Promise}
+ */
+export function preloadPictureSlide(slide) {
+	const slideshowSize = window.SlideshowSize
+	return preloadImage(getPreferredSize(
+		slide.picture,
+		getFitSize(
+			slide.picture,
+			slideshowSize.getMaxSlideWidth(),
+			slideshowSize.getMaxSlideHeight()
+		)
+	).url)
+}

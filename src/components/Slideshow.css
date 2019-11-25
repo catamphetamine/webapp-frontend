@@ -29,6 +29,7 @@
 	right: 0;
 	top: 0;
 	bottom: 0;
+	z-index: var(--Slideshow-zIndex);
 }
 
 .rrui__slideshow__slides {
@@ -85,6 +86,16 @@
 
 .rrui__slideshow__picture .rrui__picture__image {
 	cursor: pointer;
+}
+
+.rrui__slideshow__slide--card > * {
+	box-shadow: var(--SlideshowSlide-boxShadow);
+	/* PNG images can be transparent. */
+	background-color: var(--SlideshowSlide-backgroundColor);
+}
+
+.rrui__slideshow__slide--card > .rrui__slideshow__video {
+	background-color: var(--SlideshowSlide-backgroundColor--video);
 }
 
 .rrui__slideshow--panning .rrui__slideshow__slide {
@@ -272,7 +283,7 @@
 	margin-bottom: calc(var(--unit) / 2);
 	padding: 0;
 	list-style: none;
-	opacity: 0.8;
+	opacity: var(--SlideshowProgressDot-opacity);
 	li {
 		line-height: 0;
 	}
@@ -285,11 +296,22 @@
 	margin-right: calc(var(--unit) / 4);
 	border-radius: 50%;
 	background-color: rgba(255, 255, 255, 0.7);
-	box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5);
+	box-shadow: 0 0 0 var(--SlideshowProgressDot-borderWidth) var(--SlideshowProgressDot-borderColor);
 }
 
 .rrui__slideshow__progress-dot--selected {
 	background-color: var(--Clickable-color--active);
+}
+
+.rrui__slideshow__progress-dots--high-contrast {
+	--SlideshowProgressDot-opacity: 1;
+}
+
+.rrui__slideshow__progress-dot--high-contrast {
+	margin-left: calc(var(--unit) / 3);
+	margin-right: calc(var(--unit) / 3);
+	--SlideshowProgressDot-borderWidth: 2px;
+	--SlideshowProgressDot-borderColor: black;
 }
 
 .rrui__slideshow__video .rrui__video__play-icon {

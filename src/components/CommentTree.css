@@ -15,18 +15,19 @@
 /*
 If comments don't have any side padding
 then the root replies branch line would be ineligible
-because it would be drawn at the very screen edge.
-This CSS class can be used for styling such special case.
+because it would be drawn at the very left edge of the screen.
+This CSS class can be used for fixing such special case
+by offsetting the root replies branch line to the right.
 */
-.comment-tree__replies--root {
-	> .comment-tree {
-		> .comment-tree__branch-line,
-		> .comment-tree__branch-marker {
-			left: calc(-1 * var(--CommentTree-padding));
-		}
-		> .comment-tree__branch-marker {
-			width: calc(var(--CommentTree-padding));
-		}
+.comment-tree--first-level {
+	> .comment-tree__branch-line,
+	> .comment-tree__branch-marker,
+	> .comment-tree__dialogue-chain-marker {
+		left: calc(-1 * var(--CommentTree-padding) * (1 - var(--CommentTreeBranch-paddingLeft--firstLevel)));
+	}
+	> .comment-tree__branch-marker,
+	> .comment-tree__dialogue-chain-marker {
+		width: calc(var(--CommentTree-padding) * (1 - var(--CommentTreeBranch-paddingLeft--firstLevel)));
 	}
 }
 /* ^ var(--CommentTree-padding) * var(--CommentTree-root-level-replies-branch-width-factor) */

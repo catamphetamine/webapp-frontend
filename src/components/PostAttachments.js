@@ -117,7 +117,7 @@ export default function PostAttachments({
 	function createOnAttachmentClick(i) {
 		return (event) => {
 			event.preventDefault()
-			onAttachmentClick(allPicturesAndVideos[i])
+			onAttachmentClick(allPicturesAndVideos[i], { thumbnailImage: event.target })
 		}
 	}
 

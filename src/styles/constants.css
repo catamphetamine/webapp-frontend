@@ -64,8 +64,6 @@
 	/* Some magic number seen on the Internet. */
 	--line-height : 1.52947;
 
-	--Header-height: calc(var(--unit) * 3);
-
 	/*
 	Mobile font size must be at least `16px`
 	to prevent automatic zoom on input focus.
@@ -76,7 +74,6 @@
 	--Document-fontSize--m: 20px;
 
 	--preloading-screen-z-index : 10;
-	--slideshow-z-index : 1;
 
 	--border-radius : 0.2rem;
 	--shadow : 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);

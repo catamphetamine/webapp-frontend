@@ -666,12 +666,12 @@ function getPlayerNode(playerRef, video) {
 		// YouTube video could be shown in a YouTube player
 		// or as an `<iframe/>` (as a fallback).
 		if (playerRef instanceof YouTubeVideo) {
-			return playerRef.getNode()
+			return playerRef.getDOMNode()
 		}
 		return playerRef
 	}
 	if (!video.provider) {
-		return playerRef.getNode()
+		return playerRef.getDOMNode()
 	}
 }
 

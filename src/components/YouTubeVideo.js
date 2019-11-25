@@ -152,7 +152,7 @@ export default class YouTubeVideo extends React.Component {
 	}
 
 	focus = () => {
-		this.getNode().focus()
+		this.getDOMNode().focus()
 	}
 
 	render() {

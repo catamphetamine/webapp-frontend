@@ -101,7 +101,7 @@ export default function PostBlock({
 						onClick={onAttachmentClick ?
 							(event) => {
 								event.preventDefault()
-								onAttachmentClick(attachment)
+								onAttachmentClick(attachment, { thumbnailImage: event.target })
 							} :
 							undefined
 						}/>
@@ -116,7 +116,7 @@ export default function PostBlock({
 						onClick={onAttachmentClick ?
 							(event) => {
 								event.preventDefault()
-								onAttachmentClick(attachment)
+								onAttachmentClick(attachment, { thumbnailImage: event.target })
 							} :
 							undefined
 						}/>
