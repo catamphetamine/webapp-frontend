@@ -65,7 +65,9 @@
 		"close": "Закрыть",
 		"accept": "Принять",
 		"learnMore": "Подробнее",
-		"search": "Поиск"
+		"search": "Поиск",
+		"back": "Назад",
+		"forward": "Вперёд"
 	},
 	"role": {
 		"administrator": "Администратор",

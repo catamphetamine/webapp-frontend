@@ -65,7 +65,9 @@
 		"close": "Close",
 		"accept": "Accept",
 		"learnMore": "Learn more",
-		"search": "Search"
+		"search": "Search",
+		"back": "Back",
+		"forward": "Forward"
 	},
 	"role": {
 		"administrator": "Administrator",
