@@ -70,7 +70,8 @@ export default class SlideshowScaleOpenCloseTransition {
 	 * @return {Promise}
 	 */
 	onClose(slideElement, {
-		thumbnailImage
+		thumbnailImage,
+		slideImage
 	}) {
 		const {
 			animationDuration,
@@ -78,7 +79,8 @@ export default class SlideshowScaleOpenCloseTransition {
 			timeout
 		} = closeTransition(
 			thumbnailImage,
-			slideElement
+			slideElement,
+			slideImage
 		)
 		this.closingAnimationTimeout = timeout
 		slideElement.style.opacity = 0
@@ -292,7 +294,8 @@ function openTransition(
  */
 function closeTransition(
 	thumbnailElement,
-	slideElement
+	slideElement,
+	slideImage
 ) {
 	const thumbnailCoords = thumbnailElement.getBoundingClientRect()
 	const thumbnailWidth = thumbnailElement.width
@@ -324,7 +327,7 @@ function closeTransition(
 	const expandedImage = document.createElement('img')
 	expandedImage.width = slideWidth
 	expandedImage.height = slideHeight
-	expandedImage.src = slideElement.querySelector('img').src
+	expandedImage.src = slideImage.src
 	expandedImage.style.transform = `translateX(${slideX}px) translateY(${slideY}px)`
 	expandedImage.style.transformOrigin = 'top left'
 	expandedImage.style.position = 'fixed'

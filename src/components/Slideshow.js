@@ -256,8 +256,11 @@ function SlideshowComponent(props) {
 			_promise.then(() => {
 				slideshow.onCloseAnimation(({ interaction }) => {
 					let transition
+					let slideImage = getSlideDOMNode().querySelector('img')
 					if (animateOpenCloseScale.current) {
-						if (shouldOffsetSlide.current) {
+						// Sometimes for some reason the slide shows "image loading error",
+						// in which case there's no `<img/>` element inside it.
+						if (shouldOffsetSlide.current && slideImage) {
 							transition = slideshow.scaleOpenCloseTransition
 						} else {
 							// Fall back to the default open/close transition
@@ -278,7 +281,7 @@ function SlideshowComponent(props) {
 						promise
 					} = transition.onClose(
 						getSlideDOMNode(),
-						{ thumbnailImage }
+						{ thumbnailImage, slideImage }
 					)
 					setClosingAnimationDuration(animationDuration)
 					promise.then(() => setHasFinishedClosing(true))
