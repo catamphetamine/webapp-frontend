@@ -100,7 +100,9 @@ function SlideshowComponent(props) {
 	const forceUpdate = useCallback(() => setUnusedState({}), [])
 
 	useEffect(() => {
-		slideshow.onAfterRerender()
+		if (unusedState) {
+			slideshow.onAfterRerender()
+		}
 	}, [unusedState])
 
 	const focus = useCallback((direction = 'next') => {
@@ -286,8 +288,6 @@ function SlideshowComponent(props) {
 					}
 				})
 			})
-		} else if (shouldOffsetInitialSlide && thumbnailImage) {
-			applySlideOffset()
 		}
 	}, [hasBeenMeasured])
 

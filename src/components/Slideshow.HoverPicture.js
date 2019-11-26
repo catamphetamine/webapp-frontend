@@ -21,9 +21,12 @@ export default class SlideshowHoverPicture {
 			})
 		}
 		this.slideshow.onRerender(() => {
-			if (getShouldOffsetSlide()) {
-				setOffset()
-			}
+			// if (getShouldOffsetSlide()) {
+			// 	setOffset()
+			// }
+			// Reset slide offset on window resize.
+			slideDOMNode.style.transform = 'none'
+			setSlideOffset(0, 0)
 		})
 		return setOffset()
 	}
@@ -40,11 +43,16 @@ export default class SlideshowHoverPicture {
 		thumbnailImage,
 		setSlideOffset
 	}) {
-		const [slideWidth, slideHeight] = this.getSlideSize()
+		const slideCoords = slideDOMNode.getBoundingClientRect()
+		// const [slideWidth, slideHeight] = this.getSlideSize()
 		const [slideOffsetX, slideOffsetY] = calculateSlideOffset(
 			thumbnailImage.getBoundingClientRect(),
-			slideWidth,
-			slideHeight,
+			slideCoords.x,
+			slideCoords.y,
+			slideCoords.width,
+			slideCoords.height,
+			// slideWidth,
+			// slideHeight,
 			this.slideshow.getMargin
 		)
 		// slideDOMNode.style.left = slideOffsetX + 'px'
@@ -59,6 +67,8 @@ export default class SlideshowHoverPicture {
 
 function calculateSlideOffset(
 	thumbnailCoords,
+	slideXWhenCentered,
+	slideYWhenCentered,
 	slideWidth,
 	slideHeight,
 	getMargin
@@ -73,8 +83,16 @@ function calculateSlideOffset(
 		slideshowHeight,
 		getMargin
 	)
-	const slideXWhenCentered = (slideshowWidth - slideWidth) / 2
-	const slideYWhenCentered = (slideshowHeight - slideHeight) / 2
+	// Calculating slide coordinates like this results
+	// in a buggy behavior in iOS Safari and Chrome,
+	// presumably because their `getViewportHeight()`
+	// returns some incorrect values due to the
+	// appearing/disappearing top/bottom panels,
+	// or maybe their fullscreen flex align center
+	// positioning is different from `getViewportHeight() / 2`
+	// because of the same reason.
+	// const slideXWhenCentered = (slideshowWidth - slideWidth) / 2
+	// const slideYWhenCentered = (slideshowHeight - slideHeight) / 2
 	const slideOffsetX = slideX - slideXWhenCentered
 	const slideOffsetY = slideY - slideYWhenCentered
 	// Round coordinates. // upto 4 decimal place.

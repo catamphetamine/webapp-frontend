@@ -34,7 +34,12 @@ export default class SlideshowScaleOpenCloseTransition {
 		thumbnailImage
 	}) {
 		const slide = this.slideshow.getCurrentSlide()
-		const [slideWidth, slideHeight] = this.getSlideSize()
+		// const [slideWidth, slideHeight] = this.getSlideSize()
+		const slideCoords = slideElement.getBoundingClientRect()
+		const slideX = slideCoords.x
+		const slideY = slideCoords.y
+		const slideWidth = slideCoords.width
+		const slideHeight = slideCoords.height
 		const {
 			animationDuration,
 			promise,
@@ -42,6 +47,8 @@ export default class SlideshowScaleOpenCloseTransition {
 		} = openTransition(
 			getPreferredSize(slide.picture, slideWidth).url,
 			thumbnailImage,
+			slideX,
+			slideY,
 			slideWidth,
 			slideHeight,
 			this.slideshow.getMargin
@@ -103,6 +110,8 @@ function openTransition(
 	expandedPictureUrl,
 	thumbnailElement,
 	// expandedImageElement,
+	slideX,
+	slideY,
 	slideWidth,
 	slideHeight,
 	getMargin
@@ -116,14 +125,22 @@ function openTransition(
 	const thumbnailX = thumbnailCoords.left
 	const thumbnailY = thumbnailCoords.top
 
-	const [slideX, slideY] = calculateSlideCoordinates(
-		thumbnailCoords,
-		slideWidth,
-		slideHeight,
-		slideshowWidth,
-		slideshowHeight,
-		getMargin
-	)
+	// Calculating slide coordinates like this results
+	// in a buggy behavior in iOS Safari and Chrome,
+	// presumably because their `getViewportHeight()`
+	// returns some incorrect values due to the
+	// appearing/disappearing top/bottom panels,
+	// or maybe their fullscreen flex align center
+	// positioning is different from `getViewportHeight() / 2`
+	// because of the same reason.
+	// const [slideX, slideY] = calculateSlideCoordinates(
+	// 	thumbnailCoords,
+	// 	slideWidth,
+	// 	slideHeight,
+	// 	slideshowWidth,
+	// 	slideshowHeight,
+	// 	getMargin
+	// )
 
 	// const travelDistanceTopLeft = calculateDistance(
 	// 	thumbnailX,
