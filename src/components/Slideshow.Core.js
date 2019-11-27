@@ -805,8 +805,11 @@ export default class Slideshow {
 	}
 
 	shouldShowScaleButtons() {
-		const { inline } = this.props
-		return !inline && this.size.isMaxSizeSlide(false) === false
+		// Until scaling is implemented, don't show the buttons.
+		// And maybe even don't show them after scaling is implemented too.
+		return false
+		// const { inline } = this.props
+		// return !inline && this.size.isMaxSizeSlide(false) === false
 	}
 
 	shouldShowOpenExternalLinkButton() {

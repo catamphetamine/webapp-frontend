@@ -136,7 +136,7 @@
 
 	/* Slideshow. */
 	--SlideshowSlide-boxShadow: 0 10px 38px rgba(0,0,0,0.2), 0 6px 12px rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.35);
-	--SlideshowSlide-backgroundColor: var(--Content-backgroundColor);
+	--SlideshowSlide-backgroundColor: var(--Content-color-100);
 	--SlideshowSlide-backgroundColor--video: black;
 	--SlideshowProgressDot-borderWidth: 1px;
 	--SlideshowProgressDot-borderColor: rgba(0, 0, 0, 0.5);
