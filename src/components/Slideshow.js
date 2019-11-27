@@ -260,7 +260,7 @@ function SlideshowComponent(props) {
 					if (animateOpenCloseScale.current) {
 						// Sometimes for some reason the slide shows "image loading error",
 						// in which case there's no `<img/>` element inside it.
-						if (shouldOffsetSlide.current && slideImage) {
+						if (shouldOffsetSlide.current) {
 							transition = slideshow.scaleOpenCloseTransition
 						} else {
 							// Fall back to the default open/close transition

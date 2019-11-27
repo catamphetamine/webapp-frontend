@@ -3,7 +3,7 @@
 // import { openTransition } from './Slideshow.OpenCloseTransition'
 // await openTransition(attachment.picture, thumbnailElement.current)
 
-import { getFitSize, getPreferredSize } from './Picture'
+import { getFitSize, getPreferredSize, TRANSPARENT_PIXEL } from './Picture'
 import { calculateSlideCoordinates } from './Slideshow.HoverPicture'
 import { getViewportWidth, getViewportHeight, triggerRender } from '../utility/dom'
 
@@ -327,7 +327,7 @@ function closeTransition(
 	const expandedImage = document.createElement('img')
 	expandedImage.width = slideWidth
 	expandedImage.height = slideHeight
-	expandedImage.src = slideImage.src
+	expandedImage.src = slideImage ? slideImage.src : TRANSPARENT_PIXEL
 	expandedImage.style.transform = `translateX(${slideX}px) translateY(${slideY}px)`
 	expandedImage.style.transformOrigin = 'top left'
 	expandedImage.style.position = 'fixed'
@@ -335,6 +335,9 @@ function closeTransition(
 	expandedImage.style.top = '0'
 	expandedImage.style.zIndex = 'var(--Slideshow-zIndex)'
 	expandedImage.style.opacity = 1
+	// `backgroundColor` is required for transparent PNGs
+	// and also for cases when `slideImage` is not defined.
+	expandedImage.style.backgroundColor = 'var(--SlideshowSlide-backgroundColor)'
 	expandedImage.style.boxShadow = 'var(--SlideshowSlide-boxShadow)'
 	expandedImage.style.transition = `transform ${animationDuration}ms, box-shadow ${animationDuration}ms, opacity ${ANIMATION_MIN_DURATION}ms`
 	document.body.appendChild(expandedImage)
