@@ -155,7 +155,11 @@ AttachmentSpoilerBar.propTypes = {
 }
 
 // `thumbnailElement` could be used in `Slideshow.OpenCloseTransition.js`.
-function useLoadOnClick(attachment, fixAttachmentPictureSize, thumbnailElement) {
+function useLoadOnClick(
+	attachment,
+	fixAttachmentPictureSize,
+	thumbnailElement
+) {
 	const [isLoading, setIsLoading] = useState()
 	const onClick = useCallback(async (event) => {
 		if (event.ctrlKey || event.altKey || event.shiftKey || event.metaKey) {
@@ -177,12 +181,13 @@ function useLoadOnClick(attachment, fixAttachmentPictureSize, thumbnailElement) 
 			}
 			try {
 				await preloadPictureSlide(attachment)
+				// For testing/styling.
+				// await new Promise(_ => setTimeout(_, 30000000))
 			} catch (error) {
 				console.error(error)
+			} finally {
+				setIsLoading(false)
 			}
-			// For testing/styling.
-			// await new Promise(_ => setTimeout(_, 30000000))
-			setIsLoading(false)
 		}
 		return event
 	}, [attachment, fixAttachmentPictureSize, thumbnailElement, setIsLoading])
