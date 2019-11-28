@@ -33,6 +33,7 @@ PostInlineContent.propTypes = {
 	onReadMore: PropTypes.func.isRequired,
 	readMoreLabel: PropTypes.string,
 	onAttachmentClick: PropTypes.func,
+	onPostLinkClick: PropTypes.func,
 	serviceIcons: PropTypes.objectOf(PropTypes.func),
 	children: postParagraph.isRequired
 }
@@ -43,6 +44,7 @@ function PostInlineContentElement({ children: content, ...rest }) {
 		onReadMore,
 		readMoreLabel,
 		onAttachmentClick,
+		onPostLinkClick,
 		serviceIcons
 	} = rest
 	if (content === '\n') {
@@ -96,6 +98,8 @@ function PostInlineContentElement({ children: content, ...rest }) {
 		if (Array.isArray(content.content) && content.content[0].type === 'quote') {
 			return (
 				<PostInlineQuoteLink
+					onClick={onPostLinkClick}
+					postLink={content}
 					url={content.url}>
 					{renderContent(content.content)}
 				</PostInlineQuoteLink>

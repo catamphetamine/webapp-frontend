@@ -38,6 +38,7 @@ export default class Post extends React.Component {
 		]),
 		attachmentThumbnailSize: PropTypes.number.isRequired,
 		onAttachmentClick: PropTypes.func,
+		onPostLinkClick: PropTypes.func,
 		onReply: PropTypes.func,
 		vote: PropTypes.bool,
 		onVote: PropTypes.func,
@@ -201,6 +202,7 @@ export default class Post extends React.Component {
 			showPostThumbnailWhenThereAreMultipleAttachments,
 			serviceIcons,
 			onAttachmentClick,
+			onPostLinkClick,
 			onReply,
 			vote,
 			onVote,
@@ -253,6 +255,7 @@ export default class Post extends React.Component {
 								expandAttachments={expandAttachments}
 								spoilerLabel={messages.spoiler}
 								onAttachmentClick={onAttachmentClick}
+								onPostLinkClick={onPostLinkClick}
 								serviceIcons={serviceIcons}
 								locale={locale}>
 								{content}
