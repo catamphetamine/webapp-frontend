@@ -64,6 +64,10 @@ function HtmlVideo(props, ref) {
 	// 	}
 	// })
 
+	// `playsinline` attribute prevents the video from
+	// automatically entering fullscreen on play on iOS.
+	// https://stackoverflow.com/questions/19521667/disable-fullscreen-iphone-video
+
 	return (
 		<video
 			{...rest}
@@ -73,6 +77,7 @@ function HtmlVideo(props, ref) {
 			height={height}
 			poster={preview ? video.picture && video.picture.url : undefined}
 			autoPlay={autoPlay}
+			playsInline
 			controls>
 			<source
 				src={video.url}

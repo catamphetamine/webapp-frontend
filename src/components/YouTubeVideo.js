@@ -23,6 +23,10 @@ export default class YouTubeVideo extends React.Component {
 			videoId: video.id,
 			playerVars: {
 				autoplay: autoPlay ? 1 : 0,
+				// `playsinline` attribute prevents the video from
+				// automatically entering fullscreen on play on iOS.
+				// https://stackoverflow.com/questions/40960747/disable-auto-fullscreen-of-youtube-embeds-on-iphone
+				playsinline: 1,
 				start: video.startAt
 			},
 			events: {
