@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useImperativeHandle, useMemo } from 'react'
+import React, { useState, useRef, useEffect, useLayoutEffect, useImperativeHandle, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 
@@ -58,6 +58,15 @@ function Video({
 	const playState = useRef(Promise.resolve())
 
 	useEffect(() => {
+		// YouTube Player API should be loaded in advance
+		// in order to be already "ready" for the player
+		// to be rendered in the same "event loop" cycle
+		// as the user's interaction, otherwise iOS
+		// won't "auto play" the video.
+		// For example, call `loadYouTubeVideoPlayerApi()`
+		// after the website has loaded.
+		// Calling it multiple times (including concurrently)
+		// doesn't do anything.
 		if (video.provider === 'YouTube') {
 			loadYouTubeVideoPlayerApi()
 		}
@@ -68,7 +77,18 @@ function Video({
 		}
 	}, [])
 
-	useEffect(() => {
+	// Using `useLayoutEffect()` instead of `useEffect()` here
+	// because iOS won't "auto play" videos unless requested
+	// in the same "event loop" cycle as the user's interaction
+	// (for example, a tap).
+	// Still the behavior observed on my iPhone is non-deterministic:
+	// sometimes YouTube videos auto play, sometimes they won't.
+	// YouTube Player API docs are extremely unclear about that:
+	// in which cases would auto play work, in which it wouldn't.
+	// https://developers.google.com/youtube/iframe_api_reference#Autoplay_and_scripted_playback
+	// So it's unclear whether using `useLayoutEffect()`
+	// instead of `useEffect()` here makes any difference.
+	useLayoutEffect(() => {
 		// The initial call is ignored.
 		if (!hasMounted.current) {
 			return

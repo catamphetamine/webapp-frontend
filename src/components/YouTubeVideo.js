@@ -1,23 +1,35 @@
-import React from 'react'
+import React, { useRef, useImperativeHandle, useEffect, useLayoutEffect, useCallback } from 'react'
 import PropTypes from 'prop-types'
 
 import { video } from '../PropTypes'
 
 import loadScript from '../utility/loadScript'
 
-export default class YouTubeVideo extends React.Component {
-	node = React.createRef()
+function YouTubeVideo({
+	video,
+	width,
+	height,
+	autoPlay
+}, ref) {
+	const node = useRef()
+	const player = useRef()
+	const isReady = useRef()
 
-	componentDidMount() {
-		const {
-			video,
-			width,
-			height,
-			autoPlay
-		} = this.props
-		// `this.player` won't have the instance methods
+	// Using `useLayoutEffect()` instead of `useEffect()` here
+	// because iOS won't "auto play" videos unless requested
+	// in the same "event loop" cycle as the user's interaction
+	// (for example, a tap).
+	// Still the behavior observed on my iPhone is non-deterministic:
+	// sometimes YouTube videos auto play, sometimes they won't.
+	// YouTube Player API docs are extremely unclear about that:
+	// in which cases would auto play work, in which it wouldn't.
+	// https://developers.google.com/youtube/iframe_api_reference#Autoplay_and_scripted_playback
+	// So it's unclear whether using `useLayoutEffect()`
+	// instead of `useEffect()` here makes any difference.
+	useLayoutEffect(() => {
+		// `player.current` won't have the instance methods
 		// until it's in the "ready" state.
-		this.player = new YT.Player(this.node.current, {
+		player.current = new YT.Player(node.current, {
 			width,
 			height,
 			videoId: video.id,
@@ -30,149 +42,129 @@ export default class YouTubeVideo extends React.Component {
 				start: video.startAt
 			},
 			events: {
-				onReady: this.onReady
+				onReady: (event) => {
+					isReady.current = true
+					if (autoPlay) {
+						event.target.playVideo()
+					}
+				}
 			}
 		})
-	}
+	}, [])
 
-	onReady = (event) => {
-		this.isReady = true
-		const { autoPlay } = this.props
-		if (autoPlay) {
-			event.target.playVideo()
+	const getState = useCallback(() => {
+		if (isReady.current) {
+			return player.current.getPlayerState()
 		}
-	}
+	}, [])
 
-	play() {
-		if (this.isReady) {
-			// state -> "playing" (1).
-			this.player.playVideo()
-		}
-	}
-
-	pause() {
-		if (this.isReady) {
-			// state -> "paused" (2) or "ended" (0).
-			this.player.pauseVideo()
-		}
-	}
-
-	stop() {
-		if (this.isReady) {
-			// Stops loading video stream.
-			// state -> ended (0), paused (2), video cued (5) or unstarted (-1).
-			this.player.stopVideo()
-		}
-	}
-
-	getCurrentTime() {
-		if (this.isReady) {
-			return this.player.getCurrentTime()
+	const getCurrentTime = useCallback(() => {
+		if (isReady.current) {
+			return player.current.getCurrentTime()
 		}
 		return 0
-	}
+	}, [])
 
-	getDuration() {
-		if (this.isReady) {
-			return this.player.getDuration()
+	const getDOMNode = useCallback(() => {
+		return player.current.getIframe()
+	}, [])
+
+	useImperativeHandle(ref, () => ({
+		play: () => {
+			if (isReady.current) {
+				// state -> "playing" (1).
+				player.current.playVideo()
+			}
+		},
+		pause: () => {
+			if (isReady.current) {
+				// state -> "paused" (2) or "ended" (0).
+				player.current.pauseVideo()
+			}
+		},
+		stop: () => {
+			if (isReady.current) {
+				// Stops loading video stream.
+				// state -> ended (0), paused (2), video cued (5) or unstarted (-1).
+				player.current.stopVideo()
+			}
+		},
+		getCurrentTime,
+		getDuration: () => {
+			if (isReady.current) {
+				return player.current.getDuration()
+			}
+			return 0
+		},
+		seekTo: (seconds) => {
+			if (isReady.current) {
+				// const allowSeekAhead = true
+				player.current.seekTo(seconds, true)
+			}
+		},
+		// // Removes the player `<iframe/>` element.
+		// destroy: () => {
+		// 	player.current.destroy()
+		// },
+		isPaused: () => {
+			switch (getState()) {
+				case NOT_STARTED:
+				case PAUSED:
+				case ENDED:
+					return true
+				default:
+					return false
+			}
+		},
+		hasStarted: () => {
+			switch (getState()) {
+				case NOT_STARTED:
+					return false
+				default:
+					return getCurrentTime() > 0
+			}
+		},
+		hasEnded: () => {
+			return getState() === ENDED
+		},
+		mute: () => {
+			if (isReady.current) {
+				player.current.mute()
+			}
+		},
+		unMute: () => {
+			if (isReady.current) {
+				player.current.unMute()
+			}
+		},
+		isMuted: () => {
+			if (isReady.current) {
+				return player.current.isMuted()
+			}
+		},
+		setVolume: (volume) => {
+			if (isReady.current) {
+				player.current.setVolume(volume * 100)
+			}
+		},
+		getVolume: () => {
+			if (isReady.current) {
+				return player.current.getVolume() / 100
+			}
+		},
+		getDOMNode,
+		focus: () => {
+			getDOMNode().focus()
 		}
-		return 0
-	}
+	}), [getState])
 
-	seekTo(seconds) {
-		if (this.isReady) {
-			// const allowSeekAhead = true
-			this.player.seekTo(seconds, true)
-		}
-	}
-
-	getNode() {
-		return this.player.getIframe()
-	}
-
-	// Removes the player `<iframe/>` element.
-	destroy() {
-		this.player.destroy()
-	}
-
-	getState() {
-		if (this.isReady) {
-			return this.player.getPlayerState()
-		}
-	}
-
-	isPaused() {
-		switch (this.getState()) {
-			case NOT_STARTED:
-			case PAUSED:
-			case ENDED:
-				return true
-			default:
-				return false
-		}
-	}
-
-	hasStarted() {
-		switch (this.getState()) {
-			case NOT_STARTED:
-				return false
-			default:
-				return this.getCurrentTime() > 0
-		}
-	}
-
-	hasEnded() {
-		return this.getState() === ENDED
-	}
-
-	mute() {
-		if (this.isReady) {
-			this.player.mute()
-		}
-	}
-
-	unMute() {
-		if (this.isReady) {
-			this.player.unMute()
-		}
-	}
-
-	isMuted() {
-		if (this.isReady) {
-			return this.player.isMuted()
-		}
-	}
-
-	setVolume(volume) {
-		if (this.isReady) {
-			this.player.setVolume(volume * 100)
-		}
-	}
-
-	getVolume() {
-		if (this.isReady) {
-			return this.player.getVolume() / 100
-		}
-	}
-
-	focus = () => {
-		this.getDOMNode().focus()
-	}
-
-	render() {
-		// const {
-		// 	video,
-		// 	width,
-		// 	height,
-		// 	autoPlay,
-		// 	...rest
-		// } = this.props
-		// The `<div/>` with `ref={this.node}` will be replaced by YouTube.
-		return (
-			<div ref={this.node}/>
-		)
-	}
+	// The `<div/>` will be replaced by YouTube.
+	return (
+		<div ref={node}/>
+	)
 }
+
+YouTubeVideo = React.forwardRef(YouTubeVideo)
 
 YouTubeVideo.propTypes = {
 	video: video.isRequired,
@@ -187,7 +179,20 @@ YouTubeVideo.propTypes = {
 	])
 }
 
-// https://developers.google.com/youtube/iframe_api_reference
+export default YouTubeVideo
+
+/**
+ * YouTube Player API should be loaded in advance
+ * in order to be already "ready" for the player
+ * to be rendered in the same "event loop" cycle
+ * as the user's interaction, otherwise iOS
+ * won't "auto play" the video.
+ * For example, call `loadYouTubeVideoPlayerApi()`
+ * after the website has loaded.
+ * Calling it multiple times (including concurrently)
+ * doesn't do anything.
+ * https://developers.google.com/youtube/iframe_api_reference
+ */
 let apiStatus
 let apiPromise
 export function loadYouTubeVideoPlayerApi() {

@@ -304,12 +304,18 @@ function SlideshowComponent(props) {
 	})
 
 	// Uses `useLayoutEffect()` instead of `useEffect()`
-	// because after this hook has been run
-	// the slideshow re-renders now that it has access
+	// because after this hook has been run an "inline"
+	// slideshow re-renders now that it has access
 	// to `this.getSlideshowWidth()`/`this.getSlideshowHeight()`.
 	// If the slideshow was fullscreen-only then this subsequent
-	// re-render wouldn't be required. But it can be `inline` too.
+	// re-render wouldn't be required. But for an `inline` slideshow it would.
 	useLayoutEffect(() => {
+		// `slidesRef.current` is now available for `this.getSlideshowWidth()`.
+		// Also updates container padding-right for scrollbar width compensation.
+		setHasBeenMeasured(true)
+	}, [])
+
+	useEffect(() => {
 		const { fullScreen } = props
 		// Focus is now handled by `react-focus-lock`.
 		// if (document.activeElement) {
@@ -341,9 +347,6 @@ function SlideshowComponent(props) {
 			slideshow.fullscreen.enterFullscreen(container.current)
 		}
 		slideshow.init({ container: container.current })
-		// `slidesRef.current` is now available for `this.getSlideshowWidth()`.
-		// Also updates container padding-right for scrollbar width compensation.
-		setHasBeenMeasured(true)
 		slideshow.rerender = forceUpdate
 		slideshow.onSlideChange(() => {
 			setSlideOffsetIndex(undefined)
