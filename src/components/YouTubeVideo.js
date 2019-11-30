@@ -34,7 +34,14 @@ function YouTubeVideo({
 			height,
 			videoId: video.id,
 			playerVars: {
-				autoplay: autoPlay ? 1 : 0,
+				// `autoplay: 1` player parameter doesn't work on iOS.
+				// I checked it on my iPhone: even when using "immediate"
+				// native DOM manipulations, without using React.
+				// The manual `event.target.playVideo()`
+				// (same as `player.current.playVideo()`)
+				// seems to work in about half of the cases,
+				// so it's being used instead.
+				// autoplay: autoPlay ? 1 : 0,
 				// `playsinline` attribute prevents the video from
 				// automatically entering fullscreen on play on iOS.
 				// https://stackoverflow.com/questions/40960747/disable-auto-fullscreen-of-youtube-embeds-on-iphone
@@ -233,3 +240,98 @@ const PLAYING = 1
 const PAUSED = 2
 const LOADING = 3
 const CUED = 5
+
+// iOS auto play test: "auto play" only seems to work when
+// called manually via a player method, and even then
+// only in about half the cases.
+//
+// import React, { useState, useCallback } from 'react'
+// import Video from 'webapp-frontend/src/components/Video'
+//
+// const VIDEO = {"id":"CLFUEr2NV7I","provider":"YouTube","title":"『Re:ゼロから始める異世界生活 氷結の絆』PV第3弾＜2019.11.08 ROADSHOW＞","duration":91,"width":1920,"height":1080,"aspectRatio":1.7777777777777777,"picture":{"width":1280,"height":720,"url":"https://img.youtube.com/vi/CLFUEr2NV7I/maxresdefault.jpg","type":"image/jpeg","sizes":[{"width":320,"height":180,"url":"https://img.youtube.com/vi/CLFUEr2NV7I/mqdefault.jpg","type":"image/jpeg"}]}}
+//
+// function YouTubePlayerMobileAutoPlayTest() {
+// 	const [showVideo, setShowVideo] = useState()
+// 	const playVideo = useCallback(() => {
+// 		new YT.Player(document.getElementById('youtube-video-player'), {
+// 			width: 1920,
+// 			height: 1080,
+// 			videoId: 'CLFUEr2NV7I',
+// 			playerVars: {
+// 				// `autoPlay` doesn't seem to work on iOS.
+// 				// the manual `event.target.playVideo()`
+// 				// (same as `player.current.playVideo()`)
+// 				// seems to work from time to time (not always though).
+// 				// autoplay: autoPlay ? 1 : 0,
+// 				// `playsinline` attribute prevents the video from
+// 				// automatically entering fullscreen on play on iOS.
+// 				// https://stackoverflow.com/questions/40960747/disable-auto-fullscreen-of-youtube-embeds-on-iphone
+// 				playsinline: 1
+// 			},
+// 			events: {
+// 				onReady: (event) => {
+// 					event.target.playVideo()
+// 				}
+// 			}
+// 		})
+// 	}, [])
+// 	const playVideoAutoplay = useCallback(() => {
+// 		new YT.Player(document.getElementById('youtube-video-player-autoplay'), {
+// 			width: 1920,
+// 			height: 1080,
+// 			videoId: 'CLFUEr2NV7I',
+// 			playerVars: {
+// 				// `autoPlay` doesn't seem to work on iOS.
+// 				// the manual `event.target.playVideo()`
+// 				// (same as `player.current.playVideo()`)
+// 				// seems to work from time to time (not always though).
+// 				autoplay: 1,
+// 				// `playsinline` attribute prevents the video from
+// 				// automatically entering fullscreen on play on iOS.
+// 				// https://stackoverflow.com/questions/40960747/disable-auto-fullscreen-of-youtube-embeds-on-iphone
+// 				playsinline: 1
+// 			},
+// 			events: {
+// 				onReady: (event) => {
+// 				}
+// 			}
+// 		})
+// 	}, [])
+// 	return (
+// 		<div>
+// 			Video component being shown via a button:
+// 			<br/>
+// 			<br/>
+// 			<button type="button" onClick={() => setShowVideo(true)}>
+// 				Show and play video
+// 			</button>
+// 			{showVideo &&
+// 				<Video video={VIDEO} maxWidth={400} autoPlay/>
+// 			}
+// 			<br/>
+// 			<br/>
+// 			Just a clickable Video component:
+// 			<br/>
+// 			<br/>
+// 			<Video video={VIDEO} maxWidth={400}/>
+// 			<br/>
+// 			<br/>
+// 			Native DOM YouTube video auto played manually:
+// 			<br/>
+// 			<br/>
+// 			<button type="button" onClick={playVideo}>
+// 				Play video
+// 			</button>
+// 			<div id="youtube-video-player" />
+// 			<br/>
+// 			<br/>
+// 			Native DOM YouTube video auto played via "autoplay" player parameter:
+// 			<br/>
+// 			<br/>
+// 			<button type="button" onClick={playVideoAutoplay}>
+// 				Play video (autoplay)
+// 			</button>
+// 			<div id="youtube-video-player-autoplay" />
+// 		</div>
+// 	)
+// }

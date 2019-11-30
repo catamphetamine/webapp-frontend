@@ -22,6 +22,15 @@ import './Video.css'
 // `parseInt(getComputedStyle(container.current).getPropertyValue('--Picture-borderWidth'))`.
 export const BORDER_WIDTH = 1
 
+/**
+ * Renders a video component (optionally with a preview poster).
+ * The "auto play" feature seems to work on iOS for native `<video/>`s,
+ * but for YouTube videos it only "auto plays" in about half of the cases.
+ * Though, also on iOS, I noticed that when some user interaction
+ * (excluding the tap on the video itself) has happened recently
+ * (for example, in a couple of seconds before tapping the video)
+ * then even YouTube videos seem to "auto play" correctly. Whatever.
+ */
 function Video({
 	video,
 	border,
@@ -112,11 +121,12 @@ function Video({
 				// When a new player is created with `autoPlay={true}`
 				// it is initially being played without calling `play()`
 				// so `playState` is not the `.play()` promise.
-				// So, when a `<Slideshow/>` changes the current slide
-				// `pause()` is called on a video which might not have
-				// started playing yet causing the error.
-				// An ideal code would emulate `autoPlay={true}` using
-				// `useEffect()` but that would be too much hassle,
+				// So, when a `<Slideshow/>` changes the current slide,
+				// `pause()` is called on a `<Video/>` that might not have
+				// started playing yet, causing the error.
+				// An alternative code could, for example, somehow emulate `autoPlay={true}`
+				// using `useLayoutEffect()` and setting `playState.current`
+				// but that would be too much hassle just for this single use case,
 				// so just ignoring these "DOMException" errors.
 				// ("The play() request was interrupted by a call to pause()")
 				if (error.name === 'AbortError') {
