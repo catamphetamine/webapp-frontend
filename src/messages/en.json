@@ -26,6 +26,7 @@
 	"search": "Search",
 	"noSearchResults": "Nothing found",
 	"post": {
+		"verified": "Identity verified",
 		"banned": "The author of this comment was banned",
 		"bannedReason": ". Reason: \"{0}\".",
 		"sticky": "Sticky thread",
