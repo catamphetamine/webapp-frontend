@@ -24,7 +24,7 @@ export function createConfig({
 		// in development mode styles are not applied immediately
 		// in a web browser. In production mode CSS styles are
 		// included as `*.css` files so they are applied immediately.
-		showPreloadInitially: true,
+		showLoadingInitially: true,
 
 		onError,
 
