@@ -186,8 +186,9 @@ function SlideshowComponent(props) {
 	const [hasFinishedClosing, setHasFinishedClosing] = useState(animateClose ? false : true)
 
 	// All pictures (including animated GIFs) are opened above their thumbnails.
-	const shouldOffsetSlide = useRef(thumbnailImage && slide.type === 'picture')
-	const [slideOffsetIndex, setSlideOffsetIndex] = useState(shouldOffsetSlide.current ? props.i : undefined)
+	const shouldOffsetSlideInitially = thumbnailImage && slide.type === 'picture'
+	const shouldOffsetSlide = useRef(shouldOffsetSlideInitially)
+	const [slideOffsetIndex, setSlideOffsetIndex] = useState(shouldOffsetSlideInitially ? props.i : undefined)
 	const [slideOffsetX, setSlideOffsetX] = useState(0)
 	const [slideOffsetY, setSlideOffsetY] = useState(0)
 	const [hasBeenMeasured, setHasBeenMeasured] = useState(props.inline ? false : true)
@@ -205,7 +206,6 @@ function SlideshowComponent(props) {
 			return currentSlideContainerRef.current.firstChild
 		}
 		function applySlideOffset() {
-			shouldOffsetSlide.current = true
 			slideshow.onSlideChange(() => {
 				if (shouldOffsetSlide.current) {
 					shouldOffsetSlide.current = false
@@ -226,11 +226,10 @@ function SlideshowComponent(props) {
 				}
 			})
 		}
-		const shouldOffsetInitialSlide = slide.type === 'picture'
 		if (animateOpen || animateClose) {
 			let slideOffsetX
 			let slideOffsetY
-			if (shouldOffsetInitialSlide && thumbnailImage) {
+			if (shouldOffsetSlide.current) {
 				const result = applySlideOffset()
 				slideOffsetX = result[0]
 				slideOffsetY = result[1]
@@ -258,9 +257,10 @@ function SlideshowComponent(props) {
 					let transition
 					let slideImage = getSlideDOMNode().querySelector('img')
 					if (animateOpenCloseScale.current) {
-						// Sometimes for some reason the slide shows "image loading error",
-						// in which case there's no `<img/>` element inside it.
-						if (shouldOffsetSlide.current) {
+						// Close the initially opened slide via a "scale" animation
+						// if it was opened via a "scale" animation, even if slides
+						// were navigated through in the process.
+						if (shouldOffsetSlideInitially && slideshow.getState().i === props.i) {
 							transition = slideshow.scaleOpenCloseTransition
 						} else {
 							// Fall back to the default open/close transition
