@@ -72,6 +72,12 @@ $screen-xxl-min : 2560px; /* "xxl" is for "1440p" monitors (resolution: 2560 × 
   }
 }
 
+@define-mixin xs-m {
+  @media all and (min-width: $screen-xs-min) and (max-width: $screen-m-max) {
+    @mixin-content;
+  }
+}
+
 @define-mixin s-m {
   @media all and (min-width: $screen-s-min) and (max-width: $screen-m-max) {
     @mixin-content;
