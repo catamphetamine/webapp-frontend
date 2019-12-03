@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react'
+import React, { useState, useRef, useCallback, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import { FadeInOut, ActivityIndicator } from 'react-responsive-ui'
@@ -38,18 +38,38 @@ export default function PostAttachment({
 }) {
 	const thumbnailElement = useRef()
 	const [isRevealed, setIsRevealed] = useState(attachment.spoiler ? false : true)
-	const [isLoading, loadOnClick] = useLoadOnClick(attachment, fixAttachmentPictureSize, thumbnailElement)
+	const [loadOnClick, isLoading, setIsLoading, isMounted] = useLoadOnClick(attachment, fixAttachmentPictureSize, thumbnailElement)
 	const picture = getPicture(attachment)
 	const isLandscape = picture.width >= picture.height
-	async function onPictureClick(event) {
+	const slideshowOpenRequest = useRef()
+	const onPictureClick = useCallback(async (event) => {
+		if (window.Slideshow) {
+			slideshowOpenRequest.current = window.Slideshow.willOpen(() => {
+				if (isMounted.current) {
+					setIsLoading(false)
+				}
+			})
+		}
 		await loadOnClick(event)
+		if (slideshowOpenRequest.current) {
+			if (slideshowOpenRequest.current.cancelled) {
+				return
+			}
+		}
 		if (attachment.spoiler) {
 			setIsRevealed(true)
 		}
 		if (onClick) {
 			onClick(event)
 		}
-	}
+	}, [attachment, loadOnClick, setIsRevealed, onClick])
+	useEffect(() => {
+		return () => {
+			if (slideshowOpenRequest.current) {
+				slideshowOpenRequest.current.cancel()
+			}
+		}
+	}, [])
 	return (
 		<Picture
 			border
@@ -160,6 +180,11 @@ function useLoadOnClick(
 	fixAttachmentPictureSize,
 	thumbnailElement
 ) {
+	const isMounted = useRef()
+	useEffect(() => {
+		isMounted.current = true
+		return () => isMounted.current = false
+	}, [])
 	const [isLoading, setIsLoading] = useState()
 	const onClick = useCallback(async (event) => {
 		if (event.ctrlKey || event.altKey || event.shiftKey || event.metaKey) {
@@ -179,19 +204,22 @@ function useLoadOnClick(
 			if (fixAttachmentPictureSize) {
 				await getOriginalPictureSizeAndUrl(attachment)
 			}
+			let openSlideshowPending
 			try {
 				await preloadPictureSlide(attachment)
 				// For testing/styling.
-				// await new Promise(_ => setTimeout(_, 30000000))
+				await new Promise(_ => setTimeout(_, 3000))
 			} catch (error) {
 				console.error(error)
 			} finally {
-				setIsLoading(false)
+				if (isMounted.current) {
+					setIsLoading(false)
+				}
 			}
 		}
 		return event
 	}, [attachment, fixAttachmentPictureSize, thumbnailElement, setIsLoading])
-	return [isLoading, onClick]
+	return [onClick, isLoading, setIsLoading, isMounted]
 }
 
 function getAttachmentUrl(attachment) {

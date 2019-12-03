@@ -907,3 +907,17 @@ function isButton(element) {
 const FOCUS_OPTIONS = {
 	preventScroll: true
 }
+
+window.Slideshow = {
+	willOpen(onCancel) {
+		if (this.openRequest) {
+			this.openRequest.cancel()
+		}
+		return this.openRequest = {
+			cancel() {
+				this.cancelled = true
+				onCancel()
+			}
+		}
+	}
+}
