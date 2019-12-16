@@ -7,7 +7,7 @@
 
 .post__date {
 	margin-top: 0.1em;
-	font-weight: 300;
+	font-weight: var(--Post-fontWeight--secondary);
 	time {
 		user-select: none;
 	}

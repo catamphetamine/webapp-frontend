@@ -72,6 +72,39 @@
 	}
 }
 
+.rrui__button--outline {
+	/*color: var(--rrui-white-color);*/
+	/*background-color: var(--rrui-accent-color);*/
+	color: var(--Clickable-color--text);
+	padding-left: var(--unit);
+	padding-right: var(--unit);
+	border: 1px solid currentColor;
+	border-radius: 4px;
+	&:active {
+		color: var(--rrui-white-color);
+		background-color: var(--Clickable-color--text);
+		border-color: var(--Clickable-color--text);
+	}
+	&:focus {
+		box-shadow: 0 0 2px var(--rrui-accent-color-light);
+	}
+}
+
+.rrui__button--outline.rrui__button--float {
+	&:focus {
+		box-shadow: 0 0 2px var(--rrui-accent-color-light),
+			0px 0.22em 0.35em -0.07em rgba(0,0,0,0.1),
+			0px 0.4em 0.7em 0px rgba(0,0,0,0.07),
+			0px 0.07em 1.3em 0px rgba(0,0,0,0.06);
+	}
+}
+
+.rrui__button--float {
+	box-shadow: 0px 0.22em 0.35em -0.07em rgba(0,0,0,0.1),
+		0px 0.4em 0.7em 0px rgba(0,0,0,0.07),
+		0px 0.07em 1.3em 0px rgba(0,0,0,0.06);
+}
+
 /* Firefox is being stubbort with outlines. */
 /* https://stackoverflow.com/questions/71074/how-to-remove-firefoxs-dotted-outline-on-buttons-as-well-as-links */
 /* Actually having tab-only outlines is good UX. */

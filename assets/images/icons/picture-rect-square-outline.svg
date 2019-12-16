@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+	<g fill="none" stroke="currentColor" stroke-width="3.2" stroke-miterlimit="10">
+		<rect x="1.4" y="6.5" class="st0" width="97.2" height="87"/>
+		<circle class="st1" cx="29.8" cy="32.9" r="10.4"/>
+		<path class="st2" d="M1.4,92.6l25.8-31.3c0.4-0.5,0.7-0.3,1.1,0l16.1,14.3c0.4,0.4,0.8,0.5,1.1,0l22.4-30.9c0.3-0.4,0.8-0.4,1.1,0
+			l29.7,40l1.2,0"/>
+	</g>
+</svg>

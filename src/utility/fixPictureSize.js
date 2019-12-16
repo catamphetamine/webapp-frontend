@@ -8,6 +8,11 @@ export function fixAttachmentPictureSizes(attachments) {
 	return Promise.all(attachments.map(async (attachment) => {
 		switch (attachment.type) {
 			case 'picture':
+				// Don't re-fetch the image again after it
+				// has been hidden and then shown again.
+				if (attachment.picture.sizeHasBeenFixed) {
+					break
+				}
 				// Not using `Promise.all` here because the URLs
 				// aren't guaranteed to be valid.
 				// (the original image URL is not always guessed)
@@ -19,6 +24,12 @@ export function fixAttachmentPictureSizes(attachments) {
 					thumbnailSize = await getImageSize(thumbnailSizeUrl)
 				} catch (error) {
 					console.error(error)
+				} finally {
+					// Set the flag so that it doesn't re-fetch the image again
+					// after it has been hidden and then shown again.
+					// Even if fetching the image errored, it just means
+					// that it would most likely error again on retry.
+					attachment.picture.sizeHasBeenFixed = true
 				}
 				if (thumbnailSize) {
 					attachment.picture = {

@@ -68,7 +68,11 @@
 		"learnMore": "Learn more",
 		"search": "Search",
 		"back": "Back",
-		"forward": "Forward"
+		"forward": "Forward",
+		"undo": "Undo",
+		"showAll": "Show all",
+		"showMore": "Show more",
+		"showLess": "Show less"
 	},
 	"role": {
 		"administrator": "Administrator",

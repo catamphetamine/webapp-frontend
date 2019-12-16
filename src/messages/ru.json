@@ -68,7 +68,11 @@
 		"learnMore": "Подробнее",
 		"search": "Поиск",
 		"back": "Назад",
-		"forward": "Вперёд"
+		"forward": "Вперёд",
+		"undo": "Отмена",
+		"showAll": "Показать все",
+		"showMore": "Показать ещё",
+		"showLess": "Скрыть"
 	},
 	"role": {
 		"administrator": "Администратор",

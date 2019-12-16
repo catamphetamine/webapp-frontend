@@ -1,3 +1,8 @@
+:root {
+	--PostMoreActionsButton-width: 1em;
+	--PostMoreActionsButton-paddingLeft: 0.25em;
+}
+
 .post__more-actions__toggler {
 	display: flex;
 	align-items: center;
@@ -11,12 +16,12 @@
 	padding-left: calc(var(--unit) / 3);
 	padding-right: calc(var(--unit) / 3);
 	*/
-	width: 1em;
-	height: 1em;
-	margin-left: -0.25em;
-	margin-right: -0.25em;
-	padding-left: 0.25em;
-	padding-right: 0.25em;
+	width: var(--PostMoreActionsButton-width);
+	height: var(--PostMoreActionsButton-width);
+	margin-left: calc(var(--PostMoreActionsButton-paddingLeft) * -1);
+	margin-right: calc(var(--PostMoreActionsButton-paddingLeft) * -1);
+	padding-left: var(--PostMoreActionsButton-paddingLeft);
+	padding-right: var(--PostMoreActionsButton-paddingLeft);
 	box-sizing: content-box;
 }
 

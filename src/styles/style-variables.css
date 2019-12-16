@@ -65,12 +65,11 @@
 	@mixin xl-plus {
 		--Post-padding--horizontal: calc(var(--unit) * 2);
 	}
+	--Post-fontWeight--secondary: 300;
 
 	/* PostThumbnail. */
 	/* Default thumnail size. Will be overridden on `<body/>` after parsing chan response. */
 	--PostThumbnail-maxWidth: 220px;
-	/* This variable wouldn't work if set on `:root` for some reason:
-	   changing `var(--Post-padding--horizontal)` wouldn't have any effect. */
 	--PostThumbnail-marginRight: var(--Post-padding--horizontal);
 
 	/* PostQuote. */
@@ -156,6 +155,10 @@
 
 	/* Menu. */
 	--Menu-color--active: var(--gray-color-650);
+
+	/* BackButton. */
+	--BackButton-backgroundColor--hover: rgba(0,0,0,0.01);
+	--BackButton-borderColor--hover: rgba(0,0,0,0.04);
 
 	/* Clickable. */
 	--Clickable-color--text: var(--base-color-700);
@@ -264,6 +267,10 @@
 
 	/* Menu. */
 	--Menu-color--active: var(--Content-color-600);
+
+	/* BackButton. */
+	--BackButton-backgroundColor--hover: rgba(255,255,255,0.02);
+	--BackButton-borderColor--hover: rgba(255,255,255,0.04);
 
 	/* Notification. */
 	--Notification-color: var(--Content-color-900);

@@ -49,7 +49,7 @@ function MenuItem({
 	className
 }) {
 	const OutlineIcon = icon
-	const FillIcon = iconActive
+	const FillIcon = iconActive || icon
 	if (url) {
 		// `url` may contain query parameters.
 		isSelected = (isSelected === undefined ? true : isSelected) && pathname === getPathname(url)

@@ -1,6 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import ReactTimeAgo from 'react-time-ago/copy-text'
+import ReactTimeAgo from 'react-time-ago'
+// `/copy-text` was just for copying
+// import ReactTimeAgo from 'react-time-ago/copy-text'
 // import ReactTimeAgo from 'react-time-ago/tooltip'
 import { Link } from 'react-pages'
 import classNames from 'classnames'

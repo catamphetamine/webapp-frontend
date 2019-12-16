@@ -48,7 +48,7 @@ export default class Post extends React.Component {
 		initialExpandContent: PropTypes.bool,
 		onExpandContent: PropTypes.func,
 		onContentDidChange: PropTypes.func,
-		updateLinkedPost: PropTypes.func,
+		onPostContentChange: PropTypes.func,
 		// `lynxchan` doesn't provide `width` and `height`
 		// neither for the picture not for the thumbnail
 		// in `/catalog.json` API response (which is a bug).
@@ -145,7 +145,7 @@ export default class Post extends React.Component {
 			post,
 			youTubeApiKey,
 			onContentDidChange,
-			updateLinkedPost,
+			onPostContentChange,
 			commentLengthLimit,
 			genericMessages,
 			fixAttachmentPictureSizes: shouldFixAttachmentPictureSizes
@@ -153,13 +153,16 @@ export default class Post extends React.Component {
 		loadResourceLinks(post, {
 			youTubeApiKey,
 			getYouTubeVideoByUrl: getYouTubeVideoByUrlCached,
-			updateLinkedPost,
 			messages: genericMessages,
 			commentLengthLimit,
+			// Fix attachment picture sizes.
+			//
 			// `lynxchan` doesn't provide `width` and `height`
 			// neither for the picture not for the thumbnail
 			// in `/catalog.json` API response (which is a bug).
 			// http://lynxhub.com/lynxchan/res/722.html#q984
+			// This is a workaround for that: it fetches the images
+			// and finds out their correct sizes.
 			//
 			// `fixAttachmentPictureSizes` gets the correct image sizes
 			// but for some reason React doesn't apply the `style` changes to the DOM.
@@ -174,6 +177,7 @@ export default class Post extends React.Component {
 				}
 				return []
 			} : undefined,
+			onPostContentChange,
 			onContentChange: (postWithLinksExpanded) => {
 				if (this._isMounted) {
 					this.setState({

@@ -1,4 +1,5 @@
-import CommentIcon from '../../assets/images/icons/menu/message-outline.svg'
+// import CommentIcon from '../../assets/images/icons/menu/message-outline.svg'
+import CommentIcon from '../../assets/images/icons/message-rounded-rect-square.svg'
 import ReplyIcon from '../../assets/images/icons/reply.svg'
 
 export const CommentsCountBadge = {

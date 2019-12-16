@@ -63,7 +63,7 @@
 	padding-left: var(--rrui-button-side-padding);
 	padding-right: var(--rrui-button-side-padding);
 	text-transform: lowercase;
-	font-weight: 300;
+	font-weight: var(--Post-fontWeight--secondary);
 	color: inherit;
 }
 

@@ -208,7 +208,7 @@ function useLoadOnClick(
 			try {
 				await preloadPictureSlide(attachment)
 				// For testing/styling.
-				await new Promise(_ => setTimeout(_, 3000))
+				// await new Promise(_ => setTimeout(_, 3000))
 			} catch (error) {
 				console.error(error)
 			} finally {
