@@ -9,10 +9,13 @@
 .post__attachment-thumbnail.rrui__picture--non-transparent-background {
 	/* Material Design Card elevation shadow. */
 	/* https://codepen.io/sdthornton/pen/wBZdXq */
-	transition: box-shadow 160ms cubic-bezier(.25,.8,.25,1);
-	&:hover {
+	/*transition: box-shadow 160ms cubic-bezier(.25,.8,.25,1);*/
+	/*&:hover {
 		box-shadow: var(--PostAttachment-shadow--hover);
-	}
+	}*/
+	/*&:focus {
+		box-shadow: var(--PostAttachment-shadow--focus);
+	}*/
 	/*
 	&:focus {
 		box-shadow: 0 0 0 var(--PostAttachment-focusOutlineWidth) var(--Picture-borderColor);

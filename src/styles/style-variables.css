@@ -167,8 +167,8 @@
 	--Clickable-color--active: var(--base-color-400);
 
 	/* Picture. */
-	--Picture-borderColor: rgba(0, 0, 0, 0.5);
-	--Picture-borderColor--focus: var(--base-color-700);
+	--Picture-borderColor: rgba(0, 0, 0, 0.1);
+	--Picture-borderColor--focus: var(--Picture-borderColor);
 	--Picture-filter: none;
 
 	/* Critical. */
@@ -233,7 +233,8 @@
 	--PostInlineSpoiler-color--censoredContentActive: #f2dccb;
 
 	/* PostAttachment. */
-	--PostAttachment-shadowColor--hover: rgba(0,0,0,0.15);
+	/*--PostAttachment-shadowColor--hover: rgba(0,0,0,0.15);*/
+	/*--PostAttachment-shadowColor--focus: rgba(0,0,0,0.15);*/
 
 	/* CommentTree. */
 	--CommentTree-color--branch: var(--CommentTree-color);
@@ -318,8 +319,8 @@
 	--Modal-borderWidth: 1px;
 
 	/* Picture. */
-	--Picture-borderColor: var(--Content-color-100);
-	--Picture-borderColor--focus: #743f20;
+	--Picture-borderColor: transparent;
+	--Picture-borderColor--focus: var(--Picture-borderColor);
 	/*--Picture-borderColor--focus: var(--Content-color-500);*/
 	--Picture-filter: brightness(85%);
 
@@ -351,7 +352,8 @@
 	--PostInlineSpoiler-color--censoredContentActive: #5c4a49;
 
 	/* PostAttachment. */
-	--PostAttachment-shadowColor--hover: rgba(100,100,100,0.2);
+	/*--PostAttachment-shadowColor--hover: rgba(100,100,100,0.2);*/
+	/*--PostAttachment-shadowColor--focus: rgba(255,255,255,0.2);*/
 
 	/* CommentTree. */
   --CommentTree-color: var(--base-color-800);

@@ -14,7 +14,8 @@
 }
 
 .post__attachment-thumbnail {
-	--PostAttachment-shadow--hover: 0 0 0.25em var(--PostAttachment-shadowColor--hover), 0 0 0.1em var(--PostAttachment-shadowColor--hover);
+	/*--PostAttachment-shadow--hover: 0 0 0.25em var(--PostAttachment-shadowColor--hover), 0 0 0.1em var(--PostAttachment-shadowColor--hover);*/
+	/*--PostAttachment-shadow--focus: 0 0 3px var(--PostAttachment-shadowColor--focus);*/
 	position: relative;
 	margin-top: var(--PostContent-margin);
 	margin-right: var(--PostContent-margin);
@@ -25,5 +26,6 @@
 	--Picture-borderWidth: 0;
 	--Picture-backgroundColor: transparent;
 	--PostAttachment-shadow--hover: none;
+	--PostAttachment-shadow--focus: none;
 }
 */
