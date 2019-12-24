@@ -1,7 +1,9 @@
 export const FONT_SIZES = [
-	'small',
-	'medium',
-	'large'
+	'xs',
+	's',
+	'm',
+	'l',
+	'xl'
 ]
 
 /**
