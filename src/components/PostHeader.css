@@ -32,9 +32,33 @@
 }
 */
 
+.post__summary-item {
+	/* `display: flex` is to prevent weird vertical space
+	   or misalignment on "Show replies" button. */
+	display: flex;
+}
+
 .post__summary-item-separator {
 	margin-left: calc(var(--unit) * 0.75);
 	margin-right: calc(var(--unit) * 0.75);
+	pointer-events: none;
+}
+
+.post__summary-button--replies:not(.hover-button--pushed) {
+	opacity: 0.85;
+}
+
+.post__summary-item-icon {
+	width: 0.9em;
+	height: 0.9em;
+	margin-right: 0.35em;
+}
+
+.post__summary-item-icon--replies {
+	margin-top: 0.1em;
+	> path {
+		stroke-width: 4;
+	}
 }
 
 .post__summary__account {

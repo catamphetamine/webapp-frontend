@@ -35,8 +35,8 @@
 		"bannedReason": ". Причина: \"{0}\".",
 		"sticky": "Прикреплённый тред",
 		"closed": "Тред закрыт",
-		"commentsCount": "Комментариев",
-		"repliesCount": "Ответов",
+		"commentsCount": "Комментарии",
+		"repliesCount": "Ответы",
 		"readMore": "Показать\u00a0полностью",
 		"moreActions": {
 			"title": "Действия"

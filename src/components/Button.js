@@ -41,8 +41,12 @@ import './Button.css'
 // 	children: PropTypes.node.isRequired
 // }
 
-export default function Button(props) {
+function Button(props, ref) {
 	return (
-		<RRUIButton {...props}/>
+		<RRUIButton {...props} ref={ref}/>
 	)
 }
+
+Button = React.forwardRef(Button)
+
+export default Button

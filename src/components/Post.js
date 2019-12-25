@@ -40,6 +40,9 @@ export default class Post extends React.Component {
 		onAttachmentClick: PropTypes.func,
 		onPostLinkClick: PropTypes.func,
 		onReply: PropTypes.func,
+		showingReplies: PropTypes.bool,
+		onShowReplies: PropTypes.func,
+		toggleShowRepliesButtonRef: PropTypes.any,
 		vote: PropTypes.bool,
 		onVote: PropTypes.func,
 		url: PropTypes.string,
@@ -208,6 +211,9 @@ export default class Post extends React.Component {
 			onAttachmentClick,
 			onPostLinkClick,
 			onReply,
+			showingReplies,
+			onShowReplies,
+			toggleShowRepliesButtonRef,
 			vote,
 			onVote,
 			moreActions,
@@ -244,6 +250,9 @@ export default class Post extends React.Component {
 					moreActions={moreActions}
 					messages={messages}
 					onReply={onReply}
+					showingReplies={showingReplies}
+					onShowReplies={onShowReplies}
+					toggleShowRepliesButtonRef={toggleShowRepliesButtonRef}
 					vote={vote}
 					onVote={onVote}/>
 				{postContent &&

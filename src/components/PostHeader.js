@@ -12,6 +12,9 @@ import { accountLink } from './AccountLink'
 import { post, postBadge } from '../PropTypes'
 
 import LeftArrowIcon from '../../assets/images/icons/left-arrow-minimal.svg'
+import MessageIcon from '../../assets/images/icons/message-rounded-rect-square.svg'
+// import ReplyIcon from '../../assets/images/icons/reply.svg'
+// import ClockIcon from '../../assets/images/icons/clock.svg'
 
 import './PostHeader.css'
 
@@ -24,6 +27,9 @@ export default function PostHeader({
 	messages,
 	moreActions,
 	onReply,
+	showingReplies,
+	onShowReplies,
+	toggleShowRepliesButtonRef,
 	vote,
 	onVote
 }) {
@@ -38,6 +44,12 @@ export default function PostHeader({
 		<header className="post__header">
 			<div className="post__header-top">
 				<div className="post__summary">
+					{/*moreActions &&
+						<PostMoreActions
+							title={messages.moreActions.title}>
+							{moreActions}
+						</PostMoreActions>
+					*/}
 					{post.author &&
 						<div className="post__summary__account">
 							<Link to={accountLink(post.author)}>
@@ -61,7 +73,7 @@ export default function PostHeader({
 							</div>
 						</div>
 					}
-					{!post.author && post.createdAt &&
+					{(!post.author && post.createdAt) &&
 						<div className="post__summary-item">
 							<PostDate
 								date={post.createdAt}
@@ -69,7 +81,7 @@ export default function PostHeader({
 								locale={locale}/>
 						</div>
 					}
-					{!post.author && post.createdAt && onReply &&
+					{onReply && (!post.author && post.createdAt)  &&
 						<div className="post__summary-item-separator">
 							·
 						</div>
@@ -78,8 +90,28 @@ export default function PostHeader({
 						<div className="post__summary-item">
 							<Button
 								onClick={onReply}
-								className="hover-button post__summary-button">
+								className="post__summary-button hover-button">
+								{/*<ReplyIcon className="post__summary-item-icon post__summary-item-icon--reply"/>*/}
 								{messages.reply}
+							</Button>
+						</div>
+					}
+					{onShowReplies && onReply &&
+						<div className="post__summary-item-separator">
+							·
+						</div>
+					}
+					{onShowReplies &&
+						<div className="post__summary-item">
+							<Button
+								ref={toggleShowRepliesButtonRef}
+								onClick={onShowReplies}
+								title={messages.repliesCount}
+								className={classNames('post__summary-button', 'post__summary-button--replies', 'hover-button', {
+									'hover-button--pushed': showingReplies
+								})}>
+								<MessageIcon className="post__summary-item-icon post__summary-item-icon--replies"/>
+								{post.replies.length}
 							</Button>
 						</div>
 					}
@@ -144,6 +176,7 @@ export default function PostHeader({
 					}
 					{moreActions &&
 						<PostMoreActions
+							alignment="right"
 							title={messages.moreActions.title}>
 							{moreActions}
 						</PostMoreActions>
@@ -176,6 +209,9 @@ PostHeader.propTypes = {
 	moreActions: moreActionsType,
 	messages: PropTypes.object.isRequired,
 	onReply: PropTypes.func,
+	showingReplies: PropTypes.bool,
+	onShowReplies: PropTypes.func,
+	toggleShowRepliesButtonRef: PropTypes.any,
 	vote: PropTypes.bool,
 	onVote: PropTypes.func
 }
