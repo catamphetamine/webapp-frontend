@@ -7,7 +7,9 @@
 	"darkMode": "Ночной режим",
 	"settings": {
 		"title": "Настройки",
-		"language": "Язык",
+		"language": {
+			"title": "Язык"
+		},
 		"fontSize": {
 			"title": "Размер шрифта",
 			"xs": "Мелкий",

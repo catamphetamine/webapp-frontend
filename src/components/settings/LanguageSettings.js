@@ -11,7 +11,8 @@ export default function LanguageSettings({
 	messages,
 	value,
 	onChange,
-	languages
+	languages,
+	children
 }) {
 	const options = useMemo(() => {
 		return Object.keys(languages).map((language) => ({
@@ -22,12 +23,13 @@ export default function LanguageSettings({
 	return (
 		<ContentSection>
 			<ContentSectionHeader lite>
-				{messages.settings.language}
+				{messages.settings.language.title}
 			</ContentSectionHeader>
 			<Select
 				value={value}
 				options={options}
 				onChange={onChange}/>
+			{children}
 		</ContentSection>
 	)
 }
@@ -36,5 +38,6 @@ LanguageSettings.propTypes = {
 	messages: PropTypes.object.isRequired,
 	value: PropTypes.string.isRequired,
 	onChange: PropTypes.func.isRequired,
-	languages: PropTypes.objectOf(PropTypes.string).isRequired
+	languages: PropTypes.objectOf(PropTypes.string).isRequired,
+	children: PropTypes.node
 }

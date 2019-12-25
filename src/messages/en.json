@@ -7,7 +7,9 @@
 	"darkMode": "Dark mode",
 	"settings": {
 		"title": "Settings",
-		"language": "Language",
+		"language": {
+			"title": "Language"
+		},
 		"fontSize": {
 			"title": "Font Size",
 			"xs": "Small",
