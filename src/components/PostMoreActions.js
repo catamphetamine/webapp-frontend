@@ -5,7 +5,7 @@ import classNames from 'classnames'
 
 import Button from './Button'
 
-import EllipsisIcon from '../../assets/images/icons/ellipsis.svg'
+import EllipsisIcon from '../../assets/images/icons/ellipsis-light.svg'
 
 import './PostMoreActions.css'
 
