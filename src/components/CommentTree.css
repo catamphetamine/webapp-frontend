@@ -57,7 +57,7 @@ by offsetting the root replies branch line to the right.
 }
 
 .comment-tree:last-child > .comment-tree__branch-line {
-	height: var(--CommentTree-branchTop);
+	height: var(--CommentTreeBranch-marginTop);
 }
 
 .comment-tree__branch-toggler {
@@ -95,7 +95,7 @@ by offsetting the root replies branch line to the right.
 	left: calc(-1 * var(--CommentTree-padding));
 	width: var(--CommentTree-padding);
 	height: var(--CommentTree-borderWidth);
-	margin-top: var(--CommentTree-branchTop);
+	margin-top: var(--CommentTreeBranch-marginTop);
 	background-color: var(--CommentTree-color--branch);
 	pointer-events: none;
 }
