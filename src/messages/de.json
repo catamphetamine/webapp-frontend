@@ -1,0 +1,117 @@
+{
+	"languageName": "Deutsch",
+	"notifications": {
+		"title": "Benachrichtigungen",
+		"empty": "Keine neuen Benachrichtigungen"
+	},
+	"darkMode": "Dunkler Modus",
+	"settings": {
+		"title": "Einstellungen",
+		"language": {
+			"title": "Sprache"
+		},
+		"fontSize": {
+			"title": "Schriftgröße",
+			"xs": "Klein",
+			"s": "Kleiner",
+			"m": "Mittel",
+			"l": "Größer",
+			"xl": "Groß"
+		}
+	},
+	"menu": "Speisekarte",
+	"contentType": {
+		"picture": "Bild",
+		"video": "Video",
+		"audio": "Audio",
+		"link": "Link",
+		"attachment": "Attachment"
+	},
+	"search": "Suche",
+	"noSearchResults": "Nichts gefunden",
+	"post": {
+		"verified": "Identität verifiziert",
+		"banned": "Der Autor dieses Kommentars wurde gesperrt",
+		"bannedReason": ". Grund: \"{0}\".",
+		"sticky": "klebriger Thema",
+		"closed": "geschlossene Thema",
+		"commentsCount": "Kommentar",
+		"repliesCount": "Antworten",
+		"readMore": "Zeig\u00a0mehr",
+		"moreActions": {
+			"title": "Mehr Aktionen"
+		},
+		"upvote": "Like",
+		"downvote": "Dislike",
+		"alreadyVoted": "Sie haben bereits abgestimmt",
+		"reply": "Antworten",
+		"spoiler": "Spoiler",
+		"expandAttachments": "Erweitern Sie Anhänge",
+		"collapseAttachments": "Anhänge reduzieren",
+		"viewAttachments": "Anhänge anzeigen",
+		"videoNotFound": "Video nicht gefunden",
+		"linkTo": "Link zu {0}"
+	},
+	"form": {
+		"error": {
+			"required": "Erforderlich"
+		}
+	},
+	"actions": {
+		"edit": "Bearbeiten",
+		"post": "Posten",
+		"save": "speichern",
+		"add": "Hinzufügen",
+		"remove": "entfernen",
+		"ok": "Ok",
+		"cancel": "Stornieren",
+		"yes": "Ja",
+		"no": "Nein",
+		"close": "Schließen",
+		"accept": "Akzeptieren",
+		"learnMore": "Erfahren Sie mehr",
+		"search": "Suche",
+		"back": "Zurück",
+		"forward": "Nach vorne",
+		"undo": "Rückgängig machen",
+		"showAll": "Zeige alles",
+		"showMore": "Zeig mehr",
+		"showLess": "Zeige weniger"
+	},
+	"role": {
+		"administrator": "Administrator",
+		"moderator": "Moderator"
+	},
+	"errorPages": {
+		"404": {
+			"title": "Seite nicht gefunden"
+		},
+		"500": {
+			"title": "Error"
+		},
+		"503": {
+			"title": "Offline",
+			"description": "Verbindung zum Server konnte nicht hergestellt werden"
+		},
+		"requestedURL": "Seiten-URL"
+	},
+	"slideshow": {
+		"actions": {
+			"previous": "Bisherige",
+			"next": "Nächster",
+			"download": "Herunterladen",
+			"close": "Schließen",
+			"scaleUp": "Vergrößern",
+			"scaleDown": "Verkleinern",
+			"scaleReset": "Ursprüngliche Größe",
+			"searchInGoogle": "Suche in google",
+			"showControls": "Steuerelemente anzeigen",
+			"hideControls": "Steuerelemente ausblenden",
+			"openExternalLink": "Externen Link öffnen"
+		}
+	},
+	"cookies": {
+		"notice": "Diese Website verwendet Cookies und lokalen Speicher, um Inhalte zu personalisieren, Funktionen für soziale Medien bereitzustellen und den Datenverkehr zu analysieren.",
+		"required": "Sie müssen zuerst die Richtlinien für Cookies und lokalen Speicher akzeptieren."
+	}
+}
