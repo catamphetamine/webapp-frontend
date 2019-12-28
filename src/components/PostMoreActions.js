@@ -16,7 +16,9 @@ export default function PostMoreActions({ alignment, title, children }) {
       aria-label={title}
       buttonTitle={title}
 			toggleElement={TOGGLE_ELEMENT}
-			buttonClassName="hover-button post__more-actions__toggler"
+			buttonClassName={classNames('hover-button', 'post__more-actions__toggler', {
+				'post__more-actions__toggler--right': alignment === 'right'
+			})}
 			className={classNames('post__more-actions__menu', {
 				'post__more-actions__menu--right': alignment === 'right'
 			})}>

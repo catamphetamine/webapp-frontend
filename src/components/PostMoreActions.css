@@ -28,6 +28,9 @@
 
 .post__more-actions__toggler--right {
 	--PostMoreActions-marginRight: 0px;
+}
+
+.post__more-actions__menu--right {
 	.rrui__expandable {
 		right: calc(var(--unit) * -1);
 		margin-top: calc(var(--unit) / 2);

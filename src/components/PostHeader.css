@@ -21,6 +21,9 @@
 	align-items: center;
 	/* Fallback for really small screens. */
 	flex-wrap: wrap;
+	/* Add some spacing between post header left links / buttons
+	   and post header right badges / buttons. */
+  margin-right: calc(var(--unit) * 2);
 }
 
 /*
@@ -44,9 +47,11 @@
 	pointer-events: none;
 }
 
+/*
 .post__summary-button--replies:not(.hover-button--pushed) {
 	opacity: 0.85;
 }
+*/
 
 .post__summary-item-icon {
 	width: 0.9em;

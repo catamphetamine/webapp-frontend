@@ -67,11 +67,6 @@
 	}
 	--Post-fontWeight--secondary: 300;
 
-	/* PostThumbnail. */
-	/* Default thumnail size. Will be overridden on `<body/>` after parsing chan response. */
-	--PostThumbnail-maxWidth: 220px;
-	--PostThumbnail-marginRight: var(--Post-padding--horizontal);
-
 	/* PostQuote. */
 	--PostQuote-paddingLeft: var(--Post-padding--horizontal);
 	--PostQuote-paddingRight: var(--Post-padding--horizontal);
@@ -83,7 +78,10 @@
 	/*--PostQuote-borderColor: var(--PostQuote-backgroundColor);*/
 	/*--PostQuote-borderColor--hover: var(--PostQuote-backgroundColor--hover);*/
 	--PostQuote-borderWidth: 0px;
+	--PostQuote-borderWidth--right: 0px;
 	--PostQuote-marginTop: 0px;
+	--PostQuote-marginLeft: 0px;
+	--PostQuote-marginRight: 0px;
 
 	/* PostQuote (generated). */
 	--PostQuote-color--generated: var(--PostQuote-color);
@@ -102,7 +100,6 @@
 	--PostQuoteMarker-opacity: 0.5;
 	--PostQuoteMarker-width: 2px;
 	--PostQuoteMarker-padding: var(--PostQuoteMarker-padding--standalone);
-	--PostQuoteMarker-color: currentColor;
 
 	/* PostQuoteMarker (generated). */
 	--PostQuoteMarker-color--generated: var(--PostQuoteMarker-color);

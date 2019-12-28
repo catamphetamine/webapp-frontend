@@ -1,5 +1,4 @@
 .post__quote-block {
-	--PostQuote-marginLeft: 0px;
 	/* `position: relative` is for the quote marker to only span through
 	   this inline quote block in cases when there're multiple
 	   `.post__quote-block`s inside a quote
@@ -14,8 +13,8 @@
 	padding-left: var(--PostQuote-paddingLeft);
 	padding-right: var(--PostQuote-paddingRight);
 	margin-left: calc(var(--PostQuote-marginLeft) + var(--PostQuote-paddingLeft) * -1);
-	margin-right: calc(var(--PostQuote-paddingRight) * -1);
-	width: calc(100% - var(--PostQuote-marginLeft) + var(--PostQuote-paddingLeft) + var(--PostQuote-paddingRight));
+	margin-right: calc(var(--PostQuote-marginRight) + var(--PostQuote-paddingRight) * -1);
+	width: calc(100% - var(--PostQuote-marginLeft) + var(--PostQuote-paddingLeft) + var(--PostQuote-paddingRight) - var(--PostQuote-marginRight));
 }
 
 /* Places the quote block marker above the left border of expanded comment tree replies. */
@@ -34,6 +33,7 @@
 .post__quote-block {
 	color: var(--PostQuote-color);
 	background-color: var(--PostQuote-backgroundColor);
+	border-right: var(--PostQuote-borderWidth--right) solid var(--PostQuote-borderColor);
 	border-top: var(--PostQuote-borderWidth) solid var(--PostQuote-borderColor);
 	border-bottom: var(--PostQuote-borderWidth) solid var(--PostQuote-borderColor);
 }
