@@ -1,11 +1,13 @@
-.country-flag {
-	/* Country flags are 3x4 */
+.CountryFlag {
+	/* Country flags are 3x2 */
 	width: 100%;
-	height: 75%;
-	box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5);
+	height: 66.666%;
+	/* "inset" shadow is added because sometimes there're white lines
+	   at the edges of a flag due to some resizing issues in a web browser. */
+	box-shadow: 0 0 0 1px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(0,0,0,0.5);
 }
 
-.country-flag--anonymous {
+.CountryFlag--anonymous {
 	width: 100%;
 	height: 100%;
 }
