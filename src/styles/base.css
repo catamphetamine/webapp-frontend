@@ -114,6 +114,10 @@ p
 
 .no-margin-collapse:before,
 .no-margin-collapse:after {
+	display: flex;
+	flex-direction: column;
+	/* Alternatlive:
 	content: ' ';
 	display: table;
+	*/
 }
