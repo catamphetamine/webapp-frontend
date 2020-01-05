@@ -112,6 +112,19 @@ p
 	background-color: var(--Selection-backgroundColor);
 }
 
+.no-margin-collapse {
+	overflow: hidden;
+}
+
+/*
+Alternative:
+.no-margin-collapse:before,
+.no-margin-collapse:after {
+	content: ' ';
+	display: table;
+}
+*/
+
 /* Alternatlive:
 This won't work for captchan's board page,
 because this way the spacing between thread cards
@@ -121,9 +134,3 @@ will be clickable (and that would be a bug).
 	flex-direction: column;
 }
 */
-
-.no-margin-collapse:before,
-.no-margin-collapse:after {
-	content: ' ';
-	display: table;
-}
