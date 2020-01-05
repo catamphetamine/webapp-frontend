@@ -111,3 +111,9 @@ p
 	color: var(--Selection-color);
 	background-color: var(--Selection-backgroundColor);
 }
+
+.no-margin-collapse:before,
+.no-margin-collapse:after {
+	content: ' ';
+	display: table;
+}
