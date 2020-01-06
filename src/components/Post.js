@@ -24,6 +24,7 @@ export default class Post extends React.Component {
 	static propTypes = {
 		post: post.isRequired,
 		header: PropTypes.func,
+		headerItems: PropTypes.arrayOf(PropTypes.node),
 		headerBadges: PropTypes.arrayOf(postBadge),
 		footerBadges: PropTypes.arrayOf(postBadge),
 		compact: PropTypes.bool,
@@ -196,6 +197,7 @@ export default class Post extends React.Component {
 	render() {
 		const {
 			header,
+			headerItems,
 			headerBadges,
 			footerBadges,
 			compact,
@@ -246,6 +248,7 @@ export default class Post extends React.Component {
 					url={url}
 					locale={locale}
 					header={header}
+					items={headerItems}
 					badges={headerBadges}
 					moreActions={moreActions}
 					messages={messages}

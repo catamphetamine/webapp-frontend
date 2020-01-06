@@ -23,6 +23,7 @@ export default function PostHeader({
 	url,
 	locale,
 	header: Header,
+	items,
 	badges,
 	messages,
 	moreActions,
@@ -73,6 +74,16 @@ export default function PostHeader({
 							</div>
 						</div>
 					}
+					{items && items.map((item, i) => (
+						<React.Fragment key={`headerItem:${i}`}>
+							<div className="post__summary-item">
+								{item}
+							</div>
+							<div className="post__summary-item-separator">
+								·
+							</div>
+						</React.Fragment>
+					))}
 					{(!post.author && post.createdAt) &&
 						<div className="post__summary-item">
 							<PostDate
@@ -202,6 +213,7 @@ export default function PostHeader({
 
 PostHeader.propTypes = {
 	post: post.isRequired,
+	items: PropTypes.arrayOf(PropTypes.node),
 	badges: PropTypes.arrayOf(postBadge),
 	url: PropTypes.string,
 	locale: PropTypes.string,
