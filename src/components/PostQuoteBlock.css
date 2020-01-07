@@ -5,22 +5,57 @@
 	   in order for the quote marker to only span vertically for its "sub-block".
 	   This is the case when there're `post-link`s having multiple `quotes`. */
 	position: relative;
+	margin-top: var(--PostQuoteBlock-marginTop);
+	margin-bottom: var(--PostQuoteBlock-marginTop);
 	/* `padding-left` is set on `.post__quote-block`
 	   because there can be cases when there're multiple
 	   `.post__quote-block`s inside a quote
 	   and each of those "sub-blocks" has `position: relative`
 	   in order for the quote marker to only span vertically for its "sub-block". */
-	padding-left: var(--PostQuote-paddingLeft);
-	padding-right: var(--PostQuote-paddingRight);
-	margin-left: calc(var(--PostQuote-marginLeft) + var(--PostQuote-paddingLeft) * -1);
-	margin-right: calc(var(--PostQuote-marginRight) + var(--PostQuote-paddingRight) * -1);
-	width: calc(100% - var(--PostQuote-marginLeft) + var(--PostQuote-paddingLeft) + var(--PostQuote-paddingRight) - var(--PostQuote-marginRight));
+	padding-left: var(--PostQuoteBlock-paddingLeft);
+	padding-right: var(--PostQuoteBlock-paddingRight);
+	margin-left: calc(var(--PostQuoteBlock-marginLeft) + var(--PostQuoteBlock-paddingLeft) * -1);
+	margin-right: calc(var(--PostQuoteBlock-marginRight) + var(--PostQuoteBlock-paddingRight) * -1);
+	width: calc(100% - var(--PostQuoteBlock-marginLeft) + var(--PostQuoteBlock-paddingLeft) + var(--PostQuoteBlock-paddingRight) - var(--PostQuoteBlock-marginRight));
+}
+
+.post__quote-block {
+	.post__quote-marker {
+		--PostQuoteMarker-color: var(--PostQuoteBlockMarker-color);
+		--PostQuoteMarker-width: var(--PostQuoteBlockMarker-width);
+		--PostQuoteMarker-padding: calc(var(--PostQuoteBlockMarker-padding) + var(--PostQuoteBlock-borderWidth));
+		--PostQuoteMarker-opacity: var(--PostQuoteBlockMarker-opacity)
+	}
+}
+
+.post__quote-block--generated {
+	--PostQuoteBlock-marginTop: var(--PostQuoteBlock-marginTop--generated);
+	--PostQuoteBlock-color: var(--PostQuoteBlock-color--generated);
+	--PostQuoteBlock-backgroundColor: var(--PostQuoteBlock-backgroundColor--generated);
+	--PostQuoteBlock-borderWidth: var(--PostQuoteBlock-borderWidth--generated);
+	--PostQuoteBlock-borderColor: var(--PostQuoteBlock-borderColor--generated);
+	.post__quote-marker {
+		--PostQuoteBlockMarker-color: var(--PostQuoteBlockMarker-color--generated);
+		--PostQuoteBlockMarker-width: var(--PostQuoteBlockMarker-width--generated);
+		--PostQuoteBlockMarker-padding: var(--PostQuoteBlockMarker-padding--generated);
+		--PostQuoteBlockMarker-opacity: var(--PostQuoteBlockMarker-opacity--generated);
+	}
+}
+
+/* Due to the presence of a `<br/>` sequential
+   inline quotes' vertical margins don't "collapse". */
+.post__quote-block + br + .post__quote-block {
+	margin-top: 0;
+}
+
+.post__inline-quote-link--block + br + .post__inline-quote-link--block .post__quote-block {
+	margin-top: 0;
 }
 
 /* Places the quote block marker above the left border of expanded comment tree replies. */
 .comment-tree__comment--nested {
 	.post__quote-block {
-		--PostQuote-marginLeft: calc(-1 * var(--CommentTree-borderWidth));
+		--PostQuoteBlock-marginLeft: calc(-1 * var(--CommentTree-borderWidth));
 	}
 }
 
@@ -31,11 +66,11 @@
 }
 
 .post__quote-block {
-	color: var(--PostQuote-color);
-	background-color: var(--PostQuote-backgroundColor);
-	border-right: var(--PostQuote-borderWidth--right) solid var(--PostQuote-borderColor);
-	border-top: var(--PostQuote-borderWidth) solid var(--PostQuote-borderColor);
-	border-bottom: var(--PostQuote-borderWidth) solid var(--PostQuote-borderColor);
+	color: var(--PostQuoteBlock-color);
+	background-color: var(--PostQuoteBlock-backgroundColor);
+	border-right: var(--PostQuoteBlock-borderWidth--right) solid var(--PostQuoteBlock-borderColor);
+	border-top: var(--PostQuoteBlock-borderWidth) solid var(--PostQuoteBlock-borderColor);
+	border-bottom: var(--PostQuoteBlock-borderWidth) solid var(--PostQuoteBlock-borderColor);
 }
 
 .post__quote-block--generated {

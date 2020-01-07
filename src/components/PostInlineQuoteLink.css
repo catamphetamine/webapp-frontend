@@ -1,11 +1,13 @@
 .post__inline-quote-link:hover,
 .post__inline-quote-link:active {
-	/*--PostQuote-borderColor: var(--PostQuote-borderColor--hover);*/
-	--PostQuote-backgroundColor: var(--PostQuote-backgroundColor--hover);
-	/*--PostQuote-borderColor--generated: var(--PostQuote-borderColor--generated--hover);*/
-	--PostQuote-backgroundColor--generated: var(--PostQuote-backgroundColor--generated--hover);
-	/* Overrides the default `a:active` color for `.post__quote-blocks--link`. */
-	color: var(--PostQuote-color);
+	/*--PostQuoteBlock-borderColor: var(--PostQuoteBlock-borderColor--hover);*/
+	--PostQuoteBlock-backgroundColor: var(--PostQuoteBlock-backgroundColor--hover);
+	/*--PostQuoteBlock-borderColor--generated: var(--PostQuoteBlock-borderColor--generated--hover);*/
+	--PostQuoteBlock-backgroundColor--generated: var(--PostQuoteBlock-backgroundColor--generated--hover);
+	.post__quote-block {
+		/* Overrides the default `a:active` color for `.post__quote-blocks--link`. */
+		color: var(--PostQuoteBlock-color);
+	}
 }
 
 /* Due to the presence of a `<br/>` sequential

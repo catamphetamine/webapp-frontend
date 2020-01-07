@@ -6,7 +6,7 @@
 	position: relative;
 	margin-top: var(--PostContent-margin);
 	.post__quote-marker {
-		left: calc(-1 * var(--PostQuote-paddingLeft));
+		left: calc(-1 * var(--PostQuoteBlock-paddingLeft));
 	}
 }
 
@@ -18,7 +18,7 @@
    and if explicitly set here it would override that
    custome theme style. */
 .post__social__quote-marker-wrapper {
-	color: var(--PostQuote-color);
+	color: var(--PostQuoteBlock-color);
 }
 
 .post__social__header {

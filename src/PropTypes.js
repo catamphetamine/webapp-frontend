@@ -276,7 +276,9 @@ export const postInlineQuote = shape({
 	type: oneOf(['quote']).isRequired,
 	content: postInlineContent.isRequired,
 	// The `generated` flag is only used in `post-link`s.
-	generated: bool
+	generated: bool,
+	// `block: true` emulates block appearance while staying inline.
+	block: bool
 })
 
 export const postReadMore = shape({

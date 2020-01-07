@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 import PostCode from './PostCode'
 import PostInlineQuoteLink from './PostInlineQuoteLink'
 import PostInlineQuote from './PostInlineQuote'
+import PostQuoteBlock from './PostQuoteBlock'
 import PostInlineSpoiler from './PostInlineSpoiler'
 import PostText from './PostText'
 import PostLink from './PostLink'
@@ -79,6 +80,16 @@ function PostInlineContentElement({ children: content, ...rest }) {
 			</PostText>
 		)
 	} else if (content.type === 'quote') {
+		if (content.block) {
+			return (
+				<PostQuoteBlock
+					inline
+					kind={content.kind}
+					generated={content.generated}>
+					{renderContent(content.content)}
+				</PostQuoteBlock>
+			)
+		}
 		return (
 			<PostInlineQuote
 				kind={content.kind}
@@ -98,6 +109,7 @@ function PostInlineContentElement({ children: content, ...rest }) {
 		if (Array.isArray(content.content) && content.content[0].type === 'quote') {
 			return (
 				<PostInlineQuoteLink
+					block={content.content[0].block}
 					onClick={onPostLinkClick}
 					postLink={content}
 					url={content.url}>

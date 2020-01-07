@@ -10,7 +10,7 @@
 		display: block;
 		content: '';
 		width: var(--PostQuoteMarker-width);
-		height: calc(100% - 2 * var(--PostQuoteMarker-padding) + 2 * var(--PostQuote-borderWidth));
+		height: calc(100% - 2 * var(--PostQuoteMarker-padding));
 		min-height: 1.3em;
 		background-color: currentColor;
 		opacity: var(--PostQuoteMarker-opacity);

@@ -1,4 +1,5 @@
 .post__read-more {
 	font-family: var(--Document-fontFamily);
-	font-weight: 500;
+	font-weight: var(--PostReadMore-fontWeight);
+	color: var(--PostReadMore-color);
 }

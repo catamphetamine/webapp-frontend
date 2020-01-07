@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import PropTypes from 'prop-types'
 import ReactTimeAgo from 'react-time-ago'
 // `/copy-text` was just for copying
@@ -18,10 +18,14 @@ export default function PostDate({ date, link, locale, className }) {
 			locale={locale}
 			className="post__date"/>
 	)
+	const onClick = useCallback((event) => {
+		event.preventDefault()
+		history.replaceState(undefined, undefined, link)
+	}, [link])
 	if (link) {
 		if (link[0] === '/') {
 			return (
-				<Link to={link} className={className}>
+				<Link to={link} onClick={onClick} className={className}>
 					{dateElement}
 				</Link>
 			)

@@ -11,12 +11,15 @@ export default function PostInlineQuoteLink({
 	url,
 	postLink,
 	onClick,
+	block,
 	children
 }) {
 	const _onClick = useCallback((event) => {
 		onClick(event, postLink)
 	}, [onClick, postLink])
-	const className = classNames('post__inline-quote-link')
+	const className = classNames('post__inline-quote-link', {
+		'post__inline-quote-link--block': block
+	})
 	if (url[0] === '/') {
 		return (
 			<Link
@@ -42,5 +45,7 @@ PostInlineQuoteLink.propTypes = {
 	url: PropTypes.string,
 	onClick: PropTypes.func,
 	postLink: PropTypes.object,
+	// `block: true` emulates block appearance while staying inline.
+	block: PropTypes.bool,
 	children: PropTypes.node.isRequired
 }
