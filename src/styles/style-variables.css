@@ -83,6 +83,10 @@
 	--PostQuote-marginLeft: 0px;
 	--PostQuote-marginRight: 0px;
 
+	/* PostCode. */
+	--PostCode-marginLeft: var(--PostQuote-marginLeft);
+	--PostCode-marginRight: var(--PostQuote-marginRight);
+
 	/* PostQuote (generated). */
 	--PostQuote-color--generated: var(--PostQuote-color);
 	--PostQuote-backgroundColor--generated: var(--PostQuote-backgroundColor);
@@ -174,7 +178,7 @@
 
 	/* Selection. */
 	--Selection-color: var(--Content-color-900);
-	--Selection-backgroundColor: var(--Clickable-color--active);
+	--Selection-backgroundColor: var(--base-color-300);
 
 	/* Content. */
 	--Content-backgroundColor: var(--white-color);
@@ -281,8 +285,8 @@
 	--Critical-color: var(--critical-color-400);
 
 	/* Selection. */
-	--Selection-color: var(--Content-backgroundColor);
-	--Selection-backgroundColor: var(--base-color-400);
+	--Selection-color: var(--Content-color-900);
+	--Selection-backgroundColor: var(--Content-color-800);
 
 	/* Content. */
 	/* https://refactoringui.com/previews/building-your-color-palette */

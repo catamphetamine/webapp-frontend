@@ -23,6 +23,10 @@
 	overflow-wrap: break-word;
 	word-break: break-word;
 
+	/* Without `max-width: 100%` a comment could become overflown
+	   by a `<pre/>` code block. */
+	max-width: 100%;
+
 	/* When selecting text <br/>s also get selected
 	   which results in a bit of a visual clutter.
 	   (for example, in the end of `<PostInlineQuote/>`

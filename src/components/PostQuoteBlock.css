@@ -49,7 +49,12 @@
 
 /* Prepend an invisible "> " to inline quotes for copied text formatting. */
 .post__quote-block__prefix {
+	/* `font-size: 0` makes the "> " invisible, and also makes the `<div/>` zero-height. */
 	font-size: 0;
+	/* Without `display: block` it would result in an empty line before the actual
+	   quote text when the quote text is too long and is forcefully wrapped, like
+	   "REEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE". */
+	display: block;
 }
 
 .post__quote-block__content {

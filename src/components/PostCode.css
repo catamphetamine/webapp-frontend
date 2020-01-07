@@ -11,8 +11,11 @@
 .post__code:not(.post__code--inline) {
 	--PostCode-padding-horizontal: var(--PostQuote-paddingLeft);
 	line-height: var(--line-height);
-	margin-left: calc(-1 * var(--PostCode-padding-horizontal));
-	margin-right: calc(-1 * var(--PostCode-padding-horizontal));
+	/* `width` and `margin` are synchronized with `width` and `margin` on `post-link` quotes
+	   so that `<code/>` blocks appearance matches that of `post-link` quote blocks. */
+	width: calc(100% - var(--PostCode-marginLeft) + var(--PostCode-padding-horizontal) + var(--PostCode-padding-horizontal) - var(--PostCode-marginRight));
+	margin-left: calc(-1 * var(--PostCode-padding-horizontal) + var(--PostCode-marginLeft));
+	margin-right: calc(-1 * var(--PostCode-padding-horizontal) + var(--PostCode-marginRight));
 	padding-left: var(--PostCode-padding-horizontal);
 	padding-right: var(--PostCode-padding-horizontal);
 	margin-top: -1px;
