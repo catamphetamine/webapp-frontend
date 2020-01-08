@@ -19,13 +19,19 @@ export default class PostReadMore extends React.Component {
 
 		if (url) {
 			return (
-				<Link to={url} onClick={this.onClick} className="post__read-more">
+				<Link
+					to={url}
+					onClick={this.onClick}
+					className="post__read-more">
 					{readMoreLabel}
 				</Link>
 			)
 		}
 		return (
-			<button type="button" onClick={this.onClick} className="rrui__button-reset post__read-more">
+			<button
+				type="button"
+				onClick={this.onClick}
+				className="rrui__button-reset post__read-more">
 				{readMoreLabel}
 			</button>
 		)

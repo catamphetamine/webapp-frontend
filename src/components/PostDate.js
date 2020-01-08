@@ -9,7 +9,13 @@ import classNames from 'classnames'
 
 import './PostDate.css'
 
-export default function PostDate({ date, link, locale, className }) {
+export default function PostDate({
+	date,
+	linkBasePath,
+	link,
+	locale,
+	className
+}) {
 	className = classNames('post__date-link', 'post__summary-button', 'hover-button--link', className)
 	// tooltipClassName="post__date-tooltip"
 	const dateElement = (
@@ -20,7 +26,7 @@ export default function PostDate({ date, link, locale, className }) {
 	)
 	const onClick = useCallback((event) => {
 		event.preventDefault()
-		history.replaceState(undefined, undefined, link)
+		history.replaceState(undefined, undefined, (linkBasePath || '') + link)
 	}, [link])
 	if (link) {
 		if (link[0] === '/') {
@@ -42,5 +48,6 @@ export default function PostDate({ date, link, locale, className }) {
 PostDate.propTypes = {
 	date: PropTypes.instanceOf(Date).isRequired,
 	link: PropTypes.string,
+	linkBasePath: PropTypes.string,
 	className: PropTypes.string
 }

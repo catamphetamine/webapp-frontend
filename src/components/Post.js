@@ -47,6 +47,7 @@ export default class Post extends React.Component {
 		vote: PropTypes.bool,
 		onVote: PropTypes.func,
 		url: PropTypes.string,
+		urlBasePath: PropTypes.string,
 		locale: PropTypes.string,
 		moreActions: moreActionsType,
 		initialExpandContent: PropTypes.bool,
@@ -202,6 +203,7 @@ export default class Post extends React.Component {
 			footerBadges,
 			compact,
 			url,
+			urlBasePath,
 			locale,
 			expandFirstPictureOrVideo,
 			expandAttachments,
@@ -246,6 +248,7 @@ export default class Post extends React.Component {
 				<PostHeader
 					post={post}
 					url={url}
+					urlBasePath={urlBasePath}
 					locale={locale}
 					header={header}
 					items={headerItems}

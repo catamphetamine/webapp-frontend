@@ -21,6 +21,7 @@ import './PostHeader.css'
 export default function PostHeader({
 	post,
 	url,
+	urlBasePath,
 	locale,
 	header: Header,
 	items,
@@ -69,6 +70,7 @@ export default function PostHeader({
 									<PostDate
 										date={post.createdAt}
 										link={url}
+										linkBasePath={urlBasePath}
 										locale={locale}/>
 								}
 							</div>
@@ -89,6 +91,7 @@ export default function PostHeader({
 							<PostDate
 								date={post.createdAt}
 								link={url}
+								linkBasePath={urlBasePath}
 								locale={locale}/>
 						</div>
 					}
@@ -216,6 +219,7 @@ PostHeader.propTypes = {
 	items: PropTypes.arrayOf(PropTypes.node),
 	badges: PropTypes.arrayOf(postBadge),
 	url: PropTypes.string,
+	urlBasePath: PropTypes.string,
 	locale: PropTypes.string,
 	header: PropTypes.func,
 	moreActions: moreActionsType,
