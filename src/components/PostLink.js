@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-pages'
 import classNames from 'classnames'
@@ -24,73 +24,76 @@ import LinkIcon from '../../assets/images/icons/external.svg'
 
 import getHumanReadableLinkAddress from 'social-components/commonjs/utility/post/getHumanReadableLinkAddress'
 
-export default class PostLink extends React.Component {
-	onClick = (event) => {
-		const { attachment, onAttachmentClick } = this.props
-		if (attachment && attachment.type === 'video') {
-			event.preventDefault()
-			onAttachmentClick(attachment)
+export default function PostLink({
+	url,
+	service,
+	serviceIcons,
+	contentGenerated,
+	onClick,
+	attachment,
+	onAttachmentClick,
+	className,
+	children
+}) {
+	const onClick_ = useCallback((event) => {
+		if (onClick) {
+			onClick(event)
 		}
-	}
-
-	render() {
-		const {
-			url,
-			service,
-			serviceIcons,
-			contentGenerated,
-			attachment,
-			className,
-			children
-		} = this.props
-
-		if (url[0] === '/') {
-			return (
-				<Link
-					to={url}
-					className={classNames('post__link', className)}>
-					{children}
-				</Link>
-			)
+		if (!event.defaultPrevented) {
+			if (attachment && attachment.type === 'video') {
+				event.preventDefault()
+				onAttachmentClick(attachment)
+			}
 		}
+	}, [onClick, onAttachmentClick, attachment])
 
-		const serviceIcon = service && (serviceIcons[service] || SERVICE_ICONS[service])
-
-		// `.post__link-icon__wrap-fix` is a fix for preventing the link icon
-		// from staying on the previous line while the link text being placed
-		// on the next line due to wrapping in case of long unbreakable links.
-		// https://snook.ca/archives/html_and_css/icon-wrap-after-text
-
+	if (url[0] === '/') {
 		return (
-			<a
-				target={url[0] === '#' ? undefined : '_blank'}
-				href={url}
-				onClick={this.onClick}
-				className={classNames(className, 'post__link', {
-					'post__link--icon': attachment && attachment.type === 'video'
-				})}>
-				{/* attachment && attachment.type === 'video' &&  attachment.video.provider === 'YouTube' && */}
-				{service && serviceIcon &&
-					<span className="post__link-icon__wrap-fix">
-						{React.createElement(serviceIcon, {
-							title: service,
-							className: `post__link-icon service-icon` // service-icon--${service}
-						})}
-						&nbsp;
-					</span>
-				}
-				{contentGenerated && service && serviceIcon && children}
-				{contentGenerated && !(service && serviceIcon) &&
-					<span className="post__link-icon__wrap-fix">
-						<LinkIcon className="post__link-icon"/>
-						&nbsp;
-					</span>
-				}
-				{contentGenerated && !(service && serviceIcon) && getHumanReadableLinkAddress(url)}
-				{!contentGenerated && children}
-			</a>
+			<Link
+				to={url}
+				onClick={onClick_}
+				className={classNames('post__link', className)}>
+				{children}
+			</Link>
 		)
 	}
+
+	const serviceIcon = service && (serviceIcons[service] || SERVICE_ICONS[service])
+
+	// `.post__link-icon__wrap-fix` is a fix for preventing the link icon
+	// from staying on the previous line while the link text being placed
+	// on the next line due to wrapping in case of long unbreakable links.
+	// https://snook.ca/archives/html_and_css/icon-wrap-after-text
+
+	return (
+		<a
+			target={url[0] === '#' ? undefined : '_blank'}
+			href={url}
+			onClick={onClick_}
+			className={classNames(className, 'post__link', {
+				'post__link--icon': attachment && attachment.type === 'video'
+			})}>
+			{/* attachment && attachment.type === 'video' &&  attachment.video.provider === 'YouTube' && */}
+			{service && serviceIcon &&
+				<span className="post__link-icon__wrap-fix">
+					{React.createElement(serviceIcon, {
+						title: service,
+						className: `post__link-icon service-icon` // service-icon--${service}
+					})}
+					&nbsp;
+				</span>
+			}
+			{contentGenerated && service && serviceIcon && children}
+			{contentGenerated && !(service && serviceIcon) &&
+				<span className="post__link-icon__wrap-fix">
+					<LinkIcon className="post__link-icon"/>
+					&nbsp;
+				</span>
+			}
+			{contentGenerated && !(service && serviceIcon) && getHumanReadableLinkAddress(url)}
+			{!contentGenerated && children}
+		</a>
+	)
 }
 
 PostLink.propTypes = {
@@ -101,6 +104,7 @@ PostLink.propTypes = {
 	attachment: PropTypes.shape({
 		type: PropTypes.oneOf(['video']).isRequired
 	}),
+	onClick: PropTypes.func,
 	onAttachmentClick: PropTypes.func.isRequired,
 	className: PropTypes.string,
 	children: PropTypes.node.isRequired

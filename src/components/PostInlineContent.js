@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import PropTypes from 'prop-types'
 
 import PostCode from './PostCode'
@@ -35,6 +35,7 @@ PostInlineContent.propTypes = {
 	readMoreLabel: PropTypes.string,
 	onAttachmentClick: PropTypes.func,
 	onPostLinkClick: PropTypes.func,
+	isPostLinkClickable: PropTypes.func,
 	serviceIcons: PropTypes.objectOf(PropTypes.func),
 	children: postParagraph.isRequired
 }
@@ -46,8 +47,12 @@ function PostInlineContentElement({ children: content, ...rest }) {
 		readMoreLabel,
 		onAttachmentClick,
 		onPostLinkClick,
+		isPostLinkClickable,
 		serviceIcons
 	} = rest
+	const onPostLinkClick_ = useCallback((event) => {
+		onPostLinkClick(event, content)
+	}, [onPostLinkClick, content])
 	if (content === '\n') {
 		return <br/>
 	} else if (Array.isArray(content) || typeof content === 'string') {
@@ -106,21 +111,26 @@ function PostInlineContentElement({ children: content, ...rest }) {
 			</PostInlineSpoiler>
 		)
 	} else if (content.type === 'post-link') {
+		const disabled = isPostLinkClickable ? !isPostLinkClickable(content) : undefined
 		if (Array.isArray(content.content) && content.content[0].type === 'quote') {
 			return (
 				<PostInlineQuoteLink
 					block={content.content[0].block}
 					onClick={onPostLinkClick}
+					disabled={disabled}
 					postLink={content}
 					url={content.url}>
 					{renderContent(content.content)}
 				</PostInlineQuoteLink>
 			)
 		}
+		if (disabled) {
+			return renderContent(content.content)
+		}
 		return (
 			<PostLink
 				url={content.url}
-				className="post__link--post">
+				onClick={onPostLinkClick_}>
 				{renderContent(content.content)}
 			</PostLink>
 		)

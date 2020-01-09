@@ -15,3 +15,7 @@
 .post__inline-quote-link + br + .post__inline-quote-link .post__inline-quote {
 	margin-top: 0;
 }
+
+.post__inline-quote-link--disabled {
+	user-select: none;
+}

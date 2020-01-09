@@ -24,6 +24,7 @@ export default function PostBlock({
 	attachmentThumbnailSize,
 	onAttachmentClick,
 	onPostLinkClick,
+	isPostLinkClickable,
 	serviceIcons,
 	expandAttachments,
 	spoilerLabel,
@@ -41,6 +42,7 @@ export default function PostBlock({
 				readMoreLabel={readMoreLabel}
 				onAttachmentClick={onAttachmentClick}
 				onPostLinkClick={onPostLinkClick}
+				isPostLinkClickable={isPostLinkClickable}
 				serviceIcons={serviceIcons}>
 				{content}
 			</PostInlineContent>
@@ -160,6 +162,7 @@ PostBlock.propTypes = {
 	attachmentThumbnailSize: PropTypes.number,
 	onAttachmentClick: PropTypes.func,
 	onPostLinkClick: PropTypes.func,
+	isPostLinkClickable: PropTypes.func,
 	serviceIcons: PropTypes.objectOf(PropTypes.func),
 	expandAttachments: PropTypes.bool,
 	spoilerLabel: PropTypes.string,
