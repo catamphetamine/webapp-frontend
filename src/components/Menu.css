@@ -3,9 +3,7 @@
 .menu {
 	--MenuIcon-padding: calc(var(--MenuIcon-width) / 3.5);
 	display: flex;
-	margin: 0;
-	padding: 0;
-	list-style: none;
+	align-items: center;
 	/* "Negative" margins when set directly on `.menu`
 	   cause issues when used on left/right side:
 	   they stretch page width beyond `100%`
@@ -15,16 +13,6 @@
 	margin-left: calc(-1 * var(--MenuIcon-padding));
 	margin-right: calc(-1 * var(--MenuIcon-padding));
 	*/
-	> li {
-    display: flex;
-    align-items: center;
-	}
-	> li:first-child {
-		margin-left: calc(-1 * var(--MenuIcon-padding));
-	}
-	> li:last-child {
-		margin-right: calc(-1 * var(--MenuIcon-padding));
-	}
 }
 
 .menu-item-container {
@@ -48,6 +36,12 @@
 	color: var(--Menu-color);
 	&:active {
 		color: var(--Menu-color--active);
+	}
+	&:first-child {
+		margin-left: calc(-1 * var(--MenuIcon-padding));
+	}
+	&:last-child {
+		margin-right: calc(-1 * var(--MenuIcon-padding));
 	}
 }
 
@@ -88,6 +82,10 @@
 		margin-left: calc(-1 * var(--MenuIcon-width) / 6);
 		margin-right: calc(-1 * var(--MenuIcon-width) / 6);
 	}
+}
+
+.menu-item__icon--pop {
+	display: block;
 }
 
 .menu-item__icon--outline {

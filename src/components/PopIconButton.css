@@ -1,0 +1,20 @@
+.PopIcon--animate {
+	animation-duration: .45s;
+	animation-name: PopIconAnimation;
+	animation-timing-function: ease-in-out;
+	transform: scale(1);
+}
+
+@keyframes PopIconAnimation {
+	0%, 100% {
+		transform: scale(1);
+	}
+	25% {
+		/*transform: scale(1.2);*/
+		transform: scale(1.1);
+	}
+	50% {
+		/*transform: scale(.95);*/
+		transform: scale(.975);
+	}
+}

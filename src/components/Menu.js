@@ -5,6 +5,7 @@ import { Link } from 'react-pages'
 import classNames from 'classnames'
 
 import Button from './Button'
+import PopIconButton from './PopIconButton'
 
 import './Menu.css'
 
@@ -14,11 +15,11 @@ export default function Menu({
 }) {
 	const pathname = useSelector(({ found }) => found.resolvedMatch.location.pathname)
 	return (
-		<ul className={classNames('menu', className)}>
+		<div className={classNames('menu', className)}>
 			{children.map((properties, i) => (
 				<MenuItem key={i} {...properties} pathname={pathname}/>
 			))}
-		</ul>
+		</div>
 	)
 }
 
@@ -29,7 +30,8 @@ const menuItemShape = {
 	onClick: PropTypes.func,
 	isSelected: PropTypes.bool,
 	icon: PropTypes.func.isRequired,
-	iconActive: PropTypes.func
+	iconActive: PropTypes.func,
+	pop: PropTypes.bool
 }
 
 Menu.propTypes = {
@@ -43,6 +45,7 @@ function MenuItem({
 	title,
 	icon,
 	iconActive,
+	pop,
 	size,
 	pathname,
 	isSelected,
@@ -63,31 +66,51 @@ function MenuItem({
 		iconActive && 'menu-item--fill',
 		!iconActive && 'menu-item--outline'
 	)
+	if (pop) {
+		return (
+			<PopIconButton
+				value={isSelected}
+				onIcon={iconActive}
+				offIcon={icon}
+				title={title}
+				buttonComponent={Button}
+				onClick={onClick}
+				className={className}
+				iconClassName="menu-item__icon menu-item__icon--pop"/>
+		)
+	}
 	const children = (
 		<React.Fragment>
 			{FillIcon && <FillIcon className="menu-item__icon menu-item__icon--fill"/>}
 			<OutlineIcon className="menu-item__icon menu-item__icon--outline"/>
 		</React.Fragment>
 	)
+	if (onClick) {
+		return (
+			<Button
+				title={title}
+				onClick={onClick}
+				className={className}>
+				{children}
+			</Button>
+		)
+	}
+	if (url) {
+		return (
+			<Link
+				to={url}
+				title={title}
+				className={className}>
+				{children}
+			</Link>
+		)
+	}
 	return (
-		<li>
-			{onClick &&
-				<Button
-					title={title}
-					onClick={onClick}
-					className={classNames('menu-item__button', className)}>
-					{children}
-				</Button>
-			}
-			{url &&
-				<Link
-					to={url}
-					title={title}
-					className={className}>
-					{children}
-				</Link>
-			}
-		</li>
+		<div
+			aria-label={title}
+			className={className}>
+			{children}
+		</div>
 	)
 }
 
