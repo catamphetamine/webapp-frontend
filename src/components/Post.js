@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useCallback, useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 
@@ -20,142 +20,69 @@ import { fixAttachmentPictureSizes } from '../utility/fixPictureSize'
 import './Post.css'
 import './PostQuoteBlock.css'
 
-export default class Post extends React.Component {
-	static propTypes = {
-		post: post.isRequired,
-		header: PropTypes.func,
-		headerItems: PropTypes.arrayOf(PropTypes.node),
-		headerBadges: PropTypes.arrayOf(postBadge),
-		footerBadges: PropTypes.arrayOf(postBadge),
-		compact: PropTypes.bool,
-		expandFirstPictureOrVideo: PropTypes.bool,
-		expandAttachments: PropTypes.bool,
-		useSmallestThumbnailsForAttachments: PropTypes.bool,
-		serviceIcons: PropTypes.objectOf(PropTypes.func),
-		youTubeApiKey: PropTypes.string,
-		maxAttachmentThumbnails: PropTypes.oneOfType([
-			PropTypes.oneOf([false]),
-			PropTypes.number
-		]),
-		attachmentThumbnailSize: PropTypes.number.isRequired,
-		onAttachmentClick: PropTypes.func,
-		onPostLinkClick: PropTypes.func,
-		onReply: PropTypes.func,
-		showingReplies: PropTypes.bool,
-		onShowReplies: PropTypes.func,
-		toggleShowRepliesButtonRef: PropTypes.any,
-		vote: PropTypes.bool,
-		onVote: PropTypes.func,
-		url: PropTypes.string,
-		urlBasePath: PropTypes.string,
-		locale: PropTypes.string,
-		moreActions: moreActionsType,
-		initialExpandContent: PropTypes.bool,
-		onExpandContent: PropTypes.func,
-		onContentDidChange: PropTypes.func,
-		onPostContentChange: PropTypes.func,
-		// `lynxchan` doesn't provide `width` and `height`
-		// neither for the picture not for the thumbnail
-		// in `/catalog.json` API response (which is a bug).
-		// http://lynxhub.com/lynxchan/res/722.html#q984
-		fixAttachmentPictureSizes: PropTypes.bool,
-		showPostThumbnailWhenThereAreMultipleAttachments: PropTypes.bool,
-		messages: postMessages.isRequired,
-		genericMessages: PropTypes.object,
-		stretch: PropTypes.bool,
-		className: PropTypes.string
-	}
+function Post({
+	post: postProperty,
+	header,
+	headerItems,
+	headerBadges,
+	footerBadges,
+	compact,
+	url,
+	urlBasePath,
+	locale,
+	initialExpandContent,
+	onExpandContent,
+	onContentDidChange,
+	youTubeApiKey,
+	onPostContentChange,
+	commentLengthLimit,
+	genericMessages,
+	fixAttachmentPictureSizes: shouldFixAttachmentPictureSizes,
+	expandFirstPictureOrVideo,
+	expandAttachments,
+	maxAttachmentThumbnails,
+	attachmentThumbnailSize,
+	useSmallestThumbnailsForAttachments,
+	showPostThumbnailWhenThereAreMultipleAttachments,
+	serviceIcons,
+	onAttachmentClick,
+	onPostLinkClick,
+	isPostLinkClickable,
+	onReply,
+	showingReplies,
+	onShowReplies,
+	toggleShowRepliesButtonRef,
+	vote,
+	onVote,
+	moreActions,
+	messages,
+	stretch,
+	className
+}, ref) {
+	const [showPreview, setShowPreview] = useState(initialExpandContent ? false : true)
+	const [originalPost, setOriginalPost] = useState()
+	const [postWithLinksExpanded, setPostWithLinksExpanded] = useState()
 
-	static defaultProps = {
-		attachmentThumbnailSize: 250,
-		messages: {
-			readMore: '...'
-		}
-	}
+	const isMounted = useRef()
+	const prevPostProperty = useRef()
 
-	state = {
-		showPreview: this.props.initialExpandContent ? false : true
-	}
-
-	node = React.createRef()
-
-	getNode = () => this.node.current
-
-	onExpandContent = () => {
-		const {
-			onExpandContent,
-			onContentDidChange
-		} = this.props
+	const onExpandContent_ = useCallback(() => {
 		if (onExpandContent) {
 			onExpandContent()
 		}
-		this.setState({
-			showPreview: false
-		}, onContentDidChange)
-	}
+		setShowPreview(false)
+	}, [onExpandContent, setShowPreview])
 
-	getPost() {
-		const {
-			post
-		} = this.props
-		const {
-			showPreview,
-			postWithLinksExpanded,
-			post: originalPost
-		} = this.state
-		// This condition is only for cases when `post` property changes.
-		return post === originalPost ? postWithLinksExpanded : post
-	}
-
-	componentDidMount() {
-		this._isMounted = true
-		this.expandLinks()
-	}
-
-	componentWillUnmount() {
-		this._isMounted = false
-	}
-
-	componentDidUpdate(prevProps, prevState) {
-		const {
-			post,
-			expandAttachments,
-			onContentDidChange
-		} = this.props
-		const {
-			postWithLinksExpanded
-		} = this.state
-		if (post !== prevProps.post) {
-			// If `post` property has changed then re-expand links.
-			this.expandLinks()
-		}
-		if (expandAttachments !== prevProps.expandAttachments) {
-			// The post height has changed due to expanding or collapsing attachments.
-			// `onContentDidChange()` is gonna be `virtual-scroller`'s `onItemHeightChange()`.
+	useEffect(() => {
+		if (isMounted.current) {
 			if (onContentDidChange) {
 				onContentDidChange()
 			}
 		}
-		if (postWithLinksExpanded !== prevState.postWithLinksExpanded) {
-			// The post height did change due to the re-generated preview.
-			// `onContentDidChange()` is gonna be `virtual-scroller`'s `onItemHeightChange()`.
-			if (onContentDidChange) {
-				onContentDidChange()
-			}
-		}
-	}
+	}, [showPreview])
 
-	expandLinks() {
-		const {
-			post,
-			youTubeApiKey,
-			onContentDidChange,
-			onPostContentChange,
-			commentLengthLimit,
-			genericMessages,
-			fixAttachmentPictureSizes: shouldFixAttachmentPictureSizes
-		} = this.props
-		loadResourceLinks(post, {
+	function expandLinks() {
+		loadResourceLinks(postProperty, {
 			youTubeApiKey,
 			getYouTubeVideoByUrl: getYouTubeVideoByUrlCached,
 			messages: genericMessages,
@@ -184,125 +111,173 @@ export default class Post extends React.Component {
 			} : undefined,
 			onPostContentChange,
 			onContentChange: (postWithLinksExpanded) => {
-				if (this._isMounted) {
-					this.setState({
-						postWithLinksExpanded,
-						// `post` is stored in `state` for cases when `post` property changes.
-						post
-					})
+				if (isMounted.current) {
+					setPostWithLinksExpanded(postWithLinksExpanded)
+					// `post` is stored in `state` for cases when `post` property changes.
+					setOriginalPost(postProperty)
 				}
 			}
 		})
 	}
 
-	render() {
-		const {
-			header,
-			headerItems,
-			headerBadges,
-			footerBadges,
-			compact,
-			url,
-			urlBasePath,
-			locale,
-			expandFirstPictureOrVideo,
-			expandAttachments,
-			maxAttachmentThumbnails,
-			attachmentThumbnailSize,
-			useSmallestThumbnailsForAttachments,
-			showPostThumbnailWhenThereAreMultipleAttachments,
-			serviceIcons,
-			onAttachmentClick,
-			onPostLinkClick,
-			onReply,
-			showingReplies,
-			onShowReplies,
-			toggleShowRepliesButtonRef,
-			vote,
-			onVote,
-			moreActions,
-			messages,
-			stretch,
-			className
-		} = this.props
+	useEffect(() => {
+		isMounted.current = true
+		expandLinks()
+		return () => isMounted.current = false
+	}, [])
 
-		const {
-			showPreview
-		} = this.state
+	useEffect(() => {
+		// If `post` property has changed then re-expand links.
+		expandLinks()
+	}, [postProperty])
 
-		const post = this.getPost()
+	useEffect(() => {
+		// The post height has changed due to expanding or collapsing attachments.
+		// `onContentDidChange()` is gonna be `virtual-scroller`'s `onItemHeightChange()`.
+		if (onContentDidChange) {
+			onContentDidChange()
+		}
+	}, [expandAttachments])
 
-		const postContent = showPreview && post.contentPreview ? post.contentPreview : post.content
+	useEffect(() => {
+		// The post height did change due to the re-generated preview.
+		// `onContentDidChange()` is gonna be `virtual-scroller`'s `onItemHeightChange()`.
+		if (onContentDidChange) {
+			onContentDidChange()
+		}
+	}, [postWithLinksExpanded])
 
-		return (
-			<article
-				ref={this.node}
-				className={classNames(className, 'post', {
-					'post--titled': post.title,
-					'post--starts-with-text': post.content && (typeof post.content === 'string' || typeof post.content[0] === 'string' || Array.isArray(post.content[0])),
-					'post--anonymous': !post.account,
-					'post--empty': !post.content,
-					'post--compact': compact,
-					'post--stretch': stretch
-				})}>
-				<PostHeader
-					post={post}
-					url={url}
-					urlBasePath={urlBasePath}
-					locale={locale}
-					header={header}
-					items={headerItems}
-					badges={headerBadges}
-					moreActions={moreActions}
-					messages={messages}
-					onReply={onReply}
-					showingReplies={showingReplies}
-					onShowReplies={onShowReplies}
-					toggleShowRepliesButtonRef={toggleShowRepliesButtonRef}
-					vote={vote}
-					onVote={onVote}/>
-				{postContent &&
-					<div className="post__content">
-						{getContentBlocks(postContent).map((content, i) => (
-							<PostBlock
-								key={i}
-								url={url}
-								onReadMore={this.onExpandContent}
-								readMoreLabel={messages.readMore}
-								attachments={post.attachments}
-								attachmentThumbnailSize={attachmentThumbnailSize}
-								expandAttachments={expandAttachments}
-								spoilerLabel={messages.spoiler}
-								onAttachmentClick={onAttachmentClick}
-								onPostLinkClick={onPostLinkClick}
-								serviceIcons={serviceIcons}
-								locale={locale}>
-								{content}
-							</PostBlock>
-						))}
-					</div>
-				}
-				<PostAttachments
-					post={post}
-					showPostThumbnailWhenThereAreMultipleAttachments={showPostThumbnailWhenThereAreMultipleAttachments}
-					expandFirstPictureOrVideo={expandFirstPictureOrVideo}
-					useSmallestThumbnails={useSmallestThumbnailsForAttachments}
-					maxAttachmentThumbnails={maxAttachmentThumbnails}
-					attachmentThumbnailSize={attachmentThumbnailSize}
-					expandAttachments={expandAttachments}
-					spoilerLabel={messages.spoiler}
-					onAttachmentClick={onAttachmentClick}>
-					{getNonEmbeddedAttachments(post)}
-				</PostAttachments>
-				{stretch &&
-					<div className="post__stretch"/>
-				}
-				<PostFooter
-					post={post}
-					badges={footerBadges}
-					locale={locale}
-					messages={messages}/>
-			</article>
-		);
+	// This condition is only for cases when `post` property changes.
+	const post = postProperty === originalPost ? postWithLinksExpanded : postProperty
+
+	const postContent = showPreview && post.contentPreview ? post.contentPreview : post.content
+
+	return (
+		<article
+			ref={ref}
+			className={classNames(className, 'post', {
+				'post--titled': post.title,
+				'post--starts-with-text': post.content && (typeof post.content === 'string' || typeof post.content[0] === 'string' || Array.isArray(post.content[0])),
+				'post--anonymous': !post.account,
+				'post--empty': !post.content,
+				'post--compact': compact,
+				'post--stretch': stretch
+			})}>
+			<PostHeader
+				post={post}
+				url={url}
+				urlBasePath={urlBasePath}
+				locale={locale}
+				header={header}
+				items={headerItems}
+				badges={headerBadges}
+				moreActions={moreActions}
+				messages={messages}
+				onReply={onReply}
+				showingReplies={showingReplies}
+				onShowReplies={onShowReplies}
+				toggleShowRepliesButtonRef={toggleShowRepliesButtonRef}
+				vote={vote}
+				onVote={onVote}/>
+			{postContent &&
+				<div className="post__content">
+					{getContentBlocks(postContent).map((content, i) => (
+						<PostBlock
+							key={i}
+							url={url}
+							onReadMore={onExpandContent_}
+							readMoreLabel={messages.readMore}
+							attachments={post.attachments}
+							attachmentThumbnailSize={attachmentThumbnailSize}
+							expandAttachments={expandAttachments}
+							spoilerLabel={messages.spoiler}
+							onAttachmentClick={onAttachmentClick}
+							onPostLinkClick={onPostLinkClick}
+							isPostLinkClickable={isPostLinkClickable}
+							serviceIcons={serviceIcons}
+							locale={locale}>
+							{content}
+						</PostBlock>
+					))}
+				</div>
+			}
+			<PostAttachments
+				post={post}
+				showPostThumbnailWhenThereAreMultipleAttachments={showPostThumbnailWhenThereAreMultipleAttachments}
+				expandFirstPictureOrVideo={expandFirstPictureOrVideo}
+				useSmallestThumbnails={useSmallestThumbnailsForAttachments}
+				maxAttachmentThumbnails={maxAttachmentThumbnails}
+				attachmentThumbnailSize={attachmentThumbnailSize}
+				expandAttachments={expandAttachments}
+				spoilerLabel={messages.spoiler}
+				onAttachmentClick={onAttachmentClick}>
+				{getNonEmbeddedAttachments(post)}
+			</PostAttachments>
+			{stretch &&
+				<div className="post__stretch"/>
+			}
+			<PostFooter
+				post={post}
+				badges={footerBadges}
+				locale={locale}
+				messages={messages}/>
+		</article>
+	);
+}
+
+Post = React.forwardRef(Post)
+
+Post.propTypes = {
+	post: post.isRequired,
+	header: PropTypes.func,
+	headerItems: PropTypes.arrayOf(PropTypes.node),
+	headerBadges: PropTypes.arrayOf(postBadge),
+	footerBadges: PropTypes.arrayOf(postBadge),
+	compact: PropTypes.bool,
+	expandFirstPictureOrVideo: PropTypes.bool,
+	expandAttachments: PropTypes.bool,
+	useSmallestThumbnailsForAttachments: PropTypes.bool,
+	serviceIcons: PropTypes.objectOf(PropTypes.func),
+	youTubeApiKey: PropTypes.string,
+	maxAttachmentThumbnails: PropTypes.oneOfType([
+		PropTypes.oneOf([false]),
+		PropTypes.number
+	]),
+	attachmentThumbnailSize: PropTypes.number.isRequired,
+	onAttachmentClick: PropTypes.func,
+	onPostLinkClick: PropTypes.func,
+	isPostLinkClickable: PropTypes.func,
+	onReply: PropTypes.func,
+	showingReplies: PropTypes.bool,
+	onShowReplies: PropTypes.func,
+	toggleShowRepliesButtonRef: PropTypes.any,
+	vote: PropTypes.bool,
+	onVote: PropTypes.func,
+	url: PropTypes.string,
+	urlBasePath: PropTypes.string,
+	locale: PropTypes.string,
+	moreActions: moreActionsType,
+	initialExpandContent: PropTypes.bool,
+	onExpandContent: PropTypes.func,
+	onContentDidChange: PropTypes.func,
+	onPostContentChange: PropTypes.func,
+	// `lynxchan` doesn't provide `width` and `height`
+	// neither for the picture not for the thumbnail
+	// in `/catalog.json` API response (which is a bug).
+	// http://lynxhub.com/lynxchan/res/722.html#q984
+	fixAttachmentPictureSizes: PropTypes.bool,
+	showPostThumbnailWhenThereAreMultipleAttachments: PropTypes.bool,
+	messages: postMessages.isRequired,
+	genericMessages: PropTypes.object,
+	stretch: PropTypes.bool,
+	className: PropTypes.string
+}
+
+Post.defaultProps = {
+	attachmentThumbnailSize: 250,
+	messages: {
+		readMore: '...'
 	}
 }
+
+export default Post

@@ -115,13 +115,13 @@ export default class CommentTree extends React.Component {
 		// On un-expand replies — scroll to the original comment if it's not visible.
 		if (!showReplies) {
 			if (this.post.current) {
-				// const postRect = this.post.current.getNode().getBoundingClientRect()
+				// const postRect = this.post.current.getBoundingClientRect()
 				const toggleShowRepliesButtonRect = this.toggleShowRepliesButton.current.getBoundingClientRect()
 				// if (postRect.top < 0) {
 				if (toggleShowRepliesButtonRect.top < 0) {
 					// const scrolledDistance = Math.abs(postRect.top)
 					const scrolledDistance = Math.abs(toggleShowRepliesButtonRect.top)
-					promise = scrollIntoView(this.post.current.getNode(), {
+					promise = scrollIntoView(this.post.current, {
 						ease: 'easeInOutSine',
 						duration: Math.min(140 + scrolledDistance / 2, 320),
 						scrollMode: 'if-needed',
