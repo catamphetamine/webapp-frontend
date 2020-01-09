@@ -23,7 +23,7 @@
 	.post__quote-marker {
 		--PostQuoteMarker-color: var(--PostQuoteBlockMarker-color);
 		--PostQuoteMarker-width: var(--PostQuoteBlockMarker-width);
-		--PostQuoteMarker-padding: calc(var(--PostQuoteBlockMarker-padding) + var(--PostQuoteBlock-borderWidth));
+		--PostQuoteMarker-padding: var(--PostQuoteBlockMarker-padding);
 		--PostQuoteMarker-opacity: var(--PostQuoteBlockMarker-opacity)
 	}
 }

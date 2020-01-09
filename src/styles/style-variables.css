@@ -100,20 +100,26 @@
 	--PostQuoteBlock-borderWidth--generated: 0px;
 	--PostQuoteBlock-marginTop--generated: 0px;
 
-	/* PostQuoteBlockMarker (constants). */
-	--PostQuoteBlockMarker-padding--standalone: 0.2em;
+	/* PostQuoteMarker (constants). */
+	--PostQuoteMarker-padding--standalone: 0.2em;
+
+	/* PostQuoteMarker. */
+	--PostQuoteMarker-color: currentColor;
+	--PostQuoteMarker-opacity: 0.25;
+	--PostQuoteMarker-width: 2px;
+	--PostQuoteMarker-padding: var(--PostQuoteMarker-padding--standalone);
 
 	/* PostQuoteBlockMarker. */
-	--PostQuoteBlockMarker-color: currentColor;
-	--PostQuoteBlockMarker-opacity: 0.5;
-	--PostQuoteBlockMarker-width: 2px;
-	--PostQuoteBlockMarker-padding: var(--PostQuoteBlockMarker-padding--standalone);
+	--PostQuoteBlockMarker-color: var(--PostQuoteMarker-color);
+	--PostQuoteBlockMarker-opacity: var(--PostQuoteMarker-opacity);
+	--PostQuoteBlockMarker-width: var(--PostQuoteMarker-width);
+	--PostQuoteBlockMarker-padding: var(--PostQuoteMarker-padding--standalone);
 
 	/* PostQuoteBlockMarker (generated). */
 	--PostQuoteBlockMarker-color--generated: var(--PostQuoteBlockMarker-color);
 	--PostQuoteBlockMarker-opacity--generated: var(--PostQuoteBlockMarker-opacity);
 	--PostQuoteBlockMarker-width--generated: var(--PostQuoteBlockMarker-width);
-	--PostQuoteBlockMarker-padding--generated: var(--PostQuoteBlockMarker-padding--standalone);
+	--PostQuoteBlockMarker-padding--generated: var(--PostQuoteMarker-padding--standalone);
 	--PostQuoteBlockMarker-color--generated: currentColor;
 
 	/* PostInlineQuote. */
@@ -222,17 +228,15 @@
 	--PostQuoteBlock-borderColor: #c9f6ac;
 	--PostQuoteBlock-marginTop: 4px;
 
+	/* PostQuoteBlockMarker. */
+	--PostQuoteBlockMarker-padding: 0px;
+
 	/* PostQuoteBlock (generated). */
 	--PostQuoteBlock-color--generated: #87481b;
 	--PostQuoteBlock-backgroundColor--generated: #fff7ed;
 	--PostQuoteBlock-borderWidth--generated: 1px;
 	--PostQuoteBlock-borderColor--generated: #f4d7bc;
 	--PostQuoteBlock-marginTop--generated: 4px;
-
-	/* PostQuoteBlockMarker. */
-	--PostQuoteBlockMarker-opacity: 0.25;
-	--PostQuoteBlockMarker-color: currentColor;
-	--PostQuoteBlockMarker-padding: 0px;
 
 	/* PostQuoteBlockMarker (generated). */
 	--PostQuoteBlockMarker-opacity--generated: 1;
@@ -348,14 +352,14 @@
 
 	/* PostQuoteBlockMarker. */
 	--PostQuoteBlockMarker-opacity: 0.65;
-	--PostQuoteBlockMarker-padding: var(--PostQuoteBlockMarker-padding--standalone);
+	--PostQuoteBlockMarker-padding: var(--PostQuoteMarker-padding--standalone);
 
 	/* PostQuoteBlock (generated). */
 	--PostQuoteBlock-color--generated: #b27b59;
 
 	/* PostQuoteBlockMarker (generated). */
 	--PostQuoteBlockMarker-opacity--generated: 0.65;
-	--PostQuoteBlockMarker-padding--generated: var(--PostQuoteBlockMarker-padding--standalone);
+	--PostQuoteBlockMarker-padding--generated: var(--PostQuoteMarker-padding--standalone);
 
 	/* PostInlineSpoiler. */
 	--PostInlineSpoiler-color: #494949;

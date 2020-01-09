@@ -17,9 +17,11 @@
    because it could be overridden in a custom theme
    and if explicitly set here it would override that
    custome theme style. */
+/*
 .post__social__quote-marker-wrapper {
 	color: var(--PostQuoteBlock-color);
 }
+*/
 
 .post__social__header {
 	display: flex;
