@@ -44,11 +44,10 @@
 
 /* Due to the presence of a `<br/>` sequential
    inline quotes' vertical margins don't "collapse". */
-.post__quote-block + br + .post__quote-block {
-	margin-top: 0;
-}
-
-.post__inline-quote-link--block + br + .post__inline-quote-link--block .post__quote-block {
+.post__quote-block + br + .post__quote-block,
+.post__quote-block + br + .post__inline-quote-link--block .post__quote-block,
+.post__inline-quote-link--block + br + .post__inline-quote-link--block .post__quote-block,
+.post__inline-quote-link--block + br + .post__quote-block {
 	margin-top: 0;
 }
 
