@@ -1,7 +1,8 @@
 .PictureStack {
 	--PictureStack-borderColor: var(--Content-color-400);
 	--PictureStack-backgroundColor: var(--Content-backgroundColor);
-	--Picture-borderColor: var(--PictureStack-borderColor);
+	/* Makes non-stacked picture have the same border color as stacked ones. */
+	/*--Picture-borderColor: var(--PictureStack-borderColor);*/
 }
 
 .PictureStack--stack {
