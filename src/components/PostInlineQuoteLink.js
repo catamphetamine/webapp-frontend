@@ -13,15 +13,16 @@ export default function PostInlineQuoteLink({
 	onClick,
 	disabled,
 	block,
+	className,
 	children
 }) {
 	const _onClick = useCallback((event) => {
 		onClick(event, postLink)
 	}, [onClick, postLink])
-	const className = classNames('post__inline-quote-link', {
+	className = classNames(className, 'post__inline-quote-link', {
 		'post__inline-quote-link--disabled': disabled,
 		'post__inline-quote-link--block': block,
-		'post__inline-quote-link--inline': !block
+		// 'post__inline-quote-link--inline': !block
 	})
 	if (disabled) {
 		return (
@@ -58,5 +59,6 @@ PostInlineQuoteLink.propTypes = {
 	postLink: PropTypes.object,
 	// `block: true` emulates block appearance while staying inline.
 	block: PropTypes.bool,
+	className: PropTypes.string,
 	children: PropTypes.node.isRequired
 }

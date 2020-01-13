@@ -1,0 +1,43 @@
+.PictureStack {
+	--PictureStack-borderColor: var(--Content-color-400);
+	--PictureStack-backgroundColor: var(--Content-backgroundColor);
+	--Picture-borderColor: var(--PictureStack-borderColor);
+}
+
+.PictureStack--stack {
+	/* Stacked pictures border is re-drawn as a child element. */
+	--Picture-borderColor: transparent;
+	/* Show stacked pictures underneath. */
+  overflow: visible;
+}
+
+.PictureStackBorder,
+.PictureStackUnder {
+	display: block;
+	position: absolute;
+	width: calc(100% + 2 * 1px);
+	height: calc(100% + 2 * 1px);
+	border: 1px solid var(--PictureStack-borderColor);
+	background-color: var(--PictureStack-backgroundColor);
+}
+
+.PictureStackBorder {
+	left: calc(-1 * 1px);
+	top: calc(-1 * 1px);
+	border: 1px solid var(--PictureStack-borderColor);
+}
+
+.PictureStackUnder--2-of-2 {
+	left: calc(4px - 2 * 1px);
+	top: calc(4px - 2 * 1px);
+}
+
+.PictureStackUnder--2-of-3 {
+	left: calc(3px - 2 * 1px);
+	top: calc(3px - 2 * 1px);
+}
+
+.PictureStackUnder--3-of-3 {
+	left: calc(5px - 2 * 1px);
+	top: calc(5px - 2 * 1px);
+}

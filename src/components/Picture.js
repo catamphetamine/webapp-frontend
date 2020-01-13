@@ -42,6 +42,7 @@ function Picture({
 	maxHeight,
 	useSmallestSize,
 	component: Component,
+	componentProps,
 	showLoadingPlaceholder,
 	showLoadingIndicator,
 	pixelRatioMultiplier,
@@ -304,6 +305,7 @@ function Picture({
 	return (
 		<Component
 			{...rest}
+			{...componentProps}
 			ref={containerRef}
 			style={style ? { ...style, ...getContainerStyle() } : getContainerStyle()}
 			className={classNames(className, 'rrui__picture', {
@@ -380,6 +382,7 @@ Picture = React.forwardRef(Picture)
 Picture.propTypes = {
 	// Container component. Is `<div/>` by default.
 	component: PropTypes.elementType.isRequired,
+	componentProps: PropTypes.object,
 
 	// When a `<Picture/>` is a preview for a `<Video/>`
 	// then the `<Video/>` may supply its own `aspectRatio`

@@ -14,6 +14,7 @@ import YouTubeVideo, {
 	hasYouTubeVideoPlayerApiLoaded
 } from './YouTubeVideo'
 import ButtonOrLink from './ButtonOrLink'
+import PictureBadge from './PictureBadge'
 
 import './Video.css'
 
@@ -752,15 +753,15 @@ export function getMaxSize(video) {
 	return video.picture
 }
 
-export function VideoDuration({ duration, children }) {
-	// `<span/>` is used instead of a `<div/>`
-	// because a `<div/>` isn't supposed to be inside a `<button/>`.
+export function VideoDuration({ duration }) {
 	return (
-		<span className={classNames('rrui__video__duration', {
-			'rrui__video__duration--time': duration
-		})}>
-			{duration ? formatVideoDuration(duration) : (children || '▶')}
-		</span>
+		<PictureBadge
+			placement="bottom-right"
+			className={classNames('rrui__video__duration', {
+				'rrui__video__duration--time': duration
+			})}>
+			{duration ? formatVideoDuration(duration) : '▶'}
+		</PictureBadge>
 	)
 }
 

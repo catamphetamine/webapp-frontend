@@ -13,3 +13,12 @@
 .post__inline-quote-link--disabled {
 	user-select: none;
 }
+
+.post__inline-quote-link--attachment {
+	/* Attachments are `display: block`, so their container
+	   should be `display: inline-block`, not `display: inline`. */
+	display: inline-block;
+	/* Without `width: 100%` an `inline-block` would shrink
+	   to the attachment thumbnail width. */
+	width: 100%;
+}

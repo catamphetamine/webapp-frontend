@@ -10,6 +10,7 @@ export default function PostQuoteBlock({
 	kind,
 	inline,
 	generated,
+	className,
 	children
 }) {
 	// `<span/>`s are used instead of `<div/>`s
@@ -17,6 +18,7 @@ export default function PostQuoteBlock({
 	// which can't contain block-level DOM elements.
 	return (
 		<span className={classNames(
+			className,
 			'post__quote-block',
 			kind && `post__quote-block--${kind}`, {
 				'post__quote-block--generated': generated,
@@ -44,5 +46,6 @@ PostQuoteBlock.propTypes = {
 	// `kohlchan.net` and `8ch.net` have regular quotes and "inverse" quotes.
 	kind: PropTypes.string,
 	generated: PropTypes.bool,
-	content: PropTypes.node.isRequired
+	className: PropTypes.string,
+	children: PropTypes.node.isRequired
 }

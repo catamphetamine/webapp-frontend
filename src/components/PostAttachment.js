@@ -7,6 +7,7 @@ import ButtonOrLink from './ButtonOrLink'
 import { preloadPictureSlide } from './Slideshow.Picture'
 import SlideshowSize from './Slideshow.Size'
 import Picture from './Picture'
+import PictureBadge from './PictureBadge'
 import { getOriginalPictureSizeAndUrl } from '../utility/fixPictureSize'
 
 import {
@@ -24,6 +25,7 @@ import './PostAttachment.css'
 export default function PostAttachment({
 	onClick,
 	component,
+	componentProps,
 	attachment,
 	spoilerLabel,
 	expand,
@@ -76,6 +78,7 @@ export default function PostAttachment({
 			border
 			imageRef={thumbnailElement}
 			component={component}
+			componentProps={componentProps}
 			url={getAttachmentUrl(attachment)}
 			title={isRevealed ? attachment.title : spoilerLabel}
 			onClick={onClick ? onPictureClick : undefined}
@@ -109,7 +112,9 @@ export default function PostAttachment({
 				</AttachmentSpoilerBar>
 			}
 			{attachment.type === 'picture' && attachment.picture.type === 'image/gif' &&
-				<VideoDuration>gif</VideoDuration>
+				<PictureBadge placement="bottom-right">
+					gif
+				</PictureBadge>
 			}
 			{attachment.type === 'video' &&
 				<VideoDuration duration={attachment.video.duration}/>
@@ -131,6 +136,7 @@ PostAttachment.propTypes = {
 		videoAttachment
 	]).isRequired,
 	component: PropTypes.elementType.isRequired,
+	componentProps: PropTypes.object,
 	onClick: PropTypes.func,
 	spoilerLabel: PropTypes.string,
 	maxSize: PropTypes.number,

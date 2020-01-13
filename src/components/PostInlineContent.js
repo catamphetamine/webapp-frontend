@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 
@@ -12,6 +12,9 @@ import PostLink from './PostLink'
 import PostEmoji from './PostEmoji'
 import PostReadMore from './PostReadMore'
 import PostAttachment from './PostAttachment'
+
+import PictureStack from './PictureStack'
+// import PictureBadge from './PictureBadge'
 
 import { postParagraph, postInlineElement } from '../PropTypes'
 
@@ -46,6 +49,9 @@ PostInlineContent.propTypes = {
 }
 
 function PostInlineContentElement({ children: content, ...rest }) {
+	const postQuoteAttachmentProps = useMemo(() => ({
+		count: content && typeof content === 'object' && content.type === 'post-link' && content.attachment ? content.attachmentsCount : undefined
+	}), [content])
 	const {
 		url,
 		onReadMore,
@@ -122,6 +128,7 @@ function PostInlineContentElement({ children: content, ...rest }) {
 		const disabled = isPostLinkClickable ? !isPostLinkClickable(content) : undefined
 		if (Array.isArray(content.content) && content.content[0].type === 'quote') {
 			const block = content.content[0].block
+			const shouldRenderAttachment = block && content.attachment
 			// When `post-link` quote text was generated from an untitled attachment
 			// then such `post-link` is supposed to have the corresponding `attachment` set
 			// so that it could be displayed instead of a generic "Picture"/"Video" placeholder.
@@ -129,11 +136,12 @@ function PostInlineContentElement({ children: content, ...rest }) {
 				return (
 					<PostQuoteBlock
 						inline
-						kind={content.kind}
-						generated>
+						generated
+						className="post__quote-block--attachment">
 						<PostAttachment
 							attachment={content.attachment}
 							component={PostQuoteAttachment}
+							componentProps={postQuoteAttachmentProps}
 							useSmallestThumbnail={useSmallestThumbnailsForAttachments}
 							maxSize={attachmentThumbnailSize}
 							spoilerLabel={spoilerLabel}/>
@@ -146,8 +154,9 @@ function PostInlineContentElement({ children: content, ...rest }) {
 					onClick={onPostLinkClick}
 					disabled={disabled}
 					postLink={content}
-					url={content.url}>
-					{block && content.attachment ? renderAttachmentQuote(content) : renderContent(content.content)}
+					url={content.url}
+					className={shouldRenderAttachment ? 'post__inline-quote-link--attachment' : undefined}>
+					{shouldRenderAttachment ? renderAttachmentQuote(content) : renderContent(content.content)}
 				</PostInlineQuoteLink>
 			)
 		}
@@ -206,17 +215,44 @@ function toArray(content) {
 	return Array.isArray(content) ? content : [content]
 }
 
-function PostQuoteAttachment({ className, ...rest }, ref) {
+function PostQuoteAttachment({
+	count,
+	style,
+	className,
+	children,
+	...rest
+}, ref) {
 	return (
-		<span
-			{...rest}
+		<PictureStack
 			ref={ref}
-			className={classNames(className, 'post__quote-block__attachment')}/>
+			count={count}
+			style={style}
+			className={classNames(className, 'post__quote-block__attachment')}>
+			{children}
+		</PictureStack>
 	)
+	// return (
+	// 	<span
+	// 		ref={ref}
+	// 		style={style}
+	// 		className={classNames(className, 'post__quote-block__attachment')}>
+	// 		{children}
+	// 		{count > 1 &&
+	// 			<PictureBadge
+	// 				placement="top-right"
+	// 				className="post__quote-block__attachment__more-count">
+	// 				+{count - 1}
+	// 			</PictureBadge>
+	// 		}
+	// 	</span>
+	// )
 }
 
 PostQuoteAttachment = React.forwardRef(PostQuoteAttachment)
 
 PostQuoteAttachment.propTypes = {
-	className: PropTypes.string
+	count: PropTypes.number.isRequired,
+	style: PropTypes.object,
+	className: PropTypes.string,
+	children: PropTypes.node.isRequired
 }
