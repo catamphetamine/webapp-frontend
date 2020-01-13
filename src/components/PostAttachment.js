@@ -23,6 +23,7 @@ import './PostAttachment.css'
 
 export default function PostAttachment({
 	onClick,
+	component,
 	attachment,
 	spoilerLabel,
 	expand,
@@ -74,10 +75,10 @@ export default function PostAttachment({
 		<Picture
 			border
 			imageRef={thumbnailElement}
-			component={ButtonOrLink}
+			component={component}
 			url={getAttachmentUrl(attachment)}
 			title={isRevealed ? attachment.title : spoilerLabel}
-			onClick={onPictureClick}
+			onClick={onClick ? onPictureClick : undefined}
 			picture={picture}
 			width={expand ? undefined : width}
 			height={expand ? undefined : height}
@@ -95,9 +96,11 @@ export default function PostAttachment({
 			)}>
 			{isLoading &&
 				<FadeInOut show fadeInInitially fadeInDuration={3000} fadeOutDuration={0}>
-					<div className="post__attachment-thumbnail__loading">
+					{/* `<span/>` is used instead of a `<div/>`
+					    because a `<div/>` isn't supposed to be inside a `<button/>`. */}
+					<span className="post__attachment-thumbnail__loading">
 						<ActivityIndicator className="post__attachment-thumbnail__loading-indicator"/>
-					</div>
+					</span>
 				</FadeInOut>
 			}
 			{attachment.spoiler && !isRevealed && spoilerLabel &&
@@ -112,9 +115,11 @@ export default function PostAttachment({
 				<VideoDuration duration={attachment.video.duration}/>
 			}
 			{moreAttachmentsCount > 0 &&
-				<div className="post__attachment-thumbnail__more-count">
+				<span className="post__attachment-thumbnail__more-count">
+					{/* `<span/>` is used instead of a `<div/>`
+					    because a `<div/>` isn't supposed to be inside a `<button/>`. */}
 					+{moreAttachmentsCount + 1}
-				</div>
+				</span>
 			}
 		</Picture>
 	)
@@ -125,6 +130,7 @@ PostAttachment.propTypes = {
 		pictureAttachment,
 		videoAttachment
 	]).isRequired,
+	component: PropTypes.elementType.isRequired,
 	onClick: PropTypes.func,
 	spoilerLabel: PropTypes.string,
 	maxSize: PropTypes.number,
@@ -137,6 +143,10 @@ PostAttachment.propTypes = {
 	moreAttachmentsCount: PropTypes.number,
 	fixAttachmentPictureSize: PropTypes.bool,
 	className: PropTypes.string
+}
+
+PostAttachment.defaultProps = {
+	component: ButtonOrLink
 }
 
 // export default React.forwardRef(PostAttachment)

@@ -753,12 +753,14 @@ export function getMaxSize(video) {
 }
 
 export function VideoDuration({ duration, children }) {
+	// `<span/>` is used instead of a `<div/>`
+	// because a `<div/>` isn't supposed to be inside a `<button/>`.
 	return (
-		<div className={classNames('rrui__video__duration', {
+		<span className={classNames('rrui__video__duration', {
 			'rrui__video__duration--time': duration
 		})}>
 			{duration ? formatVideoDuration(duration) : (children || '▶')}
-		</div>
+		</span>
 	)
 }
 

@@ -194,6 +194,7 @@ function Post({
 							onAttachmentClick={onAttachmentClick}
 							onPostLinkClick={onPostLinkClick}
 							isPostLinkClickable={isPostLinkClickable}
+							useSmallestThumbnailsForAttachments={useSmallestThumbnailsForAttachments}
 							serviceIcons={serviceIcons}
 							locale={locale}>
 							{content}

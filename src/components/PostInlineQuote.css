@@ -37,8 +37,8 @@
 	background-color: var(--PostQuoteBlock-backgroundColor);
 	padding-left: var(--PostInlineQuote-paddingLeft);
 	padding-right: var(--PostInlineQuote-paddingLeft);
-	margin-left: calc(-1 * var(--PostInlineQuote-paddingLeft));
-	margin-right: calc(-1 * var(--PostInlineQuote-paddingLeft));
+	/*margin-left: calc(-1 * var(--PostInlineQuote-paddingLeft));*/
+	/*margin-right: calc(-1 * var(--PostInlineQuote-paddingLeft));*/
 	box-shadow: 0 0 0 var(--PostQuoteBlock-borderWidth) var(--PostQuoteBlock-borderColor);
 }
 

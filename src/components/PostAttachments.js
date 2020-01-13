@@ -214,7 +214,6 @@ PostAttachments.propTypes = {
 
 PostAttachments.defaultProps = {
 	expandFirstPictureOrVideo: false,
-	attachmentThumbnailSize: 160,
 	maxAttachmentThumbnails: 6
 }
 

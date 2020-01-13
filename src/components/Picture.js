@@ -318,14 +318,22 @@ function Picture({
 			    and that would result in "jumpiness" of the layout
 			    and would also cause bugs in a `virtual-scroller`.
 			    https://github.com/catamphetamine/virtual-scroller#images */}
+			{/* `<span/>` is used instead of a `<div/>`
+			    because a `<div/>` isn't supposed to be inside a `<button/>`. */}
 			{!(width || height) &&
-				<div style={{ width: '100%', paddingBottom: 100 / getImageAspectRatio() + '%' }}/>
+				<span style={{
+					display: 'block',
+					width: '100%',
+					paddingBottom: 100 / getImageAspectRatio() + '%'
+				}}/>
 			}
 
 			{/* Image "status" screen is displayed below the `<img/>`.
 			    This way, as the image loads, it hides the "loading" status below itself. */}
+			{/* `<span/>` is used instead of a `<div/>`
+			    because a `<div/>` isn't supposed to be inside a `<button/>`. */}
 			{imageStatus !== 1 &&
-				<div className="rrui__picture__status">
+				<span className="rrui__picture__status">
 					<FadeInOut
 						show
 						fadeInInitially
@@ -339,11 +347,11 @@ function Picture({
 							:
 							(showLoadingIndicator ?
 								<ActivityIndicator className="rrui__picture__loading-indicator"/> :
-								<div/>
+								<span className="rrui__picture__loading-indicator-stub"/>
 							)
 						}
 					</FadeInOut>
-				</div>
+				</span>
 			}
 
 			{imageStatus !== -1 &&

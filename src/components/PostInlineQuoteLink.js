@@ -20,7 +20,8 @@ export default function PostInlineQuoteLink({
 	}, [onClick, postLink])
 	const className = classNames('post__inline-quote-link', {
 		'post__inline-quote-link--disabled': disabled,
-		'post__inline-quote-link--block': block
+		'post__inline-quote-link--block': block,
+		'post__inline-quote-link--inline': !block
 	})
 	if (disabled) {
 		return (

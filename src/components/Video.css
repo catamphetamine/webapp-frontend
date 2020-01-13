@@ -30,6 +30,9 @@
 
 .rrui__video--border {
 	--Video-borderColor: var(--Picture-borderColor);
+	/* Without `background-clip: padding-box` the border wouldn't blend with background. */
+	/* https://stackoverflow.com/questions/4062001/can-you-set-a-border-opacity-in-css */
+  background-clip: padding-box;
 }
 
 .rrui__video--border:focus {
@@ -73,6 +76,7 @@
 
 .rrui__video__duration {
 	position: absolute;
+	display: block;
 	right: 0.3em;
 	bottom: 0.3em;
 	height: 1.5em;

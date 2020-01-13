@@ -98,3 +98,10 @@
 		content: '';
 	}
 }
+
+.post__quote-block__attachment {
+	/* It's a `<span/>` tag. */
+	display: block;
+	margin-top: calc(var(--unit) / 2);
+	margin-bottom: calc(var(--unit) / 2);
+}
