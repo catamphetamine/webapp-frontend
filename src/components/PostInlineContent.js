@@ -128,7 +128,8 @@ function PostInlineContentElement({ children: content, ...rest }) {
 		const disabled = isPostLinkClickable ? !isPostLinkClickable(content) : undefined
 		if (Array.isArray(content.content) && content.content[0].type === 'quote') {
 			const block = content.content[0].block
-			const shouldRenderAttachment = block && content.attachment
+			const shouldRenderAttachment = block && content.attachment &&
+			(content.attachment.type === 'picture' || content.attachment.type === 'video')
 			// When `post-link` quote text was generated from an untitled attachment
 			// then such `post-link` is supposed to have the corresponding `attachment` set
 			// so that it could be displayed instead of a generic "Picture"/"Video" placeholder.
