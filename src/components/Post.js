@@ -40,6 +40,7 @@ function Post({
 	fixAttachmentPictureSizes: shouldFixAttachmentPictureSizes,
 	expandFirstPictureOrVideo,
 	expandAttachments,
+	hideRestAttachments,
 	maxAttachmentThumbnails,
 	attachmentThumbnailSize,
 	useSmallestThumbnailsForAttachments,
@@ -210,6 +211,7 @@ function Post({
 				maxAttachmentThumbnails={maxAttachmentThumbnails}
 				attachmentThumbnailSize={attachmentThumbnailSize}
 				expandAttachments={expandAttachments}
+				hideRestAttachments={hideRestAttachments}
 				spoilerLabel={messages.spoiler}
 				onAttachmentClick={onAttachmentClick}>
 				{getNonEmbeddedAttachments(post)}
@@ -238,6 +240,7 @@ Post.propTypes = {
 	contentMaxLength: PropTypes.number,
 	expandFirstPictureOrVideo: PropTypes.bool,
 	expandAttachments: PropTypes.bool,
+	hideRestAttachments: PropTypes.bool,
 	useSmallestThumbnailsForAttachments: PropTypes.bool,
 	serviceIcons: PropTypes.objectOf(PropTypes.func),
 	youTubeApiKey: PropTypes.string,

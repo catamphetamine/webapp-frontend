@@ -139,13 +139,18 @@ function PostInlineContentElement({ children: content, ...rest }) {
 						inline
 						generated
 						className="post__quote-block--attachment">
-						<PostAttachment
-							attachment={content.attachment}
-							component={PostQuoteAttachment}
-							componentProps={postQuoteAttachmentProps}
-							useSmallestThumbnail={useSmallestThumbnailsForAttachments}
-							maxSize={attachmentThumbnailSize}
-							spoilerLabel={spoilerLabel}/>
+						<PictureStack
+							inline
+							count={content.attachmentsCount}
+							className="post__quote-block__attachment">
+							<PostAttachment
+								attachment={content.attachment}
+								component={PostQuoteAttachment}
+								componentProps={postQuoteAttachmentProps}
+								useSmallestThumbnail={useSmallestThumbnailsForAttachments}
+								maxSize={attachmentThumbnailSize}
+								spoilerLabel={spoilerLabel}/>
+						</PictureStack>
 					</PostQuoteBlock>
 				)
 			}
@@ -217,20 +222,19 @@ function toArray(content) {
 }
 
 function PostQuoteAttachment({
-	count,
+	// count,
 	style,
 	className,
 	children,
-	...rest
+	// ...rest
 }, ref) {
 	return (
-		<PictureStack
+		<span
 			ref={ref}
-			count={count}
 			style={style}
-			className={classNames(className, 'post__quote-block__attachment')}>
+			className={className}>
 			{children}
-		</PictureStack>
+		</span>
 	)
 	// return (
 	// 	<span
@@ -252,7 +256,7 @@ function PostQuoteAttachment({
 PostQuoteAttachment = React.forwardRef(PostQuoteAttachment)
 
 PostQuoteAttachment.propTypes = {
-	count: PropTypes.number.isRequired,
+	// count: PropTypes.number.isRequired,
 	style: PropTypes.object,
 	className: PropTypes.string,
 	children: PropTypes.node.isRequired

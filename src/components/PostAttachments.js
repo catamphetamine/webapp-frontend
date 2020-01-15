@@ -39,6 +39,7 @@ import PostFile, {
 } from './PostFile'
 
 import PostAttachment from './PostAttachment'
+import PictureStack from './PictureStack'
 
 import {
 	postAttachment
@@ -55,6 +56,7 @@ export default function PostAttachments({
 	post,
 	expandFirstPictureOrVideo,
 	expandAttachments,
+	hideRestAttachments,
 	attachmentThumbnailSize,
 	useSmallestThumbnails,
 	spoilerLabel,
@@ -125,6 +127,16 @@ export default function PostAttachments({
 	// they just show all attachments.
 	const postThumbnailCandidate = getPostThumbnail(post, { showPostThumbnailWhenThereAreMultipleAttachments })
 
+	let Container = PassthroughContainer
+	if (hideRestAttachments) {
+		Container = PictureStackContainer
+		if (titlePictureOrVideo) {
+			picturesAndVideos = []
+		} else {
+			picturesAndVideos = [picturesAndVideos[0]]
+		}
+	}
+
 	return (
 		<div className="post__attachments">
 			{expandAttachments &&
@@ -152,30 +164,39 @@ export default function PostAttachments({
 				})
 			}
 			{!expandAttachments && titlePictureOrVideo && titlePictureOrVideo.type === 'picture' &&
-				<PostPicture
-					attachment={titlePictureOrVideo}
-					spoilerLabel={spoilerLabel}
-					onClick={onAttachmentClick ? createOnAttachmentClick(0) : undefined}/>
+				<Container count={allPicturesAndVideos.length}>
+					<PostPicture
+						attachment={titlePictureOrVideo}
+						spoilerLabel={spoilerLabel}
+						onClick={onAttachmentClick ? createOnAttachmentClick(0) : undefined}/>
+				</Container>
 			}
 			{!expandAttachments && titlePictureOrVideo && titlePictureOrVideo.type === 'video' &&
-				<PostVideo
-					attachment={titlePictureOrVideo}
-					spoilerLabel={spoilerLabel}
-					onClick={onAttachmentClick ? createOnAttachmentClick(0) : undefined}/>
+				<Container count={allPicturesAndVideos.length}>
+					<PostVideo
+						attachment={titlePictureOrVideo}
+						spoilerLabel={spoilerLabel}
+						onClick={onAttachmentClick ? createOnAttachmentClick(0) : undefined}/>
+				</Container>
 			}
 			{!expandAttachments && picturesAndVideos.length > 0 &&
-				<div className="post__attachment-thumbnails">
+				<div className={classNames('post__attachment-thumbnails', {
+					'post__attachment-thumbnails--hide-rest-attachments': hideRestAttachments
+				})}>
 					{picturesAndVideos.map((pictureOrVideo, i) => {
 						return (
-							<PostAttachment
+							<Container
 								key={`picture-or-video-${i}`}
-								attachment={pictureOrVideo}
-								useSmallestThumbnail={useSmallestThumbnails}
-								maxSize={attachmentThumbnailSize}
-								spoilerLabel={spoilerLabel}
-								onClick={onAttachmentClick ? createOnAttachmentClick(i + (titlePictureOrVideo ? 1 : 0)) : undefined}
-								moreAttachmentsCount={i === picturesAndVideos.length - 1 ? picturesAndVideosMoreCount : undefined}
-								className={pictureOrVideo === postThumbnailCandidate ? 'post__attachment-thumbnail--post-thumbnail-candidate' : undefined}/>
+								count={allPicturesAndVideos.length}>
+								<PostAttachment
+									attachment={pictureOrVideo}
+									useSmallestThumbnail={useSmallestThumbnails}
+									maxSize={attachmentThumbnailSize}
+									spoilerLabel={spoilerLabel}
+									onClick={onAttachmentClick ? createOnAttachmentClick(i + (titlePictureOrVideo ? 1 : 0)) : undefined}
+									moreAttachmentsCount={i === picturesAndVideos.length - 1 ? picturesAndVideosMoreCount : undefined}
+									className={pictureOrVideo === postThumbnailCandidate ? 'post__attachment-thumbnail--post-thumbnail-candidate' : undefined}/>
+							</Container>
 						)
 					})}
 				</div>
@@ -202,6 +223,9 @@ PostAttachments.propTypes = {
 	onAttachmentClick: PropTypes.func,
 	expandFirstPictureOrVideo: PropTypes.bool.isRequired,
 	expandAttachments: PropTypes.bool,
+	// Currently this property only limits the displayed pictures and videos.
+	// Doesn't affect audios, files, links, etc.
+	hideRestAttachments: PropTypes.bool,
 	spoilerLabel: PropTypes.string,
 	useSmallestThumbnails: PropTypes.bool,
 	attachmentThumbnailSize: PropTypes.number.isRequired,
@@ -442,3 +466,19 @@ const TEST_ATTACHMENTS = [
 		link: LINK_EXAMPLE_2
 	}
 ]
+
+function PassthroughContainer({ count, ...rest }) {
+	return <React.Fragment {...rest}/>
+}
+
+PassthroughContainer.propTypes = {
+	count: PropTypes.number
+}
+
+function PictureStackContainer({ count, ...rest }) {
+	return <PictureStack count={count} {...rest}/>
+}
+
+PictureStackContainer.propTypes = {
+	count: PropTypes.number.isRequired
+}

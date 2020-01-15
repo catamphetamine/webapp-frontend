@@ -21,9 +21,21 @@
 }
 
 .post__attachment-thumbnails {
+	/* `.post__attachment-thumbnail` is also used in `post-link` quotes,
+	   where `margin`s aren't required. */
 	.post__attachment-thumbnail {
 		margin-top: var(--PostContent-margin);
 		margin-right: var(--PostContent-margin);
+	}
+}
+
+/* `.post__attachment-thumbnail` can't have `margin`s
+   when it's being shown as a `<PictureStack/>`,
+   so the `margin` is moved to the container. */
+.post__attachment-thumbnails--hide-rest-attachments {
+	margin-top: var(--PostContent-margin);
+	.post__attachment-thumbnail {
+		margin: 0;
 	}
 }
 

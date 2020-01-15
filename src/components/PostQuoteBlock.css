@@ -103,9 +103,7 @@
 	/* It's a `<span/>` tag. */
 	/* Can't be `display: block`, because it's inside a `<p/>`. */
 	/* Should be `display: inline-block`, because it contains a `display: block` attachment. */
-	/* CSS selector specificity is to override
-	   `display: block` set on `.post__attachment-thumbnail`. */
-	&.post__attachment-thumbnail {
+	.post__attachment-thumbnail {
 		display: inline-block;
 	}
 	margin-top: calc(var(--unit) / 2);
