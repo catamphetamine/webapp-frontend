@@ -35,7 +35,7 @@ function Post({
 	onContentDidChange,
 	youTubeApiKey,
 	onPostContentChange,
-	commentLengthLimit,
+	contentMaxLength,
 	genericMessages,
 	fixAttachmentPictureSizes: shouldFixAttachmentPictureSizes,
 	expandFirstPictureOrVideo,
@@ -86,7 +86,7 @@ function Post({
 			youTubeApiKey,
 			getYouTubeVideoByUrl: getYouTubeVideoByUrlCached,
 			messages: genericMessages,
-			commentLengthLimit,
+			contentMaxLength,
 			// Fix attachment picture sizes.
 			//
 			// `lynxchan` doesn't provide `width` and `height`
@@ -235,6 +235,7 @@ Post.propTypes = {
 	headerBadges: PropTypes.arrayOf(postBadge),
 	footerBadges: PropTypes.arrayOf(postBadge),
 	compact: PropTypes.bool,
+	contentMaxLength: PropTypes.number,
 	expandFirstPictureOrVideo: PropTypes.bool,
 	expandAttachments: PropTypes.bool,
 	useSmallestThumbnailsForAttachments: PropTypes.bool,
