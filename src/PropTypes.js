@@ -355,7 +355,8 @@ export const postFile = shape({
 	ext: string,
 	type: string,
 	size: number,
-	url: string.isRequired
+	url: string.isRequired,
+	picture: picture
 })
 
 export const fileAttachment = shape({
