@@ -110,7 +110,11 @@ function Post({
 				}
 				return []
 			} : undefined,
-			onPostContentChange,
+			onPostContentChange: (id) => {
+				if (isMounted.current) {
+					onPostContentChange(id)
+				}
+			},
 			onContentChange: (postWithLinksExpanded) => {
 				if (isMounted.current) {
 					setPostWithLinksExpanded(postWithLinksExpanded)
