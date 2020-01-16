@@ -11,7 +11,6 @@ import PostFooter, { hasFooter } from './PostFooter'
 import { moreActionsType } from './PostMoreActions'
 
 import loadResourceLinks from 'social-components/commonjs/utility/post/loadResourceLinks'
-import getNonEmbeddedAttachments from 'social-components/commonjs/utility/post/getNonEmbeddedAttachments'
 import getContentBlocks from 'social-components/commonjs/utility/post/getContentBlocks'
 
 import getYouTubeVideoByUrlCached from '../utility/getYouTubeVideoByUrlCached'
@@ -217,9 +216,7 @@ function Post({
 				expandAttachments={expandAttachments}
 				hideRestAttachments={hideRestAttachments}
 				spoilerLabel={messages.spoiler}
-				onAttachmentClick={onAttachmentClick}>
-				{getNonEmbeddedAttachments(post)}
-			</PostAttachments>
+				onAttachmentClick={onAttachmentClick}/>
 			{stretch &&
 				<div className="post__stretch"/>
 			}

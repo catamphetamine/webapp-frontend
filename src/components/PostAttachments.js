@@ -2,6 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 
+import getNonEmbeddedAttachments from 'social-components/commonjs/utility/post/getNonEmbeddedAttachments'
+import getPicturesAndVideos from 'social-components/commonjs/utility/post/getPicturesAndVideos'
 import { sortByThumbnailHeightDescending } from 'social-components/commonjs/utility/post/getSortedAttachments'
 
 import {
@@ -62,12 +64,9 @@ export default function PostAttachments({
 	spoilerLabel,
 	onAttachmentClick,
 	maxAttachmentThumbnails,
-	showPostThumbnailWhenThereAreMultipleAttachments,
-	children: attachments
+	showPostThumbnailWhenThereAreMultipleAttachments
 }) {
-	if (TEST) {
-		attachments = TEST_ATTACHMENTS
-	}
+	const attachments = TEST ? TEST_ATTACHMENTS : getAttachments(post)
 
 	if (attachments.length === 0) {
 		return null
@@ -75,7 +74,7 @@ export default function PostAttachments({
 
 	// const pictures = attachments.filter(_ => _.type === 'picture')
 	// const videos = attachments.filter(_ => _.type === 'video')
-	let picturesAndVideos = attachments.filter(_ => _.type === 'picture' || _.type === 'video')
+	let picturesAndVideos = getPicturesAndVideos(attachments)
 
 	// Extract "title" picture or video.
 	let titlePictureOrVideo
@@ -84,8 +83,8 @@ export default function PostAttachments({
 		picturesAndVideos = picturesAndVideos.slice(1)
 	}
 
-	// Sort attachment thumbnails by height descending.
-	sortPostAttachments(picturesAndVideos)
+	// Sort pictures and videos by thumbnail height descending.
+	sortByThumbnailHeightDescending(picturesAndVideos)
 
 	// "All pictures and videos" that can be used for a slideshow.
 	let allPicturesAndVideos = picturesAndVideos
@@ -133,7 +132,9 @@ export default function PostAttachments({
 		if (titlePictureOrVideo) {
 			picturesAndVideos = []
 		} else {
-			picturesAndVideos = [picturesAndVideos[0]]
+			if (picturesAndVideos.length > 0) {
+				picturesAndVideos = [picturesAndVideos[0]]
+			}
 		}
 	}
 
@@ -188,7 +189,7 @@ export default function PostAttachments({
 							<Container
 								key={`picture-or-video-${i}`}
 								count={allPicturesAndVideos.length}
-								className={classNames('post__attachment-thumbnail-picture-stack', {
+								pictureStackClassName={classNames('post__attachment-thumbnail-picture-stack', {
 									'post__attachment-thumbnail-picture-stack--post-thumbnail-candidate': pictureOrVideo === postThumbnailCandidate
 								})}>
 								<PostAttachment
@@ -248,6 +249,13 @@ PostAttachments.defaultProps = {
 
 const POSITION_ABSOLUTE = {
 	position: 'absolute'
+}
+
+export function getAttachments(post) {
+	if (TEST) {
+		return TEST_ATTACHMENTS
+	}
+	return getNonEmbeddedAttachments(post)
 }
 
 // function groupThumbnails(thumbnails, targetRowRatioTolerance) {
@@ -420,10 +428,6 @@ const POSITION_ABSOLUTE = {
 // 	})
 // }
 
-function sortPostAttachments(attachments) {
-	return sortByThumbnailHeightDescending(attachments)
-}
-
 const TEST_ATTACHMENTS = [
 	{
 		id: 1,
@@ -472,18 +476,20 @@ const TEST_ATTACHMENTS = [
 	}
 ]
 
-function PassthroughContainer({ count, ...rest }) {
+function PassthroughContainer({ count, pictureStackClassName, ...rest }) {
 	return <React.Fragment {...rest}/>
 }
 
 PassthroughContainer.propTypes = {
-	count: PropTypes.number
+	count: PropTypes.number,
+	pictureStackClassName: PropTypes.string
 }
 
-function PictureStackContainer({ count, ...rest }) {
-	return <PictureStack count={count} {...rest}/>
+function PictureStackContainer({ count, pictureStackClassName, ...rest }) {
+	return <PictureStack count={count} className={pictureStackClassName} {...rest}/>
 }
 
 PictureStackContainer.propTypes = {
-	count: PropTypes.number.isRequired
+	count: PropTypes.number.isRequired,
+	pictureStackClassName: PropTypes.string
 }
