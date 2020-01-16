@@ -187,7 +187,10 @@ export default function PostAttachments({
 						return (
 							<Container
 								key={`picture-or-video-${i}`}
-								count={allPicturesAndVideos.length}>
+								count={allPicturesAndVideos.length}
+								className={classNames('post__attachment-thumbnail-wrapper', {
+									'post__attachment-thumbnail-wrapper--post-thumbnail-candidate': pictureOrVideo === postThumbnailCandidate
+								})}>
 								<PostAttachment
 									attachment={pictureOrVideo}
 									useSmallestThumbnail={useSmallestThumbnails}
@@ -195,7 +198,9 @@ export default function PostAttachments({
 									spoilerLabel={spoilerLabel}
 									onClick={onAttachmentClick ? createOnAttachmentClick(i + (titlePictureOrVideo ? 1 : 0)) : undefined}
 									moreAttachmentsCount={i === picturesAndVideos.length - 1 ? picturesAndVideosMoreCount : undefined}
-									className={pictureOrVideo === postThumbnailCandidate ? 'post__attachment-thumbnail--post-thumbnail-candidate' : undefined}/>
+									className={classNames({
+										'post__attachment-thumbnail--post-thumbnail-candidate': pictureOrVideo === postThumbnailCandidate
+									})}/>
 							</Container>
 						)
 					})}
