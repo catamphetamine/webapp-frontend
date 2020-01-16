@@ -33,7 +33,7 @@
    when it's being shown as a `<PictureStack/>`,
    so the `margin` is moved to the container. */
 .post__attachment-thumbnails--hide-rest-attachments {
-	.post__attachment-thumbnail-wrapper {
+	.post__attachment-thumbnail-picture-stack {
 		margin-top: var(--PostContent-margin);
 		.post__attachment-thumbnail {
 			margin: 0;

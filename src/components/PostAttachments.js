@@ -188,8 +188,8 @@ export default function PostAttachments({
 							<Container
 								key={`picture-or-video-${i}`}
 								count={allPicturesAndVideos.length}
-								className={classNames('post__attachment-thumbnail-wrapper', {
-									'post__attachment-thumbnail-wrapper--post-thumbnail-candidate': pictureOrVideo === postThumbnailCandidate
+								className={classNames('post__attachment-thumbnail-picture-stack', {
+									'post__attachment-thumbnail-picture-stack--post-thumbnail-candidate': pictureOrVideo === postThumbnailCandidate
 								})}>
 								<PostAttachment
 									attachment={pictureOrVideo}
