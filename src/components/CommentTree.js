@@ -138,9 +138,7 @@ export default class CommentTree extends React.Component {
 			})
 		}
 		promise.then(() => {
-			if (this.shouldTrackState()) {
-				this.updateStateOnToggleShowReplies(showReplies)
-			}
+			this.updateStateOnToggleShowReplies(showReplies)
 			this.setState({
 				showReplies
 			}, () => {
@@ -179,7 +177,9 @@ export default class CommentTree extends React.Component {
 		// Using `.updateSubtreeState()` instead of `.setSubtreeState()` here
 		// so that the "expanded replies" state doesn't erase other "custom" state
 		// like "post is expanded" or "reply form is expanded".
-		this.updateSubtreeState(state)
+		if (this.shouldTrackState()) {
+			this.updateSubtreeState(state)
+		}
 	}
 
 	getSubtreeState = () => {
@@ -212,7 +212,9 @@ export default class CommentTree extends React.Component {
 			setState(state)
 		} else {
 			this.subtreeState = state
-			onStateChange(this.subtreeState)
+			if (onStateChange) {
+				onStateChange(this.subtreeState)
+			}
 		}
 	}
 
