@@ -73,6 +73,11 @@ export default function PostAttachment({
 			}
 		}
 	}, [])
+	// Could set some default `title` here. For example, to some
+	// `contentTypeLabels.picture` or `contentTypeLabels.video`,
+	// but that would result in a "Picture" / "Video" tooltip
+	// being shown in a web browser on mouse over, which would be
+	// redundant, pointless and distracting to a user.
 	return (
 		<Picture
 			border
