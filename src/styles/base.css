@@ -26,21 +26,22 @@ body
 /* `html` is required in order for `rem`s to work. */
 /* Also doesn't work without `body` for some weird reason. */
 html, body {
-	font-family : var(--Document-fontFamily);
+	font-family: var(--Document-fontFamily);
+	font-size: var(--Document-fontSize);
 	@mixin xxs {
-		font-size : var(--Document-fontSize--xxs);
+		--Document-fontSize: var(--Document-fontSize--xxs);
 	}
 	@mixin xs {
-		font-size : var(--Document-fontSize--xs);
+		--Document-fontSize: var(--Document-fontSize--xs);
 	}
 	@mixin s {
-		font-size : var(--Document-fontSize--s);
+		--Document-fontSize: var(--Document-fontSize--s);
 	}
 	@mixin m {
-		font-size : var(--Document-fontSize--m);
+		--Document-fontSize: var(--Document-fontSize--m);
 	}
 	@mixin l-plus {
-		font-size : var(--Document-fontSize--m);
+		--Document-fontSize: var(--Document-fontSize--m);
 	}
 }
 
