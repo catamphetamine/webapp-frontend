@@ -22,6 +22,7 @@ export default function PostHeader({
 	post,
 	url,
 	urlBasePath,
+	onPostUrlClick: _onPostUrlClick,
 	locale,
 	header: Header,
 	items,
@@ -37,6 +38,11 @@ export default function PostHeader({
 }) {
 	const onUpVote = useCallback(() => onVote(true), [onVote])
 	const onDownVote = useCallback(() => onVote(false), [onVote])
+	const onPostUrlClick = useCallback((event) => {
+		if (_onPostUrlClick) {
+			_onPostUrlClick(event, post)
+		}
+	}, [_onPostUrlClick, post])
 	if (badges) {
 		badges = badges.filter(({ condition }) => condition(post))
 	}
@@ -71,6 +77,7 @@ export default function PostHeader({
 										date={post.createdAt}
 										link={url}
 										linkBasePath={urlBasePath}
+										onClick={onPostUrlClick}
 										locale={locale}/>
 								}
 							</div>
@@ -92,6 +99,7 @@ export default function PostHeader({
 								date={post.createdAt}
 								link={url}
 								linkBasePath={urlBasePath}
+								onClick={onPostUrlClick}
 								locale={locale}/>
 						</div>
 					}
@@ -220,6 +228,7 @@ PostHeader.propTypes = {
 	badges: PropTypes.arrayOf(postBadge),
 	url: PropTypes.string,
 	urlBasePath: PropTypes.string,
+	onPostUrlClick: PropTypes.func,
 	locale: PropTypes.string,
 	header: PropTypes.func,
 	moreActions: moreActionsType,

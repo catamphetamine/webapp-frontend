@@ -46,6 +46,7 @@ function Post({
 	showPostThumbnailWhenThereAreMultipleAttachments,
 	serviceIcons,
 	onAttachmentClick,
+	onPostUrlClick,
 	onPostLinkClick,
 	isPostLinkClickable,
 	onReply,
@@ -171,6 +172,7 @@ function Post({
 				post={post}
 				url={url}
 				urlBasePath={urlBasePath}
+				onPostUrlClick={onPostUrlClick}
 				locale={locale}
 				header={header}
 				items={headerItems}
@@ -251,6 +253,7 @@ Post.propTypes = {
 	]),
 	attachmentThumbnailSize: PropTypes.number.isRequired,
 	onAttachmentClick: PropTypes.func,
+	onPostUrlClick: PropTypes.func,
 	onPostLinkClick: PropTypes.func,
 	isPostLinkClickable: PropTypes.func,
 	onReply: PropTypes.func,

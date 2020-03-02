@@ -13,6 +13,7 @@ export default function PostDate({
 	date,
 	linkBasePath,
 	link,
+	onClick,
 	locale,
 	className
 }) {
@@ -24,14 +25,19 @@ export default function PostDate({
 			locale={locale}
 			className="post__date"/>
 	)
-	const onClick = useCallback((event) => {
-		event.preventDefault()
-		history.replaceState(undefined, undefined, (linkBasePath || '') + link)
-	}, [link])
+	const _onClick = useCallback((event) => {
+		if (onClick) {
+			onClick(event)
+		}
+		if (!event.defaultPrevented) {
+			event.preventDefault()
+			history.replaceState(undefined, undefined, (linkBasePath || '') + link)
+		}
+	}, [link, linkBasePath, onClick])
 	if (link) {
 		if (link[0] === '/') {
 			return (
-				<Link to={link} onClick={onClick} className={className}>
+				<Link to={link} onClick={_onClick} className={className}>
 					{dateElement}
 				</Link>
 			)
@@ -49,5 +55,6 @@ PostDate.propTypes = {
 	date: PropTypes.instanceOf(Date).isRequired,
 	link: PropTypes.string,
 	linkBasePath: PropTypes.string,
+	onClick: PropTypes.func,
 	className: PropTypes.string
 }
