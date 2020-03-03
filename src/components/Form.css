@@ -1,8 +1,13 @@
 @import "../styles/common";
 
-.form {
+:root {
+	/* Form Actions are sometimes used outside `.form`,
+	   that's why these CSS variables are defined in `:root`. */
 	--FormAction-height: calc(var(--unit) * 3);
 	--FormAction-margin--horizontal: calc(var(--unit) * 1.5);
+}
+
+.form {
 	.rrui__input-error {
 		position: absolute;
 		width: 100%;
