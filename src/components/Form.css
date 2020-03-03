@@ -1,4 +1,8 @@
+@import "../styles/common";
+
 .form {
+	--FormAction-height: calc(var(--unit) * 3);
+	--FormAction-margin--horizontal: calc(var(--unit) * 1.5);
 	.rrui__input-error {
 		position: absolute;
 		width: 100%;
@@ -31,8 +35,8 @@
 
 .form__action {
 	display: block;
-	height: calc(var(--unit) * 3);
-	margin-right: calc(var(--unit) * 1.5);
+	height: var(--FormAction-height);
+	margin-right: var(--FormAction-margin--horizontal);
 	&:last-child {
 		margin-right: 0;
 	}
@@ -57,4 +61,19 @@
 
 .form__label {
 	color: var(--Content-color-400);
+}
+
+@mixin upto-m {
+	.left-handed {
+		.form__actions {
+			flex-direction: row-reverse;
+		}
+		.form__action {
+			margin-right: 0;
+			margin-left: var(--FormAction-margin--horizontal);
+			&:last-child {
+				margin-left: 0;
+			}
+		}
+	}
 }
