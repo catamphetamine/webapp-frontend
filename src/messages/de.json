@@ -10,6 +10,11 @@
 		"language": {
 			"title": "Sprache"
 		},
+		"leftHanded": {
+			"title": "Linkshändig",
+			"enable": "Ich bin Linkshänder",
+			"description": "Wenn Sie Linkshänder sind und diese Anwendung auf einem mobilen Gerät verwenden, können Sie den Linkshänder-Modus aktivieren, sodass einige Schaltflächen, die normalerweise auf der rechten Seite des Bildschirms angezeigt werden, um die Erreichbarkeit des rechten Daumens zu verbessern, nach links verschoben werden Seite des Bildschirms für eine bessere Erreichbarkeit des linken Daumens."
+		},
 		"fontSize": {
 			"title": "Schriftgröße",
 			"xs": "Klein",

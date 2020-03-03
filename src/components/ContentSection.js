@@ -58,3 +58,29 @@ ContentSections.propTypes = {
 	className: PropTypes.string,
 	children: PropTypes.node.isRequired
 }
+
+export function ContentSectionDescription({
+	marginBottom,
+	marginTop,
+	children
+}) {
+	return (
+		<p className={classNames(
+			'content-section__description',
+			marginBottom && `content-section__description--marginBottom${capitalizeFirstLetter(marginBottom)}`,
+			marginTop && `content-section__description--marginTop${capitalizeFirstLetter(marginTop)}`
+		)}>
+			{children}
+		</p>
+	)
+}
+
+ContentSectionDescription.propTypes = {
+	marginBottom: PropTypes.oneOf(['medium', 'large']),
+	marginTop: PropTypes.oneOf(['medium', 'large']),
+	children: PropTypes.node.isRequired
+}
+
+function capitalizeFirstLetter(string) {
+	return string.charAt(0).toUpperCase() + string.slice(1)
+}

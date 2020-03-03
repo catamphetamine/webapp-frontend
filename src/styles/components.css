@@ -20,8 +20,3 @@
 		margin-bottom: calc(var(--unit) * 4);
 	}
 }
-
-.content-section__description {
-	margin-top: 0;
-	margin-bottom: calc(var(--line-height) * 1em);
-}

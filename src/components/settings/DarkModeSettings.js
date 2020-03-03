@@ -22,7 +22,7 @@ export default function DarkModeSettings({
 	return (
 		<ContentSection>
 			<ContentSectionHeader lite>
-				{messages.settings.darkMode.title}
+				{messages.darkMode}
 			</ContentSectionHeader>
 
 			<Switch

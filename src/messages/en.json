@@ -10,6 +10,11 @@
 		"language": {
 			"title": "Language"
 		},
+		"leftHanded": {
+			"title": "Left-Handed",
+			"enable": "I'm left-handed",
+			"description": "If you're a left-handed person using this application on a mobile device, you may enable «left-handed» mode so that some buttons usually found on the right side of the screen for better right thumb reachability would be moved to the left side of the screen for better left thumb reachability."
+		},
 		"fontSize": {
 			"title": "Font Size",
 			"xs": "Small",

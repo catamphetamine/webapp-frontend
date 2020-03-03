@@ -123,3 +123,15 @@ function enableAutoDarkMode(onSetDarkMode) {
 		}
 	}
 }
+
+/**
+ * Turns Left-Handed mode on or off.
+ * @param  {boolean} leftHanded
+ */
+export function applyLeftHanded(leftHanded) {
+	if (leftHanded) {
+		document.documentElement.classList.add('left-handed')
+	} else {
+		document.documentElement.classList.remove('left-handed')
+	}
+}

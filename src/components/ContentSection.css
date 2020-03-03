@@ -140,3 +140,24 @@
 		margin-bottom: 0;
 	}
 }
+
+.content-section__description {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+.content-section__description--marginBottomLarge {
+	margin-bottom: calc(var(--line-height) * 1em);
+}
+
+.content-section__description--marginTopLarge {
+	margin-top: calc(var(--line-height) * 1em);
+}
+
+.content-section__description--marginBottomMedium {
+	margin-bottom: calc(var(--line-height) * 1em * 0.5);
+}
+
+.content-section__description--marginTopMedium {
+	margin-top: calc(var(--line-height) * 1em * 0.5);
+}
