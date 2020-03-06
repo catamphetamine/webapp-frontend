@@ -91,11 +91,15 @@ export default {
 		autoPlay,
 		mode,
 		onClick,
-		maxWidth,
-		maxHeight,
+		width,
+		height,
+		// maxWidth,
+		// maxHeight,
 		tabIndex,
 		style
 	}) {
+		// maxWidth={maxWidth}
+		// maxHeight={maxHeight}
 		return (
 			<Video
 				ref={ref}
@@ -105,8 +109,8 @@ export default {
 				autoPlay={mode === 'flow' || autoPlay}
 				stopVideoOnStopPlaying
 				showPlayIcon
-				maxWidth={maxWidth}
-				maxHeight={maxHeight}
+				width={width}
+				height={height}
 				fit="scale-down"
 				tabIndex={tabIndex}
 				preview={mode === 'flow' ? false : undefined}

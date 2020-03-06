@@ -531,11 +531,11 @@ function render(
 										isCurrentSlide: i === j,
 										autoPlay: slideIndexAtWhichTheSlideshowIsBeingOpened === j,
 										mode,
-										// `scale` is passed as `pixelRatioMultiplier` to `<Picture/>`.
-										scale: this.getSlideScale(j),
+										// // `scale` is passed as `pixelRatioMultiplier` to `<Picture/>`.
+										// scale: this.getSlideScale(j),
 										onClick: this.onSlideClick,
-										maxWidth: this.getMaxSlideWidth(),
-										maxHeight: this.getMaxSlideHeight(),
+										width: this.getCurrentSlideWidth() * this.getSlideScale(j),
+										height: this.getCurrentSlideHeight() * this.getSlideScale(j),
 										style: {
 											/* Can be scaled via `style="transform: scale(...)". */
 											// transition: 'transform 120ms ease-out',
@@ -549,7 +549,7 @@ function render(
 											// or by scaling `width` and `height`.
 											// Same's for `<video/>`s.
 											// transform: this.getSlideScale(j) === 1 ? undefined : `scale(${this.getSlideScale(j)})`
-											transform: slideOffsetIndex === j ? `translateX(${slideOffsetX}px) translateY(${slideOffsetY}px)` : undefined,
+											transform: slideOffsetIndex === j ? (j === i ? this.getSlideOffset(j, slideOffsetX, slideOffsetY) : [slideOffsetX, slideOffsetY]).map((value, i) => `translate${i === 0 ? 'X' : 'Y'}(${value}px)`).join(' ') : undefined,
 											// Adjacent slides have `box-shadow`.
 											// If its `opacity` isn't animated during open/close
 											// then the non-smoothness is noticeable.

@@ -45,7 +45,7 @@ function Picture({
 	componentProps,
 	showLoadingPlaceholder,
 	showLoadingIndicator,
-	pixelRatioMultiplier,
+	// pixelRatioMultiplier,
 	blur,
 	style,
 	className,
@@ -230,7 +230,7 @@ function Picture({
 		}
 		return getPreferredSize(
 			picture,
-			getPreferredImageWidth() * pixelRatioMultiplier
+			getPreferredImageWidth() // * pixelRatioMultiplier
 		)
 	}
 
@@ -421,8 +421,8 @@ Picture.propTypes = {
 	// If `true` then will only show the smallest size ever.
 	useSmallestSize: PropTypes.bool,
 
-	// Is a small hack for `<Slideshow/>` scaling.
-	pixelRatioMultiplier: PropTypes.number.isRequired,
+	// // Is a small hack for `<Slideshow/>` scaling.
+	// pixelRatioMultiplier: PropTypes.number.isRequired,
 
 	// Set to `false` to not show "loading" background.
 	// Is `true` by default.
@@ -439,7 +439,7 @@ Picture.defaultProps = {
 	component: 'div',
 	// fadeInDuration: 0,
 	showLoadingPlaceholder: true,
-	pixelRatioMultiplier: 1
+	// pixelRatioMultiplier: 1
 }
 
 export default Picture
@@ -630,7 +630,7 @@ function getInitialImageSize(picture, width, height, fit, useSmallestSize) {
 		const aspectRatio = getAspectRatio(picture)
 		width = width || aspectRatio * height
 		height = height || width / aspectRatio
-		let imageWidth
+		let imageWidth = width
 		switch (fit) {
 			case 'cover':
 				// If `width`/`height` aren't proportional
@@ -638,8 +638,7 @@ function getInitialImageSize(picture, width, height, fit, useSmallestSize) {
 				if (height > width / aspectRatio) {
 					imageWidth = aspectRatio * height
 				}
-			default:
-				imageWidth = width
+				break
 		}
 		return getPreferredSize(picture, imageWidth)
 	}

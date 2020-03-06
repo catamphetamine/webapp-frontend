@@ -53,11 +53,16 @@ export default {
 		slide,
 		onClick,
 		tabIndex,
-		maxWidth,
-		maxHeight,
-		scale,
+		width,
+		height,
+		// maxWidth,
+		// maxHeight,
+		// scale,
 		style
 	}) {
+		// pixelRatioMultiplier={scale}
+		// maxWidth={maxWidth}
+		// maxHeight={maxHeight}
 		return (
 			<Picture
 				ref={ref}
@@ -66,9 +71,8 @@ export default {
 				tabIndex={tabIndex}
 				showLoadingIndicator
 				showLoadingPlaceholder={false}
-				maxWidth={maxWidth}
-				maxHeight={maxHeight}
-				pixelRatioMultiplier={scale}
+				width={width}
+				height={height}
 				fit="scale-down"
 				style={style}
 				className="rrui__slideshow__picture"/>

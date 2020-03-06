@@ -32,7 +32,7 @@ export default class SlideshowScale {
 	scaleUp = (scale, scaleStep, factor = 1) => {
 		return Math.min(
 			scale * (1 + scaleStep * factor),
-			this.getMaxScale()
+			this.getCurrentSlideMaxScale()
 		)
 	}
 
@@ -48,20 +48,20 @@ export default class SlideshowScale {
 
 	scaleToggle = (scale) => {
 		// Compensates math precision (is supposed to).
-		return scale > 0.99 && scale < 1.01 ? this.getMaxScale() : 1
+		return scale > 0.99 && scale < 1.01 ? this.getCurrentSlideMaxScale() : 1
 	}
 
 	zoom(scaleBeforeZoom, zoomFactor) {
 		const scale = scaleBeforeZoom * zoomFactor
 		return Math.max(
-			Math.min(scale, this.getMaxScale()),
+			Math.min(scale, this.getCurrentSlideMaxScale()),
 			this.getMinScaleForCurrentSlide(scale)
 		)
 	}
 
-	getMaxScale() {
-		const fullScreenWidthScale = this.slideshow.getMaxSlideWidth() / this.slideshow.getSlideWidth()
-		const fullScreenHeightScale = this.slideshow.getMaxSlideHeight() / this.slideshow.getSlideHeight()
+	getCurrentSlideMaxScale() {
+		const fullScreenWidthScale = this.slideshow.getMaxSlideWidth() / this.slideshow.getCurrentSlideMaxWidth()
+		const fullScreenHeightScale = this.slideshow.getMaxSlideHeight() / this.slideshow.getCurrentSlideMaxHeight()
 		return Math.min(fullScreenWidthScale, fullScreenHeightScale)
 	}
 
@@ -74,8 +74,8 @@ export default class SlideshowScale {
 		// 		return 1
 		// 	}
 		// }
-		const slideWidthRatio = this.slideshow.getSlideWidth() / this.slideshow.getMaxSlideWidth()
-		const slideHeightRatio = this.slideshow.getSlideHeight() / this.slideshow.getMaxSlideHeight()
+		const slideWidthRatio = this.slideshow.getCurrentSlideMaxWidth() / this.slideshow.getMaxSlideWidth()
+		const slideHeightRatio = this.slideshow.getCurrentSlideMaxHeight() / this.slideshow.getMaxSlideHeight()
 		// Averaged ratio turned out to work better than "min" ratio.
 		// const slideRatio = Math.min(slideWidthRatio, slideHeightRatio)
 		const slideRatio = (slideWidthRatio + slideHeightRatio) / 2

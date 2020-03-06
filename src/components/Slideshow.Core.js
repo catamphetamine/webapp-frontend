@@ -44,8 +44,8 @@ export default class Slideshow {
 			// 	getSlideshowHeight: this.getSlideshowHeight,
 			// 	getMaxSlideWidth: this.getMaxSlideWidth,
 			// 	getMaxSlideHeight: this.getMaxSlideHeight,
-			// 	getSlideWidth: this.getSlideWidth,
-			// 	getSlideHeight: this.getSlideHeight
+			// 	getCurrentSlideMaxWidth: this.getCurrentSlideMaxWidth,
+			// 	getCurrentSlideMaxHeight: this.getCurrentSlideMaxHeight
 			// },
 			{
 				minScaledSlideRatio: props.minScaledSlideRatio
@@ -385,11 +385,17 @@ export default class Slideshow {
 	getMaxSlideWidth = () => this.size.getMaxSlideWidth()
 	getMaxSlideHeight = () => this.size.getMaxSlideHeight()
 
-	getSlideWidth = () => this.size.getSlideWidth()
-	getSlideHeight = () => this.size.getSlideHeight()
+	getCurrentSlideMaxWidth = () => this.size.getCurrentSlideMaxWidth()
+	getCurrentSlideMaxHeight = () => this.size.getCurrentSlideMaxHeight()
 	// getSlideAspectRatio = () => this.size.getSlideAspectRatio()
 
+	getCurrentSlideWidth = () => this.size.getCurrentSlideWidth()
+	getCurrentSlideHeight = () => this.size.getCurrentSlideHeight()
+
 	getMargin = (edge) => this.size.getMargin(edge)
+	getSlideOffset = (j, slideOffsetX, slideOffsetY) => this.size.getSlideOffset(this.getSlideScale(j), slideOffsetX, slideOffsetY)
+
+	getCurrentSlideMaxScale = () => this.scale.getCurrentSlideMaxScale()
 
 	onBackgroundClick = (event) => {
 		if (this.locked) {
@@ -411,12 +417,12 @@ export default class Slideshow {
 	// getClickXYInSlideCoordinates(event) {
 	// 	const { scale } = this.state
 	//
-	// 	const deltaWidth = this.getSlideshowWidth() - this.getSlideWidth() * scale
-	// 	const deltaHeight = this.getSlideshowHeight() - this.getSlideHeight() * scale
+	// 	const deltaWidth = this.getSlideshowWidth() - this.getCurrentSlideMaxWidth() * scale
+	// 	const deltaHeight = this.getSlideshowHeight() - this.getCurrentSlideMaxHeight() * scale
 	//
 	// 	// Calculate normalized (from 0 to 1) click position relative to the slide.
-	// 	const x = (event.clientX - deltaWidth / 2) / (this.getSlideWidth() * scale)
-	// 	const y = (event.clientY - deltaHeight / 2) / (this.getSlideHeight() * scale)
+	// 	const x = (event.clientX - deltaWidth / 2) / (this.getCurrentSlideMaxWidth() * scale)
+	// 	const y = (event.clientY - deltaHeight / 2) / (this.getCurrentSlideMaxHeight() * scale)
 	//
 	// 	return { x, y }
 	// }

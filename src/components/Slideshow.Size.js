@@ -58,7 +58,7 @@ export default class SlideshowSize {
 	}
 
 	// This is used for `<Picture/>` with `fit="contain"`.
-	getSlideWidth = () => {
+	getCurrentSlideMaxWidth = () => {
 		return Math.min(
 			this.getMaxSlideHeight() * this.getSlideAspectRatio(),
 			this.getMaxSlideWidth(),
@@ -66,8 +66,22 @@ export default class SlideshowSize {
 		)
 	}
 
-	getSlideHeight = () => {
-		return this.getSlideWidth() / this.getSlideAspectRatio()
+	getCurrentSlideMaxHeight = () => {
+		return this.getCurrentSlideMaxWidth() / this.getSlideAspectRatio()
+	}
+
+	getCurrentSlideWidth = () => {
+		return Math.min(
+			this.getCurrentSlideMaxWidth(),
+			this.getCurrentSlideMaxHeight() * this.getSlideAspectRatio()
+		)
+	}
+
+	getCurrentSlideHeight = () => {
+		return Math.min(
+			this.getCurrentSlideMaxHeight(),
+			this.getCurrentSlideMaxWidth() / this.getSlideAspectRatio()
+		)
 	}
 
 	getSlideAspectRatio() {
@@ -110,5 +124,39 @@ export default class SlideshowSize {
 		const maxSize = this.getSlideMaxAvailableSize()
 		return maxSize.width >= this.getMaxSlideWidth() * fitFactor ||
 			maxSize.height >= this.getMaxSlideHeight() * fitFactor
+	}
+
+	getSlideOffset = (scale, slideOffsetX, slideOffsetY) => {
+		const scaledWidth = scale * this.getCurrentSlideWidth()
+		const scaledHeight = scale * this.getCurrentSlideHeight()
+		const originX = this.getSlideshowWidth() / 2 + slideOffsetX
+		const originY = this.getSlideshowHeight() / 2 + slideOffsetY
+		const left = originX - scaledWidth / 2
+		const right = originX + scaledWidth / 2
+		const top = originY - scaledHeight / 2
+		const bottom = originY + scaledHeight / 2
+		let deltaX = 0
+		let deltaY = 0
+		if (left < this.getMargin('left')) {
+			deltaX = this.getMargin('left') - left
+		}
+		if (right > this.getSlideshowWidth() - this.getMargin('right')) {
+			deltaX = this.getSlideshowWidth() - this.getMargin('right') - right
+		}
+		if (top < this.getMargin('top')) {
+			deltaY = this.getMargin('top') - top
+		}
+		if (bottom > this.getSlideshowHeight() - this.getMargin('bottom')) {
+			deltaY = this.getSlideshowHeight() - this.getMargin('bottom') - bottom
+		}
+		let correctedSlideOffsetX = slideOffsetX + deltaX
+		if (scaledWidth >= this.getMaxSlideWidth()) {
+			correctedSlideOffsetX = 0
+		}
+		let correctedSlideOffsetY = slideOffsetY + deltaY
+		if (scaledHeight >= this.getMaxSlideHeight()) {
+			correctedSlideOffsetY = 0
+		}
+		return [correctedSlideOffsetX, correctedSlideOffsetY]
 	}
 }
