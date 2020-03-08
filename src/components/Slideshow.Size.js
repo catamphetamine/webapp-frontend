@@ -157,6 +157,9 @@ export default class SlideshowSize {
 		if (scaledHeight >= this.getMaxSlideHeight()) {
 			correctedSlideOffsetY = 0
 		}
-		return [correctedSlideOffsetX, correctedSlideOffsetY]
+		return [
+			Math.round(correctedSlideOffsetX),
+			Math.round(correctedSlideOffsetY)
+		]
 	}
 }

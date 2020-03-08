@@ -3,10 +3,6 @@ import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import FocusLock from 'react-focus-lock'
 
-import {
-	getViewportWidth
-} from '../utility/dom'
-
 // // `body-scroll-lock` has been modified a bit, see the info in the header of the file.
 // import {
 // 	disableBodyScroll,
@@ -64,36 +60,11 @@ function SlideshowComponent(props) {
 	const slidesRef = useRef()
 	const currentSlideRef = useRef()
 	const currentSlideContainerRef = useRef()
-	const previousButton = useRef()
-	const nextButton = useRef()
-	const closeButton = useRef()
-
-	let { thumbnailImage } = props
-	if (thumbnailImage) {
-		if (thumbnailImage.tagName.toLowerCase() !== 'img') {
-			thumbnailImage = thumbnailImage.querySelector('img')
-		}
-	}
+	const previousButtonRef = useRef()
+	const nextButtonRef = useRef()
+	const closeButtonRef = useRef()
 
 	const slide = props.children[props.i]
-
-	const canAnimateScaleOpenClose =
-		slide.type === 'picture' &&
-		// Don't animate opening animated GIFs
-		// because they can't be paused until they're expanded.
-		// Considering that "scale" animation fades between
-		// the enlarged preview and the original image
-		// it could result in minor visual inconsistencies.
-		slide.picture.type !== 'image/gif' &&
-		thumbnailImage ? true : false
-
-	const animateOpenCloseScale = useRef(canAnimateScaleOpenClose && props.animateOpenCloseScale)
-	const overlayOpacity = useRef(
-		props.mode === 'flow' && typeof props.overlayOpacityFlowMode !== undefined ?
-		props.overlayOpacityFlowMode :
-		props.overlayOpacity
-	)
-	const animateOpenClose = useRef(props.animateOpenClose)
 
 	// Emulates `forceUpdate()`
 	const [unusedState, setUnusedState] = useState()
@@ -112,47 +83,25 @@ function SlideshowComponent(props) {
 			}
 		}
 		if (!isTouchDevice()) {
-			if (direction === 'next' && nextButton.current) {
-				return nextButton.current.focus()
-			} else if (direction === 'previous' && previousButton.current) {
-				return previousButton.current.focus()
-			} else if (direction === 'previous' && nextButton.current) {
-				return nextButton.current.focus()
-			} else if (closeButton.current) {
+			if (direction === 'next' && nextButtonRef.current) {
+				return nextButtonRef.current.focus()
+			} else if (direction === 'previous' && previousButtonRef.current) {
+				return previousButtonRef.current.focus()
+			} else if (direction === 'previous' && nextButtonRef.current) {
+				return nextButtonRef.current.focus()
+			} else if (closeButtonRef.current) {
 				// Close button is not rendered in inline mode, for example.
-				return closeButton.current.focus()
+				return closeButtonRef.current.focus()
 			}
 		}
 		return container.current.focus()
 	}, [])
 
-	// Execute only once.
-	useMemo(() => {
-		const {
-			animateOpenCloseSmallScreen,
-			animateOpenCloseScaleSmallScreen,
-			smallScreenMaxWidth,
-			overlayOpacitySmallScreen
-		} = props
-		if (typeof window !== 'undefined' && smallScreenMaxWidth !== undefined) {
-			if (getViewportWidth() <= smallScreenMaxWidth) {
-				if (!animateOpenCloseScale.current && animateOpenCloseScaleSmallScreen && canAnimateScaleOpenClose) {
-					animateOpenCloseScale.current = true
-				}
-				if (overlayOpacitySmallScreen !== undefined) {
-					overlayOpacity.current = overlayOpacitySmallScreen
-				}
-				if (!animateOpenClose.current && animateOpenCloseSmallScreen) {
-					animateOpenClose.current = true
-				}
-			}
-		}
-	}, [])
-
 	const slideshow = useMemo(() => {
 		return new Slideshow({
 			...props,
-			overlayOpacity: overlayOpacity.current,
+			getSlideDOMNode: () => currentSlideRef.current && currentSlideContainerRef.current.firstChild,
+			// getSlideElement: () => currentSlideRef.current && currentSlideRef.current.getDOMNode && currentSlideRef.current.getDOMNode(),
 			onPanStart: () => container.current.classList.add('rrui__slideshow--panning'),
 			onPanEnd: () => container.current.classList.remove('rrui__slideshow--panning'),
 			setOverlayTransitionDuration: (duration) => container.current.style.transitionDuration = duration,
@@ -173,27 +122,7 @@ function SlideshowComponent(props) {
 	slideshow.onStateChange(setSlideshowState)
 
 	const prevSlideIndex = useRef(slideshowState.i)
-
-	const animateOpen = animateOpenClose.current
-	const animateClose = animateOpenClose.current || props.animateOpenCloseOnPanOut
-
-	const [openingAnimationDuration, setOpeningAnimationDuration] = useState()
-	const [hasStartedOpening, setHasStartedOpening] = useState(animateOpen ? false : true)
-	const [hasFinishedOpening, setHasFinishedOpening] = useState(animateOpen ? false : true)
-
-	const [closingAnimationDuration, setClosingAnimationDuration] = useState()
-	const [hasStartedClosing, setHasStartedClosing] = useState(animateClose ? false : true)
-	const [hasFinishedClosing, setHasFinishedClosing] = useState(animateClose ? false : true)
-
-	// All pictures (including animated GIFs) are opened above their thumbnails.
-	const shouldOffsetSlideInitially = thumbnailImage && slide.type === 'picture'
-	const shouldOffsetSlide = useRef(shouldOffsetSlideInitially)
-	const [slideOffsetIndex, setSlideOffsetIndex] = useState(shouldOffsetSlideInitially ? props.i : undefined)
-	const [slideOffsetX, setSlideOffsetX] = useState(0)
-	const [slideOffsetY, setSlideOffsetY] = useState(0)
 	const [hasBeenMeasured, setHasBeenMeasured] = useState(props.inline ? false : true)
-	// const animatesOpenClose = useMemo(() => thumbnailImage !== undefined, [])
-	// const clearThumbnailImageOverlay = useRef()
 
 	// Uses `useLayoutEffect()` instead of `useEffect()`
 	// because it manipulates DOM Elements (animation).
@@ -202,96 +131,7 @@ function SlideshowComponent(props) {
 			return
 		}
 		slideshow.unlock()
-		const getSlideDOMNode = () => {
-			return currentSlideContainerRef.current.firstChild
-		}
-		function applySlideOffset() {
-			slideshow.onSlideChange(() => {
-				if (shouldOffsetSlide.current) {
-					shouldOffsetSlide.current = false
-					setSlideOffsetIndex(undefined)
-					setSlideOffsetX(0)
-					setSlideOffsetY(0)
-				}
-			})
-			return slideshow.hoverPicture.onOpen(getSlideDOMNode(), {
-				thumbnailImage,
-				// Not using `useState()` for `shouldOffsetSlide`
-				// because the updated state value wouldn't be accessible
-				// from within the Slideshow.
-				getShouldOffsetSlide: () => shouldOffsetSlide.current,
-				setSlideOffset: (x, y) => {
-					setSlideOffsetX(x)
-					setSlideOffsetY(y)
-				}
-			})
-		}
-		if (animateOpen || animateClose) {
-			let slideOffsetX
-			let slideOffsetY
-			if (shouldOffsetSlide.current) {
-				const result = applySlideOffset()
-				slideOffsetX = result[0]
-				slideOffsetY = result[1]
-			}
-			let _promise = Promise.resolve()
-			if (animateOpen) {
-				const transition = animateOpenCloseScale.current ? slideshow.scaleOpenCloseTransition : slideshow.openCloseTransition
-				const {
-					animationDuration,
-					promise
-				} = transition.onOpen(
-					getSlideDOMNode(),
-					{ thumbnailImage, slideOffsetX, slideOffsetY }
-				)
-				setOpeningAnimationDuration(animationDuration)
-				setHasStartedOpening(true)
-				slideshow.lock()
-				_promise = promise.then(() => {
-					setHasFinishedOpening(true)
-					slideshow.unlock()
-				})
-			}
-			_promise.then(() => {
-				slideshow.onCloseAnimation(({ interaction }) => {
-					let transition
-					let slideImage = getSlideDOMNode().querySelector('img')
-					if (animateOpenCloseScale.current) {
-						// Close the initially opened slide via a "scale" animation
-						// if it was opened via a "scale" animation, even if slides
-						// were navigated through in the process.
-						if (shouldOffsetSlideInitially && slideshow.getState().i === props.i) {
-							transition = slideshow.scaleOpenCloseTransition
-						} else {
-							// Fall back to the default open/close transition
-							// if the original slide has already been changed.
-							transition = slideshow.openCloseTransition
-						}
-					} else {
-						if (animateOpenClose.current || (props.animateOpenCloseOnPanOut && interaction === 'pan')) {
-							transition = slideshow.openCloseTransition
-						}
-					}
-					if (!transition) {
-						return
-					}
-					setHasStartedClosing(true)
-					const {
-						animationDuration,
-						promise
-					} = transition.onClose(
-						getSlideDOMNode(),
-						{ thumbnailImage, slideImage }
-					)
-					setClosingAnimationDuration(animationDuration)
-					promise.then(() => setHasFinishedClosing(true))
-					return {
-						animationDuration,
-						promise
-					}
-				})
-			})
-		}
+		slideshow.animateOpenClose()
 	}, [hasBeenMeasured])
 
 	useEffect(() => {
@@ -348,9 +188,6 @@ function SlideshowComponent(props) {
 		}
 		slideshow.init({ container: container.current })
 		slideshow.rerender = forceUpdate
-		slideshow.onSlideChange(() => {
-			setSlideOffsetIndex(undefined)
-		})
 		return () => {
 			// Focus is now handled by `react-focus-lock`.
 			// if (this.returnFocusTo) {
@@ -368,63 +205,42 @@ function SlideshowComponent(props) {
 		}
 	}, [])
 
-	return render.call(
-		// this.
+	return SlideshowComponent_({
 		slideshow,
 		props,
-		overlayOpacity.current,
-		animateOpen,
-		animateClose,
 		slideshowState,
 		hasBeenMeasured,
-		hasStartedOpening,
-		hasFinishedOpening,
-		openingAnimationDuration,
-		hasStartedClosing,
-		hasFinishedClosing,
-		closingAnimationDuration,
-		slideOffsetX,
-		slideOffsetY,
-		slideOffsetIndex,
 		// refs.
 		container,
 		slidesRef,
 		currentSlideRef,
 		currentSlideContainerRef,
-		previousButton,
-		nextButton,
-		closeButton
-	)
+		previousButtonRef,
+		nextButtonRef,
+		closeButtonRef
+	})
 }
 
-function render(
+function SlideshowComponent_({
+	slideshow: _this,
 	props,
-	overlayOpacity,
-	animateOpen,
-	animateClose,
 	slideshowState,
 	hasBeenMeasured,
-	hasStartedOpening,
-	hasFinishedOpening,
-	openingAnimationDuration,
-	hasStartedClosing,
-	hasFinishedClosing,
-	closingAnimationDuration,
-	slideOffsetX,
-	slideOffsetY,
-	slideOffsetIndex,
 	// refs.
 	container,
 	slidesRef,
 	currentSlideRef,
 	currentSlideContainerRef,
-	previousButton,
-	nextButton,
-	closeButton
-) {
+	previousButtonRef,
+	nextButtonRef,
+	closeButtonRef
+}) {
 	const {
 		inline,
 		mode,
+		animateOpen,
+		animateClose,
+		overlayOpacity,
 		showScaleButtons,
 		highContrastControls,
 		slideCardMinOverlayOpacity,
@@ -436,7 +252,16 @@ function render(
 		i,
 		slidesShown,
 		slideIndexAtWhichTheSlideshowIsBeingOpened,
-		showMoreControls
+		showMoreControls,
+		hasStartedOpening,
+		hasFinishedOpening,
+		openingAnimationDuration,
+		hasStartedClosing,
+		hasFinishedClosing,
+		closingAnimationDuration,
+		slideOffsetX,
+		slideOffsetY,
+		slideOffsetIndex
 	} = slideshowState
 
 	// `react-focus-lock` doesn't focus `<video/>` when cycling the Tab key.
@@ -445,15 +270,15 @@ function render(
 	// Safari doesn't support pointer events.
 	// https://caniuse.com/#feat=pointer
 	// https://webkit.org/status/#?search=pointer%20events
-	// onPointerDown={this.onPointerDown}
-	// onPointerUp={this.onPointerUp}
-	// onPointerMove={this.onPointerMove}
-	// onPointerOut={this.onPointerOut}
+	// onPointerDown={_this.onPointerDown}
+	// onPointerUp={_this.onPointerUp}
+	// onPointerMove={_this.onPointerMove}
+	// onPointerOut={_this.onPointerOut}
 
 	// React doesn't support setting up non-passive listeners.
 	// https://github.com/facebook/react/issues/14856
-	// onTouchMove={this.onTouchMove}
-	// onWheel={this.onWheel}>
+	// onTouchMove={_this.onTouchMove}
+	// onWheel={_this.onWheel}>
 
 	// `tabIndex={ -1 }` makes the `<div/>` focusable.
 	return (
@@ -464,15 +289,15 @@ function render(
 				ref={container}
 				tabIndex={-1}
 				style={inline ? undefined : {
-					// paddingRight: this.containerPaddingRight,
-					// transitionDuration: this.getOverlayTransitionDuration(),
-					// `this.props.overlayOpacity` is the default overlay opacity
+					// paddingRight: _this.containerPaddingRight,
+					// transitionDuration: _this.getOverlayTransitionDuration(),
+					// `_this.props.overlayOpacity` is the default overlay opacity
 					// and doesn't reflect the current overlay opacity.
 					// Overlay opacity only changes when user swipes up/down
 					// or left on the first slide or right on the last slide,
-					// and slides get re-rendered only on `this.setState()`
+					// and slides get re-rendered only on `_this.setState()`
 					// which doesn't interfere with the opacity change.
-					backgroundColor: this.getOverlayBackgroundColor(
+					backgroundColor: _this.getOverlayBackgroundColor(
 						hasStartedOpening ?
 							(hasFinishedOpening ?
 								(hasStartedClosing && animateClose ? 0 : overlayOpacity) :
@@ -489,19 +314,19 @@ function render(
 				}}
 				className={classNames('rrui__slideshow', {
 					'rrui__slideshow--fullscreen': !inline,
-					'rrui__slideshow--panning': this.isActuallyPanning
+					'rrui__slideshow--panning': _this.isActuallyPanning
 				})}
-				onKeyDown={this.onKeyDown}
-				onDragStart={this.onDragStart}
-				onTouchStart={this.onTouchStart}
-				onTouchEnd={this.onTouchEnd}
-				onTouchCancel={this.onTouchCancel}
-				onMouseDown={this.onPointerDown}
-				onMouseUp={this.onPointerUp}
-				onMouseMove={this.onPointerMove}
-				onMouseLeave={this.onPointerOut}
-				onClick={this.onBackgroundClick}>
-				<div style={{ position: 'relative', width: '100%', height: '100%' }}>
+				onKeyDown={_this.onKeyDown}
+				onDragStart={_this.onDragStart}
+				onTouchStart={_this.onTouchStart}
+				onTouchEnd={_this.onTouchEnd}
+				onTouchCancel={_this.onTouchCancel}
+				onMouseDown={_this.onPointerDown}
+				onMouseUp={_this.onPointerUp}
+				onMouseMove={_this.onPointerMove}
+				onMouseLeave={_this.onPointerOut}
+				onClick={_this.onBackgroundClick}>
+				<div style={INNER_CONTAINER_STYLE}>
 					<ul
 						ref={slidesRef}
 						style={{
@@ -510,8 +335,8 @@ function render(
 							// Otherwise that "Composite Layers" operation would take about
 							// 30ms a couple of times sequentially causing a visual lag.
 							willChange: 'transform',
-							// transitionDuration: hasBeenMeasured ? this.getSlideRollTransitionDuration() : undefined,
-							transform: hasBeenMeasured ? this.getSlideRollTransform() : undefined,
+							// transitionDuration: hasBeenMeasured ? _this.getSlideRollTransitionDuration() : undefined,
+							transform: hasBeenMeasured ? _this.getSlideRollTransform() : undefined,
 							opacity: hasBeenMeasured ? 1 : 0
 						}}
 						className="rrui__slideshow__slides">
@@ -523,8 +348,8 @@ function render(
 									'rrui__slideshow__slide--current': i === j,
 									'rrui__slideshow__slide--card': overlayOpacity < slideCardMinOverlayOpacity
 								})}>
-								{slidesShown[j] && this.getPluginForSlide(slide) &&
-									this.getPluginForSlide(slide).render({
+								{slidesShown[j] && _this.getPluginForSlide(slide) &&
+									_this.getPluginForSlide(slide).render({
 										slide,
 										ref: i === j ? currentSlideRef : undefined,
 										tabIndex: i === j ? 0 : -1,
@@ -532,10 +357,10 @@ function render(
 										autoPlay: slideIndexAtWhichTheSlideshowIsBeingOpened === j,
 										mode,
 										// // `scale` is passed as `pixelRatioMultiplier` to `<Picture/>`.
-										// scale: this.getSlideScale(j),
-										onClick: this.onSlideClick,
-										width: this.getCurrentSlideWidth() * this.getSlideScale(j),
-										height: this.getCurrentSlideHeight() * this.getSlideScale(j),
+										// scale: _this.getSlideScale(j),
+										onClick: _this.onSlideClick,
+										width: _this.getCurrentSlideWidth() * _this.getSlideScale(j),
+										height: _this.getCurrentSlideHeight() * _this.getSlideScale(j),
 										style: {
 											/* Can be scaled via `style="transform: scale(...)". */
 											// transition: 'transform 120ms ease-out',
@@ -548,8 +373,8 @@ function render(
 											// whether they're scaled via a CSS transform
 											// or by scaling `width` and `height`.
 											// Same's for `<video/>`s.
-											// transform: this.getSlideScale(j) === 1 ? undefined : `scale(${this.getSlideScale(j)})`
-											transform: slideOffsetIndex === j ? (j === i ? this.getSlideOffset(j, slideOffsetX, slideOffsetY) : [slideOffsetX, slideOffsetY]).map((value, i) => `translate${i === 0 ? 'X' : 'Y'}(${value}px)`).join(' ') : undefined,
+											// transform: _this.getSlideScale(j) === 1 ? undefined : `scale(${_this.getSlideScale(j)})`
+											transform: _this.getSlideTransform(j),
 											// Adjacent slides have `box-shadow`.
 											// If its `opacity` isn't animated during open/close
 											// then the non-smoothness is noticeable.
@@ -570,7 +395,7 @@ function render(
 													(animateOpen ? 0 : undefined)
 											)
 										}
-										// shouldUpscaleSmallSlides: this.shouldUpscaleSmallSlides()
+										// shouldUpscaleSmallSlides: _this.shouldUpscaleSmallSlides()
 									})
 								}
 							</li>
@@ -585,18 +410,17 @@ function render(
 							) :
 							(animateOpen ? false : true)
 					) &&
-						renderControls.call(
-							this,
-							slides,
-							i,
-							messages,
-							showScaleButtons,
-							showMoreControls,
-							closeButton,
-							previousButton,
-							nextButton,
-							highContrastControls
-						)
+						<Controls
+							slideshow={_this}
+							slides={slides}
+							i={i}
+							messages={messages}
+							showScaleButtons={showScaleButtons}
+							showMoreControls={showMoreControls}
+							closeButtonRef={closeButtonRef}
+							previousButtonRef={previousButtonRef}
+							nextButtonRef={nextButtonRef}
+							highContrastControls={highContrastControls}/>
 					}
 				</div>
 			</div>
@@ -604,17 +428,45 @@ function render(
 	)
 }
 
-function renderControls(
+SlideshowComponent_.propTypes = {
+	slideshow: PropTypes.object.isRequired,
+	props: PropTypes.object.isRequired,
+	overlayOpacity: PropTypes.number,
+	animateOpen: PropTypes.bool,
+	animateClose: PropTypes.bool,
+	slideshowState: PropTypes.object.isRequired,
+	hasBeenMeasured: PropTypes.bool,
+	hasStartedOpening: PropTypes.bool,
+	hasFinishedOpening: PropTypes.bool,
+	openingAnimationDuration: PropTypes.number,
+	hasStartedClosing: PropTypes.bool,
+	hasFinishedClosing: PropTypes.bool,
+	closingAnimationDuration: PropTypes.number,
+	slideOffsetX: PropTypes.number,
+	slideOffsetY: PropTypes.number,
+	slideOffsetIndex: PropTypes.number,
+	// refs.
+	container: PropTypes.object.isRequired,
+	slidesRef: PropTypes.object.isRequired,
+	currentSlideRef: PropTypes.object.isRequired,
+	currentSlideContainerRef: PropTypes.object.isRequired,
+	previousButtonRef: PropTypes.object.isRequired,
+	nextButtonRef: PropTypes.object.isRequired,
+	closeButtonRef: PropTypes.object.isRequired
+}
+
+function Controls({
+	slideshow: _this,
 	slides,
 	i,
 	messages,
 	showScaleButtons,
 	showMoreControls,
-	closeButton,
-	previousButton,
-	nextButton,
+	closeButtonRef,
+	previousButtonRef,
+	nextButtonRef,
 	highContrastControls
-) {
+}) {
 	const LeftArrowCounterForm = highContrastControls ? LeftArrowCounterformThickStroke : LeftArrowCounterform
 	const RightArrowCounterForm = highContrastControls ? RightArrowCounterformThickStroke : RightArrowCounterform
 	const CloseCounterForm = highContrastControls ? CloseCounterformThickStroke : CloseCounterform
@@ -622,7 +474,7 @@ function renderControls(
 	return (
 		<React.Fragment>
 			<ul className="rrui__slideshow__actions">
-				{this.shouldShowMoreControls() && this.shouldShowScaleButtons() &&
+				{_this.shouldShowMoreControls() && _this.shouldShowScaleButtons() &&
 					<li className={classNames('rrui__slideshow__action-item', {
 						'rrui__slideshow__action-group': showScaleButtons
 					})}>
@@ -630,7 +482,7 @@ function renderControls(
 							<button
 								type="button"
 								title={messages.actions.scaleDown}
-								onClick={this.onScaleDown}
+								onClick={_this.onScaleDown}
 								className="rrui__button-reset rrui__slideshow__action">
 								<Minus className="rrui__slideshow__action-icon"/>
 							</button>
@@ -638,7 +490,7 @@ function renderControls(
 						<button
 							type="button"
 							title={messages.actions.scaleReset}
-							onClick={this.onScaleToggle}
+							onClick={_this.onScaleToggle}
 							className="rrui__button-reset rrui__slideshow__action">
 							<ScaleFrame className="rrui__slideshow__action-icon"/>
 						</button>
@@ -646,7 +498,7 @@ function renderControls(
 							<button
 								type="button"
 								title={messages.actions.scaleUp}
-								onClick={this.onScaleUp}
+								onClick={_this.onScaleUp}
 								className="rrui__button-reset rrui__slideshow__action">
 								<Plus className="rrui__slideshow__action-icon"/>
 							</button>
@@ -654,34 +506,34 @@ function renderControls(
 					</li>
 				}
 
-				{this.shouldShowMoreControls() && this.shouldShowOpenExternalLinkButton() &&
+				{_this.shouldShowMoreControls() && _this.shouldShowOpenExternalLinkButton() &&
 					<li className="rrui__slideshow__action-item">
 						<a
 							target="_blank"
 							title={messages.actions.openExternalLink}
 							onKeyDown={clickTheLinkOnSpacebar}
-							href={this.getPluginForSlide().getExternalLink(this.getCurrentSlide())}
+							href={_this.getPluginForSlide().getExternalLink(_this.getCurrentSlide())}
 							className="rrui__slideshow__action rrui__slideshow__action--link">
 							<ExternalIcon className="rrui__slideshow__action-icon"/>
 						</a>
 					</li>
 				}
 
-				{/*this.shouldShowMoreControls() && this.shouldShowDownloadButton() &&
+				{/*_this.shouldShowMoreControls() && _this.shouldShowDownloadButton() &&
 					<li className="rrui__slideshow__action-item">
 						<a
 							download
 							target="_blank"
 							title={messages.actions.download}
 							onKeyDown={clickTheLinkOnSpacebar}
-							href={this.getPluginForSlide().getDownloadUrl(this.getCurrentSlide())}
+							href={_this.getPluginForSlide().getDownloadUrl(_this.getCurrentSlide())}
 							className="rrui__slideshow__action rrui__slideshow__action--link">
 							<Download className="rrui__slideshow__action-icon"/>
 						</a>
 					</li>
 				*/}
 
-				{this.shouldShowMoreControls() && this.getOtherActions().map(({ name, icon: Icon, link, action }) => {
+				{_this.shouldShowMoreControls() && _this.getOtherActions().map(({ name, icon: Icon, link, action }) => {
 					const icon = <Icon className={`rrui__slideshow__action-icon rrui__slideshow__action-icon--${name}`}/>
 					return (
 						<li key={name} className="rrui__slideshow__action-item">
@@ -698,7 +550,7 @@ function renderControls(
 								<button
 									type="button"
 									onClick={(event) => {
-										if (!this.slideshow.isLocked()) {
+										if (!_this.slideshow.isLocked()) {
 											action(event)
 										}
 									}}
@@ -713,12 +565,12 @@ function renderControls(
 
 				{/* "Show/Hide controls" */}
 				{/* Is visible only on small screens. */}
-				{!this.shouldShowMoreControls() && this.hasHidableControls() && this.shouldShowShowMoreControlsButton() &&
+				{!_this.shouldShowMoreControls() && _this.hasHidableControls() && _this.shouldShowShowMoreControlsButton() &&
 					<li className="rrui__slideshow__action-item rrui__slideshow__action-item--toggle-controls">
 						<button
 							type="button"
 							title={showMoreControls ? messages.actions.hideControls : messages.actions.showControls}
-							onClick={this.onShowMoreControls}
+							onClick={_this.onShowMoreControls}
 							className={classNames('rrui__button-reset', 'rrui__slideshow__action', 'rrui__slideshow__action--counterform', {
 								'rrui__slideshow__action--toggled': showMoreControls
 							})}>
@@ -727,13 +579,13 @@ function renderControls(
 					</li>
 				}
 
-				{this.shouldShowCloseButton() &&
+				{_this.shouldShowCloseButton() &&
 					<li className="rrui__slideshow__action-item rrui__slideshow__action-item--close">
 						<button
-							ref={closeButton}
+							ref={closeButtonRef}
 							type="button"
 							title={messages.actions.close}
-							onClick={this.onClose}
+							onClick={_this.onClose}
 							className="rrui__button-reset rrui__slideshow__action rrui__slideshow__action--counterform">
 							<CloseCounterForm className="rrui__slideshow__action-icon"/>
 						</button>
@@ -741,23 +593,23 @@ function renderControls(
 				}
 			</ul>
 
-			{slides.length > 1 && i > 0 && this.shouldShowPreviousNextButtons() &&
+			{slides.length > 1 && i > 0 && _this.shouldShowPreviousNextButtons() &&
 				<button
-					ref={previousButton}
+					ref={previousButtonRef}
 					type="button"
 					title={messages.actions.previous}
-					onClick={this.onShowPrevious}
+					onClick={_this.onShowPrevious}
 					className="rrui__button-reset rrui__slideshow__action rrui__slideshow__action--counterform rrui__slideshow__previous">
 					<LeftArrowCounterForm className="rrui__slideshow__action-icon"/>
 				</button>
 			}
 
-			{slides.length > 1 && i < slides.length - 1 && this.shouldShowPreviousNextButtons() &&
+			{slides.length > 1 && i < slides.length - 1 && _this.shouldShowPreviousNextButtons() &&
 				<button
-					ref={nextButton}
+					ref={nextButtonRef}
 					type="button"
 					title={messages.actions.next}
-					onClick={this.onShowNext}
+					onClick={_this.onShowNext}
 					className="rrui__button-reset rrui__slideshow__action rrui__slideshow__action rrui__slideshow__action--counterform rrui__slideshow__next">
 					<RightArrowCounterForm className="rrui__slideshow__action-icon"/>
 				</button>
@@ -768,14 +620,27 @@ function renderControls(
 					<SlideshowProgress
 						i={i}
 						count={slides.length}
-						isDisabled={this.isLocked}
-						onShowSlide={this.showSlide}
-						onShowNextSlide={this.showNext}
+						isDisabled={_this.isLocked}
+						onShowSlide={_this.showSlide}
+						onShowNextSlide={_this.showNext}
 						highContrast={highContrastControls}/>
 				</div>
 			}
 		</React.Fragment>
 	)
+}
+
+Controls.propTypes = {
+	slides,
+	i,
+	messages,
+	showScaleButtons,
+	showMoreControls,
+	closeButtonRef: PropTypes.object,
+	previousButtonRef: PropTypes.object,
+	nextButtonRef: PropTypes.object,
+	highContrastControls: PropTypes.bool,
+	slideshow: PropTypes.object.isRequired
 }
 
 SlideshowComponent.propTypes = {
@@ -906,6 +771,12 @@ function isButton(element) {
 
 const FOCUS_OPTIONS = {
 	preventScroll: true
+}
+
+const INNER_CONTAINER_STYLE = {
+	position: 'relative',
+	width: '100%',
+	height: '100%'
 }
 
 window.Slideshow = {

@@ -6,6 +6,7 @@ import SlideshowPan from './Slideshow.Pan'
 import SlideshowPointer from './Slideshow.Pointer'
 import SlideshowTouch from './Slideshow.Touch'
 import SlideshowKeyboard from './Slideshow.Keyboard'
+import SlideshowOpenClose from './Slideshow.OpenClose'
 import SlideshowScaleOpenCloseTransition from './Slideshow.ScaleOpenCloseTransition'
 import SlideshowOpenCloseTransition from './Slideshow.OpenCloseTransition'
 import SlideshowHoverPicture from './Slideshow.HoverPicture'
@@ -20,6 +21,9 @@ export default class Slideshow {
 	onSlideChangeListeners = []
 
 	constructor(props) {
+		props = SlideshowHoverPicture.getInitialProps(props)
+		props = SlideshowOpenClose.getInitialProps(props)
+		this.shouldOffsetSlide = props.shouldOffsetSlide
 		new SlideshowResize(this)
 		this.size = new SlideshowSize(this, {
 			inline: props.inline,
@@ -34,6 +38,7 @@ export default class Slideshow {
 		})
 		this.fullscreen = new SlideshowFullscreen(this)
 		this.hoverPicture = new SlideshowHoverPicture(this)
+		this.openClose = new SlideshowOpenClose(this)
 		this.openCloseTransition = new SlideshowOpenCloseTransition(this)
 		this.scaleOpenCloseTransition = new SlideshowScaleOpenCloseTransition(this)
 		this.scale = new SlideshowScale(
@@ -65,7 +70,6 @@ export default class Slideshow {
 			// 	isLast: this.isLast
 			// },
 			{
-				overlayOpacity: props.overlayOpacity,
 				emulatePanResistanceOnClose: props.emulatePanResistanceOnClose,
 				panOffsetThreshold: props.panOffsetThreshold,
 				onPanStart: props.onPanStart,
@@ -139,7 +143,8 @@ export default class Slideshow {
 			i,
 			slidesShown: new Array(slides.length),
 			scale: this.getScaleForSlide(i),
-			slideIndexAtWhichTheSlideshowIsBeingOpened: inline ? undefined : i
+			slideIndexAtWhichTheSlideshowIsBeingOpened: inline ? undefined : i,
+			...this.hoverPicture.getInitialState()
 		}
 	}
 
@@ -393,7 +398,29 @@ export default class Slideshow {
 	getCurrentSlideHeight = () => this.size.getCurrentSlideHeight()
 
 	getMargin = (edge) => this.size.getMargin(edge)
-	getSlideOffset = (j, slideOffsetX, slideOffsetY) => this.size.getSlideOffset(this.getSlideScale(j), slideOffsetX, slideOffsetY)
+
+	getSlideTransform(j) {
+		const {
+			i,
+			slideOffsetIndex,
+			slideOffsetX,
+			slideOffsetY
+		} = this.state
+		let transform = ''
+		if (slideOffsetIndex === j) {
+			if (j === i) {
+				const [offsetX, offsetY] = this.size.getSlideOffset(
+					this.getSlideScale(j),
+					slideOffsetX,
+					slideOffsetY
+				)
+				transform += `translateX(${offsetX}px) translateY(${offsetY}px)`
+			} else {
+				transform += `translateX(${slideOffsetX}px) translateY(${slideOffsetY}px)`
+			}
+		}
+		return transform
+	}
 
 	getCurrentSlideMaxScale = () => this.scale.getCurrentSlideMaxScale()
 

@@ -4,6 +4,32 @@ import { getViewportWidth, getViewportHeight } from '../utility/dom'
 export default class SlideshowHoverPicture {
 	constructor(slideshow) {
 		this.slideshow = slideshow
+		this.slideshow.applySlideOffset = this.applySlideOffset
+		slideshow.onSlideChange(this.resetState)
+	}
+
+	static getInitialProps(props) {
+		// Get `thumbnailImage`.
+		let { thumbnailImage } = props
+		if (thumbnailImage) {
+			if (thumbnailImage.tagName.toLowerCase() !== 'img') {
+				thumbnailImage = thumbnailImage.querySelector('img')
+			}
+		}
+
+		// All pictures (including animated GIFs) are opened above their thumbnails.
+		const {
+			i,
+			children: slides
+		} = props
+		const slide = slides[i]
+		const shouldOffsetSlide = thumbnailImage && slide.type === 'picture'
+
+		return {
+			...props,
+			thumbnailImage,
+			shouldOffsetSlide
+		}
 	}
 
 	/**
@@ -62,6 +88,46 @@ export default class SlideshowHoverPicture {
 		// setSlideOffsetX(slideOffsetX)
 		// setSlideOffsetY(slideOffsetY)
 		return [slideOffsetX, slideOffsetY]
+	}
+
+	getInitialState() {
+		const { i, shouldOffsetSlide } = this.slideshow.props
+		return {
+			slideOffsetX: shouldOffsetSlide ? 0 : undefined,
+			slideOffsetY: shouldOffsetSlide ? 0 : undefined,
+			slideOffsetIndex: shouldOffsetSlide ? i : undefined
+		}
+	}
+
+	resetState = () => {
+		this.slideshow.setState({
+			slideOffsetIndex: undefined,
+			slideOffsetX: undefined,
+			slideOffsetY: undefined
+		})
+	}
+
+	applySlideOffset = () => {
+		const { getSlideDOMNode, thumbnailImage } = this.slideshow.props
+		this.slideshow.onSlideChange(() => {
+			if (this.slideshow.shouldOffsetSlide) {
+				this.slideshow.shouldOffsetSlide = false
+				this.resetState()
+			}
+		})
+		return this.onOpen(getSlideDOMNode(), {
+			thumbnailImage,
+			// Not using `useState()` for `shouldOffsetSlide`
+			// because the updated state value wouldn't be accessible
+			// from within the Slideshow.
+			getShouldOffsetSlide: () => this.slideshow.shouldOffsetSlide,
+			setSlideOffset: (x, y) => {
+				this.slideshow.setState({
+					slideOffsetX: x,
+					slideOffsetY: y
+				})
+			}
+		})
 	}
 }
 
