@@ -11,8 +11,8 @@ export default function PostInlineQuote({
 	children
 }) {
 	return (
-		<span className={classNames('post__inline-quote', {
-			'post__inline-quote--generated': generated
+		<span className={classNames('PostInlineQuote', {
+			'PostInlineQuote--generated': generated
 		})}>
 			{children}
 		</span>

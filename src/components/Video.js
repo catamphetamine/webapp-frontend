@@ -522,8 +522,7 @@ function Video({
 				className={classNames(
 					className,
 					'rrui__video',
-					'rrui__video__preview',
-					'rrui__button-reset', {
+					'rrui__video__preview', {
 						'rrui__video--border': border
 					}
 				)}>
@@ -555,12 +554,9 @@ function Video({
 			innerTabIndex={!shouldFocusPlayer(video) ? tabIndex : -1}
 			innerClassName="rrui__video__player-container-inner"
 			style={style ? { ...style, ...getContainerStyle() } : getContainerStyle()}
-			className={classNames(
-				className,
-				'rrui__video', {
-					'rrui__video--border': !shouldFocusPlayer(video) && border
-				}
-			)}>
+			className={classNames(className, 'rrui__video', {
+				'rrui__video--border': !shouldFocusPlayer(video) && border
+			})}>
 			<VideoPlayer
 				ref={playerRef}
 				video={video}

@@ -1,24 +1,29 @@
 import { PREVIEW_PICTURE_SIZES, getPictureSizeUrl } from 'social-components/commonjs/services/YouTube/getVideo'
-import { LocalStorageCache } from './LRUCache'
-import { areCookiesAccepted } from './cookiePolicy'
+import { LocalStorageCache } from './FIFOCache'
+import { areCookiesAccepted } from '../cookiePolicy'
 
 let cache
 if (typeof window !== 'undefined') {
+	// An single cached video is about 100 bytes in size (tested on a 1000 cached videos).
+	// The cache size is, therefore, about 100 KB.
 	cache = new LocalStorageCache(1000, 'youtube')
 }
 
-export function cacheVideo(video) {
+function cacheVideo(id, video) {
 	if (cache && areCookiesAccepted()) {
-		return cache.set(video.id, archiveVideo(video))
+		// Video is `null` when it's "Not found".
+		return cache.set(id, video && archiveVideo(video))
 	}
 }
 
-export function getVideoFromCache(id) {
+function getVideoFromCache(id) {
 	if (cache) {
 		const cachedVideo = cache.get(id)
 		if (cachedVideo) {
 			return unarchiveVideo(id, cachedVideo)
 		}
+		// Video is `null` when it's "Not found".
+		return cachedVideo
 	}
 }
 
@@ -28,8 +33,9 @@ export function clearCache() {
 	}
 }
 
-// An archived video is about 100 bytes in size.
+// An archived video is about 100 bytes in size (tested on a 1000 cached videos).
 // An unarchived video is about 400 bytes in size.
+// (`export` is just for testing)
 export function archiveVideo(video) {
 	return [
 		video.title,
@@ -56,6 +62,7 @@ function archivePictureSize(size) {
 	]
 }
 
+// (`export` is just for testing)
 export function unarchiveVideo(id, archive) {
 	const [
 		title,
@@ -104,4 +111,9 @@ function unarchivePictureSize(size, videoId) {
 	}
 	size.type = 'image/jpeg'
 	return size
+}
+
+export default {
+	put: (id, video) => cacheVideo(id, video),
+	get: (id) => getVideoFromCache(id)
 }

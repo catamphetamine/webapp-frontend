@@ -14,16 +14,21 @@ import SlideshowHoverPicture from './Slideshow.HoverPicture'
 import PicturePlugin from './Slideshow.Picture'
 import VideoPlugin from './Slideshow.Video'
 
+import { roundScreenPixels } from '../utility/round'
+import { triggerRender } from '../utility/dom'
+
 export default class Slideshow {
 	inits = []
 	cleanUps = []
-	onRerenders = []
-	onSlideChangeListeners = []
+	onStateChangeListeners = []
+	listeners = {
+		slideChange: [],
+		close: []
+	}
 
 	constructor(props) {
 		props = SlideshowHoverPicture.getInitialProps(props)
 		props = SlideshowOpenClose.getInitialProps(props)
-		this.shouldOffsetSlide = props.shouldOffsetSlide
 		new SlideshowResize(this)
 		this.size = new SlideshowSize(this, {
 			inline: props.inline,
@@ -41,34 +46,9 @@ export default class Slideshow {
 		this.openClose = new SlideshowOpenClose(this)
 		this.openCloseTransition = new SlideshowOpenCloseTransition(this)
 		this.scaleOpenCloseTransition = new SlideshowScaleOpenCloseTransition(this)
-		this.scale = new SlideshowScale(
-			this,
-			// {
-			// 	getPluginForSlide: this.getPluginForSlide,
-			// 	getSlideshowWidth: this.getSlideshowWidth,
-			// 	getSlideshowHeight: this.getSlideshowHeight,
-			// 	getMaxSlideWidth: this.getMaxSlideWidth,
-			// 	getMaxSlideHeight: this.getMaxSlideHeight,
-			// 	getCurrentSlideMaxWidth: this.getCurrentSlideMaxWidth,
-			// 	getCurrentSlideMaxHeight: this.getCurrentSlideMaxHeight
-			// },
-			{
-				minScaledSlideRatio: props.minScaledSlideRatio
-			}
-		)
+		this.scale = new SlideshowScale(this)
 		this.pan = new SlideshowPan(
 			this,
-			// {
-			// 	getSlideshowWidth: this.getSlideshowWidth,
-			// 	getSlideshowHeight: this.getSlideshowHeight,
-			// 	showPrevious: this.showPrevious,
-			// 	showNext: this.showNext,
-			// 	close: this.close,
-			// 	onPeek: this.onPeek,
-			// 	getOverlayBackgroundColor: this.getOverlayBackgroundColor,
-			// 	isFirst: this.isFirst,
-			// 	isLast: this.isLast
-			// },
 			{
 				emulatePanResistanceOnClose: props.emulatePanResistanceOnClose,
 				panOffsetThreshold: props.panOffsetThreshold,
@@ -77,7 +57,7 @@ export default class Slideshow {
 				inline: props.inline,
 				slideInDuration: props.slideInDuration,
 				minSlideInDuration: props.minSlideInDuration,
-				updateSlideRollOffset: () => props.setSlideRollTransform(this.getSlideRollTransform()),
+				updateSlideRollOffset: (slideIndex) => props.setSlideRollTransform(this.getSlideRollTransform(slideIndex)),
 				setSlideRollTransitionDuration: props.setSlideRollTransitionDuration,
 				// updateSlideRollTransitionDuration: () => props.setSlideRollTransitionDuration(this.getSlideRollTransitionDuration()),
 				// updateOverlayTransitionDuration: () => props.setOverlayTransitionDuration(this.getOverlayTransitionDuration()),
@@ -87,11 +67,6 @@ export default class Slideshow {
 		)
 		this.pointer = new SlideshowPointer(
 			this,
-			// {
-			// 	close: this.close,
-			// 	scaleUp: this.scaleUp,
-			// 	scaleDown: this.scaleDown
-			// },
 			{
 				closeOnOverlayClick: props.closeOnOverlayClick,
 				isOverlay: props.isOverlay,
@@ -101,17 +76,6 @@ export default class Slideshow {
 		)
 		this.touch = new SlideshowTouch(this)
 		this.keyboard = new SlideshowKeyboard(this)
-		// this.keyboard = new SlideshowKeyboard({
-		// 	resetAnimations: this.resetAnimations,
-		// 	close: this.close,
-		// 	scaleUp: this.scaleUp,
-		// 	scaleDown: this.scaleDown,
-		// 	showPrevious: this.showPrevious,
-		// 	showNext: this.showNext,
-		// 	getPluginForSlide: this.getPluginForSlide,
-		// 	getCurrentSlide: this.getCurrentSlide
-		// })
-
 		this.props = props
 		this.state = this.getInitialState()
 		this.setState = (newState) => {
@@ -119,18 +83,55 @@ export default class Slideshow {
 				...this.state,
 				...newState
 			}
-			this._onStateChange(this.state)
+			this._setState(this.state)
 		}
 		this.markPicturesShown(props.i)
 		this.lock()
+		// Focus slide on change slide.
+		this.onStateChange((newState, prevState) => {
+			const { i } = newState
+			const { i: prevIndex } = prevState
+			// On change current slide.
+			if (i !== prevIndex) {
+				const { focus } = this.props
+				focus(i > prevIndex ? 'next' : 'previous')
+			}
+		})
+		// Reset "Drag and Scale" mode exit timer.
+		this.onCleanUp(() => {
+			this.resetExitDragAndScaleModeTimer()
+			// this.resetEmulateTouchScaleAnimationFrame()
+		})
+		this.onSlideChange(() => {
+			this.resetDragAndScaleMode()
+			this.resetExitDragAndScaleModeTimer()
+			// this.resetEmulateTouchScaleAnimationFrame()
+		})
+		// Reset fixed origin.
+		this.resetScaleOrigin()
+		this.resetScaleOriginOffset()
+		this.onSlideChange(() => {
+			this.resetScaleOrigin()
+			this.resetScaleOriginOffset()
+		})
+		// Reset slide state.
+		this.onSlideChange((i) => {
+			this.markPicturesShown(i)
+			// this.onHideSlide()
+			this.setState({
+				...this.getInitialSlideState(i),
+				slideIndexAtWhichTheSlideshowIsBeingOpened: undefined
+			})
+		})
+		// Reset slide transition resetter.
+		this.onCleanUp(this.resetResetSlideTransitionTimer)
+		this.onSlideChange(this.resetResetSlideTransitionTimer)
+		// // Testing "Drag and Scale" mode.
+		// this.onInit(() => this.enterDragAndScaleMode())
 	}
 
 	getState() {
 		return this.state
-	}
-
-	onStateChange(onStateChange) {
-		this._onStateChange = onStateChange
 	}
 
 	/**
@@ -140,12 +141,21 @@ export default class Slideshow {
 	getInitialState() {
 		const { i, inline, children: slides } = this.props
 		return {
-			i,
 			slidesShown: new Array(slides.length),
-			scale: this.getScaleForSlide(i),
 			slideIndexAtWhichTheSlideshowIsBeingOpened: inline ? undefined : i,
-			...this.hoverPicture.getInitialState()
+			...this.getInitialSlideState(i)
 		}
+	}
+
+	getInitialSlideState(i) {
+		return {
+			i,
+			scale: this.getInitialScaleForSlide(i)
+		}
+	}
+
+	onSetState(setState) {
+		this._setState = setState
 	}
 
 	init(parameters) {
@@ -170,22 +180,48 @@ export default class Slideshow {
 		this.cleanUps.push(cleanUp)
 	}
 
-	onSlideChange(listener) {
-		this.onSlideChangeListeners.push(listener)
+	addEventListener(event, listener, options = {}) {
+		listener = { listener, options }
+		this.listeners[event].push(listener)
+		return () => this.listeners[event] = this.listeners[event].filter(_ => _ !== listener)
 	}
 
-	onAfterRerender() {
-		for (const onRerender of this.onRerenders) {
-			onRerender()
+	triggerListeners() {
+		const event = arguments[0]
+		const args = Array.prototype.slice.call(arguments, 1)
+		const removeListeners = []
+		const results = []
+		for (const listener of this.listeners[event]) {
+			const { listener: func, options } = listener
+			if (options.once) {
+				removeListeners.push(listener)
+			}
+			results.push(func.apply(this, args))
+		}
+		if (removeListeners.length > 0) {
+			this.listeners[event] = this.listeners[event].filter(_ => removeListeners.indexOf(_) < 0)
+		}
+		return results
+	}
+
+	onSlideChange(listener, options) {
+		return this.addEventListener('slideChange', listener, options)
+	}
+
+	handleRender(newState, prevState, { immediate } = {}) {
+		for (const listener of this.onStateChangeListeners) {
+			if (immediate && listener.immediate ||
+				!immediate && !listener.immediate) {
+				listener.listener(newState, prevState)
+			}
 		}
 	}
 
-	onRerender(rerender) {
-		this.onRerenders.push(rerender)
-	}
-
-	onCloseAnimation(getOnCloseAnimation) {
-		this.getOnCloseAnimation = getOnCloseAnimation
+	onStateChange(listener, options) {
+		this.onStateChangeListeners.push({
+			...options,
+			listener
+		})
 	}
 
 	// Only execute `fn` if the component is still mounted.
@@ -200,7 +236,6 @@ export default class Slideshow {
 	markPicturesShown(i) {
 		const { children: slides } = this.props
 		const { slidesShown } = this.state
-
 		let j = 0
 		while (j < slides.length) {
 			// Also prefetch previous and next images for left/right scrolling.
@@ -255,24 +290,11 @@ export default class Slideshow {
 		if (i === iPrevious) {
 			return
 		}
+		const triggerSlideChanged = () => this.triggerListeners('slideChange', i, options)
 		if (options.animationDuration) {
-			this.slideChangedTimeout = setTimeout(this.triggerSlideChanged, options.animationDuration)
+			this.slideChangedTimeout = setTimeout(triggerSlideChanged, options.animationDuration)
 		} else {
-			this.triggerSlideChanged()
-		}
-		this.markPicturesShown(i)
-		// this.onHideSlide()
-		this.setState({
-			i,
-			// Reset slide display mode.
-			scale: this.getScaleForSlide(i),
-			slideIndexAtWhichTheSlideshowIsBeingOpened: undefined
-		})
-	}
-
-	triggerSlideChanged = () => {
-		for (const onSlideChange of this.onSlideChangeListeners) {
-			onSlideChange()
+			triggerSlideChanged()
 		}
 	}
 
@@ -298,28 +320,401 @@ export default class Slideshow {
 	// 	}
 	// }
 
-	onScaleUp = (event) => {
-		if (this.locked) {
-			return
-		}
-		// this.onActionClick()
-		this.scaleUp()
+	getScaleFactor(scale) {
+		const { scale: currentScale } = this.state
+		return scale / currentScale
 	}
 
-	onScaleDown = (event) => {
+	onScaleUp = (event, scaleFactor = 1) => {
 		if (this.locked) {
 			return
 		}
+		// // Debugging multi-touch zoom.
+		// // DevTools doesn't provide the means to test multi-touch.
+		// if (this.emulateInteractiveZoom(event)) {
+		// 	return
+		// }
+		// // Can be used for testing touch zoom.
+		// // Isn't used in production.
+		// return this.emulateInteractiveZoom(event, 'zoomIn')
+		if (!this.isDragAndScaleMode()) {
+			if (this.canEnterDragAndScaleMode(event)) {
+				if (this.scale.willScalingUpExceedMaxSize(scaleFactor)) {
+					this.enterDragAndScaleMode()
+				}
+			}
+		}
+		this.fixDragAndScaleModeOrigin(event)
 		// this.onActionClick()
-		this.scaleDown()
+		this.scale.scaleUp(scaleFactor)
 	}
 
-	onScaleToggle = (event) => {
+	onScaleDown = (event, scaleFactor = 1) => {
+		if (this.locked) {
+			return
+		}
+		// // Can be used for testing touch zoom.
+		// // Isn't used in production.
+		// return this.emulateInteractiveZoom(event, 'zoomOut')
+		this.fixDragAndScaleModeOrigin(event)
+		// this.onActionClick()
+		this.scale.scaleDown(scaleFactor)
+	}
+
+	/**
+	 * Can be used for testing touch zoom.
+	 * DevTools doesn't provide the means to test multi-touch.
+	 * Isn't used in production.
+	 */
+	emulateInteractiveZoom(event) {
+		if (!(event.type === 'wheel' && event.shiftKey)) {
+			return
+		}
+		if (this.ignoreCurrentTouches) {
+			this.ignoreCurrentTouches = undefined
+		}
+		if (this.isInteractivelyZooming()) {
+			return console.error('Already interactively zooming')
+		}
+		let secondTouchCoords = [event.clientX, event.clientY]
+		const firstTouchCoords = [
+			secondTouchCoords[0] - Math.random() * 100,
+			secondTouchCoords[1] - Math.random() * 100
+		]
+		const getDistance = () => Math.sqrt(
+			(secondTouchCoords[0] - firstTouchCoords[0]) * (secondTouchCoords[0] - firstTouchCoords[0]) +
+			(secondTouchCoords[1] - firstTouchCoords[1]) * (secondTouchCoords[1] - firstTouchCoords[1])
+		)
+		console.log('### Start Interactive Zoom Emulation (release Shift key and move the mouse to exit interactive zoom emulation)')
+		this.startInteractiveZoom(
+			() => [
+				firstTouchCoords[0] + (secondTouchCoords[0] - firstTouchCoords[0]) / 2,
+				firstTouchCoords[1] + (secondTouchCoords[1] - firstTouchCoords[1]) / 2
+			],
+			getDistance
+		)
+		const TOUCH_ELEMENT_WIDTH = 20
+		function createTouchElement(x, y) {
+			const element = document.createElement('div')
+			element.style.position = 'absolute'
+			element.style.top = (y - TOUCH_ELEMENT_WIDTH / 2) + 'px'
+			element.style.left = (x - TOUCH_ELEMENT_WIDTH / 2) + 'px'
+			element.style.zIndex = 1000
+			element.style.width = TOUCH_ELEMENT_WIDTH + 'px'
+			element.style.height = TOUCH_ELEMENT_WIDTH + 'px'
+			element.style.borderRadius = TOUCH_ELEMENT_WIDTH / 2 + 'px'
+			element.style.border = '1px solid rgba(0,0,0,0.3)'
+			element.style.background = 'rgba(255,0,0,0.3)'
+			document.body.appendChild(element)
+			return element
+		}
+		const firstTouchElement = createTouchElement(firstTouchCoords[0], firstTouchCoords[1])
+		const secondTouchElement = createTouchElement(secondTouchCoords[0], secondTouchCoords[1])
+		this.emulateInteractiveZoomMouseMoveListener = (event) => {
+			if (event.shiftKey) {
+				secondTouchCoords = [event.clientX, event.clientY]
+				secondTouchElement.style.top = (secondTouchCoords[1] - TOUCH_ELEMENT_WIDTH / 2) + 'px'
+				secondTouchElement.style.left = (secondTouchCoords[0] - TOUCH_ELEMENT_WIDTH / 2) + 'px'
+				this.updateInteractiveZoom()
+			} else {
+				// `resetEmulateInteractiveZoom()` could have already been called
+				// in `exitDragAndScaleMode()` when pushed `Esc` to exit "Drag and Scale"
+				// mode before moving a mouse with "Shift" key released.
+				if (this.resetEmulateInteractiveZoom) {
+					this.resetEmulateInteractiveZoom()
+				}
+			}
+		}
+		this.resetEmulateInteractiveZoom = () => {
+			console.log('### End Interactive Zoom Emulation')
+			this.endInteractiveZoom()
+			document.removeEventListener('mousemove', this.emulateInteractiveZoomMouseMoveListener)
+			document.body.removeChild(firstTouchElement)
+			document.body.removeChild(secondTouchElement)
+			this.emulateInteractiveZoomMouseMoveListener = undefined
+			this.resetEmulateInteractiveZoom = undefined
+		}
+		document.addEventListener('mousemove', this.emulateInteractiveZoomMouseMoveListener)
+		return true
+	}
+
+	// /**
+	//  * Can be used for testing touch zoom.
+	//  * Isn't used in production.
+	//  */
+	// emulateInteractiveZoom(event, direction) {
+	// 	if (this.isInteractivelyZooming()) {
+	// 		// Already zooming.
+	// 		return false
+	// 	}
+	// 	// if (this.emulateInteractiveZoomAnimationFrame) {
+	// 	// 	cancelAnimationFrame(this.emulateInteractiveZoomAnimationFrame)
+	// 	// }
+	// 	const startedAt = Date.now()
+	// 	const duration = 1000
+	// 	const { i } = this.state
+	// 	const { x, y, width, height } = this.getSlideCoordinates(i)
+	// 	const originRatio = this.getOriginRatio(event.clientX, event.clientY)
+	// 	const center = [
+	// 		x + width * originRatio.x,
+	// 		y + height * originRatio.y
+	// 	]
+	// 	const getDistance = () => {
+	// 		switch (direction) {
+	// 			case 'zoomIn':
+	// 				return 1000 + (Date.now() - startedAt)
+	// 			case 'zoomOut':
+	// 				return 2000 - (Date.now() - startedAt)
+	// 			default:
+	// 				throw new Error(`Incorrect zoom direction: ${direction}`)
+	// 		}
+	// 	}
+	// 	this.startInteractiveZoom(
+	// 		() => center,
+	// 		getDistance
+	// 	)
+	// 	const scheduleZoomFrame = () => {
+	// 		this.emulateInteractiveZoomAnimationFrame = requestAnimationFrame(() => {
+	// 			// Zooming might have been cancelled.
+	// 			// For example, on slide drag.
+	// 			if (!this.isInteractivelyZooming()) {
+	// 				return
+	// 			}
+	// 			if (Date.now() < startedAt + duration) {
+	// 				this.updateInteractiveZoom()
+	// 				scheduleZoomFrame()
+	// 			} else {
+	// 				this.endInteractiveZoom()
+	// 				this.emulateInteractiveZoomAnimationFrame = undefined
+	// 			}
+	// 		})
+	// 	}
+	// 	scheduleZoomFrame()
+	// }
+
+	fixDragAndScaleModeOrigin(event) {
+		if (this.isDragAndScaleMode() && !this.hasScaleOriginBeenSet()) {
+			const { i, scale } = this.state
+			if (event.type === 'wheel') {
+				this.setScaleOrigin(event.clientX, event.clientY)
+			} else {
+				const { getSlideDOMNode, inline } = this.props
+				const { x, y, width, height } = this.getSlideCoordinates(i)
+				const slideshowWidth = this.getSlideshowWidth()
+				const slideshowHeight = this.getSlideshowHeight()
+				let originX = x + width / 2
+				let originY = y + height / 2
+				if (!inline) {
+					const centerX = slideshowWidth / 2
+					const centerY = slideshowHeight / 2
+					const dr = Math.min(slideshowWidth, slideshowHeight) * 0.1
+					const dx = dr
+					const dy = dr
+					if (x < centerX - dx &&
+						x + width > centerX + dx &&
+						y < centerY - dy &&
+						y + height > centerY + dy) {
+						originX = centerX
+						originY = centerY
+					}
+				}
+				this.setScaleOrigin(originX, originY)
+			}
+		}
+	}
+
+	canEnterDragAndScaleMode(event) {
+		// When a user starts zooming in a picture or video using a mouse wheel,
+		// first it zooms in until it reaches the "max size" for the current screen size.
+		if (event.type === 'wheel') {
+			return !this.isAnimatingScale()
+		}
+		return true
+	}
+
+	onScaleToggle = () => {
 		if (this.locked) {
 			return
 		}
 		// this.onActionClick()
-		this.scaleToggle()
+		this.scale.scaleToggle()
+	}
+
+	resetResetSlideTransitionTimer = () => {
+		if (this.resetSlideTransitionTimer) {
+			clearTimeout(this.resetSlideTransitionTimer)
+		}
+	}
+
+	setSlideTransition = (transition) => {
+		this.resetResetSlideTransitionTimer()
+		const { getSlideDOMNode } = this.props
+		// When resetting CSS transition, sets it to "initial".
+		// Setting `undefined` didn't work.
+		// Setting "none" also resulted in a weird CSS value.
+		getSlideDOMNode().style.transition = transition || 'initial'
+	}
+
+	setSlideTransform(transform, transformOrigin) {
+		const { getSlideDOMNode } = this.props
+		getSlideDOMNode().style.transform = transform
+		getSlideDOMNode().style.transformOrigin = transformOrigin
+	}
+
+	enterDragAndScaleMode() {
+		// this.resetExitDragAndScaleModeTimer()
+		const { i } = this.state
+		const [offsetX, offsetY] = this.getDefaultSlideOffset(i)
+		this.pan.dragOffsetX = offsetX
+		this.pan.dragOffsetY = offsetY
+		this.dragAndScaleMode = true
+		const { onDragAndScaleModeChange } = this.props
+		onDragAndScaleModeChange(true)
+	}
+
+	isDragAndScaleMode() {
+		return this.dragAndScaleMode
+	}
+
+	onExitDragAndScaleMode = (event) => {
+		if (this.locked) {
+			return
+		}
+		this.exitDragAndScaleMode()
+	}
+
+	exitDragAndScaleMode = () => {
+		if (this.locked) {
+			return
+		}
+		this.lock()
+		if (this.resetEmulateInteractiveZoom) {
+			this.resetEmulateInteractiveZoom()
+		}
+		this.pan.stopDragInertialMovement()
+		const { i } = this.state
+		// Calculate scale factor.
+		const { scale: currentScale } = this.state
+		let scale = this.scale.stopAnimateScale({ applyScale: false })
+		if (scale === undefined) {
+			scale = currentScale
+		}
+		// Start animation.
+		const { getSlideDOMNode, scaleAnimationDuration } = this.props
+		const scaleFactor = this.getInitialScaleForSlide(i) / currentScale
+		const { transform, transformOrigin } = this.getSlideTransform(i, {
+			scale: scaleFactor,
+			ignoreDragAndScaleMode: true
+		})
+		const finish = () => {
+			this.setSlideTransition()
+			// Reset "Drag and Scale" mode.
+			this.resetDragAndScaleMode()
+			this.pan.resetDragOffset()
+			this.resetBoxShadow()
+			this.resetScaleOrigin()
+			this.resetScaleOriginOffset()
+			// React doesn't update the slide's `transform`
+			// after re-rendering with the new state, when scale is `1`,
+			// for some reason: perhaps it doesn't compare
+			// CSS `transform` property itself, but instead
+			// tracks it internally somehow on each rerender,
+			// so when `transform` is set here manually on a DOM element,
+			// React doesn't see that and doesn't reset that `transform`
+			// when rerendering with the newly reset state.
+			// The workaround used here is to manually reset the CSS `transform`
+			// to the value it would have as part of a normal React `render()`.
+			const { transform, transformOrigin } = this.getSlideTransform(i, {
+				ignoreDragAndScaleMode: true
+			})
+			this.setSlideTransform(transform, transformOrigin)
+			// Re-focus the slide, because the "Drag and Scale" mode button
+			// won't be rendered after the new state is applied,
+			// and so it would "lose" the focus.
+			const { focus } = this.props
+			focus(i)
+			this.unlock()
+		}
+		// Hide "Drag and Scale" mode button.
+		const { onDragAndScaleModeChange } = this.props
+		onDragAndScaleModeChange(false)
+		// // Update scale value in the UI.
+		// const { onScaleChange } = this.props
+		// if (onScaleChange) {
+		// 	onScaleChange(1)
+		// }
+		// It turned out that for large scales the `transform: scale()` transition is laggy,
+		// even on a modern PC, when zooming out from 5x to 1x.
+		// On iPhone 6S Plus it even crashes iOS Safari when exiting
+		// zoom mode with a scale transition from 100x to 1x.
+		// Therefore, for scales larger than 5x there's no transition.
+		if (scale > 5) {
+			// No `transform: scale()` transition.
+			return finish()
+		}
+		// Calculate animation distance.
+		const { offsetX, offsetY } = this.getSlideCoordinates(i)
+		const [defaultOffsetX, defaultOffsetY] = this.getDefaultSlideOffset(i, {
+			ignoreDragAndScaleMode: true
+		})
+		const bouncer = new Bouncer(this, transform, transformOrigin)
+		const dx = offsetX - defaultOffsetX
+		const dy = offsetY - defaultOffsetY
+		const dr = Math.sqrt(dx * dx + dy * dy)
+		const dw = (this.getSlideWidth(i) * (scale - 1))
+		const animationOffset = dr + dw / 2
+		const animationDuration = scaleAnimationDuration * (0.7 + 0.5 * animationOffset / 1000)
+		this.setSlideTransition(`transform ${animationDuration}ms, box-shadow ${animationDuration}ms`)
+		// Scale (and animate) the slide's shadow accordingly.
+		this.updateBoxShadow(1)
+		this.setSlideTransform(
+			bouncer ? bouncer.getInitialTransform() : transform,
+			transformOrigin
+		)
+		this.animateExitDragAndScaleModeTimer = setTimeout(() => {
+			this.animateExitDragAndScaleModeTimer = undefined
+			if (bouncer) {
+				bouncer.playBounceAnimation(timer => this.animateExitDragAndScaleModeTimer = timer).then(finish)
+			} else {
+				finish()
+			}
+		}, animationDuration)
+	}
+
+	resetDragAndScaleMode = () => {
+		const { i } = this.state
+		this.dragAndScaleMode = undefined
+		this.setState({
+			scale: this.getInitialScaleForSlide(i),
+			// ...this.getSlideDragAndScaleInitialState()
+		})
+	}
+
+	resetExitDragAndScaleModeTimer = () => {
+		if (this.animateExitDragAndScaleModeTimer) {
+			clearTimeout(this.animateExitDragAndScaleModeTimer)
+			this.animateExitDragAndScaleModeTimer = undefined
+		}
+	}
+
+	// resetEmulateTouchScaleAnimationFrame() {
+	// 	if (this.emulateInteractiveZoomAnimationFrame) {
+	// 		clearTimeout(this.emulateInteractiveZoomAnimationFrame)
+	// 		this.emulateInteractiveZoomAnimationFrame = undefined
+	// 	}
+	// }
+
+	onDragOffsetChange({ animate } = {}) {
+		if (animate) {
+			const { getSlideDOMNode, scaleAnimationDuration } = this.props
+			const animationDuration = scaleAnimationDuration
+			this.setSlideTransition(`transform ${animationDuration}ms`)
+			this.resetSlideTransitionTimer = setTimeout(() => {
+				this.resetSlideTransitionTimer = undefined
+				this.setSlideTransition()
+			}, animationDuration)
+		}
+		this.updateSlideTransform()
 	}
 
 	/**
@@ -328,7 +723,7 @@ export default class Slideshow {
 	 * @param  {number} i
 	 * @return {number}
 	 */
-	getScaleForSlide(i) {
+	getInitialScaleForSlide(i) {
 		const { children: slides } = this.props
 		const slide = slides[i]
 		// This error handling case is specifically for `new Slideshow()`
@@ -336,38 +731,7 @@ export default class Slideshow {
 		if (!slide) {
 			throw new Error(`Slide #${i} not found`)
 		}
-		return this.scale.getScaleForSlide(slide)
-	}
-
-	scaleUp = (scaleFactor) => {
-		const { scaleStep } = this.props
-		const { scale } = this.state
-		this.setState({
-			scale: this.scale.scaleUp(
-				scale,
-				scaleStep,
-				scaleFactor
-			)
-		})
-	}
-
-	scaleDown = (scaleFactor) => {
-		const { scaleStep } = this.props
-		const { scale } = this.state
-		this.setState({
-			scale: this.scale.scaleDown(
-				scale,
-				scaleStep,
-				scaleFactor
-			)
-		})
-	}
-
-	scaleToggle = () => {
-		const { scale } = this.state
-		this.setState({
-			scale: this.scale.scaleToggle(scale)
-		})
+		return this.scale.getInitialScaleForSlide(slide)
 	}
 
 	onOpenExternalLink = (event) => {
@@ -378,53 +742,300 @@ export default class Slideshow {
 		}
 	}
 
-	getCurrentSlide = () => {
-		const { i } = this.state
+	getSlide = (i) => {
 		const { children: slides } = this.props
 		return slides[i]
 	}
 
-	getSlideshowWidth = () => this.size.getSlideshowWidth()
-	getSlideshowHeight = () => this.size.getSlideshowHeight()
-
-	getMaxSlideWidth = () => this.size.getMaxSlideWidth()
-	getMaxSlideHeight = () => this.size.getMaxSlideHeight()
-
-	getCurrentSlideMaxWidth = () => this.size.getCurrentSlideMaxWidth()
-	getCurrentSlideMaxHeight = () => this.size.getCurrentSlideMaxHeight()
-	// getSlideAspectRatio = () => this.size.getSlideAspectRatio()
-
-	getCurrentSlideWidth = () => this.size.getCurrentSlideWidth()
-	getCurrentSlideHeight = () => this.size.getCurrentSlideHeight()
-
-	getMargin = (edge) => this.size.getMargin(edge)
-
-	getSlideTransform(j) {
-		const {
-			i,
-			slideOffsetIndex,
-			slideOffsetX,
-			slideOffsetY
-		} = this.state
-		let transform = ''
-		if (slideOffsetIndex === j) {
-			if (j === i) {
-				const [offsetX, offsetY] = this.size.getSlideOffset(
-					this.getSlideScale(j),
-					slideOffsetX,
-					slideOffsetY
-				)
-				transform += `translateX(${offsetX}px) translateY(${offsetY}px)`
-			} else {
-				transform += `translateX(${slideOffsetX}px) translateY(${slideOffsetY}px)`
-			}
-		}
-		return transform
+	getCurrentSlide = () => {
+		const { i } = this.state
+		return this.getSlide(i)
 	}
 
-	getCurrentSlideMaxScale = () => this.scale.getCurrentSlideMaxScale()
+	hasScaleOriginBeenSet() {
+		return this.scaleOriginRatio !== undefined
+	}
+
+	setScaleOrigin(originX, originY) {
+		// Not re-fixing the origing while scale animation is playing
+		// results in a smoother scaling experience (no slide coordinates jitter).
+		if (this.hasScaleOriginBeenSet()) {
+			return console.error('Slide scale origin has already been set')
+		}
+		const { scale } = this.state
+		this.scaleOriginPrevRatio = CENTER_RATIO
+		this.scaleOriginPrevScale = scale
+		this.scaleOriginRatio = this.getOriginRatio(originX, originY)
+		this.scaleOriginX = originX
+		this.scaleOriginY = originY
+	}
+
+	getOriginRatio(originX, originY) {
+		const { i } = this.state
+		const {
+			x: slideTopLeftX,
+			y: slideTopLeftY,
+			width,
+			height
+		} = this.getSlideCoordinates(i)
+		return {
+			x: (originX - slideTopLeftX) / width,
+			y: (originY - slideTopLeftY) / height
+		}
+	}
+
+	updateInteractiveZoomOrigin(originX, originY) {
+		this.interactiveZoomOriginX = originX
+		this.interactiveZoomOriginY = originY
+	}
+
+	updateScaleOriginOffsetForNewScale(scale) {
+		const [offsetX, offsetY] = this.getScaleOriginOffsetForNewScale(scale)
+		this.scaleOriginOffsetX += offsetX
+		this.scaleOriginOffsetY += offsetY
+	}
+
+	getScaleOriginOffsetForNewScale(scale) {
+		// const debug = CONSOLE
+		// debug('### getScaleOriginOffsetForNewScale')
+		// Calculate offset X and offset Y for `transform-origin` "center cetner"
+		// so that the slide coordinates are the same as if `scale` parameter was passed
+		// with `transform-origin` being the fixed one.
+		const { i } = this.state
+		const {
+			scaleOriginRatio,
+			scaleOriginPrevRatio,
+			scaleOriginPrevScale
+		} = this
+		const nonScaledWidth = this.getSlideWidth(i)
+		const nonScaledHeight = this.getSlideHeight(i)
+		// // The math:
+		// const newWidth = nonScaledWidth * scale
+		// const prevWidth = nonScaledWidth * prevScale
+		// offsetX = -1 * (newWidth - prevWidth) * (scaleOriginXRatio - prevScaleOriginXRatio)
+		// debug('New Scale', scale)
+		// debug('New Scale Origin Ratio', scaleOriginRatio)
+		// debug('Prev Scale', scaleOriginPrevScale)
+		// debug('Prev Scale Origin Ratio', scaleOriginPrevRatio)
+		const offsetX = nonScaledWidth * (scaleOriginPrevScale - scale) * (scaleOriginRatio.x - scaleOriginPrevRatio.x)
+		const offsetY = nonScaledHeight * (scaleOriginPrevScale - scale) * (scaleOriginRatio.y - scaleOriginPrevRatio.y)
+		return [offsetX, offsetY]
+	}
+
+	resetScaleOrigin = () => {
+		this.scaleOriginRatio = undefined
+		this.scaleOriginX = undefined
+		this.scaleOriginY = undefined
+	}
+
+	resetScaleOriginOffset() {
+		this.scaleOriginOffsetX = 0
+		this.scaleOriginOffsetY = 0
+		this.interactiveZoomOriginX = undefined
+		this.interactiveZoomOriginY = undefined
+	}
+
+	getDefaultSlideOffset(i, { ignoreDragAndScaleMode, scaleFactor } = {}) {
+		const { offsetSlideIndex } = this.state
+		if (offsetSlideIndex === i) {
+			const {
+				scale,
+				slideOriginX,
+				slideOriginY
+			} = this.state
+			if (this.isDragAndScaleMode() && !ignoreDragAndScaleMode) {
+				// Don't fit the slide on screen in "Drag and Scale" mode.
+			} else {
+				return this.size.getFittedSlideOffset(
+					i,
+					// this.getSlideScale(i),
+					scaleFactor === undefined ? scale : scale * scaleFactor,
+					slideOriginX,
+					slideOriginY
+				)
+			}
+		}
+		return [0, 0]
+	}
+
+	getSlideCoordinates(j, {
+		scaleFactor,
+		ignoreDragAndScaleMode,
+		validate = false
+	} = {}) {
+		// const debug = CONSOLE
+		// debug('### Get Slide Coordinates')
+		const { i } = this.state
+		let { scale } = this.state
+		if (scaleFactor !== undefined) {
+			// debug('Scale factor', scaleFactor)
+			scale *= scaleFactor
+		}
+		// debug('Scale', scale)
+		const width = this.getSlideWidth(j) * scale
+		const height = this.getSlideHeight(j) * scale
+		// debug('Default width', this.getSlideWidth(j))
+		// debug('Width', width)
+		let [offsetX, offsetY] = this.getDefaultSlideOffset(j, {
+			scaleFactor,
+			ignoreDragAndScaleMode
+		})
+		// debug('Default offset', offsetX, offsetY)
+		if (this.isDragAndScaleMode() && j === i && !ignoreDragAndScaleMode) {
+			const [dragOffsetX, dragOffsetY] = this.getDragOffset()
+			// debug('Drag offset', dragOffsetX, dragOffsetY)
+			offsetX += dragOffsetX
+			offsetY += dragOffsetY
+			const { scaleOriginOffsetX, scaleOriginOffsetY } = this
+			// debug('Scale origin offset', scaleOriginOffsetX, scaleOriginOffsetY)
+			offsetX += scaleOriginOffsetX
+			offsetY += scaleOriginOffsetY
+			if (this.isInteractivelyZooming()) {
+				const { interactiveZoomOriginX, interactiveZoomOriginY } = this
+				// debug('Interactive zoom origin offset', interactiveZoomOriginX - this.scaleOriginX, interactiveZoomOriginY - this.scaleOriginY)
+				offsetX += interactiveZoomOriginX - this.scaleOriginX
+				offsetY += interactiveZoomOriginY - this.scaleOriginY
+			}
+		}
+		const { scaleOriginRatio } = this
+		if (scaleOriginRatio && !this.isCustomOriginTransform(j) && !ignoreDragAndScaleMode) {
+			const [dx, dy] = this.getScaleOriginOffsetForNewScale(scale)
+			// debug('Scale origin offset (for new scale)', dx, dy)
+			offsetX += dx
+			offsetY += dy
+		}
+		const result = {
+			x: (this.getSlideshowWidth() - width) / 2 + offsetX,
+			y: (this.getSlideshowHeight() - height) / 2 + offsetY,
+			width,
+			height,
+			offsetX,
+			offsetY
+		}
+		// debug('### Slide coordinates:',
+		// 	'x', result.x + ',',
+		// 	'y', result.y + ',',
+		// 	'width', width + ',',
+		// 	'height', height + ',',
+		// 	'offsetX', offsetX + ',',
+		// 	'offsetY', offsetY
+		// )
+		if (validate) {
+			this.validateSlideCoordinates(result)
+		}
+		return result
+	}
+
+	/**
+	 * Just debugging `getSlideCoordinates()` function.
+	 * @param  {object} rect — `getSlideCoordinates()` function result.
+	 */
+	validateSlideCoordinates(rect) {
+		// const debug = CONSOLE
+		const { i } = this.state
+		const { getSlideDOMNode } = this.props
+		const rect2 = getSlideDOMNode().getBoundingClientRect()
+		function differs(a, b) {
+			return Math.abs(a - b) > 1
+		}
+		if (differs(rect.x, rect2.x) || differs(rect.y, rect2.y) || differs(rect.width, rect2.width) || differs(rect.height, rect2.height)) {
+			// debug('% Calculated:', rect)
+			// debug('% DOM:', rect2)
+			throw new Error('different coordinates')
+		}
+	}
+
+	isCustomOriginTransform(j) {
+		const { i } = this.state
+		const { scaleOriginRatio } = this
+		return scaleOriginRatio !== undefined && j === i
+	}
+
+	getSlideTransform(j, { scale, ignoreDragAndScaleMode } = {}) {
+		// const debug = CONSOLE
+		// debug('### Get Slide Transform')
+		// debug('# Scale', scale)
+		const { i } = this.state
+		let transformOrigin
+		if (this.isCustomOriginTransform(j) && !ignoreDragAndScaleMode) {
+			const { scaleOriginRatio } = this
+			transformOrigin = [
+				scaleOriginRatio.x,
+				scaleOriginRatio.y
+			].map(_ => (_ * 100).toFixed(4) + '%').join(' ')
+		} else {
+			transformOrigin = '50% 50%'
+		}
+		let { offsetX, offsetY } = this.getSlideCoordinates(j, {
+			ignoreDragAndScaleMode,
+			scaleFactor: scale
+		})
+		let transform = ''
+		if (scale !== undefined) {
+			// While `scale` transition is playing, it's sub-pixel anyway,
+			// so `translateX` and `translateY` can be sub-pixel too.
+			// Presumably this would result in a slightly higher positioning precision.
+			// Maybe noticeable, maybe not. Didn't test this specific case.
+			offsetX = offsetX.toFixed(2)
+			offsetY = offsetY.toFixed(2)
+		} else {
+			offsetX = roundScreenPixels(offsetX)
+			offsetY = roundScreenPixels(offsetY)
+		}
+		transform += ` translateX(${offsetX}px) translateY(${offsetY}px)`
+		if (scale !== undefined) {
+			transform += ` scale(${scale.toFixed(4)})`
+		}
+		// debug('### Transform', transform)
+		// debug('### Transform Origin', transformOrigin)
+		return {
+			transform,
+			transformOrigin
+		}
+	}
+
+	onInteractiveZoomStart(originX, originY) {
+		this.setScaleOrigin(originX, originY)
+		this.updateInteractiveZoomOrigin(this.scaleOriginX, this.scaleOriginY)
+	}
+
+	onInteractiveZoomEnd() {
+		this.scaleOriginOffsetX += this.interactiveZoomOriginX - this.scaleOriginX
+		this.scaleOriginOffsetY += this.interactiveZoomOriginY - this.scaleOriginY
+	}
+
+	onInteractiveZoomChange() {
+		// Enter "Drag and Scale" mode on zoom in.
+		if (!this.isDragAndScaleMode()) {
+			// // Comparing to `1.01` here instead of `1`
+			// // to avoid any hypothetical issues related to precision factor.
+			// // (not that there were any — didn't test, because DevTools doesn't have multi-touch).
+			// if (zoomFactor > 1.01) {
+			this.enterDragAndScaleMode()
+			// }
+		}
+	}
+
+	onScaleEnd() {
+		this.resetScaleOrigin()
+	}
+
+	updateSlideTransform(options) {
+		const { getSlideDOMNode } = this.props
+		const { i } = this.state
+		// Reset CSS scale transform.
+		const {
+			transform,
+			transformOrigin
+		} = this.getSlideTransform(i, options)
+		this.setSlideTransform(transform, transformOrigin)
+	}
 
 	onBackgroundClick = (event) => {
+		if (this.ignoreBackgroundClick) {
+			this.ignoreBackgroundClick = undefined
+			return
+		}
 		if (this.locked) {
 			return
 		}
@@ -566,23 +1177,33 @@ export default class Slideshow {
 		})
 	}
 
-	onClose = (event) => {
+	onClose(listener, options) {
+		return this.addEventListener('close', listener, options)
+	}
+
+	onRequestClose = (event) => {
 		if (this.locked) {
 			return
 		}
 		this.close()
 	}
 
-	close = (options = {}) => {
-		if (this.getOnCloseAnimation) {
-			const { interaction } = options
-			const result = this.getOnCloseAnimation({ interaction })
+	close = ({ interaction } = {}) => {
+		let closeAnimationDuration
+		const results = this.triggerListeners('close', { interaction })
+		for (const result of results) {
 			if (result) {
 				const { animationDuration } = result
-				return this.closeAfter(animationDuration)
+				if (animationDuration) {
+					closeAnimationDuration = animationDuration
+				}
 			}
 		}
-		this._close()
+		if (closeAnimationDuration) {
+			this.closeAfter(closeAnimationDuration)
+		} else {
+			this._close()
+		}
 	}
 
 	_close = () => {
@@ -614,6 +1235,7 @@ export default class Slideshow {
 		} else {
 			this.didScrollThroughSlides = true
 			this.showSlide(i - 1, options)
+			return true
 		}
 	}
 
@@ -624,6 +1246,16 @@ export default class Slideshow {
 		} else {
 			this.didScrollThroughSlides = true
 			this.showSlide(i + 1, options)
+			return true
+		}
+	}
+
+	goToSlide = (number) => {
+		const { i } = this.state
+		const { children: slides } = this.props
+		if (number > 0 && number <= slides.length) {
+			this.didScrollThroughSlides = true
+			this.showSlide(number - 1)
 		}
 	}
 
@@ -670,28 +1302,39 @@ export default class Slideshow {
 	}
 
 	onTouchStart = (event) => {
+		this.touch.onTouchStart(event)
+		if (this.ignoreCurrentTouches) {
+			this.ignoreCurrentTouches = undefined
+		}
 		if (this.locked) {
 			return
 		}
-		const { isButton } = this.props
-		this.touch.onTouchStart(event)
-		if (this.touch.getTouchCount() === 1) {
-			// Ignore button/link clicks.
-			if (isButton(event.target)) {
-				return
-			}
-			const { x, y } = this.touch.getTouch()
-			this.pan.onPanStart(x, y)
-		} else if (this.touch.getTouchCount() === 2) {
-			// Ignore multitouch when panning.
-			if (this.pan.isPanning) {
-				this.pan.onPanEnd(true)
-			}
-			this.onZoomStart()
-		} else {
-			// Ignore multitouch.
-			// Reset.
-			this.onTouchCancel()
+		switch (this.touch.getTouchCount()) {
+			case 1:
+				const { isButton } = this.props
+				// Ignore button/link clicks.
+				if (isButton(event.target)) {
+					return
+				}
+				const { x, y } = this.touch.getTouch()
+				this.pan.onPanStart(x, y)
+				break
+			case 2:
+				// Exit panning mode when started touch zooming.
+				// Can still pan in touch zoom mode:
+				// when the center between the touches shifts,
+				// the slide shifts accordingly.
+				if (this.pan.isPanning) {
+					this.pan.onPanEnd(true)
+				}
+				this.startInteractiveZoom(
+					this.touch.getCenterBetweenTouches,
+					this.touch.getDistanceBetweenTouches
+				)
+				break
+			default:
+				// Ignore more than two simultaneous touches.
+				break
 		}
 	}
 
@@ -702,50 +1345,62 @@ export default class Slideshow {
 
 	onTouchCancel = (event) => {
 		this.touch.onTouchCancel(event)
+		if (this.ignoreCurrentTouches) {
+			this.ignoreCurrentTouches = undefined
+		}
+		// If it was single-touch panning mode, then exit it.
 		if (this.pan.isPanning) {
 			this.pan.onPanEnd()
-		} else if (this.isZooming) {
-			this.onZoomEnd()
 		}
-		// // Proceed on handling panning after zoomed with a pinch gesture
-		// // and then lifted up one of the two fingers.
-		// if (this.touch.getTouchCount() === 1) {
-		// 	this.pan.onPanStart(
-		// 		this.touches[0].x,
-		// 		this.touches[0].y
-		// 	)
-		// }
+		// If it was double-touch zooming mode, then exit it.
+		else if (this.isInteractivelyZooming()) {
+			this.endInteractiveZoom()
+			// When lifting one finger while in double-touch zooming mode,
+			// exit to signle-touch panning mode.
+			if (this.touch.getTouchCount() === 1) {
+				const { x, y } = this.touch.getTouch()
+				this.pan.onPanStart(x, y)
+			}
+		}
 	}
 
 	onTouchMove = (event) => {
+		// Don't react to touches while slideshow is locked.
+		// Don't touch-scale the page when slideshow is locked.
+		if (this.pan.isPanning ||
+			this.isInteractivelyZooming() ||
+			this.ignoreCurrentTouches ||
+			this.locked) {
+			if (event.cancelable) {
+				event.preventDefault()
+			}
+		}
 		if (this.locked) {
 			return
 		}
 		// When a user scrolls to the next slide via touch
-		// and then taps on the screen while the transition is still ongoing
-		// such "touchstart" event will be ignored
-		// but the subsequent "touchmove" events will still get here
-		// while `this.touch.getTouch()` being `undefined`.
+		// and then taps on the screen while the transition is still ongoing,
+		// such "touchstart" event will be ignored, but the subsequent
+		// "touchmove" events will still reach this listener,
+		// and in such cases `this.touch.getTouch()` is `undefined`,
+		// so it can be used to detect such cases and ignore the "touchmove" event.
 		if (!this.touch.getTouch()) {
 			return
 		}
 		this.touch.onTouchMove(event)
-		const { x, y } = this.touch.getTouch()
 		if (this.pan.isPanning) {
-			if (event.cancelable) {
-				event.preventDefault()
-			}
+			const { x, y } = this.touch.getTouch()
 			this.pan.onPan(x, y)
-		} else if (this.isZooming) {
-			if (event.cancelable) {
-				event.preventDefault()
-			}
-			this.onZoom()
+		} else if (this.isInteractivelyZooming()) {
+			// Interactive zoom will also move the slide
+			// when touch fingers are moved.
+			this.updateInteractiveZoom()
 		}
 	}
 
 	onPointerDown = (event) => {
 		if (this.locked) {
+			this.ignoreBackgroundClick = true
 			return
 		}
 		if (!this.pointer.isClickDown(event)) {
@@ -792,26 +1447,6 @@ export default class Slideshow {
 		}
 	}
 
-	onZoomStart() {
-		const { scale } = this.state
-		this.isZooming = true
-		this.scaleBeforeZoom = scale
-		this.zoomStartDistanceBetweenTouches = this.touch.getDistanceBetweenTouches()
-	}
-
-	onZoom() {
-		const zoomFactor = this.touch.getDistanceBetweenTouches() / this.zoomStartDistanceBetweenTouches
-		this.setState({
-			scale: this.scale.zoom(this.scaleBeforeZoom, zoomFactor)
-		})
-	}
-
-	onZoomEnd() {
-		this.isZooming = false
-		this.scaleBeforeZoom = undefined
-		this.zoomStartDistanceBetweenTouches = undefined
-	}
-
 	getOverlayBackgroundColor = (opacity) => {
 		return `rgba(0,0,0,${opacity})`
 	}
@@ -824,11 +1459,14 @@ export default class Slideshow {
 	 */
 	getSlideScale(j) {
 		const { i, scale } = this.state
-		return i === j ? scale : this.getScaleForSlide(j)
+		return i === j ? scale : this.getInitialScaleForSlide(j)
 	}
 
 	getPluginForSlide = (slide = this.getCurrentSlide()) => {
+		// j = this.state.i
 		const { plugins } = this.props
+		// const { children: slides } = this.props
+		// const slide = slides[j]
 		const plugin = getPluginForSlide(slide, plugins)
 		if (plugin) {
 			return plugin
@@ -939,9 +1577,14 @@ export default class Slideshow {
 		return true
 	}
 
-	getSlideRollTransform() {
-		const { i } = this.state
-		return `translate(${-1 * this.getSlideshowWidth() * i + this.pan.getPanOffsetX()}px, ${this.pan.getPanOffsetY()}px)`
+	getSlideRollTransform(i) {
+		let offsetX = -1 * this.getSlideshowWidth() * i
+		let offsetY = 0
+		if (!this.isDragAndScaleMode()) {
+			offsetX += this.pan.getPanOffsetX()
+			offsetY += this.pan.getPanOffsetY()
+		}
+		return `translate(${offsetX}px, ${offsetY}px)`
 	}
 
 	// getSlideRollTransitionDuration() {
@@ -967,3 +1610,58 @@ export const PLUGINS = [
 	VideoPlugin,
 	PicturePlugin
 ]
+
+const CENTER_RATIO = { x: 0.5, y: 0.5 }
+
+function CONSOLE(...args) {
+	console.log.apply(console, args)
+}
+
+class Bouncer {
+	constructor(slideshow, transform, transformOrigin, callback) {
+		this.slideshow = slideshow
+		this.transform = transform
+		this.transformOrigin = transformOrigin
+		this.callback = callback
+		this.transformScale = parseFloat(transform.match(/scale\(([\d\.]+)\)/)[1])
+		this.scaleAnimationFactor = 0.75 * (1 + 0.8 * ((2000 - slideshow.getSlideshowWidth()) / 2000))
+		this.bounceAnimationInitialScale = 1 - (0.04 * this.scaleAnimationFactor)
+	}
+	getTransform(scale) {
+		// Scales `scale()` factor in `transform`.
+		return this.transform.replace(/scale\([\d\.]+\)/, `scale(${(this.transformScale * scale).toFixed(10)})`)
+	}
+	getInitialTransform() {
+		return this.getTransform(this.bounceAnimationInitialScale)
+	}
+	playBounceAnimation(setTimer) {
+		// Play "bounce" animation on the slide.
+		// const BOUNCE_ANIMATION_EASING = 'cubic-bezier(0.215, 0.610, 0.355, 1.000)'
+		const KEYFRAMES = [
+			{
+				duration: 140,
+				scale: 1 + (0.01 * this.scaleAnimationFactor)
+			},
+			{
+				duration: 180,
+				scale: 1
+			}
+		]
+		const animateKeyframes = (keyframes, callback) => {
+			if (keyframes.length === 0) {
+				return callback()
+			}
+			const keyframe = keyframes[0]
+			this.slideshow.setSlideTransition(`transform ${keyframe.duration}ms`) // ${BOUNCE_ANIMATION_EASING}`)
+			this.slideshow.setSlideTransform(this.getTransform(keyframe.scale), this.transformOrigin)
+			// getSlideDOMNode().classList.add('rrui__slideshow__slide--bounce')
+			setTimer(setTimeout(() => {
+				setTimer()
+				animateKeyframes(keyframes.slice(1), callback)
+			}, keyframe.duration))
+		}
+		return new Promise((resolve) => {
+			animateKeyframes(KEYFRAMES, resolve)
+		})
+	}
+}

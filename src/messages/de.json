@@ -4,6 +4,8 @@
 		"title": "Benachrichtigungen",
 		"empty": "Keine neuen Benachrichtigungen"
 	},
+	"error": "Fehler",
+	"default": "Standard",
 	"darkMode": "Dunkler Modus",
 	"settings": {
 		"title": "Einstellungen",
@@ -65,9 +67,9 @@
 	"actions": {
 		"edit": "Bearbeiten",
 		"post": "Posten",
-		"save": "speichern",
+		"save": "Speichern",
 		"add": "Hinzufügen",
-		"remove": "entfernen",
+		"remove": "Entfernen",
 		"ok": "Ok",
 		"cancel": "Stornieren",
 		"yes": "Ja",
@@ -82,6 +84,9 @@
 		"showAll": "Zeige alles",
 		"showMore": "Zeig mehr",
 		"showLess": "Zeige weniger"
+	},
+	"status": {
+		"done": "Erledigt"
 	},
 	"role": {
 		"administrator": "Administrator",
@@ -112,7 +117,8 @@
 			"searchInGoogle": "Suche in google",
 			"showControls": "Steuerelemente anzeigen",
 			"hideControls": "Steuerelemente ausblenden",
-			"openExternalLink": "Externen Link öffnen"
+			"openExternalLink": "Externen Link öffnen",
+			"exitDragAndScaleMode": "Beenden Sie den Drag & Scale-Modus"
 		}
 	},
 	"cookies": {

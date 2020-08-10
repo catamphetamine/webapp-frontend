@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 
-import PostQuoteMarker from './PostQuoteMarker'
+import PostQuoteBorderLeft from './PostQuoteBorderLeft'
 import PostAttachments from './PostAttachments'
 
 import { social } from '../PropTypes'
@@ -22,39 +22,37 @@ export default function PostSocial({
 }) {
 	const ProviderLogo = getProviderLogoComponent(social.provider)
 	const authorId = (
-		<span className="post__social__author-id-element">
+		<span className="PostSocial-authorIdElement">
 			{social.author.id}
 		</span>
 	)
 	return (
-		<article className="post__social">
-			<div className="post__social__quote-marker-wrapper">
-				<PostQuoteMarker/>
-			</div>
-			<header className="post__social__header">
+		<article className="PostSocial">
+			<PostQuoteBorderLeft/>
+			<header className="PostSocial-header">
 				{social.author.picture &&
 					<Link to={social.author.url}>
 						<img
 							title={social.author.name || social.author.id}
 							src={social.author.picture.url}
-							className="post__social__user-picture"/>
+							className="PostSocial-authorPicture"/>
 					</Link>
 				}
-				<div className="post__social__author-name-and-id">
-					<div className="post__social__author-name">
+				<div className="PostSocial-authorNameAndId">
+					<div className="PostSocial-authorName">
 						<Link
 							to={social.author.url}
 							textColor={false}
-							className="post__social__author-name-inner">
+							className="PostSocial-authorNameInner">
 							{!social.author.picture &&
 								<ProviderLogo
 									title={social.provider}
-									className="post__social__provider-logo"/>
+									className="PostSocial-providerLogo"/>
 							}
 							{social.author.name || authorId}
 						</Link>
 					</div>
-					<div className="post__social__author-id">
+					<div className="PostSocial-authorId">
 						<Link to={social.author.url}>
 							{social.author.name ? authorId : social.provider}
 						</Link>
@@ -63,7 +61,7 @@ export default function PostSocial({
 							<Link to={social.url}>
 								<time
 									dateTime={social.date.toISOString()}
-									className="post__social__date">
+									className="PostSocial-date">
 									{social.date.toLocaleString(locale, {
 										year: 'numeric',
 										month: 'short',
@@ -78,7 +76,7 @@ export default function PostSocial({
 			{social.content &&
 				<blockquote
 					cite={social.url || social.author.url || social.author.name || social.author.id}
-					className="post__social__content">
+					className="PostSocial-content">
 					{/* `<Link/>` is placed inside `<blockquote/>` and `<p/>`
 					    because `<a/>` can't contain block-level DOM elements.
 					    `<blockquote/>` can be replaced with inline-level `<q/>`
@@ -127,9 +125,9 @@ function Link({ inline, textColor, to, className, children }) {
 				target="_blank"
 				href={to}
 				className={classNames(className, {
-					// 'post__social__content-link',
-					'post__social__content-link--text-color': textColor,
-					'post__social__content-link--block': !inline
+					// 'PostSocial-content-link',
+					'PostSocial-content-link--text-color': textColor,
+					'PostSocial-content-link--block': !inline
 				})}>
 				{children}
 			</a>

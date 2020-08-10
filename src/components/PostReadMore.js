@@ -1,6 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import classNames from 'classnames'
 import { Link } from 'react-pages'
+
+import { Button } from './Button'
 
 import './PostReadMore.css'
 
@@ -16,24 +19,23 @@ export default class PostReadMore extends React.Component {
 			url,
 			readMoreLabel
 		} = this.props
-
+		const className = 'PostReadMore'
 		if (url) {
 			return (
 				<Link
 					to={url}
 					onClick={this.onClick}
-					className="post__read-more">
+					className={className}>
 					{readMoreLabel}
 				</Link>
 			)
 		}
 		return (
-			<button
-				type="button"
+			<Button
 				onClick={this.onClick}
-				className="rrui__button-reset post__read-more">
+				className={className}>
 				{readMoreLabel}
-			</button>
+			</Button>
 		)
 	}
 }

@@ -1,6 +1,6 @@
 @import "../styles/common";
 
-.post__list {
+.PostList {
 	padding-left : calc(var(--unit) * 2);
 	@mixin upto-xs {
 		padding-left : var(--unit);
@@ -9,8 +9,8 @@
 
 /** Change bullet color of list item by replacing it with CSS. */
 
-.post__list-item {
-	line-height: var(--line-height);
+.PostList-item {
+	line-height: var(--Document-lineHeight);
 	list-style: none;
 	&:before {
 		position: relative;

@@ -1,6 +1,6 @@
-.post__link-block {
+.PostLinkBlock {
 	display: block;
-	margin-top: var(--PostContent-margin);
+	margin-top: var(--PostContent-marginTop);
 	padding: var(--unit);
 	color: inherit;
 	background-color: #fcfcfc;

@@ -1,10 +1,10 @@
-.post__file {
+.PostFile {
 	display: flex;
 	align-items: center;
-	margin-top: var(--PostContent-margin);
+	margin-top: var(--PostContent-marginTop);
 }
 
-.post__file-icon {
+.PostFile-icon {
 	width: 0.95em;
 	height: 0.95em;
 	/* Links with really long filenames could result in the file icon shrinking.
@@ -14,7 +14,7 @@
 	margin-right: 0.25em;
 }
 
-.post__file-size {
+.PostFile-size {
 	margin-left: 0.4em;
 	color: var(--gray-color-400);
 	font-weight: 300;

@@ -20,9 +20,9 @@ import {
 	videoAttachment
 } from '../PropTypes'
 
-import './PostAttachment.css'
+import './PostAttachmentThumbnail.css'
 
-export default function PostAttachment({
+export default function PostAttachmentThumbnail({
 	onClick,
 	component,
 	componentProps,
@@ -45,7 +45,10 @@ export default function PostAttachment({
 	const picture = getPicture(attachment)
 	const isLandscape = picture.width >= picture.height
 	const slideshowOpenRequest = useRef()
-	const onPictureClick = useCallback(async (event) => {
+	// This `onClick(event)` function is not `async`
+	// because an `async` function results in a React warning
+	// telling that a "synthetic event" has been reused.
+	const onPictureClick = useCallback((event) => {
 		if (window.Slideshow) {
 			slideshowOpenRequest.current = window.Slideshow.willOpen(() => {
 				if (isMounted.current) {
@@ -53,17 +56,24 @@ export default function PostAttachment({
 				}
 			})
 		}
-		await loadOnClick(event)
-		if (slideshowOpenRequest.current) {
-			if (slideshowOpenRequest.current.cancelled) {
-				return
+		const finish = () => {
+			if (slideshowOpenRequest.current) {
+				if (slideshowOpenRequest.current.cancelled) {
+					return
+				}
+			}
+			if (attachment.spoiler) {
+				setIsRevealed(true)
+			}
+			if (onClick) {
+				onClick(event)
 			}
 		}
-		if (attachment.spoiler) {
-			setIsRevealed(true)
-		}
-		if (onClick) {
-			onClick(event)
+		const promise = loadOnClick(event)
+		if (promise) {
+			promise.then(finish)
+		} else {
+			finish()
 		}
 	}, [attachment, loadOnClick, setIsRevealed, onClick])
 	useEffect(() => {
@@ -96,18 +106,18 @@ export default function PostAttachment({
 			blur={attachment.spoiler && !isRevealed ? BLUR_FACTOR : undefined}
 			className={classNames(
 				className,
-				'post__attachment-thumbnail', {
+				'PostAttachmentThumbnail', {
 					// 'rrui__picture-border': !(attachment.type === 'picture' && attachment.picture.transparentBackground)
-					// 'post__attachment-thumbnail--spoiler': attachment.spoiler && !isRevealed
-					'post__attachment-thumbnail--transparent': picture.transparentBackground
+					// 'PostAttachmentThumbnail--spoiler': attachment.spoiler && !isRevealed
+					'PostAttachmentThumbnail--transparent': picture.transparentBackground
 				}
 			)}>
 			{isLoading &&
 				<FadeInOut show fadeInInitially fadeInDuration={3000} fadeOutDuration={0}>
 					{/* `<span/>` is used instead of a `<div/>`
 					    because a `<div/>` isn't supposed to be inside a `<button/>`. */}
-					<span className="post__attachment-thumbnail__loading">
-						<ActivityIndicator className="post__attachment-thumbnail__loading-indicator"/>
+					<span className="PostAttachmentThumbnail__loading">
+						<ActivityIndicator className="PostAttachmentThumbnail__loading-indicator"/>
 					</span>
 				</FadeInOut>
 			}
@@ -125,7 +135,7 @@ export default function PostAttachment({
 				<VideoDuration duration={attachment.video.duration}/>
 			}
 			{moreAttachmentsCount > 0 &&
-				<span className="post__attachment-thumbnail__more-count">
+				<span className="PostAttachmentThumbnail__more-count">
 					{/* `<span/>` is used instead of a `<div/>`
 					    because a `<div/>` isn't supposed to be inside a `<button/>`. */}
 					+{moreAttachmentsCount + 1}
@@ -135,7 +145,7 @@ export default function PostAttachment({
 	)
 }
 
-PostAttachment.propTypes = {
+PostAttachmentThumbnail.propTypes = {
 	attachment: PropTypes.oneOfType([
 		pictureAttachment,
 		videoAttachment
@@ -156,7 +166,7 @@ PostAttachment.propTypes = {
 	className: PropTypes.string
 }
 
-PostAttachment.defaultProps = {
+PostAttachmentThumbnail.defaultProps = {
 	component: ButtonOrLink
 }
 
@@ -183,7 +193,7 @@ function AttachmentSpoilerBar({ width, height, children: spoilerLabel, ...rest }
 		<div
 			{...rest}
 			style={{ fontSize: fontSize + 'px' }}
-			className="post__spoiler-bar post__attachment-thumbnail__spoiler-bar">
+			className="PostAttachmentThumbnail-spoiler">
 			{spoilerLabel}
 		</div>
 	)
@@ -207,7 +217,10 @@ function useLoadOnClick(
 		return () => isMounted.current = false
 	}, [])
 	const [isLoading, setIsLoading] = useState()
-	const onClick = useCallback(async (event) => {
+	// This `onClick(event)` function is not `async`
+	// because an `async` function results in a React warning
+	// telling that a "synthetic event" has been reused.
+	const onClick = useCallback((event) => {
 		if (event.ctrlKey || event.altKey || event.shiftKey || event.metaKey) {
 			return
 		}
@@ -218,28 +231,25 @@ function useLoadOnClick(
 		if (attachment.type === 'picture') {
 			// Preload the picture.
 			setIsLoading(true)
-			// `lynxchan` doesn't provide `width` and `height`
-			// neither for the picture not for the thumbnail
-			// in `/catalog.json` API response (which is a bug).
-			// http://lynxhub.com/lynxchan/res/722.html#q984
-			if (fixAttachmentPictureSize) {
-				await getOriginalPictureSizeAndUrl(attachment)
-			}
-			let openSlideshowPending
-			try {
-				await preloadPictureSlide(attachment)
-				// For testing/styling.
-				// await new Promise(_ => setTimeout(_, 3000))
-			} catch (error) {
-				console.error(error)
-			} finally {
+			const finish = () => {
 				if (isMounted.current) {
 					setIsLoading(false)
 				}
 			}
+			return preloadPicture(attachment, { fixAttachmentPictureSize }).then(
+				finish,
+				(error) => {
+					console.error(error)
+					finish()
+				}
+			)
 		}
-		return event
-	}, [attachment, fixAttachmentPictureSize, thumbnailElement, setIsLoading])
+	}, [
+		attachment,
+		fixAttachmentPictureSize,
+		thumbnailElement,
+		setIsLoading
+	])
 	return [onClick, isLoading, setIsLoading, isMounted]
 }
 
@@ -263,4 +273,17 @@ function getPicture(attachment) {
 		case 'video':
 			return attachment.video.picture
 	}
+}
+
+async function preloadPicture(attachment, { fixAttachmentPictureSize }) {
+	// `lynxchan` doesn't provide `width` and `height`
+	// neither for the picture not for the thumbnail
+	// in `/catalog.json` API response (which is a bug).
+	// http://lynxhub.com/lynxchan/res/722.html#q984
+	if (fixAttachmentPictureSize) {
+		await getOriginalPictureSizeAndUrl(attachment)
+	}
+	await preloadPictureSlide(attachment)
+	// For testing/styling.
+	// await new Promise(_ => setTimeout(_, 3000))
 }

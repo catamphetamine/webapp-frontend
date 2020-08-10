@@ -1,11 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import { pictureAttachment } from '../PropTypes'
-
 import { getAspectRatio } from './Picture'
-
-import PostAttachment from './PostAttachment'
+import PostAttachmentThumbnail from './PostAttachmentThumbnail'
+import PostEmbeddedAttachmentTitle from './PostEmbeddedAttachmentTitle'
+import { pictureAttachment } from '../PropTypes'
 
 import './PostPicture.css'
 
@@ -19,13 +18,19 @@ export default function PostPicture({
 	const picture = attachment.picture
 	const aspectRatio = getAspectRatio(picture)
 	return (
-		<PostAttachment
-			attachment={attachment}
-			maxHeight={maxHeight}
-			expand={expand}
-			spoilerLabel={spoilerLabel}
-			onClick={onClick}
-			className="post__picture"/>
+		<section className="PostPicture">
+			<PostAttachmentThumbnail
+				attachment={attachment}
+				maxHeight={maxHeight}
+				expand={expand}
+				spoilerLabel={spoilerLabel}
+				onClick={onClick}/>
+			{picture.title &&
+				<PostEmbeddedAttachmentTitle>
+					{picture.title}
+				</PostEmbeddedAttachmentTitle>
+			}
+		</section>
 	)
 }
 

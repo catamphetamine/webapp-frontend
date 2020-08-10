@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import ReactTimeAgo from 'react-time-ago'
 // `/copy-text` was just for copying
@@ -7,54 +7,49 @@ import ReactTimeAgo from 'react-time-ago'
 import { Link } from 'react-pages'
 import classNames from 'classnames'
 
+import PostSelfLink from './PostSelfLink'
+
 import './PostDate.css'
+import './Padding.css'
 
 export default function PostDate({
 	date,
-	linkBasePath,
-	link,
+	url,
+	urlBasePath,
 	onClick,
 	locale,
 	className
 }) {
-	className = classNames('post__date-link', 'post__summary-button', 'hover-button--link', className)
-	// tooltipClassName="post__date-tooltip"
+	// tooltipClassName="PostDate-tooltip"
 	const dateElement = (
 		<ReactTimeAgo
 			date={date}
 			locale={locale}
-			className="post__date"/>
+			className="PostDate-date"/>
 	)
-	const _onClick = useCallback((event) => {
-		if (onClick) {
-			onClick(event)
-		}
-		if (!event.defaultPrevented) {
-			event.preventDefault()
-			history.replaceState(undefined, undefined, (linkBasePath || '') + link)
-		}
-	}, [link, linkBasePath, onClick])
-	if (link) {
-		if (link[0] === '/') {
-			return (
-				<Link to={link} onClick={_onClick} className={className}>
-					{dateElement}
-				</Link>
-			)
-		}
+	if (url) {
 		return (
-			<a href={link} target="_blank" className={className}>
+			<PostSelfLink
+				url={url}
+				baseUrl={urlBasePath}
+				onClick={onClick}
+				className={classNames('Padding', className)}>
 				{dateElement}
-			</a>
+			</PostSelfLink>
 		)
 	}
-	return dateElement
+	return (
+		<span className={classNames('PostDate', className)}>
+			{dateElement}
+		</span>
+	)
 }
 
 PostDate.propTypes = {
 	date: PropTypes.instanceOf(Date).isRequired,
-	link: PropTypes.string,
-	linkBasePath: PropTypes.string,
+	url: PropTypes.string,
+	urlBasePath: PropTypes.string,
+	locale: PropTypes.string,
 	onClick: PropTypes.func,
 	className: PropTypes.string
 }

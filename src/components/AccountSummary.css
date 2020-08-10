@@ -48,7 +48,7 @@
 .account-summary__link
 {
 	display : inline-block;
-	line-height : var(--line-height);
+	line-height : var(--Document-lineHeight);
 	color : var(--black-color);
 
 	&:hover {

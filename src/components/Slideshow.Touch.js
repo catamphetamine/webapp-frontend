@@ -20,6 +20,10 @@ export default class SlideshowTouch {
 		return this.touches[0]
 	}
 
+	getTouches() {
+		return this.touches
+	}
+
 	getTouchCount() {
 		return this.touches.length
 	}
@@ -42,16 +46,14 @@ export default class SlideshowTouch {
 
 	onTouchCancel = (event) => {
 		// Remove cancelled/ended touches.
-		if (event) {
-			this.touches = this.touches.filter((touch) => {
-				for (const untouch of event.changedTouches) {
-					if (untouch.identifier === touch.id) {
-						return false
-					}
+		this.touches = this.touches.filter((touch) => {
+			for (const untouch of event.changedTouches) {
+				if (untouch.identifier === touch.id) {
+					return false
 				}
-				return true
-			})
-		}
+			}
+			return true
+		})
 	}
 
 	onTouchMove = (event) => {
@@ -73,10 +75,17 @@ export default class SlideshowTouch {
 		}
 	}
 
-	getDistanceBetweenTouches() {
+	getDistanceBetweenTouches = () => {
 		const distanceX = Math.abs(this.touches[0].x - this.touches[1].x)
 		const distanceY = Math.abs(this.touches[0].y - this.touches[1].y)
 		return Math.sqrt(distanceX * distanceX + distanceY * distanceY)
+	}
+
+	getCenterBetweenTouches = () => {
+		return [
+			(this.touches[0].x + this.touches[1].x) / 2,
+			(this.touches[0].y + this.touches[1].y) / 2
+		]
 	}
 
 	resetTapEvent = () => {

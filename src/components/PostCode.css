@@ -1,6 +1,8 @@
-.post__code {
+.PostCode {
 	/*border-radius: var(--border-radius);*/
-	border: 1px solid var(--Content-color-200);
+	border: var(--PostCode-borderWidth) solid var(--Content-color-200);
+	border-left-width: var(--PostCode-borderLeftWidth);
+	border-right-width: var(--PostCode-borderRightWidth);
 	background-color: var(--Content-color-100);
 	/* "Prism" syntax highlighter doesn't seem to
 	   force line breaks on long lines, so `overflow: auto`
@@ -8,46 +10,46 @@
 	overflow-x: auto;
 }
 
-.post__code:not(.post__code--inline) {
-	--PostCode-padding-horizontal: var(--PostQuoteBlock-paddingLeft);
-	line-height: var(--line-height);
+.PostCode--block {
+	--PostCode-paddingLeft: var(--PostQuoteBlock-paddingLeft);
+	--PostCode-paddingRight: var(--PostQuoteBlock-paddingRight);
+	line-height: var(--Document-lineHeight);
 	/* `width` and `margin` are synchronized with `width` and `margin` on `post-link` quotes
 	   so that `<code/>` blocks appearance matches that of `post-link` quote blocks. */
-	width: calc(100% - var(--PostCode-marginLeft) + var(--PostCode-padding-horizontal) + var(--PostCode-padding-horizontal) - var(--PostCode-marginRight));
-	margin-left: calc(-1 * var(--PostCode-padding-horizontal) + var(--PostCode-marginLeft));
-	margin-right: calc(-1 * var(--PostCode-padding-horizontal) + var(--PostCode-marginRight));
-	padding-left: var(--PostCode-padding-horizontal);
-	padding-right: var(--PostCode-padding-horizontal);
-	margin-top: -1px;
-	margin-bottom: -1px;
+	width: calc(100% - var(--PostCode-marginLeft) + var(--PostCode-borderLeftWidth) + var(--PostCode-paddingLeft) + var(--PostCode-paddingRight) + var(--PostCode-borderRightWidth) - var(--PostCode-marginRight));
+	margin-left: calc(var(--PostCode-marginLeft) - var(--PostCode-paddingLeft) - var(--PostCode-borderLeftWidth));
+	margin-right: calc(var(--PostCode-marginRight) - var(--PostCode-paddingRight) - var(--PostCode-borderRightWidth));
+	padding-left: var(--PostCode-paddingLeft);
+	padding-right: var(--PostCode-paddingRight);
+	margin-top: calc(-1 * var(--PostCode-borderWidth));
+	margin-bottom: calc(-1 * var(--PostCode-borderWidth));
 }
 
-.post__code--inline {
-	padding-left: 0.25em;
-	padding-right: 0.25em;
+.PostCode--inline {
+	padding-left: var(--PostCode-paddingLeft--inline);
+	padding-right: var(--PostCode-paddingLeft--inline);
 }
 
-.post__code.post__block {
-	margin-top: 0.5em;
-	&:first-child {
-		margin-top: 1em;
-	}
+.PostCode--block {
+	margin-top: var(--PostCode-marginTop--block);
 }
 
-.post.content-section {
-	.post__code:not(.post__code--inline) {
-		margin-left: calc(var(--Post-padding--horizontal) * -1);
-		margin-right: calc(var(--Post-padding--horizontal) * -1);
-		padding-left: var(--Post-padding--horizontal);
-		padding-right: var(--Post-padding--horizontal);
+/*
+.Post.content-section {
+	.PostCode--block {
+		margin-left: calc(var(--Post-paddingLeft) * -1);
+		margin-right: calc(var(--Post-paddingLeft) * -1);
+		padding-left: var(--Post-paddingLeft);
+		padding-right: var(--Post-paddingLeft);
 		padding-top: 0.5em;
 		padding-bottom: 0.5em;
 		border-left: none;
 		border-right: none;
-		width: calc(100% + 2 * var(--Post-padding--horizontal));
+		width: calc(100% + 2 * var(--Post-paddingLeft));
 		border-radius: 0;
 	}
 }
+*/
 
 /*-moz-tab-size: 2;
 -o-tab-size: 2;
@@ -59,7 +61,7 @@ tab-size: 2;*/
 hyphens: none;*/
 
 .dark {
-	.post__code--highlighted {
+	.PostCode--highlighted {
 		/**
 		 * prism.js tomorrow night eighties for JavaScript, CoffeeScript, CSS and HTML
 		 * Based on https://github.com/chriskempson/tomorrow-theme
@@ -143,7 +145,7 @@ hyphens: none;*/
 }
 
 .light {
-	.post__code--highlighted {
+	.PostCode--highlighted {
 		/*
 		 Solarized Color Schemes originally by Ethan Schoonover
 		 http://ethanschoonover.com/solarized

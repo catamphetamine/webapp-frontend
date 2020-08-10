@@ -20,6 +20,10 @@ import Slideshow, { PLUGINS } from './Slideshow.Core'
 export { isSlideSupported } from './Slideshow.Core'
 import SlideshowSize from './Slideshow.Size'
 
+import { Button } from './Button'
+
+import { roundScreenPixels } from '../utility/round'
+
 // import Download from '../../assets/images/icons/download-cloud.svg'
 import ExternalIcon from '../../assets/images/icons/external.svg'
 import LeftArrow from '../../assets/images/icons/left-arrow-minimal.svg'
@@ -28,10 +32,12 @@ import ScaleFrame from '../../assets/images/icons/scale-frame.svg'
 import Plus from '../../assets/images/icons/plus.svg'
 import Minus from '../../assets/images/icons/minus.svg'
 import Close from '../../assets/images/icons/close.svg'
+// import SearchIcon from '../../assets/images/icons/search.svg'
 import LeftArrowCounterform from '../../assets/images/icons/left-arrow-minimal-counterform.svg'
 import RightArrowCounterform from '../../assets/images/icons/right-arrow-minimal-counterform.svg'
 import CloseCounterform from '../../assets/images/icons/close-counterform.svg'
 import EllipsisVerticalCounterform from '../../assets/images/icons/ellipsis-vertical-counterform.svg'
+import GoToIconCounterform from '../../assets/images/icons/go-to-counterform.svg'
 
 import LeftArrowCounterformThickStroke from '../../assets/images/icons/left-arrow-minimal-counterform-thick-stroke.svg'
 import RightArrowCounterformThickStroke from '../../assets/images/icons/right-arrow-minimal-counterform-thick-stroke.svg'
@@ -47,7 +53,7 @@ export default function SlideshowWrapper(props) {
 		footerHeight: props.footer && props.footer.offsetHeight
 	}
 	// `window.SlideshowSize` is used in `preloadPictureSlide()` in `Slideshow.Picture.js`.
-	window.SlideshowSize = new SlideshowSize(null, props)
+	window.SlideshowSize = new SlideshowSize({}, props)
 	if (props.isOpen) {
 		return <SlideshowComponent {...props}/>
 	} else {
@@ -65,16 +71,6 @@ function SlideshowComponent(props) {
 	const closeButtonRef = useRef()
 
 	const slide = props.children[props.i]
-
-	// Emulates `forceUpdate()`
-	const [unusedState, setUnusedState] = useState()
-	const forceUpdate = useCallback(() => setUnusedState({}), [])
-
-	useEffect(() => {
-		if (unusedState) {
-			slideshow.onAfterRerender()
-		}
-	}, [unusedState])
 
 	const focus = useCallback((direction = 'next') => {
 		if (currentSlideRef.current.focus) {
@@ -111,17 +107,38 @@ function SlideshowComponent(props) {
 			isRendered: () => slidesRef.current !== undefined,
 			getWidth: () => slidesRef.current.clientWidth,
 			getHeight: () => slidesRef.current.clientHeight,
-			isOverlay: (element) => element.classList.contains('rrui__slideshow__slide'),
+			isOverlay: (element) => element.classList.contains('rrui__slideshow__slide-wrapper'),
 			isSmallScreen: () => !isMediumScreenSizeOrLarger(),
 			isTouchDevice,
-			isButton
+			isButton,
+			focus,
+			onDragAndScaleModeChange: (isEnabled) => {
+				const dragAndScaleModeButton = document.querySelector('.rrui__slideshow__action--drag-and-scale-mode')
+				if (dragAndScaleModeButton) {
+					if (isEnabled) {
+						dragAndScaleModeButton.classList.remove('rrui__slideshow__action--hidden')
+					} else {
+						dragAndScaleModeButton.classList.add('rrui__slideshow__action--hidden')
+					}
+				}
+			},
+			onScaleChange: (scale) => {
+				const dragAndScaleModeButton = document.querySelector('.rrui__slideshow__action--drag-and-scale-mode')
+				if (dragAndScaleModeButton) {
+					const roundedScale = roundScale(scale)
+					dragAndScaleModeButton.className = getDragAndScaleModeButtonClassName(roundedScale, slideshow.isDragAndScaleMode())
+					const scaleValue = document.querySelector('.rrui__slideshow__scale')
+					if (scaleValue) {
+						scaleValue.innerText = roundedScale
+					}
+				}
+			}
 		})
 	}, [])
 
 	const [slideshowState, setSlideshowState] = useState(slideshow.getState())
-	slideshow.onStateChange(setSlideshowState)
+	slideshow.onSetState(setSlideshowState)
 
-	const prevSlideIndex = useRef(slideshowState.i)
 	const [hasBeenMeasured, setHasBeenMeasured] = useState(props.inline ? false : true)
 
 	// Uses `useLayoutEffect()` instead of `useEffect()`
@@ -131,17 +148,29 @@ function SlideshowComponent(props) {
 			return
 		}
 		slideshow.unlock()
-		slideshow.animateOpenClose()
+		slideshow.onOpen()
 	}, [hasBeenMeasured])
 
+	// Emulates `forceUpdate()`
+	const [unusedState, setUnusedState] = useState()
+	const forceUpdate = useCallback(() => setUnusedState({}), [])
+
+	const prevSlideshowState = useRef(slideshowState)
+	const prevSlideshowStateImmediate = useRef(slideshowState)
+
 	useEffect(() => {
-		const { i } = slideshowState
-		const iPrevious = prevSlideIndex.current
-		if (i !== iPrevious) {
-			focus(i > iPrevious ? 'next' : 'previous')
-			prevSlideIndex.current = i
+		if (slideshowState !== prevSlideshowState.current) {
+			slideshow.handleRender(slideshowState, prevSlideshowState.current)
+			prevSlideshowState.current = slideshowState
 		}
-	})
+	}, [slideshowState])
+
+	useLayoutEffect(() => {
+		if (slideshowState !== prevSlideshowStateImmediate.current) {
+			slideshow.handleRender(slideshowState, prevSlideshowStateImmediate.current, { immediate: true })
+			prevSlideshowStateImmediate.current = slideshowState
+		}
+	}, [slideshowState])
 
 	// Uses `useLayoutEffect()` instead of `useEffect()`
 	// because after this hook has been run an "inline"
@@ -244,12 +273,15 @@ function SlideshowComponent_({
 		showScaleButtons,
 		highContrastControls,
 		slideCardMinOverlayOpacity,
+		scaleAnimationDuration,
 		messages,
+		goToSource,
 		children: slides
 	} = props
 
 	const {
 		i,
+		scale,
 		slidesShown,
 		slideIndexAtWhichTheSlideshowIsBeingOpened,
 		showMoreControls,
@@ -259,10 +291,12 @@ function SlideshowComponent_({
 		hasStartedClosing,
 		hasFinishedClosing,
 		closingAnimationDuration,
-		slideOffsetX,
-		slideOffsetY,
-		slideOffsetIndex
+		slideOriginX,
+		slideOriginY,
+		offsetSlideIndex
 	} = slideshowState
+
+	const dragAndScaleMode = _this.isDragAndScaleMode()
 
 	// `react-focus-lock` doesn't focus `<video/>` when cycling the Tab key.
 	// https://github.com/theKashey/react-focus-lock/issues/61
@@ -336,7 +370,7 @@ function SlideshowComponent_({
 							// 30ms a couple of times sequentially causing a visual lag.
 							willChange: 'transform',
 							// transitionDuration: hasBeenMeasured ? _this.getSlideRollTransitionDuration() : undefined,
-							transform: hasBeenMeasured ? _this.getSlideRollTransform() : undefined,
+							transform: hasBeenMeasured ? _this.getSlideRollTransform(i) : undefined,
 							opacity: hasBeenMeasured ? 1 : 0
 						}}
 						className="rrui__slideshow__slides">
@@ -344,9 +378,8 @@ function SlideshowComponent_({
 							<li
 								key={j}
 								ref={j === i ? currentSlideContainerRef : undefined}
-								className={classNames('rrui__slideshow__slide', {
-									'rrui__slideshow__slide--current': i === j,
-									'rrui__slideshow__slide--card': overlayOpacity < slideCardMinOverlayOpacity
+								className={classNames('rrui__slideshow__slide-wrapper', {
+									'rrui__slideshow__slide-wrapper--current': i === j
 								})}>
 								{slidesShown[j] && _this.getPluginForSlide(slide) &&
 									_this.getPluginForSlide(slide).render({
@@ -359,8 +392,12 @@ function SlideshowComponent_({
 										// // `scale` is passed as `pixelRatioMultiplier` to `<Picture/>`.
 										// scale: _this.getSlideScale(j),
 										onClick: _this.onSlideClick,
-										width: _this.getCurrentSlideWidth() * _this.getSlideScale(j),
-										height: _this.getCurrentSlideHeight() * _this.getSlideScale(j),
+										width: roundScreenPixels(_this.getSlideWidth(j) * _this.getSlideScale(j)),
+										height: roundScreenPixels(_this.getSlideHeight(j) * _this.getSlideScale(j)),
+										className: classNames('rrui__slideshow__slide', {
+											'rrui__slideshow__slide--current': i === j,
+											'rrui__slideshow__slide--card': overlayOpacity < slideCardMinOverlayOpacity
+										}),
 										style: {
 											/* Can be scaled via `style="transform: scale(...)". */
 											// transition: 'transform 120ms ease-out',
@@ -374,7 +411,7 @@ function SlideshowComponent_({
 											// or by scaling `width` and `height`.
 											// Same's for `<video/>`s.
 											// transform: _this.getSlideScale(j) === 1 ? undefined : `scale(${_this.getSlideScale(j)})`
-											transform: _this.getSlideTransform(j),
+											..._this.getSlideTransform(j),
 											// Adjacent slides have `box-shadow`.
 											// If its `opacity` isn't animated during open/close
 											// then the non-smoothness is noticeable.
@@ -414,9 +451,13 @@ function SlideshowComponent_({
 							slideshow={_this}
 							slides={slides}
 							i={i}
+							scale={scale}
 							messages={messages}
+							dragAndScaleMode={dragAndScaleMode}
 							showScaleButtons={showScaleButtons}
 							showMoreControls={showMoreControls}
+							showPagination={!hasStartedClosing}
+							goToSource={goToSource}
 							closeButtonRef={closeButtonRef}
 							previousButtonRef={previousButtonRef}
 							nextButtonRef={nextButtonRef}
@@ -442,9 +483,9 @@ SlideshowComponent_.propTypes = {
 	hasStartedClosing: PropTypes.bool,
 	hasFinishedClosing: PropTypes.bool,
 	closingAnimationDuration: PropTypes.number,
-	slideOffsetX: PropTypes.number,
-	slideOffsetY: PropTypes.number,
-	slideOffsetIndex: PropTypes.number,
+	slideOriginX: PropTypes.number,
+	slideOriginY: PropTypes.number,
+	offsetSlideIndex: PropTypes.number,
 	// refs.
 	container: PropTypes.object.isRequired,
 	slidesRef: PropTypes.object.isRequired,
@@ -452,16 +493,21 @@ SlideshowComponent_.propTypes = {
 	currentSlideContainerRef: PropTypes.object.isRequired,
 	previousButtonRef: PropTypes.object.isRequired,
 	nextButtonRef: PropTypes.object.isRequired,
-	closeButtonRef: PropTypes.object.isRequired
+	closeButtonRef: PropTypes.object.isRequired,
+	goToSource: PropTypes.func
 }
 
 function Controls({
 	slideshow: _this,
 	slides,
 	i,
+	scale,
 	messages,
+	dragAndScaleMode,
 	showScaleButtons,
 	showMoreControls,
+	showPagination,
+	goToSource,
 	closeButtonRef,
 	previousButtonRef,
 	nextButtonRef,
@@ -471,6 +517,10 @@ function Controls({
 	const RightArrowCounterForm = highContrastControls ? RightArrowCounterformThickStroke : RightArrowCounterform
 	const CloseCounterForm = highContrastControls ? CloseCounterformThickStroke : CloseCounterform
 	const EllipsisVerticalCounterForm = highContrastControls ? EllipsisVerticalCounterformThickStroke : EllipsisVerticalCounterform
+	const onGoToSource = useCallback(() => {
+		goToSource(slides[i])
+	}, [goToSource, slides, i])
+	const roundedScale = roundScale(scale)
 	return (
 		<React.Fragment>
 			<ul className="rrui__slideshow__actions">
@@ -479,30 +529,41 @@ function Controls({
 						'rrui__slideshow__action-group': showScaleButtons
 					})}>
 						{showScaleButtons &&
-							<button
-								type="button"
+							<Button
 								title={messages.actions.scaleDown}
 								onClick={_this.onScaleDown}
-								className="rrui__button-reset rrui__slideshow__action">
+								className="rrui__slideshow__action">
 								<Minus className="rrui__slideshow__action-icon"/>
-							</button>
+							</Button>
 						}
-						<button
-							type="button"
+						<Button
 							title={messages.actions.scaleReset}
 							onClick={_this.onScaleToggle}
-							className="rrui__button-reset rrui__slideshow__action">
+							className="rrui__slideshow__action">
 							<ScaleFrame className="rrui__slideshow__action-icon"/>
-						</button>
+						</Button>
 						{showScaleButtons &&
-							<button
-								type="button"
+							<Button
 								title={messages.actions.scaleUp}
 								onClick={_this.onScaleUp}
-								className="rrui__button-reset rrui__slideshow__action">
+								className="rrui__slideshow__action">
 								<Plus className="rrui__slideshow__action-icon"/>
-							</button>
+							</Button>
 						}
+					</li>
+				}
+
+				{true &&
+					<li className="rrui__slideshow__action-item">
+						<button
+							type="button"
+							title={messages.actions.exitDragAndScaleMode}
+							onClick={_this.onExitDragAndScaleMode}
+							className={getDragAndScaleModeButtonClassName(roundedScale, dragAndScaleMode)}>
+							<ScaleFrame className="rrui__slideshow__action-icon"/>
+							<span className="rrui__slideshow__scale">{roundedScale}</span>
+							<span style={SCALE_X_STYLE}>x</span>
+						</button>
 					</li>
 				}
 
@@ -547,75 +608,82 @@ function Controls({
 								</a>
 							}
 							{!link &&
-								<button
-									type="button"
+								<Button
 									onClick={(event) => {
 										if (!_this.slideshow.isLocked()) {
 											action(event)
 										}
 									}}
 									title={messages.actions[name]}
-									className="rrui__button-reset rrui__slideshow__action">
+									className="rrui__slideshow__action">
 									{icon}
-								</button>
+								</Button>
 							}
 						</li>
 					)
 				})}
 
+				{/* "Go to source" */}
+				{goToSource &&
+					<li className="rrui__slideshow__action-item">
+						<Button
+							title={messages.actions.goToSource}
+							onClick={onGoToSource}
+							className="rrui__slideshow__action rrui__slideshow__action--counterform">
+							<GoToIconCounterform className="rrui__slideshow__action-icon"/>
+						</Button>
+					</li>
+				}
+
 				{/* "Show/Hide controls" */}
 				{/* Is visible only on small screens. */}
 				{!_this.shouldShowMoreControls() && _this.hasHidableControls() && _this.shouldShowShowMoreControlsButton() &&
 					<li className="rrui__slideshow__action-item rrui__slideshow__action-item--toggle-controls">
-						<button
-							type="button"
+						<Button
 							title={showMoreControls ? messages.actions.hideControls : messages.actions.showControls}
 							onClick={_this.onShowMoreControls}
-							className={classNames('rrui__button-reset', 'rrui__slideshow__action', 'rrui__slideshow__action--counterform', {
+							className={classNames('rrui__slideshow__action', 'rrui__slideshow__action--counterform', {
 								'rrui__slideshow__action--toggled': showMoreControls
 							})}>
 							<EllipsisVerticalCounterForm className="rrui__slideshow__action-icon"/>
-						</button>
+						</Button>
 					</li>
 				}
 
 				{_this.shouldShowCloseButton() &&
-					<li className="rrui__slideshow__action-item rrui__slideshow__action-item--close">
-						<button
+					<li className="rrui__slideshow__action-item">
+						<Button
 							ref={closeButtonRef}
-							type="button"
 							title={messages.actions.close}
-							onClick={_this.onClose}
-							className="rrui__button-reset rrui__slideshow__action rrui__slideshow__action--counterform">
+							onClick={_this.onRequestClose}
+							className="rrui__slideshow__action rrui__slideshow__action--counterform">
 							<CloseCounterForm className="rrui__slideshow__action-icon"/>
-						</button>
+						</Button>
 					</li>
 				}
 			</ul>
 
 			{slides.length > 1 && i > 0 && _this.shouldShowPreviousNextButtons() &&
-				<button
+				<Button
 					ref={previousButtonRef}
-					type="button"
 					title={messages.actions.previous}
 					onClick={_this.onShowPrevious}
-					className="rrui__button-reset rrui__slideshow__action rrui__slideshow__action--counterform rrui__slideshow__previous">
+					className="rrui__slideshow__action rrui__slideshow__action--counterform rrui__slideshow__previous">
 					<LeftArrowCounterForm className="rrui__slideshow__action-icon"/>
-				</button>
+				</Button>
 			}
 
 			{slides.length > 1 && i < slides.length - 1 && _this.shouldShowPreviousNextButtons() &&
-				<button
+				<Button
 					ref={nextButtonRef}
-					type="button"
 					title={messages.actions.next}
 					onClick={_this.onShowNext}
-					className="rrui__button-reset rrui__slideshow__action rrui__slideshow__action rrui__slideshow__action--counterform rrui__slideshow__next">
+					className="rrui__slideshow__action rrui__slideshow__action rrui__slideshow__action--counterform rrui__slideshow__next">
 					<RightArrowCounterForm className="rrui__slideshow__action-icon"/>
-				</button>
+				</Button>
 			}
 
-			{slides.length > 1 &&
+			{slides.length > 1 && showPagination &&
 				<div className="rrui__slideshow__progress rrui__slideshow__controls-center rrui__slideshow__controls-bottom">
 					<SlideshowProgress
 						i={i}
@@ -623,6 +691,7 @@ function Controls({
 						isDisabled={_this.isLocked}
 						onShowSlide={_this.showSlide}
 						onShowNextSlide={_this.showNext}
+						onGoToSlide={_this.goToSlide}
 						highContrast={highContrastControls}/>
 				</div>
 			}
@@ -633,9 +702,13 @@ function Controls({
 Controls.propTypes = {
 	slides,
 	i,
+	scale: PropTypes.number.isRequired,
 	messages,
+	dragAndScaleMode: PropTypes.bool,
 	showScaleButtons,
 	showMoreControls,
+	showPagination: PropTypes.bool,
+	goToSource: PropTypes.func,
 	closeButtonRef: PropTypes.object,
 	previousButtonRef: PropTypes.object,
 	nextButtonRef: PropTypes.object,
@@ -666,6 +739,7 @@ SlideshowComponent.propTypes = {
 	minScaledSlideRatio: PropTypes.number.isRequired,
 	mouseWheelScaleFactor: PropTypes.number.isRequired,
 	// minInitialScale: PropTypes.number.isRequired,
+	scaleAnimationDuration: PropTypes.number.isRequired,
 	fullScreenFitPrecisionFactor: PropTypes.number.isRequired,
 	margin: PropTypes.number.isRequired,
 	minMargin: PropTypes.number.isRequired,
@@ -722,6 +796,7 @@ SlideshowComponent.defaultProps = {
 	minScaledSlideRatio: 0.1,
 	mouseWheelScaleFactor: 0.33,
 	// minInitialScale: 0.5,
+	scaleAnimationDuration: 120,
 	fullScreenFitPrecisionFactor: 0.875,
 	margin: 0.025, // %
 	minMargin: 10, // px
@@ -769,6 +844,27 @@ function isButton(element) {
 	return false
 }
 
+function roundScale(scale) {
+	if (scale < 0.95) {
+		if (scale < 0.095) {
+			return Math.round(scale * 100) / 100
+		} else {
+			return Math.round(scale * 10) / 10
+		}
+	} else {
+		return Math.round(scale)
+	}
+}
+
+function getDragAndScaleModeButtonClassName(roundedScale, dragAndScaleMode) {
+	return classNames('ButtonReset', 'rrui__slideshow__action', 'rrui__slideshow__action--drag-and-scale-mode', {
+		'rrui__slideshow__action--hidden': !dragAndScaleMode,
+		'rrui__slideshow__action--fontSize-s': roundedScale >= 1 && roundedScale < 10,
+		'rrui__slideshow__action--fontSize-xs': roundedScale >= 10 && roundedScale < 100 || roundedScale >= 0.1 && roundedScale < 1,
+		'rrui__slideshow__action--fontSize-xxs': roundedScale >= 100 || roundedScale >= 0.01 && roundedScale < 0.1,
+	})
+}
+
 const FOCUS_OPTIONS = {
 	preventScroll: true
 }
@@ -777,6 +873,11 @@ const INNER_CONTAINER_STYLE = {
 	position: 'relative',
 	width: '100%',
 	height: '100%'
+}
+
+const SCALE_X_STYLE = {
+	marginLeft: '0.1em',
+	fontSize: '85%'
 }
 
 window.Slideshow = {

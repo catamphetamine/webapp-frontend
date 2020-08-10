@@ -1,7 +1,7 @@
-.post__text--underline {
+.PostText--underline {
 	text-decoration: underline;
 }
 
-.post__text--overline {
+.PostText--overline {
 	text-decoration: overline;
 }

@@ -14,7 +14,7 @@ export default function PostText({ style, children }) {
 		)
 	}
 	return (
-		<span className={`post__text--${style}`}>
+		<span className={`PostText--${style}`}>
 			{children}
 		</span>
 	)

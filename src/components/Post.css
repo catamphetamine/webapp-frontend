@@ -1,18 +1,6 @@
 @import "../styles/common";
 
-:root {
-	--Post-padding--vertical: 1em;
-	--Post-padding--verticalCompact: 0.9em;
-}
-
-.post {
-	--PostContent-margin: 0.6em;
-
-	/* Textual content has some inherent bottom spacing due to line height.
-	   Other content (attachment thumbnails, embedded pictures and videos)
-	   doesn't have such extra visual spacing. Therefore reduce it for text. */
-	--Post-textLineHeightBottomSpace: 0.25em;
-
+.Post {
 	/* Long hyperlinks can overflow post on small screens.
 	   (for example, on mobile devices)
 	   `overflow-wrap` in combination with `word-break` fixes that
@@ -27,6 +15,13 @@
 	   by a `<pre/>` code block. */
 	max-width: 100%;
 
+	padding-top: var(--Post-paddingTop);
+	padding-bottom: var(--Post-paddingBottom);
+	padding-left: var(--Post-paddingLeft);
+	padding-right: var(--Post-paddingRight);
+
+	transition: var(--Post-transition);
+
 	/* When selecting text <br/>s also get selected
 	   which results in a bit of a visual clutter.
 	   (for example, in the end of `<PostInlineQuote/>`
@@ -38,58 +33,39 @@
 	}
 }
 
-.post--compact {
-	--Post-padding--vertical: var(--Post-padding--verticalCompact)
+.Post--compact {
+	--Post-paddingTop: var(--Post-paddingTop--compact);
+	--Post-paddingBottom: var(--Post-paddingBottom--compact);
 }
 
-.post--stretch {
+.Post--stretch {
 	display: flex;
 	flex-direction: column;
 }
 
-.post__stretch {
+.Post-stretchVertically {
 	flex: auto;
 }
 
-.post__content {
-	/*margin-bottom: calc(-1 * var(--PostContent-margin));*/
+.PostContent {
+	/*margin-bottom: calc(-1 * var(--PostContent-marginTop));*/
 	font-family: var(--Text-fontFamily);
+	/* Reverts the effect of `margin-top` on the first post block. */
+	margin-top: calc(-1 * var(--PostContent-marginTop));
 }
 
-/* For play video icon. */
-.post__video .rrui__video {
-	&:hover {
-		.rrui__video__play-icon-background {
-			fill: rgba(0, 0, 0, 0.8);
-		}
-	}
-}
+/*.PostContent--starts-with-text {*/
+	/* Reverts the effect of `margin-top` on the first paragraph. */
+	/*margin-top: calc(-1 * var(--PostParagraph-marginTop));*/
+/*}*/
 
-.post__spoiler-bar {
-	position: absolute;
-	width: 100%;
-	left: 0;
-	bottom: 0;
-	display: flex;
-	justify-content: center;
-	overflow: hidden;
-	padding-bottom: 0.15em;
-	padding-top: 0.15em;
-	background: var(--gray-color-900);
-	color: var(--white-color);
-	font-family: var(--Document-fontFamily);
-	font-weight: 300;
-	text-transform: uppercase;
-	letter-spacing: 0.1em;
-	opacity: 0.75;
+.on-click {
+	--Post-transition: var(--Post-transition--onClick);
+	--PostInlineSpoiler-transition: var(--PostInlineSpoiler-transition--onClick);
 }
 
 .on-click--active {
-	--Content-backgroundColor: var(--Content-backgroundColor--active);
+	--Post-backgroundColor: var(--Content-backgroundColor--active);
 	--PostInlineSpoiler-color: var(--PostInlineSpoiler-color--contentActive);
 	--PostInlineSpoiler-color--censored: var(--PostInlineSpoiler-color--censoredContentActive);
-
-	.post, .post__inline-spoiler {
-		transition: background-color 60ms;
-	}
 }

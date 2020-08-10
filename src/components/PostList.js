@@ -8,9 +8,9 @@ import './PostList.css'
 
 export default function PostList({ children }) {
 	return (
-		<ul className="post__list">
+		<ul className="PostList">
 			{children.map((item, i) => (
-				<li key={i} className="post__list-item">
+				<li key={i} className="PostList-item">
 					<PostInlineContent>
 						{item}
 					</PostInlineContent>

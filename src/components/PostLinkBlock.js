@@ -11,7 +11,7 @@ export default function PostLinkBlock({ link }) {
 		<a
 			target="_blank"
 			href={link.url}
-			className="post__link-block">
+			className="PostLinkBlock">
 			<section>
 				{link.picture &&
 					<Picture picture={link.picture}/>

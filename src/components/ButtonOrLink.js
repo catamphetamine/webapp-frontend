@@ -1,7 +1,8 @@
 import React, { useRef } from 'react'
 import PropTypes from 'prop-types'
-import classNames from 'classnames'
+
 import { Link } from 'react-pages'
+import Button from './Button'
 
 import _openLinkInNewTab from '../utility/openLinkInNewTab'
 
@@ -150,19 +151,17 @@ const ButtonOrLink = React.forwardRef(function({
 		// onPointerMove={onPointerMove}
 		// onPointerOut={onPointerOut}
 		return (
-			<button
+			<Button
 				{...rest}
 				ref={ref}
-				type="button"
 				onDragStart={onDragStart}
 				onClick={onClick}
 				onMouseDown={onPointerDown}
 				onMouseUp={onPointerUp}
 				onMouseMove={onPointerMove}
-				onMouseLeave={onPointerOut}
-				className={classNames(rest.className, 'rrui__button-reset')}>
+				onMouseLeave={onPointerOut}>
 				{children}
-			</button>
+			</Button>
 		)
 	}
 	if (url[0] === '/') {

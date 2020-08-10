@@ -28,6 +28,14 @@ export default function PostBlock({
 	isPostLinkClickable,
 	serviceIcons,
 	expandAttachments,
+	first,
+	markFirstQuote,
+	expandPostLinkBlockQuotes,
+	postLinkQuoteMinimizedComponent,
+	postLinkQuoteExpandTimeout,
+	isPostLinkQuoteExpanded,
+	onPostLinkQuoteExpand,
+	onContentDidChange,
 	spoilerLabel,
 	locale,
 	children: content
@@ -47,14 +55,20 @@ export default function PostBlock({
 				useSmallestThumbnailsForAttachments={useSmallestThumbnailsForAttachments}
 				attachmentThumbnailSize={attachmentThumbnailSize}
 				spoilerLabel={spoilerLabel}
-				serviceIcons={serviceIcons}>
+				serviceIcons={serviceIcons}
+				markFirstQuote={first && markFirstQuote}
+				expandPostLinkBlockQuotes={expandPostLinkBlockQuotes}
+				postLinkQuoteMinimizedComponent={postLinkQuoteMinimizedComponent}
+				postLinkQuoteExpandTimeout={postLinkQuoteExpandTimeout}
+				isPostLinkQuoteExpanded={isPostLinkQuoteExpanded}
+				onPostLinkQuoteExpand={onPostLinkQuoteExpand}>
 				{content}
 			</PostInlineContent>
 		)
 	}
 	if (Array.isArray(content) || typeof content === 'string') {
 		return (
-			<PostParagraph>
+			<PostParagraph first={first}>
 				{renderContent(content)}
 			</PostParagraph>
 		)
@@ -85,7 +99,7 @@ export default function PostBlock({
 		)
 	} else if (content.type === 'read-more') {
 		return (
-			<PostParagraph>
+			<PostParagraph first={first}>
 				<PostReadMore
 					url={url}
 					onReadMore={onReadMore}
@@ -147,7 +161,7 @@ export default function PostBlock({
 	} else {
 		console.error(`Unsupported post content:\n`, content)
 		return (
-			<PostParagraph>
+			<PostParagraph first={first}>
 				{renderContent(
 					(Array.isArray(content.content) || content.content) ?
 						content.content :
@@ -171,6 +185,14 @@ PostBlock.propTypes = {
 	serviceIcons: PropTypes.objectOf(PropTypes.func),
 	expandAttachments: PropTypes.bool,
 	spoilerLabel: PropTypes.string,
+	first: PropTypes.bool,
+	markFirstQuote: PropTypes.bool,
+	expandPostLinkBlockQuotes: PropTypes.bool,
+	postLinkQuoteMinimizedComponent: PropTypes.elementType,
+	postLinkQuoteExpandTimeout: PropTypes.number,
+	isPostLinkQuoteExpanded: PropTypes.func,
+	onPostLinkQuoteExpand: PropTypes.func,
+	onContentDidChange: PropTypes.func,
 	locale: PropTypes.string,
 	children: postBlock.isRequired
 }

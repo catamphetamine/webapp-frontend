@@ -12,17 +12,17 @@ import './PostFile.css'
 
 export default function PostFile({ file }) {
 	return (
-		<div className="post__file">
+		<div className="PostFile">
 			<FileIcon
 				type={file.type}
-				className="post__file-icon"/>
+				className="PostFile-icon"/>
 			<a
 				target="_blank"
 				href={file.url}>
-				{`${file.name}${file.ext || ''}`}
+				{`${file.name || ''}${file.ext || ''}`}
 			</a>
 			{file.size &&
-				<span className="post__file-size">
+				<span className="PostFile-size">
 					{filesize(file.size)}
 				</span>
 			}

@@ -48,10 +48,10 @@ export function fixAttachmentPictureSizes(attachments) {
 					// This is a workaround for that bug: applies the changes to the DOM
 					// that aren't applied by React (React will apply the changes on subsequent updates).
 					// There also might be several elements corresponding to the attachment
-					// in cases when `.post__thumbnail` is rendered, so using `document.querySelectorAll()`.
+					// in cases when "post thumbnail" is rendered, so using `document.querySelectorAll()`.
 					// If the component is unmounted before this code executes,
 					// then the `thumbnails` array will be empty.
-					const thumbnails = document.querySelectorAll(`.post__attachment-thumbnail img[src="${thumbnailSizeUrl}"]`)
+					const thumbnails = document.querySelectorAll(`.PostAttachmentThumbnail img[src="${thumbnailSizeUrl}"]`)
 					for (const thumbnail of thumbnails) {
 						const borderWidth = parseInt(getComputedStyle(thumbnail.parentNode).borderWidth)
 						thumbnail.parentNode.style.width = thumbnailSize.width + 2 * borderWidth + 'px'

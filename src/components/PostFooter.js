@@ -2,6 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 
+import PostBadge from './PostBadge'
+
 import { post, postBadge } from '../PropTypes'
 
 import './PostFooter.css'
@@ -20,25 +22,18 @@ export default function PostFooter({
 		return null
 	}
 	return (
-		<footer className="post__footer">
+		<footer className="PostFooter">
 			{hasBadges &&
-				<div className="post__footer-badges">
-					{/*
-					// `title` doesn't work on SVGs for some reason
-					// (perhaps because SVGs don't have background)
-					// so I moved `title` to a `<div/>`.
-					*/}
-					{badges.map(({ ref, name, icon: Icon, title, content, onClick, isPushed }) => (
+				<div className="PostFooter-badges">
+					{badges.map((badge) => (
 						<PostBadge
-							buttonRef={ref}
-							key={name}
-							onClick={onClick && (() => onClick(post))}
-							isPushed={isPushed}
-							title={title && title(post, locale, messages)}
-							className="post__footer-badge">
-							<Icon className={`post__footer-badge-icon post__footer-badge-icon--${name}`}/>
-							{content(post)}
-						</PostBadge>
+							key={badge.name}
+							post={post}
+							locale={locale}
+							messages={messages}
+							badge={badge}
+							className="PostFooter-badge"
+							iconClassName={`PostFooter-badgeIcon PostFooter-badgeIcon--${badge.name}`}/>
 					))}
 				</div>
 			}
@@ -51,41 +46,4 @@ PostFooter.propTypes = {
 	badges: PropTypes.arrayOf(postBadge),
 	locale: PropTypes.string,
 	messages: PropTypes.object
-}
-
-class PostBadge extends React.Component {
-	render() {
-		let {
-			buttonRef,
-			onClick,
-			isPushed,
-			children,
-			...rest
-		} = this.props
-		if (onClick) {
-			children = (
-				<button
-					ref={buttonRef}
-					type="button"
-					onClick={onClick}
-					className={classNames('post__badge-button', 'hover-button', 'rrui__button-reset', {
-						'hover-button--pushed': isPushed
-					})}>
-					{children}
-				</button>
-			)
-		}
-		return (
-			<div {...rest}>
-				{children}
-			</div>
-		)
-	}
-}
-
-PostBadge.propTypes = {
-	buttonRef: PropTypes.any,
-	onClick: PropTypes.func,
-	isPushed: PropTypes.bool,
-	children: PropTypes.node.isRequired
 }

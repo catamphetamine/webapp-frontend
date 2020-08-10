@@ -6,6 +6,15 @@
 	--Document-color: var(--Content-color-900);
 	--Document-backgroundColor: var(--Content-backgroundColor);
 	--Document-fontFamily: Roboto, sans-serif;
+	--Document-fontWeight: normal;
+
+	/* LinearProgress. */
+	--LinearProgress-backgroundColor: rgb(167, 202, 237);
+	--LinearProgress-color: #1976d2;
+	--LinearProgress-height: 4px;
+	--LinearProgress-animationTimingFactor: 1;
+	--LinearProgress-animationDuration: calc(2.1s * var(--LinearProgress-animationTimingFactor));
+	--LinearProgress-animationInterval: calc(1.18s * var(--LinearProgress-animationTimingFactor));
 
 	/* Quote. */
 	--Quote--before: '«';
@@ -65,15 +74,60 @@
 	--Content-fontWeight--bold: bolder;
 
 	/* Post. */
-	--Post-padding--horizontal: var(--ContentSection-padding--horizontal);
+	--Post-paddingTop: 1em;
+	--Post-paddingBottom: var(--Post-paddingTop);
+	--Post-paddingTop--compact: 0.9em;
+	--Post-paddingBottom--compact: var(--Post-paddingTop--compact);
+	--Post-paddingLeft: var(--ContentSection-padding--horizontal);
+	--Post-paddingRight: var(--Post-paddingLeft);
 	@mixin xl-plus {
-		--Post-padding--horizontal: calc(var(--unit) * 2);
+		--Post-paddingLeft: calc(var(--unit) * 2);
 	}
+	/* Textual content has some inherent bottom spacing due to line height.
+	   Other content (attachment thumbnails, embedded pictures and videos)
+	   doesn't have such extra visual spacing. Therefore, vertical margin
+	   is slightly reduced for text in order for it to be visually similar
+	   to the vertical spacing of other content like embedded pictures/videos. */
+	--Post-textLineHeightBlankSpace: 0.25em;
 	--Post-fontWeight--secondary: 300;
+	--Post-backgroundColor: var(--Content-backgroundColor);
+	--Post-transition: none;
+	--Post-transition--onClick: background-color 60ms;
+	--PostContent-marginTop: 0.6em;
 
-	/* PostQuoteBlock. */
-	--PostQuoteBlock-paddingLeft: var(--Post-padding--horizontal);
-	--PostQuoteBlock-paddingRight: var(--Post-padding--horizontal);
+	/* PostTitle. */
+	/*--PostTitle-marginTop: var(--PostContent-marginTop);*/
+	/*--PostTitle-marginTop--compact: var(--PostTitle-marginTop);*/
+	--PostTitle-marginBottom: var(--PostContent-marginTop);
+	/* No margin bottom seems ok. */
+	/*--PostTitle-marginBottom: 0px;*/
+	/*--PostTitle-marginBottom--compact: var(--PostTitle-marginBottom);*/
+	--PostTitle-fontSize: 1.17em;
+	--PostTitle-fontWeight: normal;
+
+	/* PostParagraph. */
+	/* Textual content has some inherent bottom spacing due to line height.
+   Other content (attachment thumbnails, embedded pictures and videos)
+   doesn't have such extra visual spacing. Therefore reduce it for text. */
+	--PostParagraph-marginTop: calc(var(--PostContent-marginTop) - var(--Post-textLineHeightBlankSpace));
+	--PostParagraph-marginBottom: calc(-1 * var(--Post-textLineHeightBlankSpace));
+
+	/* PostInlineSpoiler. */
+	--PostInlineSpoiler-opacity: initial;
+	--PostInlineSpoiler-opacity--censored: initial;
+	--PostInlineSpoiler-transition: none;
+	--PostInlineSpoiler-transition--onClick: var(--Post-transition--onClick);
+
+	/* PostQuoteBlock (defaults). */
+	--PostQuoteBlock-paddingLeft: var(--Post-paddingLeft);
+	--PostQuoteBlock-paddingRight: var(--Post-paddingLeft);
+	--PostQuoteBlock-borderWidth: 0px;
+	--PostQuoteBlock-borderWidth--left: 0px;
+	--PostQuoteBlock-borderWidth--right: 0px;
+	--PostQuoteBlock-marginTop: 0px;
+	--PostQuoteBlock-marginBottom: 0px;
+	--PostQuoteBlock-marginLeft: 0px;
+	--PostQuoteBlock-marginRight: 0px;
 
 	/* PostQuoteBlock (regular). */
 	--PostQuoteBlock-color: initial;
@@ -81,15 +135,22 @@
 	--PostQuoteBlock-backgroundColor--hover: var(--PostQuoteBlock-backgroundColor);
 	/*--PostQuoteBlock-borderColor: var(--PostQuoteBlock-backgroundColor);*/
 	/*--PostQuoteBlock-borderColor--hover: var(--PostQuoteBlock-backgroundColor--hover);*/
-	--PostQuoteBlock-borderWidth: 0px;
-	--PostQuoteBlock-borderWidth--right: 0px;
-	--PostQuoteBlock-marginTop: 0px;
-	--PostQuoteBlock-marginLeft: 0px;
-	--PostQuoteBlock-marginRight: 0px;
 
 	/* PostCode. */
 	--PostCode-marginLeft: var(--PostQuoteBlock-marginLeft);
 	--PostCode-marginRight: var(--PostQuoteBlock-marginRight);
+	--PostCode-marginTop--block: 0.5em;
+	--PostCode-paddingLeft--inline: 0.25em;
+	--PostCode-borderWidth: 1px;
+	--PostCode-borderLeftWidth: 0px;
+	--PostCode-borderRightWidth: 0px;
+
+	/* PostSocial. */
+	--PostSocial-paddingLeft: var(--PostQuoteBlock-paddingLeft);
+	--PostSocial-paddingRight: var(--PostQuoteBlock-paddingRight);
+	--PostSocial-borderWidth: 1px;
+	--PostSocial-borderLeftWidth: 0px;
+	--PostSocial-borderRightWidth: 0px;
 
 	/* PostQuoteBlock (generated). */
 	--PostQuoteBlock-color--generated: var(--PostQuoteBlock-color);
@@ -97,50 +158,73 @@
 	--PostQuoteBlock-backgroundColor--generated--hover: var(--PostQuoteBlock-backgroundColor--generated);
 	/*--PostQuoteBlock-borderColor--generated: var(--PostQuoteBlock-backgroundColor--generated);*/
 	/*--PostQuoteBlock-borderColor--generated--hover: var(--PostQuoteBlock-backgroundColor--generated--hover);*/
-	--PostQuoteBlock-borderWidth--generated: 0px;
-	--PostQuoteBlock-marginTop--generated: 0px;
+	/*--PostQuoteBlock-borderWidth--generated: 0px;*/
+	/*--PostQuoteBlock-marginTop--generated: 0px;*/
+	/*--PostQuoteBlock-marginBottom--generated: var(--PostQuoteBlock-marginTop--generated);*/
+	--PostQuoteBlock-borderWidth--generated: var(--PostQuoteBlock-borderWidth);
+	--PostQuoteBlock-marginTop--generated: var(--PostQuoteBlock-marginTop);
+	--PostQuoteBlock-marginBottom--generated: var(--PostQuoteBlock-marginBottom);
 
-	/* PostQuoteMarker (constants). */
-	--PostQuoteMarker-padding--standalone: 0.2em;
+	/* PostQuoteBorderLeft (constants). */
+	--PostQuoteBorderLeft-marginTop--standalone: 0.2em;
 
-	/* PostQuoteMarker. */
-	--PostQuoteMarker-color: currentColor;
-	--PostQuoteMarker-opacity: 0.25;
-	--PostQuoteMarker-width: 2px;
-	--PostQuoteMarker-padding: var(--PostQuoteMarker-padding--standalone);
+	/* PostQuoteBorderLeft. */
+	--PostQuoteBorderLeft-color: currentColor;
+	--PostQuoteBorderLeft-opacity: 0.25;
+	--PostQuoteBorderLeft-width: 2px;
+	--PostQuoteBorderLeft-marginTop: var(--PostQuoteBorderLeft-marginTop--standalone);
+	--PostQuoteBorderLeft-left: calc(var(--PostQuoteBlock-paddingLeft) / 2);
 
-	/* PostQuoteBlockMarker. */
-	--PostQuoteBlockMarker-color: var(--PostQuoteMarker-color);
-	--PostQuoteBlockMarker-opacity: var(--PostQuoteMarker-opacity);
-	--PostQuoteBlockMarker-width: var(--PostQuoteMarker-width);
-	--PostQuoteBlockMarker-padding: var(--PostQuoteMarker-padding--standalone);
+	/* PostQuoteBlockBorderLeft. */
+	--PostQuoteBlockBorderLeft-color: var(--PostQuoteBorderLeft-color);
+	--PostQuoteBlockBorderLeft-opacity: var(--PostQuoteBorderLeft-opacity);
+	--PostQuoteBlockBorderLeft-width: var(--PostQuoteBorderLeft-width);
+	--PostQuoteBlockBorderLeft-marginTop: var(--PostQuoteBorderLeft-marginTop--standalone);
 
-	/* PostQuoteBlockMarker (generated). */
-	--PostQuoteBlockMarker-color--generated: var(--PostQuoteBlockMarker-color);
-	--PostQuoteBlockMarker-opacity--generated: var(--PostQuoteBlockMarker-opacity);
-	--PostQuoteBlockMarker-width--generated: var(--PostQuoteBlockMarker-width);
-	--PostQuoteBlockMarker-padding--generated: var(--PostQuoteMarker-padding--standalone);
-	--PostQuoteBlockMarker-color--generated: currentColor;
+	/* PostQuoteBlockBorderLeft (generated). */
+	--PostQuoteBlockBorderLeft-color--generated: var(--PostQuoteBlockBorderLeft-color);
+	--PostQuoteBlockBorderLeft-opacity--generated: var(--PostQuoteBlockBorderLeft-opacity);
+	--PostQuoteBlockBorderLeft-width--generated: var(--PostQuoteBlockBorderLeft-width);
+	--PostQuoteBlockBorderLeft-marginTop--generated: var(--PostQuoteBorderLeft-marginTop--standalone);
+	--PostQuoteBlockBorderLeft-color--generated: currentColor;
 
 	/* PostInlineQuote. */
 	--PostInlineQuote-paddingLeft: 0.1em;
+
+	/* PostQuoteLink (minimized). */
+	--PostQuoteLink-marginTop--minimizedFirst: 0px;
+	--PostQuoteLink-paddingTop--minimizedFirst: var(--unit);
+	--PostQuoteLink-paddingLeft--minimized: calc(var(--unit) * 0.5);
+	--PostQuoteLink-color--minimized: var(--Content-color-300);
+	--PostQuoteLink-color--minimizedHover: var(--PostQuoteLink-color--minimized);
+	/*--PostQuoteLink-color--minimizedHover: var(--PostQuoteBlock-color--generated);*/
+	--PostQuoteLink-backgroundColor--minimizedHover: var(--PostQuoteBlock-backgroundColor--generated);
+	--PostQuoteLink-borderColor--minimizedHover: var(--PostQuoteBlock-borderColor--generated);
 
 	/* PostReadMore. */
 	--PostReadMore-color: var(--Clickable-color--text);
 	--PostReadMore-fontWeight: 500;
 
+	/* PostAttachments. */
+	--PostAttachments-marginTop--afterContent: var(--unit);
+
 	/* PostAttachment. */
 	/*--PostAttachment-focusOutlineWidth: 2px;*/
 
+	/* PostButton. */
+	--PostButton-paddingLeft: calc(var(--unit) / 2);
+	--PostButton-paddingTop: calc(var(--unit) / 4);
+
 	/* HoverButton. */
 	--HoverButton-color: inherit;
+	--HoverButton-backgroundColor: var(--gray-color-transparent);
 	--HoverButton-backgroundColor--pushed: var(--HoverButton-backgroundColor--active);
 	--HoverButton-borderColor--pushedFocus: var(--HoverButton-borderColor--pushedActive);
 	--HoverButton-backgroundColor--pushedActive: var(--HoverButton-backgroundColor--active);
 	--HoverButton-borderRadius: 0px;
 
 	/* CommentTree. */
-	--CommentTree-padding: var(--Post-padding--horizontal);
+	--CommentTree-padding: var(--Post-paddingLeft);
 	--CommentTree-borderWidth: 1px;
 	--CommentTree-borderStyle: dashed;
 	--CommentTree-borderStyle--branch: solid;
@@ -149,7 +233,7 @@
 	@mixin upto-xs {
 		--CommentTreeBranch-marginTop--content: 1.9em;
 	}
-	--CommentTreeBranch-marginTop: calc(var(--Post-padding--vertical) + var(--CommentTreeBranch-marginTop--content));
+	--CommentTreeBranch-marginTop: calc(var(--Post-paddingTop) + var(--CommentTreeBranch-marginTop--content));
 	--CommentTreeBranch-paddingLeft--firstLevel: 0;
 
 	/* Slideshow. */
@@ -222,26 +306,32 @@
 	--PostVotes-color--negative: #b50000;
 
 	/* PostQuoteBlock. */
-	--PostQuoteBlock-color: #268000;
-	--PostQuoteBlock-backgroundColor: #dfffcb;
+	/*--PostQuoteBlock-color: #268000;*/
+	/*--PostQuoteBlock-backgroundColor: #dfffcb;*/
+	/*--PostQuoteBlock-borderColor: #c9f6ac;*/
+	--PostQuoteBlock-color: #386b00;
+	--PostQuoteBlock-backgroundColor: #efffd9;
+	--PostQuoteBlock-borderColor: #d4ecad;
 	--PostQuoteBlock-borderWidth: 1px;
-	--PostQuoteBlock-borderColor: #c9f6ac;
 	--PostQuoteBlock-marginTop: 4px;
+	--PostQuoteBlock-marginBottom: var(--PostQuoteBlock-marginTop);
 
-	/* PostQuoteBlockMarker. */
-	--PostQuoteBlockMarker-padding: 0px;
+	/* PostQuoteBlockBorderLeft. */
+	--PostQuoteBlockBorderLeft-marginTop: 0px;
 
 	/* PostQuoteBlock (generated). */
 	--PostQuoteBlock-color--generated: #87481b;
 	--PostQuoteBlock-backgroundColor--generated: #fff7ed;
-	--PostQuoteBlock-borderWidth--generated: 1px;
 	--PostQuoteBlock-borderColor--generated: #f4d7bc;
-	--PostQuoteBlock-marginTop--generated: 4px;
 
-	/* PostQuoteBlockMarker (generated). */
-	--PostQuoteBlockMarker-opacity--generated: 1;
-	--PostQuoteBlockMarker-color--generated: #e6bb85;
-	--PostQuoteBlockMarker-padding--generated: 0px;
+	/* PostQuoteBlockBorderLeft (generated). */
+	--PostQuoteBlockBorderLeft-opacity--generated: 1;
+	--PostQuoteBlockBorderLeft-color--generated: #e6bb85;
+	--PostQuoteBlockBorderLeft-marginTop--generated: 0px;
+
+	/* PostSocial. */
+	--PostSocial-backgroundColor: rgba(0,0,0,0.03);
+	--PostSocial-borderColor: rgba(0,0,0,0.06);
 
 	/* PostInlineSpoiler. */
 	--PostInlineSpoiler-color: var(--Content-color-100);
@@ -263,7 +353,6 @@
 	--HoverButton-color--active: initial;
 	--HoverButton-color--pushed: var(--base-color-700);
 	--HoverButton-color--pushedActive: var(--base-color-600);
-	--HoverButton-backgroundColor: var(--gray-color-transparent);
 	--HoverButton-backgroundColor--active: var(--base-color-100);
 	--HoverButton-backgroundColor--pushed: var(--HoverButton-backgroundColor--active);
 	--HoverButton-borderColor: var(--Content-color-100);
@@ -275,12 +364,12 @@
 /* Dark Mode. */
 .dark {
 	/* Document. */
-	--Document-backgroundColor: #272727;
+	--Document-backgroundColor: #202020;
 
 	/* Header. */
 	--Header-color: var(--Content-color-900);
 	--Header-backgroundColor: var(--Content-color-100);
-	--Header-borderColor: rgba(255,255,255,.07);
+	--Header-borderColor: rgba(255,255,255,.04);
 
 	/* Menu. */
 	--Menu-color--active: var(--Content-color-600);
@@ -305,11 +394,11 @@
 
 	/* Content. */
 	/* https://refactoringui.com/previews/building-your-color-palette */
-	--Content-color-100: #333333;
-	--Content-color-200: #444444;
-	--Content-color-300: #555555;
-	--Content-color-400: #666666;
-	--Content-color-500: #777777;
+	--Content-color-100: #444444;
+	--Content-color-200: #555555;
+	--Content-color-300: #646464;
+	--Content-color-400: #717171;
+	--Content-color-500: #797979;
 	--Content-color-600: #888888;
 	--Content-color-700: #989898;
 	--Content-color-800: #a0a0a0;
@@ -322,7 +411,7 @@
 	/* ContentSection. */
 	/* `--ContentSection-borderColor` is not used currently. */
 	--ContentSection-borderColor: #e3e4e8;
-	--ContentSection-shadowColor: rgba(0,0,0,.15);
+	--ContentSection-shadowColor: rgba(0,0,0,0.5);
 
 	/* Clickable. */
 	--Clickable-color: var(--base-color-400);
@@ -348,18 +437,29 @@
 	--PostVotes-color--negative: #ff5454;
 
 	/* PostQuoteBlock. */
-	--PostQuoteBlock-color: #82c45f;
+	--PostQuoteBlock-color: #83c362;
+	/*--PostQuoteBlock-backgroundColor: #82c45f;*/
+	/*--PostQuoteBlock-borderColor: #f4d7bc;*/
 
-	/* PostQuoteBlockMarker. */
-	--PostQuoteBlockMarker-opacity: 0.65;
-	--PostQuoteBlockMarker-padding: var(--PostQuoteMarker-padding--standalone);
+	/* PostQuoteBlockBorderLeft. */
+	--PostQuoteBlockBorderLeft-opacity: 0.65;
+	--PostQuoteBlockBorderLeft-marginTop: var(--PostQuoteBorderLeft-marginTop--standalone);
 
 	/* PostQuoteBlock (generated). */
-	--PostQuoteBlock-color--generated: #b27b59;
+	--PostQuoteBlock-color--generated: #bb8662;
+	/*--PostQuoteBlock-backgroundColor--generated: #46382f;*/
+	/*--PostQuoteBlock-borderColor--generated: #4e4035;*/
 
-	/* PostQuoteBlockMarker (generated). */
-	--PostQuoteBlockMarker-opacity--generated: 0.65;
-	--PostQuoteBlockMarker-padding--generated: var(--PostQuoteMarker-padding--standalone);
+	/* PostQuoteBlockBorderLeft (generated). */
+	--PostQuoteBlockBorderLeft-opacity--generated: 0.65;
+	--PostQuoteBlockBorderLeft-marginTop--generated: var(--PostQuoteBorderLeft-marginTop--standalone);
+
+	/* PostQuoteLink (minimized). */
+	--PostQuoteLink-backgroundColor--minimizedHover: rgba(255,255,255,0.05);
+
+	/* PostSocial. */
+	--PostSocial-backgroundColor: rgba(255,255,255,0.03);
+	--PostSocial-borderColor: rgba(255,255,255,0.06);
 
 	/* PostInlineSpoiler. */
 	--PostInlineSpoiler-color: #494949;
@@ -385,7 +485,6 @@
 	--HoverButton-color--active: var(--base-color-300);
 	--HoverButton-color--pushed: var(--base-color-400);
 	--HoverButton-color--pushedActive: var(--HoverButton-color--active);
-	--HoverButton-backgroundColor: var(--gray-color-transparent);
 	--HoverButton-backgroundColor--active: var(--Content-color-200);
 	--HoverButton-borderColor: var(--Content-color-200);
 	--HoverButton-borderColor--active: var(--Content-color-300);

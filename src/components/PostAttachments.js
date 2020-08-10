@@ -40,7 +40,7 @@ import PostFile, {
 	EXAMPLE_3 as FILE_EXAMPLE_3
 } from './PostFile'
 
-import PostAttachment from './PostAttachment'
+import PostAttachmentThumbnail from './PostAttachmentThumbnail'
 import PictureStack from './PictureStack'
 
 import {
@@ -58,7 +58,7 @@ export default function PostAttachments({
 	post,
 	expandFirstPictureOrVideo,
 	expandAttachments,
-	hideRestAttachments,
+	onlyShowFirstAttachmentThumbnail,
 	attachmentThumbnailSize,
 	useSmallestThumbnails,
 	spoilerLabel,
@@ -127,7 +127,7 @@ export default function PostAttachments({
 	const postThumbnailCandidate = getPostThumbnail(post, { showPostThumbnailWhenThereAreMultipleAttachments })
 
 	let Container = PassthroughContainer
-	if (hideRestAttachments) {
+	if (onlyShowFirstAttachmentThumbnail) {
 		Container = PictureStackContainer
 		if (titlePictureOrVideo) {
 			picturesAndVideos = []
@@ -138,8 +138,12 @@ export default function PostAttachments({
 		}
 	}
 
+	const attachmentsCount = picturesAndVideos.length + audios.length + links.length + files.length
+
 	return (
-		<div className="post__attachments">
+		<div className={classNames('PostAttachments', {
+			'PostAttachments--onlyPostThumbnail': attachmentsCount === 1 && picturesAndVideos.length === 1 && picturesAndVideos[0] === postThumbnailCandidate
+		})}>
 			{expandAttachments &&
 				picturesAndVideos.map((pictureOrVideo, i) => {
 					switch (pictureOrVideo.type) {
@@ -181,18 +185,18 @@ export default function PostAttachments({
 				</Container>
 			}
 			{!expandAttachments && picturesAndVideos.length > 0 &&
-				<div className={classNames('post__attachment-thumbnails', {
-					'post__attachment-thumbnails--hide-rest-attachments': hideRestAttachments
+				<div className={classNames('PostAttachments-thumbnails', {
+					'PostAttachments-thumbnails--onlyShowFirstAttachmentThumbnail': onlyShowFirstAttachmentThumbnail
 				})}>
 					{picturesAndVideos.map((pictureOrVideo, i) => {
 						return (
 							<Container
 								key={`picture-or-video-${i}`}
 								count={allPicturesAndVideos.length}
-								pictureStackClassName={classNames('post__attachment-thumbnail-picture-stack', {
-									'post__attachment-thumbnail-picture-stack--post-thumbnail-candidate': pictureOrVideo === postThumbnailCandidate
+								pictureStackClassName={classNames('PostAttachments-pictureStack', {
+									'PostAttachments-pictureStack--postThumbnail': pictureOrVideo === postThumbnailCandidate
 								})}>
-								<PostAttachment
+								<PostAttachmentThumbnail
 									attachment={pictureOrVideo}
 									useSmallestThumbnail={useSmallestThumbnails}
 									maxSize={attachmentThumbnailSize}
@@ -200,7 +204,7 @@ export default function PostAttachments({
 									onClick={onAttachmentClick ? createOnAttachmentClick(i + (titlePictureOrVideo ? 1 : 0)) : undefined}
 									moreAttachmentsCount={i === picturesAndVideos.length - 1 ? picturesAndVideosMoreCount : undefined}
 									className={classNames({
-										'post__attachment-thumbnail--post-thumbnail-candidate': pictureOrVideo === postThumbnailCandidate
+										'PostAttachmentThumbnail--postThumbnail': pictureOrVideo === postThumbnailCandidate
 									})}/>
 							</Container>
 						)
@@ -231,7 +235,7 @@ PostAttachments.propTypes = {
 	expandAttachments: PropTypes.bool,
 	// Currently this property only limits the displayed pictures and videos.
 	// Doesn't affect audios, files, links, etc.
-	hideRestAttachments: PropTypes.bool,
+	onlyShowFirstAttachmentThumbnail: PropTypes.bool,
 	spoilerLabel: PropTypes.string,
 	useSmallestThumbnails: PropTypes.bool,
 	attachmentThumbnailSize: PropTypes.number.isRequired,

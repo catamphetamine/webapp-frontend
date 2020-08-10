@@ -87,13 +87,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/catamphetamine/webapp-frontend.git"
+    "url": "git+https://gitlab.com/catamphetamine/webapp-frontend.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/catamphetamine/webapp-frontend/issues"
+    "url": "https://gitlab.com/catamphetamine/webapp-frontend/issues"
   },
-  "homepage": "https://github.com/catamphetamine/webapp-frontend#readme",
+  "homepage": "https://gitlab.com/catamphetamine/webapp-frontend#readme",
   "description": ""
 }

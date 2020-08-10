@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 import Video, { getUrl, getMaxSize, getAspectRatio } from './Video'
+import PostEmbeddedAttachmentTitle from './PostEmbeddedAttachmentTitle'
 import { videoAttachment } from '../PropTypes'
 
 import './PostVideo.css'
@@ -18,7 +19,7 @@ export default function PostVideo({
 }) {
 	const url = getUrl(video)
 	return (
-		<section className="post__video">
+		<section className="PostVideo">
 			<Video
 				border
 				expand={expand}
@@ -27,16 +28,9 @@ export default function PostVideo({
 				spoilerLabel={spoilerLabel}
 				onClick={onClick}/>
 			{video.title &&
-				<h1 className="post__video-title">
-					{url &&
-						<a
-							target="_blank"
-							href={url}>
-							{video.title}
-						</a>
-					}
-					{!url && video.title}
-				</h1>
+				<PostEmbeddedAttachmentTitle link={url}>
+					{video.title}
+				</PostEmbeddedAttachmentTitle>
 			}
 		</section>
 	)

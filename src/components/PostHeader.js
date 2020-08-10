@@ -4,25 +4,28 @@ import classNames from 'classnames'
 import { Link } from 'react-pages'
 
 import AccountPicture from './AccountPicture'
-import PostInlineContent from './PostInlineContent'
 import PostDate from './PostDate'
 import PostMoreActions, { moreActionsType } from './PostMoreActions'
-import Button from './Button'
+import PostTitle from './PostTitle'
+import PostBadge from './PostBadge'
+import PostVotes from './PostVotes'
+import HoverButton from './HoverButton'
 import { accountLink } from './AccountLink'
+
 import { post, postBadge } from '../PropTypes'
 
-import LeftArrowIcon from '../../assets/images/icons/left-arrow-minimal.svg'
 import MessageIcon from '../../assets/images/icons/message-rounded-rect-square.svg'
 // import ReplyIcon from '../../assets/images/icons/reply.svg'
 // import ClockIcon from '../../assets/images/icons/clock.svg'
 
 import './PostHeader.css'
+import './Padding.css'
 
 export default function PostHeader({
 	post,
 	url,
 	urlBasePath,
-	onPostUrlClick: _onPostUrlClick,
+	onPostUrlClick,
 	locale,
 	header: Header,
 	items,
@@ -36,188 +39,34 @@ export default function PostHeader({
 	vote,
 	onVote
 }) {
-	const onUpVote = useCallback(() => onVote(true), [onVote])
-	const onDownVote = useCallback(() => onVote(false), [onVote])
-	const onPostUrlClick = useCallback((event) => {
-		if (_onPostUrlClick) {
-			_onPostUrlClick(event, post)
-		}
-	}, [_onPostUrlClick, post])
-	if (badges) {
-		badges = badges.filter(({ condition }) => condition(post))
-	}
-	const hasBadges = badges && badges.length > 0
-	const hasVotes = onVote !== undefined
 	return (
-		<header className="post__header">
-			<div className="post__header-top">
-				<div className="post__summary">
-					{/*moreActions &&
-						<PostMoreActions
-							title={messages.moreActions.title}>
-							{moreActions}
-						</PostMoreActions>
-					*/}
-					{post.author &&
-						<div className="post__summary__account">
-							<Link to={accountLink(post.author)}>
-								<AccountPicture
-									account={post.author}
-									className="post__account-picture"/>
-							</Link>
-							<div className="post__account-name-and-date">
-								<Link
-									to={accountLink(post.author)}
-									rel="author"
-									className="post__account-name">
-									{post.author.name}
-								</Link>
-								{post.createdAt &&
-									<PostDate
-										date={post.createdAt}
-										link={url}
-										linkBasePath={urlBasePath}
-										onClick={onPostUrlClick}
-										locale={locale}/>
-								}
-							</div>
-						</div>
-					}
-					{items && items.map((item, i) => (
-						<React.Fragment key={`headerItem:${i}`}>
-							<div className="post__summary-item">
-								{item}
-							</div>
-							<div className="post__summary-item-separator">
-								·
-							</div>
-						</React.Fragment>
-					))}
-					{(!post.author && post.createdAt) &&
-						<div className="post__summary-item">
-							<PostDate
-								date={post.createdAt}
-								link={url}
-								linkBasePath={urlBasePath}
-								onClick={onPostUrlClick}
-								locale={locale}/>
-						</div>
-					}
-					{onReply && (!post.author && post.createdAt)  &&
-						<div className="post__summary-item-separator">
-							·
-						</div>
-					}
-					{onReply &&
-						<div className="post__summary-item">
-							<Button
-								onClick={onReply}
-								className="post__summary-button hover-button">
-								{/*<ReplyIcon className="post__summary-item-icon post__summary-item-icon--reply"/>*/}
-								{messages.reply}
-							</Button>
-						</div>
-					}
-					{onShowReplies && onReply &&
-						<div className="post__summary-item-separator">
-							·
-						</div>
-					}
-					{onShowReplies &&
-						<div className="post__summary-item">
-							<Button
-								ref={toggleShowRepliesButtonRef}
-								onClick={onShowReplies}
-								title={messages.repliesCount}
-								className={classNames('post__summary-button', 'post__summary-button--replies', 'hover-button', {
-									'hover-button--pushed': showingReplies
-								})}>
-								<MessageIcon className="post__summary-item-icon post__summary-item-icon--replies"/>
-								{post.replies.length}
-							</Button>
-						</div>
-					}
-				</div>
-				<div className="post__actions">
-					{(hasBadges || hasVotes) &&
-						<div className="post__actions-except-more">
-							{hasBadges &&
-								<div className="post__header-badges">
-									{badges.map(({ name, title, icon, getIcon, getIconProps }) => {
-										const Icon = getIcon ? getIcon(post, locale) : icon
-										const props = getIconProps && getIconProps(post, locale)
-										// `title` doesn't work on SVGs for some reason
-										// (perhaps because SVGs don't have background)
-										// so I moved `title` to a `<div/>`.
-										return (
-											<div
-												key={name}
-												title={title && title(post, locale)}
-												className="post__header-badge-container">
-												<Icon
-													{...props}
-													className={`post__header-badge post__header-badge--${name}`}/>
-											</div>
-										)
-									})}
-								</div>
-							}
-							{hasVotes &&
-								<div className="post__votes">
-									<Button
-										title={vote !== undefined ? messages.alreadyVoted : messages.downvote}
-										disabled={vote !== undefined}
-										onClick={onDownVote}
-										className={classNames('hover-button', 'post__summary-button', 'post__vote post__vote--down', {
-											'post__vote--voted': vote !== undefined,
-											'post__vote--downvoted': vote === false
-										})}>
-										<LeftArrowIcon className="post__vote-icon post__vote-icon--down"/>
-									</Button>
-									<div className={classNames('post__votes-count', {
-										'post__votes-count--neutral': post.upvotes === post.downvotes,
-										'post__votes-count--positive': post.upvotes > post.downvotes,
-										'post__votes-count--negative': post.upvotes < post.downvotes
-									})}>
-										{(post.downvotes > post.upvotes) && '−'}
-										{Math.abs(post.upvotes - post.downvotes)}
-									</div>
-									<Button
-										title={vote !== undefined ? messages.alreadyVoted : messages.upvote}
-										disabled={vote !== undefined}
-										onClick={onUpVote}
-										className={classNames('hover-button', 'post__summary-button', 'post__vote post__vote--up', {
-											'post__vote--voted': vote !== undefined,
-											'post__vote--upvoted': vote === true
-										})}>
-										<LeftArrowIcon className="post__vote-icon post__vote-icon--up"/>
-									</Button>
-								</div>
-							}
-						</div>
-					}
-					{moreActions &&
-						<PostMoreActions
-							alignment="right"
-							title={messages.moreActions.title}>
-							{moreActions}
-						</PostMoreActions>
-					}
-				</div>
+		<header className="PostHeader">
+			<div className="PostHeader-top">
+				<PostHeaderLeft
+					post={post}
+					url={url}
+					urlBasePath={urlBasePath}
+					onPostUrlClick={onPostUrlClick}
+					locale={locale}
+					messages={messages}
+					items={items}
+					onShowReplies={onShowReplies}
+					showingReplies={showingReplies}
+					onReply={onReply}
+					toggleShowRepliesButtonRef={toggleShowRepliesButtonRef}/>
+				<PostHeaderRight
+					post={post}
+					locale={locale}
+					messages={messages}
+					badges={badges}
+					vote={vote}
+					onVote={onVote}
+					moreActions={moreActions}/>
 			</div>
 			{Header &&
 				<Header post={post} locale={locale}/>
 			}
-			{post.title &&
-				<h1 className="post__heading">
-					{post.titleCensored &&
-						<PostInlineContent>
-							{post.titleCensored}
-						</PostInlineContent>
-					}
-					{!post.titleCensored && post.title}
-				</h1>
-			}
+			<PostTitle post={post}/>
 		</header>
 	)
 }
@@ -239,4 +88,190 @@ PostHeader.propTypes = {
 	toggleShowRepliesButtonRef: PropTypes.any,
 	vote: PropTypes.bool,
 	onVote: PropTypes.func
+}
+
+function PostHeaderLeft({
+	post,
+	url,
+	urlBasePath,
+	onPostUrlClick,
+	locale,
+	messages,
+	items,
+	onReply,
+	onShowReplies,
+	toggleShowRepliesButtonRef,
+	showingReplies
+}) {
+	const onPostUrlClick_ = useCallback((event) => {
+		if (onPostUrlClick) {
+			onPostUrlClick(event, post)
+		}
+	}, [onPostUrlClick, post])
+	return (
+		<div className="PostHeader-left">
+			{/*moreActions &&
+				<PostMoreActions
+					title={messages.moreActions.title}>
+					{moreActions}
+				</PostMoreActions>
+			*/}
+			{post.author &&
+				<div className="PostAuthor">
+					<Link to={accountLink(post.author)}>
+						<AccountPicture
+							account={post.author}
+							className="PostAuthor-picture"/>
+					</Link>
+					<div className="PostAuthor-nameAndDate">
+						<Link
+							to={accountLink(post.author)}
+							rel="author"
+							className="PostAuthor-name">
+							{post.author.name}
+						</Link>
+						{post.createdAt &&
+							<PostDate
+								date={post.createdAt}
+								url={url}
+								urlBasePath={urlBasePath}
+								onClick={onPostUrlClick_}
+								locale={locale}/>
+						}
+					</div>
+				</div>
+			}
+			{items && items.map((item, i) => (
+				<React.Fragment key={`headerItem:${i}`}>
+					<div className="PostHeader-item">
+						{item}
+					</div>
+					<div className="PostHeader-itemSeparator">
+						·
+					</div>
+				</React.Fragment>
+			))}
+			{(!post.author && post.createdAt) &&
+				<div className="PostHeader-item">
+					<PostDate
+						date={post.createdAt}
+						url={url}
+						urlBasePath={urlBasePath}
+						onClick={onPostUrlClick_}
+						locale={locale}/>
+				</div>
+			}
+			{onReply && (!post.author && post.createdAt)  &&
+				<div className="PostHeader-itemSeparator">
+					·
+				</div>
+			}
+			{onReply &&
+				<div className="PostHeader-item">
+					<HoverButton
+						onClick={onReply}
+						className="Padding">
+						{/*<ReplyIcon className="PostHeader-itemIcon PostHeader-itemIcon--reply"/>*/}
+						{messages.reply}
+					</HoverButton>
+				</div>
+			}
+			{onShowReplies && onReply &&
+				<div className="PostHeader-itemSeparator">
+					·
+				</div>
+			}
+			{onShowReplies &&
+				<div className="PostHeader-item">
+					<HoverButton
+						ref={toggleShowRepliesButtonRef}
+						onClick={onShowReplies}
+						title={messages.repliesCount}
+						pushed={showingReplies}
+						className="Padding">
+						<MessageIcon className="PostHeader-itemIcon PostHeader-itemIcon--replies"/>
+						{post.replies.length}
+					</HoverButton>
+				</div>
+			}
+		</div>
+	)
+}
+
+PostHeaderLeft.propTypes = {
+	post: post.isRequired,
+	url: PropTypes.string,
+	urlBasePath: PropTypes.string,
+	onPostUrlClick: PropTypes.func,
+	locale: PropTypes.string,
+	messages: PropTypes.object.isRequired,
+	items: PropTypes.arrayOf(PropTypes.node),
+	onReply: PropTypes.func,
+	onShowReplies: PropTypes.func,
+	toggleShowRepliesButtonRef: PropTypes.any,
+	showingReplies: PropTypes.bool
+}
+
+function PostHeaderRight({
+	post,
+	locale,
+	messages,
+	badges,
+	vote,
+	onVote,
+	moreActions
+}) {
+	if (badges) {
+		badges = badges.filter(({ condition }) => condition(post))
+	}
+	const hasBadges = badges && badges.length > 0
+	const hasVotes = onVote !== undefined
+	return (
+		<div className="PostHeader-right">
+			{(hasBadges || hasVotes) &&
+				<div className="PostHeader-rightExceptMoreActionsMenuButton">
+					{hasBadges &&
+						<div className="PostHeader-badges">
+							{badges.map((badge) => {
+								return (
+									<PostBadge
+										key={badge.name}
+										post={post}
+										locale={locale}
+										messages={messages}
+										badge={badge}
+										className="PostHeader-badgeContainer"
+										iconClassName={`PostHeader-badge PostHeader-badge--${badge.name}`}/>
+								)
+							})}
+						</div>
+					}
+					{hasVotes &&
+						<PostVotes
+							post={post}
+							vote={vote}
+							onVote={onVote}
+							messages={messages}/>
+					}
+				</div>
+			}
+			{moreActions &&
+				<PostMoreActions
+					alignment="right"
+					title={messages.moreActions.title}>
+					{moreActions}
+				</PostMoreActions>
+			}
+		</div>
+	)
+}
+
+PostHeaderRight.propTypes = {
+	post: post.isRequired,
+	locale: PropTypes.string,
+	messages: PropTypes.object.isRequired,
+	badges: PropTypes.arrayOf(postBadge),
+	onVote: PropTypes.func,
+	vote: PropTypes.bool,
+	moreActions: moreActionsType
 }

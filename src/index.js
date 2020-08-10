@@ -16,4 +16,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // Run the application.
-require('./render').default().catch(error => console.error(error))
+require('./render').default().catch((error) => {
+	console.error(error.stack || error)
+	alert('Error')
+})

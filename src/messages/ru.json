@@ -4,6 +4,8 @@
 		"title": "Уведомления",
 		"empty": "Нет новых уведомлений"
 	},
+	"error": "Ошибка",
+	"default": "По умолчанию",
 	"darkMode": "Ночной режим",
 	"settings": {
 		"title": "Настройки",
@@ -38,7 +40,7 @@
 		"verified": "Личность подтверждена",
 		"banned": "Автор этого сообщения был забанен",
 		"bannedReason": ". Причина: \"{0}\".",
-		"sticky": "Прикреплённый тред",
+		"sticky": "Закреплённый тред",
 		"closed": "Тред закрыт",
 		"commentsCount": "Комментарии",
 		"repliesCount": "Ответы",
@@ -83,6 +85,9 @@
 		"showMore": "Показать ещё",
 		"showLess": "Скрыть"
 	},
+	"status": {
+		"done": "Готово"
+	},
 	"role": {
 		"administrator": "Администратор",
 		"moderator": "Модератор"
@@ -112,7 +117,8 @@
 			"searchInGoogle": "Поискать в Гугле",
 			"showControls": "Показать действия",
 			"hideControls": "Скрыть действия",
-			"openExternalLink": "Открыть оригинал"
+			"openExternalLink": "Открыть оригинал",
+			"exitDragAndScaleMode": "Выйти из режима перетаскивания и увеличения"
 		}
 	},
 	"cookies": {

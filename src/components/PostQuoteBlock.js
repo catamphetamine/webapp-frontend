@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 
-import PostQuoteMarker from './PostQuoteMarker'
+import PostQuoteBorderLeft from './PostQuoteBorderLeft'
 
 import './PostQuoteBlock.css'
 
@@ -10,6 +10,7 @@ export default function PostQuoteBlock({
 	kind,
 	inline,
 	generated,
+	first,
 	className,
 	children
 }) {
@@ -19,18 +20,19 @@ export default function PostQuoteBlock({
 	return (
 		<span className={classNames(
 			className,
-			'post__quote-block',
-			kind && `post__quote-block--${kind}`, {
-				'post__quote-block--generated': generated,
-				'post__quote-block--inline': inline
+			'PostQuoteBlock',
+			kind && `PostQuoteBlock--${kind}`, {
+				'PostQuoteBlock--generated': generated,
+				'PostQuoteBlock--inline': inline,
+				'PostQuoteBlock--first': first
 			})}>
-			<PostQuoteMarker/>
+			<PostQuoteBorderLeft/>
 			{/* Set the content to "> " for copy-pasting quotes. */}
 			{/* It won't be visible due to `font-size: 0`. */}
-			<span className="post__quote-block__prefix">
+			<span className="PostQuoteBlock__prefix">
 				{'> '}
 			</span>
-			<q className="post__quote-block__content">
+			<q className="PostQuoteBlock__content">
 				{children}
 			</q>
 		</span>
@@ -46,6 +48,7 @@ PostQuoteBlock.propTypes = {
 	// `kohlchan.net` and `8ch.net` have regular quotes and "inverse" quotes.
 	kind: PropTypes.string,
 	generated: PropTypes.bool,
+	first: PropTypes.bool,
 	className: PropTypes.string,
 	children: PropTypes.node.isRequired
 }

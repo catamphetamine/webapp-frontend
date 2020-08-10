@@ -13,14 +13,16 @@ import { moreActionsType } from './PostMoreActions'
 import loadResourceLinks from 'social-components/commonjs/utility/post/loadResourceLinks'
 import getContentBlocks from 'social-components/commonjs/utility/post/getContentBlocks'
 
-import getYouTubeVideoByUrlCached from '../utility/getYouTubeVideoByUrlCached'
 import { fixAttachmentPictureSizes } from '../utility/fixPictureSize'
+import ResourceCache from '../utility/cache/ResourceCache'
 
 import './Post.css'
 import './PostQuoteBlock.css'
 
 function Post({
 	post: postProperty,
+	showHeader,
+	showSummary,
 	header,
 	headerItems,
 	headerBadges,
@@ -31,15 +33,16 @@ function Post({
 	locale,
 	initialExpandContent,
 	onExpandContent,
+	initialExpandPostLinkQuotes,
 	onContentDidChange,
 	youTubeApiKey,
 	onPostContentChange,
 	contentMaxLength,
-	genericMessages,
+	resourceMessages,
 	fixAttachmentPictureSizes: shouldFixAttachmentPictureSizes,
 	expandFirstPictureOrVideo,
 	expandAttachments,
-	hideRestAttachments,
+	onlyShowFirstAttachmentThumbnail,
 	maxAttachmentThumbnails,
 	attachmentThumbnailSize,
 	useSmallestThumbnailsForAttachments,
@@ -49,6 +52,10 @@ function Post({
 	onPostUrlClick,
 	onPostLinkClick,
 	isPostLinkClickable,
+	expandPostLinkBlockQuotes,
+	postLinkQuoteMinimizedComponent,
+	postLinkQuoteExpandTimeout,
+	onPostLinkQuoteExpand,
 	onReply,
 	showingReplies,
 	onShowReplies,
@@ -72,10 +79,18 @@ function Post({
 			onExpandContent()
 		}
 		setShowPreview(false)
-	}, [onExpandContent, setShowPreview])
+	}, [
+		onExpandContent,
+		setShowPreview
+	])
+
+	const isPostLinkQuoteExpanded = useCallback((_id) => {
+		return initialExpandPostLinkQuotes && initialExpandPostLinkQuotes[_id]
+	}, [initialExpandPostLinkQuotes])
 
 	useEffect(() => {
 		if (isMounted.current) {
+			// Call `onContentDidChange()` when the user has clicked "Read more".
 			if (onContentDidChange) {
 				onContentDidChange()
 			}
@@ -85,8 +100,8 @@ function Post({
 	function expandLinks() {
 		loadResourceLinks(postProperty, {
 			youTubeApiKey,
-			getYouTubeVideoByUrl: getYouTubeVideoByUrlCached,
-			messages: genericMessages,
+			cache: ResourceCache,
+			messages: resourceMessages,
 			contentMaxLength,
 			// Fix attachment picture sizes.
 			//
@@ -104,7 +119,7 @@ function Post({
 			// `<PostAttachment/>` does pass the correct `style` to `<ButtonOrLink/>`
 			// but the `style` doesn't get applied in the DOM.
 			//
-			loadPost: shouldFixAttachmentPictureSizes ? (post) => {
+			loadResources: shouldFixAttachmentPictureSizes ? (post) => {
 				if (post.attachments) {
 					return fixAttachmentPictureSizes(post.attachments)
 				}
@@ -157,40 +172,53 @@ function Post({
 
 	const postContent = showPreview && post.contentPreview ? post.contentPreview : post.content
 
+	const startsWithText = post.content && (typeof post.content === 'string' || typeof post.content[0] === 'string' || Array.isArray(post.content[0]))
+	const startsWithQuote = post.content && Array.isArray(post.content) && (post.content[0].type === 'quote' || (Array.isArray(post.content[0]) && (post.content[0][0].type === 'post-link' || post.content[0][0].type === 'quote')))
+
 	return (
 		<article
 			ref={ref}
-			className={classNames(className, 'post', {
-				'post--titled': post.title,
-				'post--starts-with-text': post.content && (typeof post.content === 'string' || typeof post.content[0] === 'string' || Array.isArray(post.content[0])),
-				'post--anonymous': !post.account,
-				'post--empty': !post.content,
-				'post--compact': compact,
-				'post--stretch': stretch
+			className={classNames(className, 'Post', {
+				// 'Post--has-title': post.title,
+				// 'Post--starts-with-text': startsWithText,
+				// 'Post--starts-with-quote': startsWithQuote,
+				'Post--anonymous': !post.account,
+				// 'Post--no-content': !post.content,
+				'Post--has-content': post.content,
+				'Post--compact': compact,
+				'Post--stretch': stretch
 			})}>
-			<PostHeader
-				post={post}
-				url={url}
-				urlBasePath={urlBasePath}
-				onPostUrlClick={onPostUrlClick}
-				locale={locale}
-				header={header}
-				items={headerItems}
-				badges={headerBadges}
-				moreActions={moreActions}
-				messages={messages}
-				onReply={onReply}
-				showingReplies={showingReplies}
-				onShowReplies={onShowReplies}
-				toggleShowRepliesButtonRef={toggleShowRepliesButtonRef}
-				vote={vote}
-				onVote={onVote}/>
+			{showHeader &&
+				<PostHeader
+					post={post}
+					showSummary={showSummary}
+					url={url}
+					urlBasePath={urlBasePath}
+					onPostUrlClick={onPostUrlClick}
+					locale={locale}
+					header={header}
+					items={headerItems}
+					badges={headerBadges}
+					moreActions={moreActions}
+					messages={messages}
+					onReply={onReply}
+					showingReplies={showingReplies}
+					onShowReplies={onShowReplies}
+					toggleShowRepliesButtonRef={toggleShowRepliesButtonRef}
+					vote={vote}
+					onVote={onVote}/>
+			}
 			{postContent &&
-				<div className="post__content">
+				<div className={classNames('PostContent', {
+					// 'PostContent--has-title': post.title,
+					'PostContent--starts-with-text': startsWithText
+				})}>
 					{getContentBlocks(postContent).map((content, i) => (
 						<PostBlock
 							key={i}
 							url={url}
+							first={i === 0}
+							markFirstQuote={startsWithQuote}
 							onReadMore={onExpandContent_}
 							readMoreLabel={messages.readMore}
 							attachments={post.attachments}
@@ -200,6 +228,12 @@ function Post({
 							onAttachmentClick={onAttachmentClick}
 							onPostLinkClick={onPostLinkClick}
 							isPostLinkClickable={isPostLinkClickable}
+							expandPostLinkBlockQuotes={expandPostLinkBlockQuotes}
+							postLinkQuoteMinimizedComponent={postLinkQuoteMinimizedComponent}
+							postLinkQuoteExpandTimeout={postLinkQuoteMinimizedComponent}
+							isPostLinkQuoteExpanded={isPostLinkQuoteExpanded}
+							onPostLinkQuoteExpand={onPostLinkQuoteExpand}
+							onContentDidChange={onContentDidChange}
 							useSmallestThumbnailsForAttachments={useSmallestThumbnailsForAttachments}
 							serviceIcons={serviceIcons}
 							locale={locale}>
@@ -216,11 +250,11 @@ function Post({
 				maxAttachmentThumbnails={maxAttachmentThumbnails}
 				attachmentThumbnailSize={attachmentThumbnailSize}
 				expandAttachments={expandAttachments}
-				hideRestAttachments={hideRestAttachments}
+				onlyShowFirstAttachmentThumbnail={onlyShowFirstAttachmentThumbnail}
 				spoilerLabel={messages.spoiler}
 				onAttachmentClick={onAttachmentClick}/>
 			{stretch &&
-				<div className="post__stretch"/>
+				<div className="Post-stretchVertically"/>
 			}
 			<PostFooter
 				post={post}
@@ -243,7 +277,7 @@ Post.propTypes = {
 	contentMaxLength: PropTypes.number,
 	expandFirstPictureOrVideo: PropTypes.bool,
 	expandAttachments: PropTypes.bool,
-	hideRestAttachments: PropTypes.bool,
+	onlyShowFirstAttachmentThumbnail: PropTypes.bool,
 	useSmallestThumbnailsForAttachments: PropTypes.bool,
 	serviceIcons: PropTypes.objectOf(PropTypes.func),
 	youTubeApiKey: PropTypes.string,
@@ -256,6 +290,10 @@ Post.propTypes = {
 	onPostUrlClick: PropTypes.func,
 	onPostLinkClick: PropTypes.func,
 	isPostLinkClickable: PropTypes.func,
+	expandPostLinkBlockQuotes: PropTypes.bool,
+	postLinkQuoteMinimizedComponent: PropTypes.elementType,
+	postLinkQuoteExpandTimeout: PropTypes.number,
+	onPostLinkQuoteExpand: PropTypes.func,
 	onReply: PropTypes.func,
 	showingReplies: PropTypes.bool,
 	onShowReplies: PropTypes.func,
@@ -268,6 +306,7 @@ Post.propTypes = {
 	moreActions: moreActionsType,
 	initialExpandContent: PropTypes.bool,
 	onExpandContent: PropTypes.func,
+	initialExpandPostLinkQuotes: PropType.objectOf(PropTypes.bool),
 	onContentDidChange: PropTypes.func,
 	onPostContentChange: PropTypes.func,
 	// `lynxchan` doesn't provide `width` and `height`
@@ -277,12 +316,15 @@ Post.propTypes = {
 	fixAttachmentPictureSizes: PropTypes.bool,
 	showPostThumbnailWhenThereAreMultipleAttachments: PropTypes.bool,
 	messages: postMessages.isRequired,
-	genericMessages: PropTypes.object,
+	resourceMessages: PropTypes.object,
+	showHeader: PropTypes.bool,
+	showSummary: PropTypes.bool,
 	stretch: PropTypes.bool,
 	className: PropTypes.string
 }
 
 Post.defaultProps = {
+	showHeader: true,
 	attachmentThumbnailSize: 250,
 	messages: {
 		readMore: '...'

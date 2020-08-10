@@ -62,7 +62,7 @@
 	--column-padding : var(--unit);
 
 	/* Some magic number seen on the Internet. */
-	--line-height : 1.52947;
+	--Document-lineHeight: 1.52947;
 
 	/*
 	Mobile font size must be at least `16px`

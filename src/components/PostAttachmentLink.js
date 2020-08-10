@@ -8,17 +8,17 @@ export default function PostAttachmentLink({ children: { link } }) {
 		<a
 			href={link.url}
 			target="_blank"
-			className="post__link-attachment">
+			className="PostAttachmentLink">
 			{link.picture &&
 				<Picture
 					picture={link.picture}
-					className="post__link-picture"/>
+					className="PostAttachmentLink-picture"/>
 			}
-			<div className="post__link-title-and-description">
-				<h2 className="post__link-title">
+			<div className="PostAttachmentLink-titleAndDescription">
+				<h2 className="PostAttachmentLink-title">
 					{link.title}
 				</h2>
-				<p className="post__link-description">
+				<p className="PostAttachmentLink-description">
 					{link.description}
 				</p>
 			</div>

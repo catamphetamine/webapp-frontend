@@ -1,78 +1,82 @@
-.post__quote-block {
+.PostQuoteBlock {
 	/* `position: relative` is for the quote marker to only span through
 	   this inline quote block in cases when there're multiple
-	   `.post__quote-block`s inside a quote
+	   `.PostQuoteBlock`s inside a quote
 	   in order for the quote marker to only span vertically for its "sub-block".
 	   This is the case when there're `post-link`s having multiple `quotes`. */
 	position: relative;
-	margin-top: var(--PostQuoteBlock-marginTop);
-	margin-bottom: var(--PostQuoteBlock-marginTop);
-	/* `padding-left` is set on `.post__quote-block`
+	width: calc(-1 * var(--PostQuoteBlock-marginLeft) + var(--PostQuoteBlock-borderWidth--left) + var(--PostQuoteBlock-paddingLeft) + 100% + var(--PostQuoteBlock-paddingRight) + var(--PostQuoteBlock-borderWidth--right) - var(--PostQuoteBlock-marginRight));
+	margin-left: calc(var(--PostQuoteBlock-marginLeft) - var(--PostQuoteBlock-borderWidth--left) - var(--PostQuoteBlock-paddingLeft));
+	margin-right: calc(var(--PostQuoteBlock-marginRight) - var(--PostQuoteBlock-borderWidth--right) - var(--PostQuoteBlock-paddingRight));
+	margin-top: calc(var(--PostQuoteBlock-marginTop) - var(--PostQuoteBlock-borderWidth));
+	margin-bottom: calc(var(--PostQuoteBlock-marginBottom) - var(--PostQuoteBlock-borderWidth));
+	/* `padding-left` is set on `.PostQuoteBlock`
 	   because there can be cases when there're multiple
-	   `.post__quote-block`s inside a quote
+	   `.PostQuoteBlock`s inside a quote
 	   and each of those "sub-blocks" has `position: relative`
 	   in order for the quote marker to only span vertically for its "sub-block". */
 	padding-left: var(--PostQuoteBlock-paddingLeft);
 	padding-right: var(--PostQuoteBlock-paddingRight);
-	margin-left: calc(var(--PostQuoteBlock-marginLeft) + var(--PostQuoteBlock-paddingLeft) * -1);
-	margin-right: calc(var(--PostQuoteBlock-marginRight) + var(--PostQuoteBlock-paddingRight) * -1);
-	width: calc(100% - var(--PostQuoteBlock-marginLeft) + var(--PostQuoteBlock-paddingLeft) + var(--PostQuoteBlock-paddingRight) - var(--PostQuoteBlock-marginRight));
 }
 
-.post__quote-block {
-	.post__quote-marker {
-		--PostQuoteMarker-color: var(--PostQuoteBlockMarker-color);
-		--PostQuoteMarker-width: var(--PostQuoteBlockMarker-width);
-		--PostQuoteMarker-padding: var(--PostQuoteBlockMarker-padding);
-		--PostQuoteMarker-opacity: var(--PostQuoteBlockMarker-opacity)
+.PostQuoteBlock {
+	.PostQuoteBorderLeft {
+		--PostQuoteBorderLeft-color: var(--PostQuoteBlockBorderLeft-color);
+		--PostQuoteBorderLeft-width: var(--PostQuoteBlockBorderLeft-width);
+		--PostQuoteBorderLeft-marginTop: var(--PostQuoteBlockBorderLeft-marginTop);
+		--PostQuoteBorderLeft-opacity: var(--PostQuoteBlockBorderLeft-opacity)
 	}
 }
 
-.post__quote-block--generated {
+.PostQuoteBlock--generated {
 	--PostQuoteBlock-marginTop: var(--PostQuoteBlock-marginTop--generated);
+	--PostQuoteBlock-marginBottom: var(--PostQuoteBlock-marginBottom--generated);
 	--PostQuoteBlock-color: var(--PostQuoteBlock-color--generated);
 	--PostQuoteBlock-backgroundColor: var(--PostQuoteBlock-backgroundColor--generated);
 	--PostQuoteBlock-borderWidth: var(--PostQuoteBlock-borderWidth--generated);
 	--PostQuoteBlock-borderColor: var(--PostQuoteBlock-borderColor--generated);
-	.post__quote-marker {
-		--PostQuoteBlockMarker-color: var(--PostQuoteBlockMarker-color--generated);
-		--PostQuoteBlockMarker-width: var(--PostQuoteBlockMarker-width--generated);
-		--PostQuoteBlockMarker-padding: var(--PostQuoteBlockMarker-padding--generated);
-		--PostQuoteBlockMarker-opacity: var(--PostQuoteBlockMarker-opacity--generated);
+	.PostQuoteBorderLeft {
+		--PostQuoteBlockBorderLeft-color: var(--PostQuoteBlockBorderLeft-color--generated);
+		--PostQuoteBlockBorderLeft-width: var(--PostQuoteBlockBorderLeft-width--generated);
+		--PostQuoteBlockBorderLeft-marginTop: var(--PostQuoteBlockBorderLeft-marginTop--generated);
+		--PostQuoteBlockBorderLeft-opacity: var(--PostQuoteBlockBorderLeft-opacity--generated);
 	}
 }
 
 /* Due to the presence of a `<br/>` sequential
    inline quotes' vertical margins don't "collapse". */
-.post__quote-block + br + .post__quote-block,
-.post__quote-block + br + .post__inline-quote-link--block .post__quote-block,
-.post__inline-quote-link--block + br + .post__inline-quote-link--block .post__quote-block,
-.post__inline-quote-link--block + br + .post__quote-block {
+.PostQuoteBlock + br + .PostQuoteBlock,
+.PostQuoteBlock + br + .PostQuoteLink--block .PostQuoteBlock,
+.PostQuoteLink--block + br + .PostQuoteLink--block .PostQuoteBlock,
+.PostQuoteLink--block + br + .PostQuoteBlock {
 	margin-top: 0;
 }
 
 /* Places the quote block marker above the left border of expanded comment tree replies. */
-.comment-tree__comment--nested {
-	.post__quote-block {
+/*
+.CommentTree-comment--nested {
+	.PostQuoteBlock {
 		--PostQuoteBlock-marginLeft: calc(-1 * var(--CommentTree-borderWidth));
 	}
 }
+*/
 
-.post__quote-block--inline {
+.PostQuoteBlock--inline {
 	/* `display: inline` wouldn't work: it would only apply
 	   `padding-left` to the first line of text. */
 	display: inline-block;
 }
 
-.post__quote-block {
+.PostQuoteBlock {
 	color: var(--PostQuoteBlock-color);
 	background-color: var(--PostQuoteBlock-backgroundColor);
+	border-left: var(--PostQuoteBlock-borderWidth--left) solid var(--PostQuoteBlock-borderColor);
 	border-right: var(--PostQuoteBlock-borderWidth--right) solid var(--PostQuoteBlock-borderColor);
 	border-top: var(--PostQuoteBlock-borderWidth) solid var(--PostQuoteBlock-borderColor);
 	border-bottom: var(--PostQuoteBlock-borderWidth) solid var(--PostQuoteBlock-borderColor);
 }
 
-.post__quote-block--generated {
+.PostQuoteBlock--generated {
 	/* When autogenerating quotes multiple paragraphs are
 	   joined with "\n" characters and these "line breaks"
 	   must be preserved when such autogenerated quotes are rendered.
@@ -82,7 +86,7 @@
 }
 
 /* Prepend an invisible "> " to inline quotes for copied text formatting. */
-.post__quote-block__prefix {
+.PostQuoteBlock__prefix {
 	/* `font-size: 0` makes the "> " invisible, and also makes the `<div/>` zero-height. */
 	font-size: 0;
 	/* Without `display: block` it would result in an empty line before the actual
@@ -91,39 +95,10 @@
 	display: block;
 }
 
-.post__quote-block__content {
+.PostQuoteBlock__content {
 	&:before,
 	&:after {
 		/* Don't insert quote characters around the quoted text. */
 		content: '';
-	}
-}
-
-.post__quote-block__attachment {
-	/* It's a `<span/>` tag. */
-	/* Can't be `display: block`, because it's inside a `<p/>`. */
-	/* Should be `display: inline-block`, because it contains a `display: block` attachment. */
-	.post__attachment-thumbnail {
-		display: inline-block;
-	}
-	margin-top: calc(var(--unit) / 2);
-	margin-bottom: calc(var(--unit) / 2);
-}
-
-.post__quote-block__attachment__more-count {
-	position: absolute;
-	top: 0;
-	right: 0;
-}
-
-/* This is only used as a workaround for quotes containing attachments. */
-.post__quote-block--attachment {
-	/* This removes the weird white space on the bottom. */
-	/* At the same time, it introduces some weird extra margin bottom. */
-  line-height: 0;
-  /* This makes the `<q/>` a `display: inline-block`
-     because it contains an attachment that is `display: block`. */
-	.post__quote-block__content {
-		display: inline-block;
 	}
 }

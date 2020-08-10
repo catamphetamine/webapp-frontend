@@ -28,6 +28,7 @@ body
 html, body {
 	font-family: var(--Document-fontFamily);
 	font-size: var(--Document-fontSize);
+	font-weight: var(--Document-fontWeight);
 	@mixin xxs {
 		--Document-fontSize: var(--Document-fontSize--xxs);
 	}
@@ -80,8 +81,7 @@ strong {
 	font-weight: var(--Content-fontWeight--bold);
 }
 
-.link--block
-{
+.link--block {
 	display: block;
 	color: initial;
 }
@@ -96,16 +96,14 @@ img {
 	filter: var(--Picture-filter);
 }
 
-p
-{
-	line-height   : var(--line-height);
-	margin-top    : 1em;
-	margin-bottom : 0;
+p {
+	line-height: var(--Document-lineHeight);
+	margin-top: 1em;
+	margin-bottom: 0;
 }
 
-.position-relative
-{
-	position : relative;
+.position-relative {
+	position: relative;
 }
 
 ::selection {
@@ -114,7 +112,8 @@ p
 }
 
 .no-margin-collapse {
-	overflow: hidden;
+	/* `overflow: hidden` won't do because it hides `box-shadow`. */
+	/*overflow: hidden;*/
 }
 
 /*

@@ -1,6 +1,10 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
+
+import { Button } from './Button'
+
+import './Slideshow.Progress.css'
 
 export default function SlideshowProgress({
 	i,
@@ -8,16 +12,22 @@ export default function SlideshowProgress({
 	maxCountForDots,
 	onShowSlide,
 	onShowNextSlide,
+	onGoToSlide,
 	highContrast,
 	isDisabled
 }) {
+	const goToSlide = useCallback(() => {
+		const number = parseInt(prompt())
+		if (!isNaN(number)) {
+			onGoToSlide(number)
+		}
+	}, [onGoToSlide])
 	if (count > maxCountForDots) {
 		return (
-			<button
-				type="button"
-				onClick={onShowNextSlide}
+			<Button
+				onClick={goToSlide}
 				tabIndex={-1}
-				className="rrui__button-reset rrui__slideshow__progress-counter">
+				className="rrui__slideshow__progress-counter">
 				<div className="rrui__slideshow__progress-counter-current">
 					{i + 1}
 				</div>
@@ -27,7 +37,7 @@ export default function SlideshowProgress({
 				<div className="rrui__slideshow__progress-counter-total">
 					{count}
 				</div>
-			</button>
+			</Button>
 		)
 	}
 	return (
@@ -36,19 +46,18 @@ export default function SlideshowProgress({
 		})}>
 			{createRange(count).map((_, j) => (
 				<li key={j}>
-					<button
-						type="button"
+					<Button
 						onClick={() => {
 							if (!isDisabled()) {
 								onShowSlide(j)
 							}
 						}}
 						tabIndex={-1}
-						className={classNames('rrui__button-reset', 'rrui__slideshow__progress-dot', {
+						className={classNames('rrui__slideshow__progress-dot', {
 							'rrui__slideshow__progress-dot--selected': j === i,
 							'rrui__slideshow__progress-dot--high-contrast': highContrast
 						})}>
-					</button>
+					</Button>
 				</li>
 			))}
 		</ul>
@@ -61,6 +70,7 @@ SlideshowProgress.propTypes = {
 	maxCountForDots: PropTypes.number.isRequired,
 	onShowSlide: PropTypes.func.isRequired,
 	onShowNextSlide: PropTypes.func.isRequired,
+	onGoToSlide: PropTypes.func.isRequired,
 	highContrast: PropTypes.bool,
 	isDisabled: PropTypes.func.isRequired
 }

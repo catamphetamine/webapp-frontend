@@ -1,11 +1,17 @@
 @import "../styles/common";
 
-.post__date-link {
-	display: block;
-	color: inherit;
+.PostDate {
+	--Padding-paddingLeft: var(--PostButton-paddingLeft);
+	--Padding-paddingTop: var(--PostButton-paddingTop);
 }
 
-.post__date {
+.PostDate--link {
+	display: block;
+	color: inherit;
+	outline: none;
+}
+
+.PostDate-date {
 	margin-top: 0.1em;
 	font-weight: var(--Post-fontWeight--secondary);
 	time {
@@ -13,7 +19,7 @@
 	}
 }
 
-.post__date-tooltip {
+.PostDate-tooltip {
 	height        : calc(var(--unit) * 3);
 	margin-top    : -0.5em;
 	padding-left  : 0.85em;

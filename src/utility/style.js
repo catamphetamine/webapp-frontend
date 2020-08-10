@@ -130,8 +130,8 @@ function enableAutoDarkMode(onSetDarkMode) {
  */
 export function applyLeftHanded(leftHanded) {
 	if (leftHanded) {
-		document.documentElement.classList.add('left-handed')
+		document.documentElement.classList.add('Document--leftHanded')
 	} else {
-		document.documentElement.classList.remove('left-handed')
+		document.documentElement.classList.remove('Document--leftHanded')
 	}
 }

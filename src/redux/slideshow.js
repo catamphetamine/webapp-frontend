@@ -9,7 +9,8 @@ const SLIDESHOW_PROPERTIES = [
 	'slides',
 	'index',
 	'mode',
-	'thumbnailImage'
+	'thumbnailImage',
+	'goToSource'
 ]
 
 const onOpenSlideshow = redux.simpleAction(

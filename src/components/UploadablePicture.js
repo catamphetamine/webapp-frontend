@@ -9,7 +9,7 @@ import './UploadablePicture.css'
 import ResponsivePicture, { getPreferredSize, preloadImage } from './Picture'
 
 import { uploadPicture } from '../redux/uploadablePicture'
-import { notify } from '../redux/notifications'
+import { showError } from '../redux/notifications'
 
 const PICTURE_COMPONENT_CLASS = <ResponsivePicture/>.type
 
@@ -37,7 +37,7 @@ export default function UploadablePicture({
 		if (onError) {
 			return onError(error)
 		}
-		dispatch(notify(error.message, { type: 'critical' }))
+		dispatch(showError(error.message))
 	}, [dispatch, onError])
 
 	const upload = useCallback(async (file) => {

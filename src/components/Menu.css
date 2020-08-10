@@ -27,12 +27,10 @@
 	height: var(--MenuIcon-width);
 	/* Don't include side padding in width. */
 	box-sizing: content-box;
-	/*
 	padding-left: var(--MenuIcon-padding);
 	padding-right: var(--MenuIcon-padding);
-	*/
-	--rrui-button-side-padding: var(--MenuIcon-padding);
-	--rrui-button-busy-indicator-width: 1px;
+	/*--rrui-button-side-padding: var(--MenuIcon-padding);*/
+	/*--rrui-button-busy-indicator-width: 1px;*/
 	color: var(--Menu-color);
 	&:active {
 		color: var(--Menu-color--active);

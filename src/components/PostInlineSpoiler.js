@@ -24,11 +24,11 @@ export default function PostInlineSpoiler({
 			data-hide={!show && hidden ? true : undefined}
 			title={hidden && censored && typeof content === 'string' ? content : undefined}
 			onClick={onClick}
-			className={classNames('post__inline-spoiler', {
-				'post__inline-spoiler--hidden': !show && hidden,
-				'post__inline-spoiler--censored': censored
+			className={classNames('PostInlineSpoiler', {
+				'PostInlineSpoiler--hidden': !show && hidden,
+				'PostInlineSpoiler--censored': censored
 			})}>
-			<span className="post__inline-spoiler-contents">
+			<span className="PostInlineSpoiler-contents">
 				{children}
 			</span>
 		</span>

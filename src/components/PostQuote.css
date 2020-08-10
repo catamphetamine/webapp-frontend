@@ -1,20 +1,20 @@
 @import "../styles/common";
 
-.post__quote
+.PostQuote
 {
 	padding-left : 1em;
 	border-left  : 0.1em solid var(--gray-color-100);
 }
 
-.post__quote-text
+.PostQuote-text
 {
 	margin-left   : 0;
 	margin-bottom : 0;
 	font-size     : 115%;
-	line-height   : var(--line-height);
+	line-height   : var(--Document-lineHeight);
 }
 
-.post__quote-source
+.PostQuote-source
 {
 	margin-top : 1em;
 }

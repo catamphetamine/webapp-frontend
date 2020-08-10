@@ -1,48 +1,51 @@
-.hover-button {
+.HoverButton {
 	color: inherit;
 	border-radius: var(--HoverButton-borderRadius);
 }
 
-.hover-button:hover,
-.hover-button:focus,
-.hover-button--link:focus {
-	background-color: var(--HoverButton-backgroundColor);
-	box-shadow: 0 0 0 1px var(--HoverButton-borderColor);
-	color: var(--HoverButton-color);
+.HoverButton:hover,
+.HoverButton:focus,
+.HoverButton--link:focus {
+	&:not([disabled]) {
+		color: var(--HoverButton-color);
+		background-color: var(--HoverButton-backgroundColor);
+		box-shadow: 0 0 0 1px var(--HoverButton-borderColor);
+	}
 }
 
-/* Added `.hover-button` for CSS selector specificity
-   to override `:hover` and `:focus` styles. */
-.hover-button.hover-button--pushed {
-	color: var(--HoverButton-color--pushed);
-	background-color: var(--HoverButton-backgroundColor--pushed);
+/* Added `.HoverButton` for CSS selector specificity
+   to override `:hover` and `:focus` styles
+   because those have higher priority than CSS classes. */
+.HoverButton.HoverButton--pushed {
+	--HoverButton-color: var(--HoverButton-color--pushed);
+	--HoverButton-backgroundColor: var(--HoverButton-backgroundColor--pushed);
 }
 
-.hover-button--pushed {
-	box-shadow: 0 0 0 1px var(--HoverButton-borderColor--pushed);
+.HoverButton--pushed {
+	--HoverButton-borderColor: var(--HoverButton-borderColor--pushed);
 }
 
-.hover-button--pushed:hover,
-.hover-button--pushed:focus {
-	box-shadow: 0 0 0 1px var(--HoverButton-borderColor--pushedFocus);
+.HoverButton--pushed:hover,
+.HoverButton--pushed:focus {
+	--HoverButton-borderColor: var(--HoverButton-borderColor--pushedFocus);
 }
 
-.hover-button:active,
-.hover-button--link:active {
-	background-color: var(--HoverButton-backgroundColor--active);
+.HoverButton:active,
+.HoverButton--link:active {
+	--HoverButton-backgroundColor: var(--HoverButton-backgroundColor--active);
 }
 
-.hover-button--pushed:active {
-	background-color: var(--HoverButton-backgroundColor--pushedActive);
+.HoverButton--pushed:active {
+	--HoverButton-backgroundColor: var(--HoverButton-backgroundColor--pushedActive);
 }
 
-.hover-button:active,
-.hover-button--link:active {
-	color: var(--HoverButton-color--active);
-	box-shadow: 0 0 0 1px var(--HoverButton-borderColor--active);
+.HoverButton:active,
+.HoverButton--link:active {
+	--HoverButton-color: var(--HoverButton-color--active);
+	--HoverButton-borderColor: var(--HoverButton-borderColor--active);
 }
 
-.hover-button--pushed:active {
-	color: var(--HoverButton-color--pushedActive);
-	box-shadow: 0 0 0 1px var(--HoverButton-borderColor--pushedActive);
+.HoverButton--pushed:active {
+	--HoverButton-color: var(--HoverButton-color--pushedActive);
+	--HoverButton-borderColor: var(--HoverButton-borderColor--pushedActive);
 }

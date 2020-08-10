@@ -1,52 +1,91 @@
-import React, { useState, useCallback } from 'react'
-import { Button as RRUIButton } from 'react-responsive-ui'
+import React, { useState, useCallback, useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 
 import './Button.css'
 
-// export default function Button({
-// 	disabled,
-// 	onClick,
-// 	className,
-// 	children,
-// 	...rest
-// }) {
-// 	const [wait, setWait] = useState()
-// 	const _onClick = useCallback(() => {
-// 		const result = onClick()
-// 		if (result && typeof result.then === 'function') {
-// 			setWait(true)
-// 			result.then(
-// 				() => setWait(false),
-// 				() => setWait(false)
-// 			)
-// 		}
-// 	}, [onClick])
-// 	return (
-// 		<button
-// 			{...rest}
-// 			disabled={disabled || wait}
-// 			type="button"
-// 			className={classNames('rrui__button-reset', className)}>
-// 			{children}
-// 		</button>
-// 	)
-// }
-
-// Button.propTypes = {
-// 	disabled: PropTypes.bool,
-// 	onClick: PropTypes.func.isRequired,
-// 	className: PropTypes.string,
-// 	children: PropTypes.node.isRequired
-// }
-
-function Button(props, ref) {
+function _Button({
+	className,
+	children,
+	...rest
+}, ref) {
 	return (
-		<RRUIButton {...props} ref={ref}/>
+		<button
+			{...rest}
+			ref={ref}
+			type="button"
+			className={classNames('Button', className)}>
+			{children}
+		</button>
 	)
 }
 
-Button = React.forwardRef(Button)
+export const Button = React.forwardRef(_Button)
 
-export default Button
+Button.propTypes = {
+	className: PropTypes.string,
+	// Sometimes there can be empty buttons:
+	// for example, round buttons styled via CSS.
+	children: PropTypes.node //.isRequired
+}
+
+function Button_({
+	disabled,
+	onClick,
+	className,
+	children,
+	...rest
+}, ref) {
+	const [wait, setWait] = useState()
+	const isMounted = useRef()
+	const _onClick = useCallback((...args) => {
+		const result = onClick.apply(this, args)
+		if (result && typeof result.then === 'function') {
+			setWait(true)
+			const onEnded = () => {
+				if (isMounted.current) {
+					setWait(false)
+				}
+			}
+			result.then(
+				onEnded,
+				onEnded
+			)
+		}
+	}, [
+		onClick,
+		setWait
+	])
+	useEffect(() => {
+		isMounted.current = true
+		return () => {
+			isMounted.current = false
+		}
+	})
+	return (
+		<Button
+			{...rest}
+			ref={ref}
+			onClick={_onClick}
+			disabled={disabled || wait}
+			type="button"
+			className={classNames(className, {
+				'Button--wait': wait
+			})}>
+			{children}
+		</Button>
+	)
+}
+
+Button_ = React.forwardRef(Button_)
+
+Button_.propTypes = {
+	disabled: PropTypes.bool,
+	onClick: PropTypes.func.isRequired,
+	className: PropTypes.string,
+	// Sometimes there can be empty buttons:
+	// for example, round buttons styled via CSS.
+	children: PropTypes.node //.isRequired
+}
+
+export default Button_

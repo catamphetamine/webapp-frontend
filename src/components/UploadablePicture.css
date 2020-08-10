@@ -26,7 +26,7 @@
 	border-radius : inherit;
 	transition : background-color 100ms ease-out;
 	padding : var(--unit);
-	line-height : var(--line-height);
+	line-height : var(--Document-lineHeight);
 }
 
 .uploadable-picture--accepts-drop .rrui__file-upload__area--dragged-over .uploadable-picture__change-overlay

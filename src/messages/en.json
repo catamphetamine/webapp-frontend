@@ -4,6 +4,8 @@
 		"title": "Notifications",
 		"empty": "No new notifications"
 	},
+	"error": "Error",
+	"default": "Default",
 	"darkMode": "Dark mode",
 	"settings": {
 		"title": "Settings",
@@ -83,6 +85,9 @@
 		"showMore": "Show more",
 		"showLess": "Show less"
 	},
+	"status": {
+		"done": "Done"
+	},
 	"role": {
 		"administrator": "Administrator",
 		"moderator": "Moderator"
@@ -112,7 +117,8 @@
 			"searchInGoogle": "Search in Google",
 			"showControls": "Show controls",
 			"hideControls": "Hide controls",
-			"openExternalLink": "Open external link"
+			"openExternalLink": "Open external link",
+			"exitDragAndScaleMode": "Exit Drag and Scale mode"
 		}
 	},
 	"cookies": {

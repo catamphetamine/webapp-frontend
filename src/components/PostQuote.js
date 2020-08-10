@@ -7,16 +7,16 @@ import './PostQuote.css'
 
 export default function PostQuote({ children: quote }) {
 	return (
-		<div className="post__quote">
+		<div className="PostQuote">
 			<blockquote
 				cite={quote.url || quote.source}
-				className="post__quote-text">
+				className="PostQuote-text">
 				<PostInlineContent>
 					{quote.content}
 				</PostInlineContent>
 			</blockquote>
 			{quote.source &&
-				<div className="post__quote-source">
+				<div className="PostQuote-source">
 					{!quote.url && quote.source}
 					{quote.url &&
 						<a href={quote.url} target="_blank">

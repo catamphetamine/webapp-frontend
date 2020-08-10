@@ -8,7 +8,8 @@ import {
 	object,
 	oneOf,
 	oneOfType,
-	instanceOf
+	instanceOf,
+	elementType
 } from 'prop-types'
 
 const id = oneOfType([
@@ -122,7 +123,7 @@ export const audio = shape({
 	]),
 	id: string,
 	author: string,
-	title: string.isRequired,
+	title: string,
 	description: string,
 	date: date,
 	duration: number,
@@ -213,12 +214,20 @@ const postNewLine = oneOf(['\n'])
 export const postInlineContent = oneOfType([
 	string,
 	postNewLine,
-	arrayOf([
+	arrayOf(oneOfType([
 		string,
 		postNewLine,
 		postStyledText,
-		postEmoji
-	])
+		postEmoji,
+		// quote's `content` is `postInlineContent` which would create a recursion.
+		shape({
+			type: oneOf(['quote']).isRequired
+		}),
+		// link's `content` is `postInlineContent` which would create a recursion.
+		shape({
+			type: oneOf(['link']).isRequired
+		})
+	]))
 ])
 
 export const postInlineLink = shape({
@@ -242,8 +251,9 @@ export const postSpoiler = shape({
 
 export const postPostLinkShape = shape({
 	type: oneOf(['post-link']).isRequired,
-	// postId: string.isRequired,
-	// threadId: string.isRequired,
+	postId: oneOfType([string, number]).isRequired,
+	// threadId: oneOfType([string, number]),
+	// boardId: oneOfType([string, number]),
 	url: string.isRequired,
 	content: postInlineContent
 })
@@ -351,7 +361,7 @@ const linkAttachment = shape({
 })
 
 export const postFile = shape({
-	name: string.isRequired,
+	name: string,
 	ext: string,
 	type: string,
 	size: number,
@@ -400,11 +410,16 @@ export const post = shape({
 })
 
 export const postBadge = shape({
+	ref: object,
 	name: string.isRequired,
-	icon: func,
+	icon: elementType,
 	getIcon: func,
+	getIconProps: func,
 	title: func,
-	condition: func.isRequired
+	condition: func.isRequired,
+	content: elementType,
+	onClick: func,
+	isPushed: bool
 })
 
 export const postMessages = shape({

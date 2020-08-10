@@ -1,4 +1,5 @@
 import React from 'react'
+import classNames from 'classnames'
 
 import Picture, {
 	preloadImage,
@@ -7,11 +8,6 @@ import Picture, {
 	getAspectRatio,
 	isVector
 } from './Picture'
-
-import {
-	getViewportWidth,
-	getViewportHeight
-} from '../utility/dom'
 
 import Search from '../../assets/images/icons/menu/search-outline.svg'
 
@@ -58,7 +54,8 @@ export default {
 		// maxWidth,
 		// maxHeight,
 		// scale,
-		style
+		style,
+		className
 	}) {
 		// pixelRatioMultiplier={scale}
 		// maxWidth={maxWidth}
@@ -73,9 +70,8 @@ export default {
 				showLoadingPlaceholder={false}
 				width={width}
 				height={height}
-				fit="scale-down"
 				style={style}
-				className="rrui__slideshow__picture"/>
+				className={classNames('rrui__slideshow__picture', className)}/>
 		)
 	}
 }

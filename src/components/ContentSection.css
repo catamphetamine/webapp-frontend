@@ -147,17 +147,17 @@
 }
 
 .content-section__description--marginBottomLarge {
-	margin-bottom: calc(var(--line-height) * 1em);
+	margin-bottom: calc(var(--Document-lineHeight) * 1em);
 }
 
 .content-section__description--marginTopLarge {
-	margin-top: calc(var(--line-height) * 1em);
+	margin-top: calc(var(--Document-lineHeight) * 1em);
 }
 
 .content-section__description--marginBottomMedium {
-	margin-bottom: calc(var(--line-height) * 1em * 0.5);
+	margin-bottom: calc(var(--Document-lineHeight) * 1em * 0.5);
 }
 
 .content-section__description--marginTopMedium {
-	margin-top: calc(var(--line-height) * 1em * 0.5);
+	margin-top: calc(var(--Document-lineHeight) * 1em * 0.5);
 }

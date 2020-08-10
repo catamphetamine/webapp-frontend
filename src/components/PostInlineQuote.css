@@ -1,23 +1,23 @@
 /*
-.post__inline-quote {
+.PostInlineQuote {
 	color: #789922;
 }
 
-.post__inline-quote:before {
+.PostInlineQuote:before {
 	content: '> ';
 	color: #789922;
 }
 
-.post__inline-quote:after {
+.PostInlineQuote:after {
 	content: '';
 }
 */
 
-.post__inline-quote:before {
+.PostInlineQuote:before {
 	content: var(--Quote--before);
 }
 
-.post__inline-quote:after {
+.PostInlineQuote:after {
 	content: var(--Quote--after);
 }
 
@@ -26,13 +26,13 @@
    At the same time there're `post-link`s having `quotes` that are rendered as
    `block`s because they don't have additional "new lines" around them. */
 /*
-.post__inline-quote {
+.PostInlineQuote {
 	display: inline-block;
 	width: 100%;
 }
 */
 
-.post__inline-quote {
+.PostInlineQuote {
 	color: var(--PostQuoteBlock-color);
 	background-color: var(--PostQuoteBlock-backgroundColor);
 	padding-left: var(--PostInlineQuote-paddingLeft);
@@ -42,7 +42,7 @@
 	box-shadow: 0 0 0 var(--PostQuoteBlock-borderWidth) var(--PostQuoteBlock-borderColor);
 }
 
-.post__inline-quote--generated {
+.PostInlineQuote--generated {
 	--PostQuoteBlock-color: var(--PostQuoteBlock-color--generated);
 	--PostQuoteBlock-backgroundColor: var(--PostQuoteBlock-backgroundColor--generated);
 	--PostQuoteBlock-borderColor: var(--PostQuoteBlock-borderColor--generated);

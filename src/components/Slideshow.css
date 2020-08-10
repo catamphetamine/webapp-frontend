@@ -45,12 +45,21 @@
 	transition-property: transform;
 }
 
-.rrui__slideshow__slide {
+.rrui__slideshow__slide-wrapper {
 	flex: 0 0 100%;
+	/* `width: 100%` and `height: 100%` are required, otherwise
+	   slides larger than viewport won't be centered on screen. */
+	width: 100%;
 	height: 100%;
 	display: flex;
 	align-items: center;
 	justify-content: center;
+}
+
+.rrui__slideshow__slide {
+	/* Without `flex: 0 0 auto` it wouldn't allow scaling the slide
+	   larger than slideshow width. */
+	flex: 0 0 auto;
 }
 
 .rrui__slideshow__video {
@@ -63,15 +72,16 @@
 }
 
 /* Show a border around the current slide
-   So that it can be discerned from the next/previous slides. */
-.rrui__slideshow__slide--current {
+   so that it can be discerned from the next/previous slides. */
+.rrui__slideshow__slide-wrapper--current {
 	/* Elevating the current slide using `z-index`
-	   so that its `box-shadow` is visible. */
+	   so that its `box-shadow` is above the next slide's. */
 	position: relative;
 	z-index: 1;
-	.rrui__slideshow__video {
-		--Video-borderColor--focus: var(--Picture-borderColor);
-	}
+}
+
+.rrui__slideshow__slide--current {
+	--Video-borderColor--focus: var(--Picture-borderColor);
 }
 
 .rrui__slideshow__slides--dragging {
@@ -84,25 +94,57 @@
 	transform: translateX(-789px);
 }
 
-.rrui__slideshow__picture .rrui__picture__image {
+.rrui__slideshow__picture {
 	cursor: pointer;
 }
 
-.rrui__slideshow__slide--card > * {
+.rrui__slideshow__slide--card {
 	box-shadow: var(--SlideshowSlide-boxShadow);
 	/* PNG images can be transparent. */
 	background-color: var(--SlideshowSlide-backgroundColor);
+	&.rrui__slideshow__video {
+		background-color: var(--SlideshowSlide-backgroundColor--video);
+	}
 }
 
-.rrui__slideshow__slide--card > .rrui__slideshow__video {
-	background-color: var(--SlideshowSlide-backgroundColor--video);
+/* https://daneden.github.io/animate.css/ */
+/* https://github.com/daneden/animate.css/blob/master/source/bouncing_entrances/bounceIn.css */
+@keyframes bounce {
+	from, 25%, 47%, 72%, to {
+		animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+	}
+	0% {
+		transform: scale3d(1, 1, 1);
+	}
+	25% {
+		transform: scale3d(.99, .99, .99);
+	}
+	47% {
+		transform: scale3d(1.01, 1.01, 1.01);
+	}
+	72% {
+		transform: scale3d(0.995, 0.995, 0.995);
+	}
+	to {
+		transform: scale3d(1, 1, 1);
+	}
 }
 
-.rrui__slideshow--panning .rrui__slideshow__slide {
+.rrui__slideshow__slide--bounce {
+	animation: bounce 0.6s;
+	/*transform: translate3d(0, 0, 0);*/
+}
+
+.rrui__slideshow--panning {
 	cursor: grabbing;
 }
 
-.rrui__slideshow__slide .rrui__picture__loading {
+/* Overrides "cursor: pointer" on a picture slide. */
+.rrui__slideshow--panning .rrui__slideshow__picture {
+	cursor: grabbing;
+}
+
+.rrui__slideshow__picture .rrui__picture__loading {
 	color: var(--white-color);
 }
 
@@ -146,12 +188,29 @@
 	border-radius: 50%;
 	background-color: rgba(0,0,0,0.7);
 	color: var(--white-color);
+	font-weight: 300;
 
 	outline: none;
 
 	&:hover, &:focus {
 		color: var(--Clickable-color--active);
 	}
+}
+
+.rrui__slideshow__action--hidden {
+	visibility: hidden;
+}
+
+.rrui__slideshow__action--fontSize-s {
+	font-size: 75%;
+}
+
+.rrui__slideshow__action--fontSize-xs {
+	font-size: 60%;
+}
+
+.rrui__slideshow__action--fontSize-xxs {
+	font-size: 45%;
 }
 
 .rrui__slideshow__action:active,
@@ -232,86 +291,6 @@
 
 .rrui__slideshow__next {
 	right: 0;
-}
-
-.rrui__slideshow__progress-counter {
-	display: flex;
-	align-items: center;
-	height: 1.65em;
-	border-radius: 1em;
-	padding-left: 0.6em;
-	padding-right: 0.6em;
-	background-color: rgba(0, 0, 0, 0.7);
-	color: var(--white-color);
-	font-weight: 300;
-	&:focus, &:hover {
-		color: var(--Clickable-color--active);
-	}
-	&:active {
-		color: var(--white-color);
-		background-color: var(--Clickable-color--active);
-		.rrui__slideshow__progress-counter-current {
-			opacity: 1;
-		}
-		.rrui__slideshow__progress-counter-divider {
-			opacity: 0.6;
-		}
-		.rrui__slideshow__progress-counter-total {
-			opacity: 0.75;
-		}
-	}
-}
-
-.rrui__slideshow__progress-counter-current {
-	opacity: 0.75;
-}
-
-.rrui__slideshow__progress-counter-divider {
-	margin-left: 0.35em;
-	margin-right: 0.35em;
-	opacity: 0.35;
-	transform: scale(1.3);
-}
-
-.rrui__slideshow__progress-counter-total {
-	opacity: 0.5;
-}
-
-.rrui__slideshow__progress-dots {
-	display: flex;
-	margin: 0;
-	margin-bottom: calc(var(--unit) / 2);
-	padding: 0;
-	list-style: none;
-	opacity: var(--SlideshowProgressDot-opacity);
-	li {
-		line-height: 0;
-	}
-}
-
-.rrui__slideshow__progress-dot {
-	width: calc(var(--unit) / 2);
-	height: calc(var(--unit) / 2);
-	margin-left: calc(var(--unit) / 4);
-	margin-right: calc(var(--unit) / 4);
-	border-radius: 50%;
-	background-color: rgba(255, 255, 255, 0.7);
-	box-shadow: 0 0 0 var(--SlideshowProgressDot-borderWidth) var(--SlideshowProgressDot-borderColor);
-}
-
-.rrui__slideshow__progress-dot--selected {
-	background-color: var(--Clickable-color--active);
-}
-
-.rrui__slideshow__progress-dots--high-contrast {
-	--SlideshowProgressDot-opacity: 1;
-}
-
-.rrui__slideshow__progress-dot--high-contrast {
-	margin-left: calc(var(--unit) / 3);
-	margin-right: calc(var(--unit) / 3);
-	--SlideshowProgressDot-borderWidth: 2px;
-	--SlideshowProgressDot-borderColor: black;
 }
 
 .rrui__slideshow__video .rrui__video__play-icon {

@@ -1,1 +1,1 @@
-import './YouTubeVideoCache.test'
+import './cache/YouTubeVideoCache.test'

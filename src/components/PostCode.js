@@ -23,11 +23,12 @@ export default function PostCode({
 	}), [language])
 	const className = classNames(
 		_className,
-		'post__code',
-		// Add `.post__block` CSS class to reduce `margin-top` in cases
-		// when `<PostCode/>` block comes after a `<PostParagraph/>`.
-		!inline && 'post__block',
-		inline && 'post__code--inline',
+		'PostCode',
+		// // Add `.PostBlock` CSS class to reduce `margin-top` in cases
+		// // when `<PostCode/>` block comes after a `<PostParagraph/>`.
+		// !inline && 'PostBlock',
+		!inline && 'PostCode--block',
+		inline && 'PostCode--inline',
 		inline && language && `language-${language}`
 	)
 	if (language && typeof children === 'string') {
@@ -38,7 +39,7 @@ export default function PostCode({
 					PreTag={Pre}
 					useInlineStyles={false}
 					language={language}
-					realClassName={classNames(className, 'post__code--highlighted')}
+					realClassName={classNames(className, 'PostCode--highlighted')}
 					codeTagProps={codeTagProps}>
 					{children}
 				</SyntaxHighlighter>

@@ -74,6 +74,13 @@
 	position: absolute;
 	top: 0;
 	left: 0;
+	/* <Slideshow/> captures `thumbnailElement` on click
+	   in order to play scale open animation.
+	   If the blurred image was clickable,
+	   then the scale open animation wouldn't be correct
+	   because the coordinates of the blurred image
+	   aren't equal to the coordinates of the picture. */
+	pointer-events: none;
 }
 
 .rrui__picture__status {

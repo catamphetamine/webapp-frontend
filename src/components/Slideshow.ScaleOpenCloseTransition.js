@@ -5,7 +5,7 @@
 
 import { getFitSize, getPreferredSize, TRANSPARENT_PIXEL } from './Picture'
 import { calculateSlideCoordinates } from './Slideshow.HoverPicture'
-import { getViewportWidth, getViewportHeight, triggerRender } from '../utility/dom'
+import { triggerRender } from '../utility/dom'
 
 const OPEN_ANIMATION_LOGARITHM_FACTOR = 5
 const OPEN_ANIMATION_PIXELS_PER_SECOND = 2500 // `getViewportWidth()` doesn't play with mobile devices: too slow.
@@ -51,6 +51,8 @@ export default class SlideshowScaleOpenCloseTransition {
 			slideY,
 			slideWidth,
 			slideHeight,
+			this.slideshow.getSlideshowWidth(),
+			this.slideshow.getSlideshowHeight(),
 			this.slideshow.getMargin
 		)
 		this.openingAnimationTimeout = timeout
@@ -116,11 +118,10 @@ function openTransition(
 	slideY,
 	slideWidth,
 	slideHeight,
+	slideshowWidth,
+	slideshowHeight,
 	getMargin
 ) {
-	const slideshowWidth = getViewportWidth()
-	const slideshowHeight = getViewportHeight()
-
 	const thumbnailCoords = thumbnailElement.getBoundingClientRect()
 	const thumbnailWidth = thumbnailElement.width
 	const thumbnailHeight = thumbnailElement.height
@@ -250,13 +251,6 @@ function openTransition(
 	expandedImage.style.transition = `transform ${animationDuration}ms, box-shadow ${animationDuration}ms, opacity ${ANIMATION_MIN_DURATION}ms`
 	document.body.appendChild(expandedImage)
 
-	// const [slideOffsetX, slideOffsetY] = calculateSlideOffset(
-	// 	slideX,
-	// 	slideY,
-	//  slideWidth,
-	// 	slideHeight
-	// )
-
 	// Run CSS transitions.
 	triggerRender(expandedImage)
 	triggerRender(thumbnailImageCopy)
@@ -279,8 +273,6 @@ function openTransition(
 
 	return {
 		animationDuration,
-		// slideOffsetX,
-		// slideOffsetY,
 		promise,
 		timeout
 	}
@@ -359,8 +351,6 @@ function closeTransition(
 
 	return {
 		animationDuration,
-		// slideOffsetX,
-		// slideOffsetY,
 		promise,
 		timeout
 	}

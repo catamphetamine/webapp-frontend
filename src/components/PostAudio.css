@@ -1,5 +1,5 @@
-.post__audio {
-	margin-top: var(--PostContent-margin);
+.PostAudio {
+	margin-top: var(--PostContent-marginTop);
 
 	h1 {
 		margin-top: 0.4em;

@@ -2,12 +2,12 @@ Some experiments on a generic web application frontend.
 
 ## Install
 
-First, [install `webapp-backend`](https://github.com/catamphetamine/webapp-backend).
+First, [install `webapp-backend`](https://gitlab.com/catamphetamine/webapp-backend).
 
 Then:
 
 ```
-git clone git@github.com:catamphetamine/webapp-frontend.git
+git clone git@gitlab.com:catamphetamine/webapp-frontend.git
 cd webapp-frontend
 npm install
 ```

@@ -1,18 +1,31 @@
 @import "../styles/common";
 
-.post__video {
-	margin-top: var(--PostContent-margin);
+.PostVideo {
+	margin-top: var(--PostContent-marginTop);
 }
 
-.post__video-title {
+/*
+.PostVideo-title {
 	margin-top: 0.4em;
 	margin-bottom: 0;
 	font-weight: normal;
 	line-height: 1.35em;
 }
+*/
 
-.post__video:last-child {
-	.post__video-title {
-		margin-bottom: calc(-1 * var(--Post-textLineHeightBottomSpace));
+/*
+.PostVideo:last-child {
+	.PostVideo-title {
+		margin-bottom: calc(-1 * var(--Post-textLineHeightBlankSpace));
+	}
+}
+*/
+
+/* For play video icon. */
+.PostVideo .rrui__video {
+	&:hover {
+		.rrui__video__play-icon-background {
+			fill: rgba(0, 0, 0, 0.8);
+		}
 	}
 }

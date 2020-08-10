@@ -3,8 +3,6 @@ module.exports = {
 		"@babel/preset-env"
 	],
 	plugins: [
-		"@babel/plugin-transform-destructuring",
-		["@babel/plugin-proposal-object-rest-spread", { useBuiltIns: true }],
 		["@babel/plugin-proposal-decorators", { "legacy": true }],
 		["@babel/plugin-proposal-class-properties", { "loose" : true }]
 	],

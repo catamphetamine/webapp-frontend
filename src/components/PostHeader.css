@@ -1,4 +1,4 @@
-.post__header {
+.PostHeader {
 	/* Added `z-index: 1` so that post header "hover buttons"' borders
 	   aren't hidden by the first block quote's background color. */
 	/* Removed `z-index: 1` because otherwise the "..." (more actions)
@@ -8,12 +8,13 @@
   /*z-index: 1;*/
 }
 
-.post__header-top {
+.PostHeader-top {
 	display: flex;
 	justify-content: space-between;
+	color: var(--Post-color--secondary);
 }
 
-.post__summary {
+.PostHeader-items {
 	display: flex;
 	/* Was `flex-start` previously but changed to `center`
 	   because otherwise date and reply button would be
@@ -27,7 +28,7 @@
 }
 
 /*
-.post__summary-item {
+.PostHeader-item {
 	margin-right: calc(var(--unit) * 1.5);
 	&:last-child {
 		margin-right: 0;
@@ -35,86 +36,54 @@
 }
 */
 
-.post__summary-item {
+.PostHeader-item {
+	--Padding-paddingLeft: var(--PostButton-paddingLeft);
+	--Padding-paddingTop: var(--PostButton-paddingTop);
 	/* `display: flex` is to prevent weird vertical space
 	   or misalignment on "Show replies" button. */
 	display: flex;
 }
 
-.post__summary-item-separator {
+.PostHeader-itemSeparator {
 	margin-left: calc(var(--unit) * 0.75);
 	margin-right: calc(var(--unit) * 0.75);
 	pointer-events: none;
 }
 
-/*
-.post__summary-button--replies:not(.hover-button--pushed) {
-	opacity: 0.85;
-}
-*/
-
-.post__summary-item-icon {
+.PostHeader-itemIcon {
 	width: 0.9em;
 	height: 0.9em;
 	margin-right: 0.35em;
 }
 
-.post__summary-item-icon--replies {
+.PostHeader-itemIcon--replies {
 	margin-top: 0.1em;
-	> path {
-		stroke-width: 4;
-	}
 }
 
-.post__summary__account {
+.PostAuthor {
 	display: flex;
 	align-items: center;
 }
 
-.post__header-top {
-	color: var(--Post-color--secondary);
-}
-
-.post__summary-button {
-	/*height: calc(var(--unit) * 2);*/
-	height: auto;
-	margin-top: calc(-1 * var(--unit) / 8);
-	margin-bottom: calc(-1 * var(--unit) / 8);
-	margin-left: calc(-1 * var(--unit) / 2);
-	margin-right: calc(-1 * var(--unit) / 2);
-	padding-top: calc(var(--unit) / 8);
-	padding-bottom: calc(var(--unit) / 8);
-	--rrui-button-side-padding: calc(var(--unit) / 2);
-	--rrui-button-busy-indicator-width: 1px;
-	/* `.post__summary-button` is not only used for `<Button/>`s
-	   but also for `<Link/>`s, therefore duplicating
-	   `--rrui-button-side-padding` as `padding-left`/`padding-right`. */
-	padding-left: var(--rrui-button-side-padding);
-	padding-right: var(--rrui-button-side-padding);
-	text-transform: lowercase;
-	font-weight: var(--Post-fontWeight--secondary);
-	color: inherit;
-}
-
-.post__header-badges {
+.PostHeader-badges {
 	display: flex;
 	/* Fallback for really small screens. */
 	flex-wrap: wrap;
 	user-select: none;
 }
 
-.post__header-badges + .post__votes {
+.PostHeader-badges + .PostVotes {
 	margin-left: var(--unit);
 }
 
-.post__header-badge-container {
+.PostHeader-badgeContainer {
 	margin-right: var(--unit);
 	&:last-child {
 		margin-right: 0;
 	}
 }
 
-.post__header-badge {
+.PostHeader-badge {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -130,7 +99,7 @@
 	opacity: 0.8;
 }
 
-.post__actions {
+.PostHeader-right {
 	display: flex;
 	/* Was `flex-start` previously but changed to `center`
 	   because otherwise date and reply button would be
@@ -138,7 +107,7 @@
 	align-items: center;
 }
 
-.post__actions-except-more {
+.PostHeader-rightExceptMoreActionsMenuButton {
 	display: flex;
 	/* Was `flex-start` previously but changed to `center`
 	   because otherwise date and reply button would be
@@ -149,126 +118,42 @@
 	margin-right: var(--unit);
 }
 
-.post__votes {
-	display: flex;
-	align-items: center;
-	font-weight: 300;
-}
-
-.post__votes-count {
-	margin-left: 0.5em;
-	margin-right: 0.5em;
-	/* Disable text selection cursor on votes count.
-	   Could be "cursor: default" instead but that would
-	   override `<OnClick/>`'s `cursor: pointer`. */
-	pointer-events: none;
-	opacity: 0.75;
-}
-
-.post__votes-count--neutral {
-	opacity: 0.6;
-}
-
-.post__votes-count--positive {
-	color: var(--PostVotes-color--positive);
-}
-
-.post__votes-count--negative {
-	color: var(--PostVotes-color--negative);
-}
-
-.post__vote-icon {
-	width: var(--unit);
-	height: var(--unit);
-}
-
-.post__vote-icon--up {
-	transform: rotate(90deg);
-}
-
-.post__vote-icon--down {
-	transform: rotate(270deg);
-}
-
-.post__vote--voted {
-	opacity: 0.5;
-}
-
-.post__vote--downvoted {
-	color: var(--PostVotes-color--negative);
-}
-
-.post__vote--upvoted {
-	color: var(--PostVotes-color--positive);
-}
-
-.post__vote--downvoted,
-.post__vote--upvoted {
-	opacity: 1;
-	.post__vote-icon {
-		line {
-			stroke-width: 10;
-		}
-	}
-}
-
-.post--compact.post--anonymous {
-	.post__header {
-		margin-top: calc(-1 * var(--Post-textLineHeightBottomSpace));
+.Post--compact.Post--anonymous {
+	.PostHeader {
+		margin-top: calc(-1 * var(--Post-textLineHeightBlankSpace));
 	}
 }
 
 /* Textual content has some inherent bottom spacing due to line height.
    Other content (attachment thumbnails, embedded pictures and videos)
    doesn't have such extra visual spacing. Therefore reduce it for text. */
-.post--compact.post--anonymous:not(.post--empty):not(.post--titled) {
-	.post__header {
-		margin-bottom: calc(-1 * var(--Post-textLineHeightBottomSpace));
-	}
-}
-
-.post__account-name-and-date {
-	display : flex;
-	flex-direction : column;
-	margin-left : var(--unit);
-}
-
-.post__account-name {
-	color: var(--Clickable-color--text);
-}
-
-.post__account-picture {
-	width  : calc(var(--unit) * 4);
-	height : calc(var(--unit) * 4);
-	border-radius : var(--border-radius);
-	box-shadow : 0 0 0 1px var(--ContentSection-borderColor);
-}
-
-.post__heading {
-	margin-top: 0.5em;
-	/* `padding-bottom` should be used instead of `margin-bottom` here
-	   so that `margin-bottom` doesn't collapse with `margin-top`
-	   of the first paragraph of `post.content`, because when
-	   `<Post stretch/>` property is used `.post` becomes `display: flex`
-	   and margins no longer collapse. */
-	/*margin-bottom: 0.5em;*/
-	/* No margin bottom seems ok. */
-	margin-bottom: 0;
-	font-weight: 400;
-}
-
-.post--titled .post__summary {
-	margin-bottom: -0.1em;
-}
-
 /*
-.post--starts-with-text {
-	.post__heading {
-		--PostHeading-marginBottom: 0em;
+.Post--compact.Post--anonymous:not(.Post--no-content):not(.Post--has-title) {
+	.PostHeader {
+		margin-bottom: calc(-1 * var(--Post-textLineHeightBlankSpace));
 	}
 }
 */
 
-.post__date-link {
-	outline: none;
+.PostHeader-items {
+	display: flex;
+	flex-direction: column;
+	margin-left: var(--unit);
+}
+
+.PostAuthor-name {
+	color: var(--Clickable-color--text);
+}
+
+.PostAuthor-picture {
+	width: calc(var(--unit) * 4);
+	height: calc(var(--unit) * 4);
+	border-radius : var(--border-radius);
+	box-shadow : 0 0 0 1px var(--ContentSection-borderColor);
+}
+
+.Post--titled {
+	.PostHeader-items {
+		margin-bottom: -0.1em;
+	}
 }

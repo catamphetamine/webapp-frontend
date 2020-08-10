@@ -319,7 +319,7 @@ function Picture({
 			    until the image file header has been parsed
 			    and that would result in "jumpiness" of the layout
 			    and would also cause bugs in a `virtual-scroller`.
-			    https://github.com/catamphetamine/virtual-scroller#images */}
+			    https://gitlab.com/catamphetamine/virtual-scroller#images */}
 			{/* `<span/>` is used instead of a `<div/>`
 			    because a `<div/>` isn't supposed to be inside a `<button/>`. */}
 			{!(width || height) &&

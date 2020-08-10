@@ -3,6 +3,9 @@ export default class MemoryStorage {
 	constructor(options = {}) {
 		this.options = options
 	}
+	has(key) {
+		return this.data.hasOwnProperty(key)
+	}
 	get(key, defaultValue) {
 		const item = this.data[key] || defaultValue
 		if (this.options.emulateSerialize) {

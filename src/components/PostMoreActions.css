@@ -1,9 +1,10 @@
 :root {
 	--PostMoreActionsButton-width: 1em;
 	--PostMoreActionsButton-paddingLeft: 0.25em;
+	--PostMoreActionsButton-paddingTop: 0.15em;
 }
 
-.post__more-actions__toggler {
+.PostMoreActions-toggler {
 	--PostMoreActions-marginRight: 0.5em;
 	display: flex;
 	align-items: center;
@@ -21,23 +22,27 @@
 	height: var(--PostMoreActionsButton-width);
 	margin-left: calc(var(--PostMoreActionsButton-paddingLeft) * -1);
 	margin-right: calc(var(--PostMoreActionsButton-paddingLeft) * -1 + var(--PostMoreActions-marginRight));
+	margin-top: calc(var(--PostMoreActionsButton-paddingTop) * -1);
+	margin-bottom: calc(var(--PostMoreActionsButton-paddingTop) * -1);
 	padding-left: var(--PostMoreActionsButton-paddingLeft);
 	padding-right: var(--PostMoreActionsButton-paddingLeft);
+	padding-top: var(--PostMoreActionsButton-paddingTop);
+	padding-bottom: var(--PostMoreActionsButton-paddingTop);
 	box-sizing: content-box;
 }
 
-.post__more-actions__toggler--right {
+.PostMoreActions-toggler--right {
 	--PostMoreActions-marginRight: 0px;
 }
 
-.post__more-actions__menu--right {
+.PostMoreActions-menu--right {
 	.rrui__expandable {
 		right: calc(var(--unit) * -1);
 		margin-top: calc(var(--unit) / 2);
 	}
 }
 
-.post__more-actions__toggler-icon {
+.PostMoreActions-togglerIcon {
 	width: 100%;
 	/* `<OnClick/>`'s `filter` is set up to ignore clicks on `<button/>`s.
 	   `<svg/>` is required to ignore clicks in order for them to be registered by `<button/>`. */
@@ -45,8 +50,8 @@
 	opacity: 0.6;
 }
 
-.post__more-actions__toggler:active {
-	.post__more-actions__toggler-icon {
+.PostMoreActions-toggler:active {
+	.PostMoreActions-togglerIcon {
 		opacity: initial;
 	}
 }

@@ -1,4 +1,4 @@
-.post__link-icon {
+.PostLink-icon {
 	position: relative;
 	top: 0.15em;
 	/*margin-right: 0.2em;*/
@@ -16,30 +16,8 @@
    link text being placed on the next line
    due to wrapping in case of long unbreakable links. */
 /* https://snook.ca/archives/html_and_css/icon-wrap-after-text */
-.post__link-icon__wrap-fix {
+.PostLink-iconWrapFix {
 	white-space: nowrap;
 	/* This "negative" margin compensates the width added by "&nbsp;". */
 	/*margin-right: -0.2em;*/
-}
-
-.service-icon {
-	color: var(--Content-color-900);
-}
-
-.service-icon--monochrome {
-	color: inherit;
-}
-
-.service-icon--monochrome [data-stroke] {
-	/* `!important` overrides `color` set via `style="color:var(--white-color)"`. */
-	/* For example, see `steam.svg`. */
-	color: inherit !important;
-}
-
-.service-icon--monochrome [data-fill] {
-	color: var(--Content-backgroundColor);
-}
-
-.service-icon--monochrome [data-fill="gradient"] {
-	fill: currentColor;
 }

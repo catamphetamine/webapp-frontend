@@ -1,10 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Button } from 'react-responsive-ui'
 import classNames from 'classnames'
 import Close from '../../assets/images/icons/close-thicker.svg'
 
 import PostBlock from './PostBlock'
+import { Button } from './Button'
 
 import './Announcement.css'
 
@@ -27,13 +27,12 @@ export default function Announcement({
 			</div>
 
 			{onClose &&
-				<button
-					type="button"
+				<Button
 					onClick={onClose}
 					title={closeLabel}
-					className="announcement__close rrui__button-reset">
+					className="announcement__close">
 					<Close className="announcement__close-icon"/>
-				</button>
+				</Button>
 			}
 
 			{onClick &&

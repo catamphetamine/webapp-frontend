@@ -1,14 +1,14 @@
 @import "../styles/common";
 
-.comment-tree {
+.CommentTree {
 	position: relative;
 }
 
-.comment-tree--nested {
+.CommentTree--nested {
 	margin-left: var(--CommentTree-padding);
 }
 
-.comment-tree__replies {
+.CommentTree-replies {
 	position: relative;
 	/* On iOS for some reason the first-level replies left branch is invisible.
 	   Observed in both Safari and Chrome.
@@ -25,18 +25,18 @@ because it would be drawn at the very left edge of the screen.
 This CSS class can be used for fixing such special case
 by offsetting the root replies branch line to the right.
 */
-.comment-tree--first-level {
-	> .comment-tree__branch-line,
-	> .comment-tree__branch-marker,
-	> .comment-tree__dialogue-chain-marker {
+.CommentTree--first-level {
+	> .CommentTree-trunk,
+	> .CommentTree-branch,
+	> .CommentTreeDialogueTrace--side {
 		left: calc(-1 * var(--CommentTree-padding) * (1 - var(--CommentTreeBranch-paddingLeft--firstLevel)));
 		/* This `margin-left: 1px` works around the disappearance of
 		   the branch line on mobile devices for first-level replies branch.
 		   Observed in iOS Safari and Chrome. */
 		margin-left: 1px;
 	}
-	> .comment-tree__branch-marker,
-	> .comment-tree__dialogue-chain-marker {
+	> .CommentTree-branch,
+	> .CommentTreeDialogueTrace--side {
 		/* The `-1px` adjustment is to compensate the `margin-left: 1px` workaround above.
 		   Observed in iOS Safari and Chrome. */
 		width: calc(-1px + var(--CommentTree-padding) * (1 - var(--CommentTreeBranch-paddingLeft--firstLevel)));
@@ -44,7 +44,7 @@ by offsetting the root replies branch line to the right.
 }
 /* ^ var(--CommentTree-padding) * var(--CommentTree-root-level-replies-branch-width-factor) */
 
-.comment-tree__branch-line {
+.CommentTree-trunk {
 	position: absolute;
 	left: calc(-1 * var(--CommentTree-padding));
 	height: 100%;
@@ -56,13 +56,13 @@ by offsetting the root replies branch line to the right.
 	pointer-events: none;
 }
 
-.comment-tree:last-child > .comment-tree__branch-line {
+.CommentTree:last-child > .CommentTree-trunk {
 	height: var(--CommentTreeBranch-marginTop);
 }
 
-.comment-tree__branch-toggler {
+.CommentTree-toggler {
 	position: absolute;
-	/* This `1px` horizontal shift corresponds to the `1px` shift workaround for `.comment-tree__replies`. */
+	/* This `1px` horizontal shift corresponds to the `1px` shift workaround for `.CommentTree-replies`. */
 	left: 1px;
 	top: 0;
 	width: var(--CommentTree-padding);
@@ -71,26 +71,26 @@ by offsetting the root replies branch line to the right.
 	cursor: pointer;
 	&:hover {
 		background-color: var(--CommentTree-backgroundColor--hover);
-		& ~ .comment-tree {
+		& ~ .CommentTree {
 			/* Highlights branch lines for the immediate child comment tree
 			   and for all nested comment trees. */
-			.comment-tree__branch-toggler {
+			.CommentTree-toggler {
 				background-color: var(--CommentTree-backgroundColor--hover);
 			}
-			.comment-tree__branch-line {
+			.CommentTree-trunk {
 				border-left-color: var(--CommentTree-color--hover);
 			}
-			.comment-tree__dialogue-chain-marker {
+			.CommentTreeDialogueTrace {
 				border-color: var(--CommentTree-color--hover);
 			}
-			.comment-tree__branch-marker {
+			.CommentTree-branch {
 				background-color: var(--CommentTree-color--hover);
 			}
 		}
 	}
 }
 
-.comment-tree__branch-marker {
+.CommentTree-branch {
 	position: absolute;
 	left: calc(-1 * var(--CommentTree-padding));
 	width: var(--CommentTree-padding);
@@ -100,8 +100,11 @@ by offsetting the root replies branch line to the right.
 	pointer-events: none;
 }
 
-.comment-tree__dialogue-chain-marker {
+.CommentTreeDialogueTrace {
 	position: absolute;
+}
+
+.CommentTreeDialogueTrace--side {
 	left: calc(-1 * var(--CommentTree-padding));
 	width: var(--CommentTree-padding);
 	height: calc(var(--CommentTree-padding) * 1.5);
@@ -110,6 +113,10 @@ by offsetting the root replies branch line to the right.
 	border-bottom-color: var(--CommentTree-color--branch);
 	border-bottom-style: var(--CommentTree-borderStyle--branch);
 	border-right: none;
-	box-sizing: border-box;
-	pointer-events: none;
+}
+
+.CommentTreeDialogueTrace--through {
+	left: var(--CommentTree-padding);
+	height: 0;
+	border-left: var(--CommentTree-borderWidth) solid var(--CommentTree-color);
 }

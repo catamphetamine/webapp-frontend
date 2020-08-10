@@ -28,13 +28,18 @@ export default class SlideshowPointer {
 		if (!inline) {
 			event.preventDefault()
 			if (deltaY < 0) {
-				this.slideshow.scaleUp(mouseWheelScaleFactor)
+				this.slideshow.onScaleUp(event, mouseWheelScaleFactor)
 			} else {
-				this.slideshow.scaleDown(mouseWheelScaleFactor)
+				this.slideshow.onScaleDown(event, mouseWheelScaleFactor)
 			}
 		}
 	}
 
+	/**
+	 * Returns `true` if the left mouse button was clicked.
+	 * @param  {Event}  event
+	 * @return {Boolean}
+	 */
 	isClickDown(event) {
 		return event.button === 0
 		// switch (event.button) {

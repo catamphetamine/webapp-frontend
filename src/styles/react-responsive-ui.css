@@ -25,22 +25,14 @@
 	--rrui-input-field-background-color: transparent;
 	--rrui-input-field-label-color-focus: var(--Clickable-color--text);
 	--rrui-checkbox-fill-color: var(--Content-backgroundColor);
-	/*--rrui-button-transition: none;*/
 	--rrui-button-transition: none;
+	--rrui-tooltip-opacity: 0.85;
 }
 
 .dark {
 	--rrui-input-field-label-color: var(--Content-color-600);
 	--rrui-checkbox-fill-color: var(--Content-color-600);
 	--rrui-switch-knob-background-color: var(--Content-backgroundColor);
-}
-
-.rrui__tooltip--after-show {
-	opacity : 0.85;
-}
-
-.rrui__tooltip--before-hide {
-	opacity : 0;
 }
 
 .rrui__button--text {

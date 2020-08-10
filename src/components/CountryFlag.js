@@ -23,5 +23,5 @@ CountryFlag.propTypes = {
 }
 
 CountryFlag.defaultProps = {
-	flagsPath: 'https://catamphetamine.github.io/country-flag-icons/3x2/'
+	flagsPath: 'https://catamphetamine.gitlab.io/country-flag-icons/3x2/'
 }

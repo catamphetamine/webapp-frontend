@@ -5,18 +5,19 @@ import { audio } from '../PropTypes'
 import './PostAudio.css'
 
 export default function PostAudio({ audio }) {
+	const className = 'PostAudio'
 	if (!audio.provider) {
-		return <PostAudioFile audio={audio} className="post__audio"/>
+		return <PostAudioFile audio={audio} className={className}/>
 	}
 	switch (audio.provider) {
 		case 'SoundCloud':
-			return <SoundCloudAudio audio={audio} className="post__audio"/>
+			return <SoundCloudAudio audio={audio} className={className}/>
 		default:
 			console.error(`Unsupported audio provider: "${audio.provider}`)
 			return (
-				<div className="post__audio">
+				<div className={className}>
 					{audio.author}
-					{audio.author && ' — '}
+					{audio.author && audio.title && ' — '}
 					{audio.title}
 				</div>
 			)
@@ -56,7 +57,7 @@ function PostAudioFile({ audio, className }) {
 			</audio>
 			<h1>
 				{audio.author}
-				{audio.author && ' — '}
+				{audio.author && audio.title && ' — '}
 				{audio.title}
 			</h1>
 		</section>

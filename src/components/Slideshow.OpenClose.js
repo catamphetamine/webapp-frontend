@@ -5,7 +5,7 @@ import {
 export default class OpenClose {
 	constructor(slideshow) {
 		this.slideshow = slideshow
-		this.slideshow.animateOpenClose = this.animateOpenClose
+		this.slideshow.onOpen = this.animateOpenAndAnimateOnClose
 	}
 
 	static getInitialProps(props) {
@@ -29,9 +29,6 @@ export default class OpenClose {
 			animateOpenClose,
 			animateOpenCloseScale
 		} = props
-
-		const animateOpen = animateOpenClose
-		const animateClose = animateOpenClose || animateOpenCloseOnPanOut
 
 		let overlayOpacity = mode === 'flow' && typeof overlayOpacityFlowMode !== undefined ?
 			overlayOpacityFlowMode :
@@ -64,6 +61,9 @@ export default class OpenClose {
 			}
 		}
 
+		const animateOpen = animateOpenClose
+		const animateClose = animateOpenClose || animateOpenCloseOnPanOut
+
 		return {
 			...props,
 			overlayOpacity,
@@ -74,7 +74,7 @@ export default class OpenClose {
 		}
 	}
 
-	animateOpenClose = () => {
+	animateOpenAndAnimateOnClose = () => {
 		const {
 			i,
 			animateOpen,
@@ -84,12 +84,16 @@ export default class OpenClose {
 			animateOpenCloseScale,
 			getSlideDOMNode,
 			thumbnailImage,
-			shouldOffsetSlide
+			shouldOffsetSlide: shouldHaveOffsetInitialSlideOnOpen
 		} = this.slideshow.props
+		const {
+			offsetSlideIndex
+		} = this.slideshow.getState()
 		if (animateOpen || animateClose) {
 			let slideOffsetX
 			let slideOffsetY
-			if (this.slideshow.shouldOffsetSlide) {
+			// if (offsetSlideIndex === i) {
+			if (shouldHaveOffsetInitialSlideOnOpen) {
 				const result = this.slideshow.applySlideOffset()
 				slideOffsetX = result[0]
 				slideOffsetY = result[1]
@@ -121,13 +125,13 @@ export default class OpenClose {
 				})
 			}
 			_promise.then(() => {
-				this.slideshow.onCloseAnimation(({ interaction }) => {
+				this.slideshow.onClose(({ interaction }) => {
 					let transition
 					if (animateOpenCloseScale) {
 						// Close the initially opened slide via a "scale" animation
 						// if it was opened via a "scale" animation, even if slides
 						// were navigated through in the process.
-						if (shouldOffsetSlide && this.slideshow.getState().i === i) {
+						if (shouldHaveOffsetInitialSlideOnOpen && this.slideshow.getState().i === i) {
 							transition = this.slideshow.scaleOpenCloseTransition
 						} else {
 							// Fall back to the default open/close transition

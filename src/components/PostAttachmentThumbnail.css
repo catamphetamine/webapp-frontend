@@ -1,12 +1,12 @@
 @import "../styles/common";
 
-.post__attachment-thumbnail {
+.PostAttachmentThumbnail {
 	/* `<button/>`s are `display: inline` by default. */
 	display: block;
 }
 
 /* Only apply border to attachment thumbnails having non-transparent background. */
-.post__attachment-thumbnail.rrui__picture--non-transparent-background {
+.PostAttachmentThumbnail.rrui__picture--non-transparent-background {
 	/* Material Design Card elevation shadow. */
 	/* https://codepen.io/sdthornton/pen/wBZdXq */
 	/*transition: box-shadow 160ms cubic-bezier(.25,.8,.25,1);*/
@@ -25,14 +25,14 @@
 
 /* Blur radius depends on the actual image dimensions. */
 /*
-.post__attachment-thumbnail--spoiler {
+.PostAttachmentThumbnail--spoiler {
 	.rrui__picture__image {
 		filter: blur(14px);
 	}
 }
 */
 
-.post__attachment-thumbnail__loading {
+.PostAttachmentThumbnail__loading {
 	position: absolute;
 	width: 100%;
 	height: 100%;
@@ -46,7 +46,7 @@
 	z-index: 1;
 }
 
-.post__attachment-thumbnail__loading-indicator {
+.PostAttachmentThumbnail__loading-indicator {
 	width  : calc(var(--unit) * 2);
 	height : calc(var(--unit) * 2);
 	color  : var(--white-color);
@@ -54,7 +54,7 @@
 	font-size : 12px;
 }
 
-.post__attachment-thumbnail__more-count {
+.PostAttachmentThumbnail__more-count {
 	position : absolute;
 	top      : 0;
 	left     : 0;
@@ -73,4 +73,23 @@
 	pointer-events : none;
 
 	font-size : 3rem;
+}
+
+.PostAttachmentThumbnail-spoiler {
+	position: absolute;
+	width: 100%;
+	left: 0;
+	bottom: 0;
+	display: flex;
+	justify-content: center;
+	overflow: hidden;
+	padding-bottom: 0.15em;
+	padding-top: 0.15em;
+	background: var(--Content-backgroundColor);
+	color: var(--Content-color-900);
+	font-family: var(--Document-fontFamily);
+	font-weight: 300;
+	text-transform: uppercase;
+	letter-spacing: 0.1em;
+	opacity: 0.75;
 }

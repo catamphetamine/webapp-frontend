@@ -1,7 +1,7 @@
 import { archiveVideo, unarchiveVideo } from './YouTubeVideoCache'
 
-import { describe, it } from './mocha'
-import expectToEqual from './expectToEqual'
+import { describe, it } from '../mocha'
+import expectToEqual from '../expectToEqual'
 
 describe('YouTubeVideoCache', () => {
 	it('should archive/unarchive YouTube video', () => {

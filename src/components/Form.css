@@ -38,6 +38,18 @@
 	margin-top: calc(var(--unit) * 0.75);
 }
 
+.form__component-and-button {
+	display: flex;
+	.form__component {
+		flex: 1;
+		margin-top: calc(var(--unit) * 1.5);
+		margin-right: var(--unit);
+	}
+	.rrui__button--text {
+		--FormAction-height: auto;
+	}
+}
+
 .form__action {
 	display: block;
 	height: var(--FormAction-height);
@@ -69,7 +81,7 @@
 }
 
 @mixin upto-m {
-	.left-handed {
+	.Document--leftHanded {
 		.form__actions {
 			flex-direction: row-reverse;
 		}

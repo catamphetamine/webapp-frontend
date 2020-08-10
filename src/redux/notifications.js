@@ -16,4 +16,15 @@ export const notify = (content, options) => {
 	return setNotification({ content, ...options })
 }
 
+export const showError = (content, options) => {
+	if (typeof content !== 'string') {
+		if (content.message) {
+			content = content.message
+		} else {
+			content = JSON.stringify(content, null, 2)
+		}
+	}
+	return setNotification({ content, type: 'critical', ...options })
+}
+
 export default redux.reducer()

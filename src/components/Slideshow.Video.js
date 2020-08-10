@@ -1,7 +1,9 @@
 import React from 'react'
+import classNames from 'classnames'
 
 import { getAspectRatio } from './Picture'
 import Video, { getMaxSize, getUrl } from './Video'
+import { isKey } from '../utility/keys'
 
 export default {
 	minInitialScale: 0.65,
@@ -47,13 +49,11 @@ export default {
 	// 			return false
 	// 	}
 	// },
-	onKeyDown(event, slide) {
-		// const video = currentSlideElementRef.current
-		switch (event.keyCode) {
-			// Capture Spacebar (Play/Pause).
-			case 32:
-				// Spacebar is always handled by the `<Video/>` which is focused.
-				return true
+	onKeyDown(event) {
+		// Capture Spacebar (Play/Pause).
+		if (isKey('Space', event)) {
+			// Spacebar is always handled by the `<Video/>` which is focused.
+			return true
 		}
 	},
 	canOpenExternalLink(slide) {
@@ -96,10 +96,13 @@ export default {
 		// maxWidth,
 		// maxHeight,
 		tabIndex,
-		style
+		style,
+		className
 	}) {
 		// maxWidth={maxWidth}
 		// maxHeight={maxHeight}
+		// Disables video seeking on Left/Right arrow in "flow" slideshow mode.
+		// seekOnArrowKeys={mode === 'flow' ? false : undefined}
 		return (
 			<Video
 				ref={ref}
@@ -114,10 +117,9 @@ export default {
 				fit="scale-down"
 				tabIndex={tabIndex}
 				preview={mode === 'flow' ? false : undefined}
-				seekOnArrowKeys={mode === 'flow' ? false : undefined}
 				seekOnArrowKeysAtBorders={false}
 				style={style}
-				className="rrui__slideshow__video"/>
+				className={classNames('rrui__slideshow__video', className)}/>
 		)
 	}
 }
