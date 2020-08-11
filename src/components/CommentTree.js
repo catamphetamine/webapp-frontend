@@ -4,8 +4,6 @@ import classNames from 'classnames'
 
 import removeLeadingPostLink from 'social-components/commonjs/utility/post/removeLeadingPostLink'
 
-import Post from './Post'
-import { RepliesCountBadge } from './Post.badges'
 import { Button } from './Button'
 
 import { post } from '../PropTypes'

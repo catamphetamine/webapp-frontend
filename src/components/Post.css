@@ -43,10 +43,6 @@
 	flex-direction: column;
 }
 
-.Post-stretchVertically {
-	flex: auto;
-}
-
 .PostContent {
 	/*margin-bottom: calc(-1 * var(--PostContent-marginTop));*/
 	font-family: var(--Text-fontFamily);

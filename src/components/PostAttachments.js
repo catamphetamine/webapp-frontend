@@ -237,8 +237,8 @@ PostAttachments.propTypes = {
 	// Doesn't affect audios, files, links, etc.
 	onlyShowFirstAttachmentThumbnail: PropTypes.bool,
 	spoilerLabel: PropTypes.string,
+	attachmentThumbnailSize: PropTypes.number,
 	useSmallestThumbnails: PropTypes.bool,
-	attachmentThumbnailSize: PropTypes.number.isRequired,
 	maxAttachmentThumbnails: PropTypes.oneOfType([
 		PropTypes.oneOf([false]),
 		PropTypes.number

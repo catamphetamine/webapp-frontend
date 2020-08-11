@@ -81,7 +81,7 @@ PostHeader.propTypes = {
 	locale: PropTypes.string,
 	header: PropTypes.func,
 	moreActions: moreActionsType,
-	messages: PropTypes.object.isRequired,
+	messages: PropTypes.object,
 	onReply: PropTypes.func,
 	showingReplies: PropTypes.bool,
 	onShowReplies: PropTypes.func,
@@ -112,7 +112,7 @@ function PostHeaderLeft({
 		<div className="PostHeader-left">
 			{/*moreActions &&
 				<PostMoreActions
-					title={messages.moreActions.title}>
+					title={messages && messages.moreActions && messages.moreActions.title}>
 					{moreActions}
 				</PostMoreActions>
 			*/}
@@ -172,7 +172,7 @@ function PostHeaderLeft({
 						onClick={onReply}
 						className="Padding">
 						{/*<ReplyIcon className="PostHeader-itemIcon PostHeader-itemIcon--reply"/>*/}
-						{messages.reply}
+						{messages && messages.reply}
 					</HoverButton>
 				</div>
 			}
@@ -186,7 +186,7 @@ function PostHeaderLeft({
 					<HoverButton
 						ref={toggleShowRepliesButtonRef}
 						onClick={onShowReplies}
-						title={messages.repliesCount}
+						title={messages && messages.repliesCount}
 						pushed={showingReplies}
 						className="Padding">
 						<MessageIcon className="PostHeader-itemIcon PostHeader-itemIcon--replies"/>
@@ -204,7 +204,7 @@ PostHeaderLeft.propTypes = {
 	urlBasePath: PropTypes.string,
 	onPostUrlClick: PropTypes.func,
 	locale: PropTypes.string,
-	messages: PropTypes.object.isRequired,
+	messages: PropTypes.object,
 	items: PropTypes.arrayOf(PropTypes.node),
 	onReply: PropTypes.func,
 	onShowReplies: PropTypes.func,
@@ -258,7 +258,7 @@ function PostHeaderRight({
 			{moreActions &&
 				<PostMoreActions
 					alignment="right"
-					title={messages.moreActions.title}>
+					title={messages && messages.moreActions && messages.moreActions.title}>
 					{moreActions}
 				</PostMoreActions>
 			}
@@ -269,7 +269,7 @@ function PostHeaderRight({
 PostHeaderRight.propTypes = {
 	post: post.isRequired,
 	locale: PropTypes.string,
-	messages: PropTypes.object.isRequired,
+	messages: PropTypes.object,
 	badges: PropTypes.arrayOf(postBadge),
 	onVote: PropTypes.func,
 	vote: PropTypes.bool,

@@ -212,7 +212,7 @@
 	/*--PostAttachment-focusOutlineWidth: 2px;*/
 
 	/* PostButton. */
-	--PostButton-paddingLeft: calc(var(--unit) / 2);
+	--PostButton-paddingLeft: calc(var(--unit) / 3);
 	--PostButton-paddingTop: calc(var(--unit) / 4);
 
 	/* HoverButton. */

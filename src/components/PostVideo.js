@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 
 import Video, { getUrl, getMaxSize, getAspectRatio } from './Video'
 import PostEmbeddedAttachmentTitle from './PostEmbeddedAttachmentTitle'
+import { ATTACHMENT_THUMBNAIL_SIZE } from './PostAttachmentThumbnail'
 import { videoAttachment } from '../PropTypes'
 
 import './PostVideo.css'
@@ -42,6 +43,10 @@ PostVideo.propTypes = {
 	maxHeight: PropTypes.number,
 	expand: PropTypes.bool,
 	spoilerLabel: PropTypes.string
+}
+
+PostVideo.defaultProps = {
+	maxHeight: ATTACHMENT_THUMBNAIL_SIZE
 }
 
 function getMaxWidth(video, maxSize, maxHeight) {

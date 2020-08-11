@@ -49,7 +49,7 @@ PostAttachmentThumbnail.propTypes = {
 	postLink: postPostLinkShape.isRequired,
 	markFirstQuote: PropTypes.bool,
 	useSmallestThumbnailsForAttachments: PropTypes.bool,
-	attachmentThumbnailSize: PropTypes.number.isRequired,
+	attachmentThumbnailSize: PropTypes.number,
 	spoilerLabel: PropTypes.string
 }
 

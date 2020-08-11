@@ -22,7 +22,7 @@ export default function PostVotes({
 	return (
 		<div className="PostVotes">
 			<HoverButton
-				title={vote !== undefined ? messages.alreadyVoted : messages.downvote}
+				title={messages && vote !== undefined ? messages.alreadyVoted : messages.downvote}
 				disabled={vote !== undefined}
 				onClick={onDownVote}
 				className={classNames('Padding', 'PostVote', 'PostVote--down', {
@@ -40,7 +40,7 @@ export default function PostVotes({
 				{Math.abs(post.upvotes - post.downvotes)}
 			</div>
 			<HoverButton
-				title={vote !== undefined ? messages.alreadyVoted : messages.upvote}
+				title={messages && vote !== undefined ? messages.alreadyVoted : messages.upvote}
 				disabled={vote !== undefined}
 				onClick={onUpVote}
 				className={classNames('Padding', 'PostVote', 'PostVote--up', {
@@ -57,5 +57,5 @@ PostVotes.propTypes = {
 	post: post.isRequired,
 	vote: PropTypes.bool,
 	onVote: PropTypes.func.isRequired,
-	messages: PropTypes.object.isRequired
+	messages: PropTypes.object
 }

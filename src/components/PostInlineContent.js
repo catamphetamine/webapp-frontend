@@ -41,7 +41,7 @@ PostInlineContent.propTypes = {
 	onPostLinkClick: PropTypes.func,
 	isPostLinkClickable: PropTypes.func,
 	useSmallestThumbnailsForAttachments: PropTypes.bool,
-	attachmentThumbnailSize: PropTypes.number.isRequired,
+	attachmentThumbnailSize: PropTypes.number,
 	spoilerLabel: PropTypes.string,
 	serviceIcons: PropTypes.objectOf(PropTypes.func),
 	markFirstQuote: PropTypes.bool,

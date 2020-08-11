@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 import { getAspectRatio } from './Picture'
-import PostAttachmentThumbnail from './PostAttachmentThumbnail'
+import PostAttachmentThumbnail, { ATTACHMENT_THUMBNAIL_SIZE } from './PostAttachmentThumbnail'
 import PostEmbeddedAttachmentTitle from './PostEmbeddedAttachmentTitle'
 import { pictureAttachment } from '../PropTypes'
 
@@ -37,9 +37,13 @@ export default function PostPicture({
 PostPicture.propTypes = {
 	attachment: pictureAttachment.isRequired,
 	onClick: PropTypes.func,
-	maxHeight: PropTypes.number,
+	maxHeight: PropTypes.number.isRequired,
 	expand: PropTypes.bool,
 	spoilerLabel: PropTypes.string
+}
+
+PostPicture.defaultProps = {
+	maxHeight: ATTACHMENT_THUMBNAIL_SIZE
 }
 
 export const EXAMPLE = {

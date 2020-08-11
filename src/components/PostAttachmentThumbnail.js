@@ -83,6 +83,12 @@ export default function PostAttachmentThumbnail({
 			}
 		}
 	}, [])
+	// Either `maxSize` should be set, or `maxWidth`/`maxHeight`,
+	// or `width`/`height`.
+	if ((maxWidth === undefined && maxHeight === undefined) &&
+		(width === undefined && height === undefined)) {
+		maxSize = ATTACHMENT_THUMBNAIL_SIZE
+	}
 	// Could set some default `title` here. For example, to some
 	// `contentTypeLabels.picture` or `contentTypeLabels.video`,
 	// but that would result in a "Picture" / "Video" tooltip
@@ -287,3 +293,5 @@ async function preloadPicture(attachment, { fixAttachmentPictureSize }) {
 	// For testing/styling.
 	// await new Promise(_ => setTimeout(_, 3000))
 }
+
+export const ATTACHMENT_THUMBNAIL_SIZE = 250
