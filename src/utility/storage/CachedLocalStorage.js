@@ -87,10 +87,19 @@ export default class CachedLocalStorage extends LocalStorage {
 		// https://github.com/fusionjs/fusion-plugin-universal-events/pull/158#issuecomment-450958837
 		// https://github.com/GoogleChromeLabs/page-lifecycle/issues/2
 		document.addEventListener('visibilitychange', this.onVisibilityChange)
+		// On mobile (at least on iPhones), all browsers (Safari, Chrome, Firefox)
+		// have a bug: they don't emit a "visibilitychange" event on page refresh.
+		// A workaround is to listen to "pagehide" event.
+		// https://developer.mozilla.org/en-US/docs/Web/API/Window/pagehide_event
+		window.addEventListener('pagehide', this.flush)
 	}
 
+	/**
+	 * `.unload()` should be called when the storage instance will no longer be used.
+	 */
 	unload() {
 		document.removeEventListener('visibilitychange', this.onVisibilityChange)
+		window.removeEventListener('pagehide', this.flush)
 	}
 
 	onVisibilityChange = () => {

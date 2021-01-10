@@ -3,7 +3,9 @@ import PropTypes from 'prop-types'
 
 import { video } from '../PropTypes'
 
-function HtmlVideo(props, ref) {
+import './Video.Html.css'
+
+function VideoHtml(props, ref) {
 	const player = useRef()
 	const volumeBeforeMute = useRef()
 	// `<video/>` docs:
@@ -86,11 +88,11 @@ function HtmlVideo(props, ref) {
 	)
 }
 
-HtmlVideo = React.forwardRef(HtmlVideo)
+VideoHtml = React.forwardRef(VideoHtml)
 
-export default HtmlVideo
+export default VideoHtml
 
-HtmlVideo.propTypes = {
+VideoHtml.propTypes = {
 	video: video.isRequired,
 	preview: PropTypes.bool.isRequired,
 	tabIndex: PropTypes.number,
@@ -105,6 +107,6 @@ HtmlVideo.propTypes = {
 	])
 }
 
-HtmlVideo.defaultProps = {
+VideoHtml.defaultProps = {
 	preview: true
 }

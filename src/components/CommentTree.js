@@ -1,6 +1,8 @@
-import React, { useRef, useState, useCallback, useEffect } from 'react'
+import React, { useRef, useMemo, useState, useCallback, useLayoutEffect } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
+
+import useMount from '../hooks/useMount'
 
 import removeLeadingPostLink from 'social-components/commonjs/utility/post/removeLeadingPostLink'
 
@@ -11,6 +13,20 @@ import scrollIntoView from '../utility/scrollIntoView'
 
 import './CommentTree.css'
 
+/**
+ * Renders a tree of comments.
+ * Each comment can have a `.replies[]` list consisting of other comments.
+ * When replies of a comment are expanded/un-expanded, the tree's `state` changes.
+ * On more details on how `state` is structured, see the comments on `propTypes` below.
+ * Basically, `state` simply stores "are children expanded" state of each branch of the tree.
+ * By default, the `state` is stored in an "instance variable", and "is expanded" state
+ * of each branch is additionally stored as a `boolean` flag in a `useState()` variable,
+ * so that the branch is re-rendered on expand/un-expand.
+ * The default `state` storage is implemented an instance variable
+ * rather than a `useState()` variable, because if `useState()` was used
+ * instead of an instance variable, the whole tree would re-render when
+ * some (arbitrarily deep) branch was expanded/un-expanded.
+ */
 export default function CommentTree({
 	flat,
 	comment,
@@ -18,50 +34,74 @@ export default function CommentTree({
 	isFirstLevelTree,
 	component: Component,
 	getComponentProps,
+	isStateManagedExternally,
 	initialState,
 	onStateChange,
 	onShowReply,
 	onDidToggleShowReplies,
 	dialogueChainStyle,
-	setState,
 	getState,
+	setState,
 	className,
 	...rest
 }) {
-	const post = useRef()
-	const toggleShowRepliesButton = useRef()
+	// Set the root-level `isStateManagedExternally` property value.
+	// `isStateManagedExternally` is just a leftover of some earlier concept of
+	// "managing state outside of this component", but that turned out to have
+	// a consequence of re-rendering the whole tree when expanding/un-expanding
+	// any arbitrarily-deep reply branch, which is not optimal compared to the
+	// "internal" managing of the state, which only re-renders a specific
+	// reply branch. So currently, `isStateManagedExternally` is always `false`.
+	if (!parentComment) {
+		isStateManagedExternally = false
+	}
 
-	const [shouldShowReplies, setShowReplies] = useState(
-		initialState && initialState.replies
-		||
-		(getState && getState() && getState().replies)
-		? true : false
+	// `elementRef` is only used to scroll to the parent post
+	// when the user hides its replies tree.
+	const elementRef = useRef()
+
+	// `toggleShowRepliesButtonRef` is only used to focus the
+	// "toggle show/hide replies tree" button when the user
+	// clicks the tree branches instead of the toggle button.
+	// (the tree branches act as the toggle button on click).
+	const toggleShowRepliesButtonRef = useRef()
+
+	// `setState()` is always present on a subtree of a tree.
+	// The only case when `setState()` is not present is when
+	// it's the root of the tree (not a subtree).
+
+	// If state is not managed externally, then the "expanded"
+	// state is stored in this `useState()` variable.
+	const [_shouldShowReplies, _setShowReplies] = useState(
+		isStateManagedExternally
+			? undefined
+			: (
+				getState
+					? (getState().replies ? true : false)
+					: (initialState.replies ? true : false)
+			)
 	)
 
-	const subtreeState = useRef(initialState || {})
+	const shouldShowReplies = isStateManagedExternally
+		? (getState() && getState().replies ? true : false)
+		: _shouldShowReplies
 
-	const shouldTrackState = useCallback(() => {
-		return onStateChange || setState ? true : false
-	}, [
-		onStateChange,
-		setState
-	])
+	// If state is not managed externally, then it's
+	// stored in this "instance variable".
+	const _state = useRef(initialState)
+	const _getTreeState = useCallback(() => _state.current, [])
 
-	const getSubtreeState = useCallback(() => {
-		if (getState) {
-			return getState()
-		} else {
-			return subtreeState.current
-		}
-	}, [getState])
+	// Gets the state of the current branch of the tree.
+	const getSubtreeState = setState ? getState : _getTreeState
 
-	const setSubtreeState = useCallback((state) => {
+	// Sets the state of the current branch of the tree.
+	const setSubtreeState = useCallback((newState) => {
 		if (setState) {
-			setState(state)
+			setState(newState)
 		} else {
-			subtreeState.current = state
+			_state.current = newState
 			if (onStateChange) {
-				onStateChange(state)
+				onStateChange(newState)
 			}
 		}
 	}, [
@@ -69,35 +109,80 @@ export default function CommentTree({
 		onStateChange
 	])
 
-	const updateSubtreeState = useCallback((state) => {
-		if (state) {
-			setSubtreeState({
-				...getSubtreeState(),
-				...state
-			})
-		} else {
-			setSubtreeState()
-		}
-	}, [
-		getSubtreeState,
-		setSubtreeState
-	])
+	const getChildSubtreeState = useCallback((i) => {
+		return getSubtreeState().replies[i]
+	}, [getSubtreeState])
 
+	// Sets the state of a child branch of the current branch of the tree.
 	const setChildSubtreeState = useCallback((i, childState) => {
-		const state = getSubtreeState()
-		state.replies[i] = childState
-		setSubtreeState(state)
+		const replies = getSubtreeState().replies.slice()
+		replies[i] = childState
+		setSubtreeState({
+			...getSubtreeState(),
+			replies
+		})
 	}, [
 		getSubtreeState,
 		setSubtreeState
 	])
 
-	const updateStateOnToggleShowReplies = useCallback((showReplies) => {
-		let state
-		if (showReplies) {
-			state = {
-				replies: new Array(comment.replies.length)
+	// This thing caches `getSubtreeState()` functions
+	// for each branch of the current branch of the tree.
+	// `ref`s are used to always have the reference to the
+	// latest `getState()` property.
+	const getSubtreeStateFunctions = useRef([])
+	const getChildSubtreeStateRef = useRef()
+	getChildSubtreeStateRef.current = getChildSubtreeState
+	const getGetSubtreeStateFunction = useCallback((i) => {
+		if (!getSubtreeStateFunctions.current[i]) {
+			// `getSubtreeStateFunctions.current[i]` is created only once, so
+			// `getChildSubtreeState()` shouldn't change in order for this to work,
+			// that's why `getChildSubtreeStateRef.current` is used here instead of
+			// `getChildSubtreeState()`.
+			getSubtreeStateFunctions.current[i] = () => {
+				return getChildSubtreeStateRef.current(i)
 			}
+		}
+		return getSubtreeStateFunctions.current[i]
+	}, [])
+
+	// This thing caches `setSubtreeState()` functions
+	// for each branch of the current branch of the tree.
+	// `ref`s are used to always have the reference to the
+	// latest `getState()` property.
+	const setSubtreeStateFunctions = useRef([])
+	const setChildSubtreeStateRef = useRef()
+	setChildSubtreeStateRef.current = setChildSubtreeState
+	const getSetSubtreeStateFunction = useCallback((i) => {
+		if (!setSubtreeStateFunctions.current[i]) {
+			// `setSubtreeStateFunctions.current[i]` is created only once, so
+			// `setChildSubtreeState()` shouldn't change in order for this to work,
+			// that's why `setChildSubtreeStateRef.current` is used here instead of
+			// `setChildSubtreeState()`.
+			setSubtreeStateFunctions.current[i] = (state) => {
+				setChildSubtreeStateRef.current(i, state)
+			}
+		}
+		return setSubtreeStateFunctions.current[i]
+	}, [])
+
+	const onShowRepliesChange = useCallback((showReplies) => {
+		// The "expanded" state of replies is derived from the `state` as:
+		// "if state is `{}`, then replies are not expanded;
+		//  otherwise, replies are expanded".
+		const state = {}
+		if (showReplies) {
+			// Not using `.fill({})` here, because it would
+			// place the same object reference in all items,
+			// which would later lead to item states messing up each other.
+			// https://stackoverflow.com/a/28507704/970769
+			const replies = new Array(comment.replies.length)
+			let i = 0
+			while (i < replies.length) {
+				replies[i] = {}
+				i++
+			}
+			state.replies = replies
 			if (onShowReply) {
 				for (const reply of comment.replies) {
 					onShowReply(reply)
@@ -110,20 +195,27 @@ export default function CommentTree({
 			if (comment.replies.length === 1) {
 				expandDialogueChainReplies(comment, state, onShowReply)
 			}
-		} else {
-			state = null
 		}
-		// Using `.updateSubtreeState()` instead of `.setSubtreeState()` here
-		// so that the "expanded replies" state doesn't erase other "custom" state
-		// like "post is expanded" or "reply form is expanded".
-		if (shouldTrackState()) {
-			updateSubtreeState(state)
+		// The "expanded replies" state is merged with the current comment state
+		// rather than replacing it, so that it doesn't discard other possible
+		// "custom" state like "show full comment" or "show inline reply form".
+		const newState = { ...getSubtreeState() }
+		if (state.replies) {
+			newState.replies = state.replies
+		} else {
+			delete newState.replies
+		}
+		setSubtreeState(newState)
+		if (!isStateManagedExternally) {
+			_setShowReplies(state.replies ? true : false)
 		}
 	}, [
 		comment,
 		onShowReply,
-		shouldTrackState,
-		updateSubtreeState
+		getSubtreeState,
+		setSubtreeState,
+		setState,
+		_setShowReplies
 	])
 
 	const onToggleShowReplies = useCallback(() => {
@@ -132,14 +224,14 @@ export default function CommentTree({
 		// On expand replies — no scroll.
 		// On un-expand replies — scroll to the original comment if it's not visible.
 		if (!showReplies) {
-			if (post.current) {
-				// const postRect = post.current.getBoundingClientRect()
-				const toggleShowRepliesButtonRect = toggleShowRepliesButton.current.getBoundingClientRect()
+			if (elementRef.current) {
+				// const postRect = elementRef.current.getBoundingClientRect()
+				const toggleShowRepliesButtonRect = toggleShowRepliesButtonRef.current.getBoundingClientRect()
 				// if (postRect.top < 0) {
 				if (toggleShowRepliesButtonRect.top < 0) {
 					// const scrolledDistance = Math.abs(postRect.top)
 					const scrolledDistance = Math.abs(toggleShowRepliesButtonRect.top)
-					promise = scrollIntoView(post.current, {
+					promise = scrollIntoView(elementRef.current, {
 						ease: 'easeInOutSine',
 						duration: Math.min(140 + scrolledDistance / 2, 320),
 						scrollMode: 'if-needed',
@@ -150,24 +242,31 @@ export default function CommentTree({
 			promise.then(() => {
 				// If the component is still mounted then
 				// focus the "Toggle show replies" button.
-				if (toggleShowRepliesButton.current) {
-					toggleShowRepliesButton.current.focus()
+				if (toggleShowRepliesButtonRef.current) {
+					toggleShowRepliesButtonRef.current.focus()
 				}
 			})
 		}
 		promise.then(() => {
-			updateStateOnToggleShowReplies(showReplies)
-			setShowReplies(showReplies)
+			onShowRepliesChange(showReplies)
 		})
 	}, [
 		shouldShowReplies,
-		setShowReplies,
-		updateStateOnToggleShowReplies
+		onShowRepliesChange
 	])
 
-	useEffect(() => {
-		if (onDidToggleShowReplies) {
-			onDidToggleShowReplies()
+	const [isMounted, onMount] = useMount()
+
+	// `onDidToggleShowReplies()` calls `onRenderedContentDidChange()`
+	// that instructs `virtual-scroller` to re-measure the item's height.
+	// Therefore, it should happen immedately after a re-render,
+	// hence the use of `useLayoutEffect()` instead of `useEffect()`.
+	useLayoutEffect(() => {
+		// Skip the initial render.
+		if (isMounted()) {
+			if (onDidToggleShowReplies) {
+				onDidToggleShowReplies()
+			}
 		}
 	}, [shouldShowReplies])
 
@@ -180,11 +279,34 @@ export default function CommentTree({
 	if (_isMiddleDialogueChainLink) {
 		showReplies = true
 	}
-	const _subtreeState = shouldTrackState() ? getSubtreeState() : undefined
 	const componentProps = getComponentProps ? getComponentProps({
-		getState: getSubtreeState,
-		updateState: updateSubtreeState
+		initialState: getSubtreeState(),
+		setState: (getNewState) => setSubtreeState(getNewState(getSubtreeState()))
 	}) : undefined
+	const repliesWithRemovedLeadingPostLink = useMemo(() => {
+		return comment.replies && comment.replies.map((reply) => {
+			return removeLeadingPostLink(reply, comment.id)
+		})
+	}, [
+		comment.id,
+		comment.replies
+	])
+	function getChildCommentTreeProps(i) {
+		return {
+			...rest,
+			isStateManagedExternally,
+			getState: getGetSubtreeStateFunction(i),
+			setState: getSetSubtreeStateFunction(i),
+			comment: repliesWithRemovedLeadingPostLink[i],
+			parentComment: comment,
+			component: Component,
+			dialogueChainStyle,
+			getComponentProps,
+			onShowReply,
+			onDidToggleShowReplies
+		}
+	}
+	onMount()
 	return (
 		<div className={classNames('CommentTree', {
 			'CommentTree--nested': parentComment && !flat,
@@ -210,10 +332,10 @@ export default function CommentTree({
 				})}
 				comment={comment}
 				parentComment={parentComment}
-				postRef={post}
+				elementRef={elementRef}
 				showingReplies={showReplies}
 				onToggleShowReplies={comment.replies ? onToggleShowReplies : undefined}
-				toggleShowRepliesButtonRef={toggleShowRepliesButton}/>
+				toggleShowRepliesButtonRef={toggleShowRepliesButtonRef}/>
 			{/* Reply link marker for a single reply. */}
 			{showReplies && _isMiddleDialogueChainLink &&
 				<div className={classNames('CommentTreeDialogueTrace', {
@@ -225,17 +347,9 @@ export default function CommentTree({
 		      reply "tree" rendered: a "dialogue chain" will be rendered instead. */}
 			{showReplies && _isMiddleDialogueChainLink &&
 				<CommentTree
-					{...rest}
+					{...getChildCommentTreeProps(0)}
 					flat
-					onShowReply={onShowReply}
-					getState={shouldTrackState() ? (() => _subtreeState.replies[0]) : undefined}
-					setState={shouldTrackState() ? (state => setChildSubtreeState(0, state)) : undefined}
-					comment={removeLeadingPostLink(comment.replies[0], comment)}
-					parentComment={comment}
-					component={Component}
-					isFirstLevelTree={isFirstLevelTree}
-					dialogueChainStyle={dialogueChainStyle}
-					getComponentProps={getComponentProps}/>
+					isFirstLevelTree={isFirstLevelTree}/>
 			}
 			{/* If there're more than a single reply then show the replies tree. */}
 			{showReplies && !_isMiddleDialogueChainLink &&
@@ -248,17 +362,9 @@ export default function CommentTree({
 					{/* The replies. */}
 					{comment.replies.map((reply, i) => (
 						<CommentTree
-							{...rest}
+							{...getChildCommentTreeProps(i)}
 							key={reply.id}
-							onShowReply={onShowReply}
-							getState={shouldTrackState() ? (() => _subtreeState.replies[i]) : undefined}
-							setState={shouldTrackState() ? (state => setChildSubtreeState(i, state)) : undefined}
-							comment={removeLeadingPostLink(reply, comment)}
-							parentComment={comment}
-							component={Component}
-							isFirstLevelTree={!parentComment}
-							dialogueChainStyle={dialogueChainStyle}
-							getComponentProps={getComponentProps}/>
+							isFirstLevelTree={!parentComment}/>
 					))}
 				</div>
 			}
@@ -276,30 +382,30 @@ CommentTree.propTypes = {
 	component: PropTypes.func.isRequired,
 	getComponentProps: PropTypes.func,
 	// `state` is a recursive structure.
-	// For a comment, `state` is either `null`
-	// or an array having the same count of elements as the replies count for the comment.
-	// `null` means "the comment's replies are not expanded".
-	//  (or there're no replies to this comment).
-	// `[...]` means "the comment's replies are expanded".
+	// For a comment, `state` is an object.
+	// If a comment's replies are expanded, it's `state.replies[]` property
+	// is an array having the same count of elements as the replies count for the comment.
+	// `state.replies === undefined` means "the comment's replies are not expanded".
+	//  (or it could mean that there're no replies to this comment).
 	//
 	// Example:
 	//
 	// State:
 	// {
 	// 	replies: [
-	// 		null,
-	// 		null,
+	// 		{},
+	// 		{},
 	// 		{
 	// 			replies: [
-	// 				null,
+	// 				{},
 	// 				{
 	// 					replies: [
-	// 						null
+	// 						{}
 	// 					]
 	// 				}
 	// 			]
 	// 		},
-	// 		null
+	// 		{}
 	// 	]
 	// }
 	//
@@ -330,16 +436,24 @@ CommentTree.propTypes = {
 	//    |---------|
 	// "Dialogue" reply chains are always expanded
 	// when the first reply in the chain is expanded.
-	initialState: PropTypes.arrayOf(PropTypes.any),
+	initialState: PropTypes.object.isRequired,
 	onStateChange: PropTypes.func,
 	onShowReply: PropTypes.func,
-	// These two properties are only passed to child comment trees.
+	// `isStateManagedExternally` is just a leftover of some earlier concept of
+	// "managing state outside of this component", but that turned out to have
+	// a consequence of re-rendering the whole tree when expanding/un-expanding
+	// any arbitrarily-deep reply branch, which is not optimal compared to the
+	// "internal" managing of the state, which only re-renders a specific
+	// reply branch. So currently, `isStateManagedExternally` is always `false`.
+	isStateManagedExternally: PropTypes.bool,
+	// `getState()`/`setState()` properties are only passed to child comment trees.
 	setState: PropTypes.func,
 	getState: PropTypes.func,
 	dialogueChainStyle: PropTypes.oneOf(['side', 'through']).isRequired
 }
 
 CommentTree.defaultProps = {
+	initialState: {},
 	dialogueChainStyle: 'side'
 }
 
@@ -357,7 +471,7 @@ function expandDialogueChainReplies(comment, subtreeState, onShowReply) {
 	while ((reply = parentComment.replies[0]) &&
 		reply.replies && reply.replies.length === 1) {
 		const subtreeState = {
-			replies: [null]
+			replies: [{}]
 		}
 		parentCommentState.replies[0] = subtreeState
 		parentCommentState = subtreeState

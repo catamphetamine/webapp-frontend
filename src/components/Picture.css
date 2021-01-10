@@ -1,13 +1,13 @@
 @import "../styles/common";
 
-.rrui__picture {
+.Picture {
 	position: relative;
 	border-radius: inherit;
 	user-select: none;
 	/* If the `<img/>` image is blurred then `overflow: hidden`
 	   prevents it bleeding over the edges. */
 	/* `overflow: hidden` also prevents the possible overflow
-	   of `.rrui__picture` with `<img/>` when there're several
+	   of `.Picture` with `<img/>` when there're several
 	   `sizes` each of which have `width` and `height` rounded
 	   and therefore have slightly different aspect ratios. */
 	overflow: hidden;
@@ -15,33 +15,33 @@
 	outline: none;
 }
 
-.rrui__picture--non-transparent-background {
+.Picture--nonTransparentBackground {
 	background-color: var(--Picture-backgroundColor);
 }
 
 /*
-.rrui__picture--cover
+.Picture--cover
 {
 	background-size : cover;
 	background-position : center center;
 }
 */
 
-.rrui__picture--repeat-x {
+.Picture--repeatX {
 	height : 100%;
 	background-repeat : repeat;
 }
 
 /*
-.rrui__picture-border {
+.PictureBorder {
 	padding: var(--Picture-borderWidth);
-	.rrui__picture {
+	.Picture {
 		box-shadow: 0 0 0 var(--Picture-borderWidth) var(--Picture-borderColor);
 	}
 }
 */
 
-.rrui__picture--border {
+.Picture--border {
 	border: var(--Picture-borderWidth) solid var(--Picture-borderColor);
 	/* Without `background-clip: padding-box` the border wouldn't blend with background. */
 	/* https://stackoverflow.com/questions/4062001/can-you-set-a-border-opacity-in-css */
@@ -49,17 +49,17 @@
 	/* Show :focused state for `<button/>`. */
 	/* Outline is not shown on `<a/>` too for some reason. */
 	&:focus {
-		/* Won't be applied to `.rrui__picture--transparent-background`. */
+		/* Won't be applied to `.Picture--transparent-background`. */
 		--Picture-borderColor: var(--Picture-borderColor--focus);
 	}
 }
 
-.rrui__picture--transparent-background {
+.Picture--transparentBackground {
 	background-color: transparent;
 }
 
-.rrui__picture__image {
-	/* Setting `position: relative` so that it's rendered above `.rrui__picture__status`
+.Picture-image {
+	/* Setting `position: relative` so that it's rendered above `.Picture-status`
 	   so that the clickable element is the `<img/>` and not the `<div/>`. */
 	position: relative;
 	display: block;
@@ -70,7 +70,7 @@
 	outline: none;
 }
 
-.rrui__picture__image--blurred {
+.Picture-image--blurred {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -83,24 +83,24 @@
 	pointer-events: none;
 }
 
-.rrui__picture__status {
+.Picture-status {
 	display: block;
 	width: 100%;
 	height: 100%;
 	overflow: hidden;
 }
 
-/* Placeholder stretches the `.rrui__picture`
+/* Placeholder stretches the `.Picture`
    so the `<img/>` and the status indicator
    are `position: absolute`. */
-.rrui__picture__status,
-.rrui__picture__image {
+.Picture-status,
+.Picture-image {
 	position: absolute;
 	top: 0;
 }
 
-.rrui__picture__loading-indicator,
-.rrui__picture__loading-error {
+.Picture-loadingIndicator,
+.Picture-loadingError {
 	position: absolute;
 	left: 50%;
 	top: 50%;
@@ -113,12 +113,12 @@
 }
 
 /* `<FadeInOut/>` is supposed to have some DOM Element as a child. */
-/* That's why an empty `.rrui__picture__loading-indicator-stub` is used. */
-.rrui__picture__loading-indicator-stub {
+/* That's why an empty `.Picture-loadingIndicatorStub` is used. */
+.Picture-loadingIndicatorStub {
 	display: block;
 }
 
-.rrui__picture__loading-error {
+.Picture-loadingError {
 	width: calc(var(--unit) * 2 * 0.7);
 	height: calc(var(--unit) * 2 * 0.7);
 	cursor: pointer;

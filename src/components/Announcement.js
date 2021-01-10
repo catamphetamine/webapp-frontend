@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import Close from '../../assets/images/icons/close-thicker.svg'
 
-import PostBlock from './PostBlock'
+import { Content } from './PostContent'
 import { Button } from './Button'
 
 import './Announcement.css'
@@ -21,9 +21,9 @@ export default function Announcement({
 			'announcement--button': onClick
 		})}>
 			<div className="announcement__content">
-				<PostBlock className="announcement__content">
+				<Content>
 					{announcement ? announcement.content : children}
-				</PostBlock>
+				</Content>
 			</div>
 
 			{onClose &&

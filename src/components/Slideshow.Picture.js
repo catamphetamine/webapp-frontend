@@ -71,7 +71,7 @@ export default {
 				width={width}
 				height={height}
 				style={style}
-				className={classNames('rrui__slideshow__picture', className)}/>
+				className={classNames('Slideshow-Picture', className)}/>
 		)
 	}
 }
@@ -100,6 +100,7 @@ export default {
 
 /**
  * Preloads a picture slide.
+ * `inline` property is supposed to be `false`.
  * @param  {object} slide
  * @param  {object} slideshow
  * @return {Promise}
@@ -110,6 +111,7 @@ export function preloadPictureSlide(slide) {
 		slide.picture,
 		getFitSize(
 			slide.picture,
+			// `inline` property is supposed to be `false`.
 			slideshowSize.getMaxSlideWidth(),
 			slideshowSize.getMaxSlideHeight()
 		)

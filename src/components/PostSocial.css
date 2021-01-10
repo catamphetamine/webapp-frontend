@@ -21,6 +21,13 @@
 	}
 }
 
+.PostSocial--clickable {
+	cursor: pointer;
+	&:active {
+		--PostSocial-backgroundColor: var(--PostSocial-backgroundColor--active);
+	}
+}
+
 /* The only purpose of this "wrapper" is setting `color`
    in order for `<PostQuoteBorderLeft/>` to have that color
    via its `color: inherit`.

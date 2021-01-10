@@ -1,3 +1,9 @@
+// For some weird reason, in Chrome, `setTimeout()` would lag up to a second (or more) behind.
+// Turns out, Chrome developers have deprecated `setTimeout()` API entirely without asking anyone.
+// Replacing `setTimeout()` with `requestAnimationFrame()` can work around that Chrome bug.
+// https://github.com/bvaughn/react-virtualized/issues/722
+import { setTimeout, clearTimeout } from 'request-animation-frame-timeout'
+
 // Copy-pasted from:
 // https://github.com/willmcpo/body-scroll-lock/blob/master/lib/bodyScrollLock.es6.js
 // On March 18, 2019.
@@ -48,7 +54,6 @@ const allowTouchMove = el => locks.some(lock => {
 });
 
 const preventDefault = rawEvent => {
-  console.log('$$$$$$$$$$$')
   const e = rawEvent || window.event;
 
   // For the case whereby consumers adds a touchmove event listener to document.

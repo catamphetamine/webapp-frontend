@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 108 108">
+<g fill="none" stroke="currentColor" stroke-width="3.5">
+	<path stroke-width="3" d="M94.5,85.7h-13v15c0,1.5-1.7,2.2-2.8,1.2L61.8,85.7H13.6c-4.4,0-8-3.6-8-8V13.6c0-4.4,3.6-8,8-8h80.8
+	c4.4,0,8,3.6,8,8v64.1C102.5,82.1,98.9,85.7,94.5,85.7z"/>
+	<line class="st1" x1="26.2" y1="23" x2="40.8" y2="37.7"/>
+	<line class="st1" x1="26.2" y1="37.7" x2="40.8" y2="23"/>
+	<line class="st1" x1="67.2" y1="23" x2="81.8" y2="37.7"/>
+	<line class="st1" x1="67.2" y1="37.7" x2="81.8" y2="23"/>
+	<path class="st1" d="M31.1,68.3c0,0,2.8-9.1,23.2-9.1s22.8,9.1,22.8,9.1"/>
+</g>
+</svg>

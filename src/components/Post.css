@@ -1,36 +1,12 @@
 @import "../styles/common";
 
 .Post {
-	/* Long hyperlinks can overflow post on small screens.
-	   (for example, on mobile devices)
-	   `overflow-wrap` in combination with `word-break` fixes that
-	   by forcing word breaks on overflow.
-	   https://stackoverflow.com/questions/17259916/difference-between-overflow-wrap-and-word-break
-	   https://developer.mozilla.org/en-US/docs/Web/CSS/overflow-wrap
-	   https://developer.mozilla.org/en-US/docs/Web/CSS/word-break */
-	overflow-wrap: break-word;
-	word-break: break-word;
-
-	/* Without `max-width: 100%` a comment could become overflown
-	   by a `<pre/>` code block. */
-	max-width: 100%;
-
 	padding-top: var(--Post-paddingTop);
 	padding-bottom: var(--Post-paddingBottom);
 	padding-left: var(--Post-paddingLeft);
 	padding-right: var(--Post-paddingRight);
 
 	transition: var(--Post-transition);
-
-	/* When selecting text <br/>s also get selected
-	   which results in a bit of a visual clutter.
-	   (for example, in the end of `<PostInlineQuote/>`
-	   when a `<Post/>` has `.content-section` CSS class).
-	   `font-size: 0` doesn't affect the height of `<br/>`
-	   but it removes the visual selection from it. */
-	br {
-		font-size: 0;
-	}
 }
 
 .Post--compact {
@@ -38,30 +14,9 @@
 	--Post-paddingBottom: var(--Post-paddingBottom--compact);
 }
 
+/*
 .Post--stretch {
 	display: flex;
 	flex-direction: column;
 }
-
-.PostContent {
-	/*margin-bottom: calc(-1 * var(--PostContent-marginTop));*/
-	font-family: var(--Text-fontFamily);
-	/* Reverts the effect of `margin-top` on the first post block. */
-	margin-top: calc(-1 * var(--PostContent-marginTop));
-}
-
-/*.PostContent--starts-with-text {*/
-	/* Reverts the effect of `margin-top` on the first paragraph. */
-	/*margin-top: calc(-1 * var(--PostParagraph-marginTop));*/
-/*}*/
-
-.on-click {
-	--Post-transition: var(--Post-transition--onClick);
-	--PostInlineSpoiler-transition: var(--PostInlineSpoiler-transition--onClick);
-}
-
-.on-click--active {
-	--Post-backgroundColor: var(--Content-backgroundColor--active);
-	--PostInlineSpoiler-color: var(--PostInlineSpoiler-color--contentActive);
-	--PostInlineSpoiler-color--censored: var(--PostInlineSpoiler-color--censoredContentActive);
-}
+*/

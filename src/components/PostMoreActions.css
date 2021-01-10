@@ -44,8 +44,9 @@
 
 .PostMoreActions-togglerIcon {
 	width: 100%;
-	/* `<OnClick/>`'s `filter` is set up to ignore clicks on `<button/>`s.
-	   `<svg/>` is required to ignore clicks in order for them to be registered by `<button/>`. */
+	/* `<Clickable/>`'s `filter` is set up to ignore clicks on `<button/>`s.
+	   `<svg/>` is required to ignore clicks in order for those clicks to be
+	   registered by `<button/>`. */
 	pointer-events: none;
 	opacity: 0.6;
 }

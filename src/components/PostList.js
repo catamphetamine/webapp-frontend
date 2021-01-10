@@ -6,12 +6,15 @@ import PostInlineContent from './PostInlineContent'
 
 import './PostList.css'
 
-export default function PostList({ children }) {
+export default function PostList({
+	children,
+	...rest
+}) {
 	return (
 		<ul className="PostList">
 			{children.map((item, i) => (
 				<li key={i} className="PostList-item">
-					<PostInlineContent>
+					<PostInlineContent {...rest}>
 						{item}
 					</PostInlineContent>
 				</li>

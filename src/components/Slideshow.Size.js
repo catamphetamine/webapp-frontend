@@ -13,23 +13,18 @@ export default class SlideshowSize {
 			bottom: props.footerHeight
 		}
 
-		slideshow.getSlideshowWidth = this.getSlideshowWidth
-		slideshow.getSlideshowHeight = this.getSlideshowHeight
+		if (slideshow) {
+			slideshow.getSlideshowWidth = this.getSlideshowWidth
+			slideshow.getSlideshowHeight = this.getSlideshowHeight
 
-		slideshow.getMaxSlideWidth = this.getMaxSlideWidth
-		slideshow.getMaxSlideHeight = this.getMaxSlideHeight
+			slideshow.getMaxSlideWidth = this.getMaxSlideWidth
+			slideshow.getMaxSlideHeight = this.getMaxSlideHeight
 
-		// slideshow.getCurrentSlideMaxWidth = this.getCurrentSlideMaxWidth
-		// slideshow.getCurrentSlideMaxHeight = this.getCurrentSlideMaxHeight
-		// slideshow.getSlideAspectRatio = this.getSlideAspectRatio
+			slideshow.getSlideWidth = this.getSlideWidth
+			slideshow.getSlideHeight = this.getSlideHeight
 
-		// slideshow.getCurrentSlideWidth = this.getCurrentSlideWidth
-		// slideshow.getCurrentSlideHeight = this.getCurrentSlideHeight
-
-		slideshow.getSlideWidth = this.getSlideWidth
-		slideshow.getSlideHeight = this.getSlideHeight
-
-		slideshow.getMargin = this.getMargin
+			slideshow.getMargin = this.getMargin
+		}
 	}
 
 	getMaxSlideWidth = () => {
@@ -83,17 +78,16 @@ export default class SlideshowSize {
 		return inline
 	}
 
-	// This is used for `<Picture/>` with `fit="contain"`.
-	getSlideMaxWidth = (i) => {
+	getSlideMaxWidth = (slide) => {
 		return Math.min(
-			this.getMaxSlideHeight() * this.getSlideAspectRatio(i),
+			this.getMaxSlideHeight() * this.getSlideAspectRatio(slide),
 			this.getMaxSlideWidth(),
-			this.shouldUpscaleSmallSlides() ? Number.MAX_VALUE : this.getSlideMaxAvailableSize(i).width
+			this.shouldUpscaleSmallSlides() ? Number.MAX_VALUE : this.getSlideMaxAvailableSize(slide).width
 		)
 	}
 
-	getSlideMaxHeight = (i) => {
-		return this.getSlideMaxWidth(i) / this.getSlideAspectRatio(i)
+	getSlideMaxHeight = (slide) => {
+		return this.getSlideMaxWidth(slide) / this.getSlideAspectRatio(slide)
 	}
 
 	/**
@@ -102,10 +96,10 @@ export default class SlideshowSize {
 	 * @param  {number} i — Slide index.
 	 * @return {number}
 	 */
-	getSlideWidth = (i) => {
+	getSlideWidth = (slide) => {
 		return Math.min(
-			this.getSlideMaxWidth(i),
-			this.getSlideMaxHeight(i) * this.getSlideAspectRatio(i)
+			this.getSlideMaxWidth(slide),
+			this.getSlideMaxHeight(slide) * this.getSlideAspectRatio(slide)
 		)
 	}
 
@@ -115,20 +109,18 @@ export default class SlideshowSize {
 	 * @param  {number} i — Slide index.
 	 * @return {number}
 	 */
-	getSlideHeight = (i) => {
+	getSlideHeight = (slide) => {
 		return Math.min(
-			this.getSlideMaxHeight(i),
-			this.getSlideMaxWidth(i) / this.getSlideAspectRatio(i)
+			this.getSlideMaxHeight(slide),
+			this.getSlideMaxWidth(slide) / this.getSlideAspectRatio(slide)
 		)
 	}
 
-	getSlideAspectRatio(i) {
-		const slide = this.slideshow.getSlide(i)
+	getSlideAspectRatio(slide) {
 		return this.slideshow.getPluginForSlide(slide).getAspectRatio(slide)
 	}
 
-	getSlideMaxAvailableSize(i) {
-		const slide = this.slideshow.getSlide(i)
+	getSlideMaxAvailableSize(slide) {
 		return this.slideshow.getPluginForSlide(slide).getMaxSize(slide)
 	}
 
@@ -161,23 +153,23 @@ export default class SlideshowSize {
 			return
 		}
 		const fitFactor = precise ? 1 : fullScreenFitPrecisionFactor
-		const { i } = this.slideshow.state
-		const maxSize = this.getSlideMaxAvailableSize(i)
+		const slide = this.slideshow.getCurrentSlide()
+		const maxSize = this.getSlideMaxAvailableSize(slide)
 		return maxSize.width >= this.getMaxSlideWidth() * fitFactor ||
 			maxSize.height >= this.getMaxSlideHeight() * fitFactor
 	}
 
 	/**
 	 * Fits the slide on screen (also introduces some margins).
-	 * @param  {number} i — Slide index.
+	 * @param  {object} slide — Slide.
 	 * @param  {number} scale — Slide scale.
 	 * @param  {number} originX — "Gravitate to origin" X.
 	 * @param  {number} originY — "Gravitate to origin" Y.
 	 * @return {number[]} [offsetX, offsetY]
 	 */
-	getFittedSlideOffset = (i, scale, originX, originY) => {
-		const scaledWidth = scale * this.getSlideWidth(i)
-		const scaledHeight = scale * this.getSlideHeight(i)
+	getFittedSlideOffset = (slide, scale, originX, originY) => {
+		const scaledWidth = scale * this.getSlideWidth(slide)
+		const scaledHeight = scale * this.getSlideHeight(slide)
 		const shouldOffsetX = scaledWidth < this.getMaxSlideWidth()
 		const shouldOffsetY = scaledHeight < this.getMaxSlideHeight()
 		// const originX = this.getSlideshowWidth() / 2 + initialOffsetX

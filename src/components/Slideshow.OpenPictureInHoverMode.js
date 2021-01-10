@@ -1,36 +1,27 @@
 import { getFitSize } from './Picture'
 import { roundScreenPixels } from '../utility/round'
 
-export default class SlideshowHoverPicture {
+export default class SlideshowOpenPictureInHoverMode {
 	constructor(slideshow) {
 		this.slideshow = slideshow
-		this.slideshow.applySlideOffset = this.applySlideOffset
 	}
 
 	static getInitialProps(props) {
-		// Get `thumbnailImage`.
-		let { thumbnailImage } = props
-		if (thumbnailImage) {
-			if (thumbnailImage.tagName.toLowerCase() !== 'img') {
-				thumbnailImage = thumbnailImage.querySelector('img')
+		// Get `imageElement`.
+		let { imageElement } = props
+		if (imageElement) {
+			if (imageElement.tagName.toLowerCase() !== 'img') {
+				imageElement = imageElement.querySelector('img')
 			}
 		}
-
 		// All pictures (including animated GIFs) are opened above their thumbnails.
-		const {
-			i,
-			children: slides
-		} = props
+		const { i, slides, openPictureInHoverMode } = props
 		const slide = slides[i]
-		const shouldOffsetSlide = thumbnailImage && slide.type === 'picture'
-
-		const thumbnailCoords = thumbnailImage && thumbnailImage.getBoundingClientRect()
-
 		return {
 			...props,
-			thumbnailImage,
-			thumbnailCoords,
-			shouldOffsetSlide
+			imageElement,
+			imageElementCoords: imageElement && imageElement.getBoundingClientRect(),
+			openPictureInHoverMode: openPictureInHoverMode && imageElement && slide.type === 'picture'
 		}
 	}
 
@@ -42,27 +33,18 @@ export default class SlideshowHoverPicture {
 		)
 	}
 
-	dontOffsetSlide = () => {
-		// this.slideshow.shouldOffsetSlide = false
-		this.slideshow.setState({
-			offsetSlideIndex: undefined,
-			slideOriginX: undefined,
-			slideOriginY: undefined
-		})
-	}
-
 	applySlideOffset = () => {
 		const { getSlideDOMNode } = this.slideshow.props
 		this.slideshow.onSlideChange(() => {
 			const { offsetSlideIndex } = this.slideshow.getState()
 			if (offsetSlideIndex !== undefined) {
-				this.dontOffsetSlide()
+				this.slideshow.setState(NO_OFFSET_STATE)
 			}
 		}, { once: true })
 		this.slideshow.onResize(() => {
-			// Reset slide offset on window resize.
-			getSlideDOMNode().style.transform = 'none'
-			this.dontOffsetSlide()
+			// // Reset slide offset on window resize.
+			// getSlideDOMNode().style.transform = 'none'
+			// this.slideshow.setState(NO_OFFSET_STATE)
 		})
 		return this.calculateAndApplySlideOffset(getSlideDOMNode())
 	}
@@ -71,8 +53,8 @@ export default class SlideshowHoverPicture {
 	 * @return {number[]} `[x, y]`
 	 */
 	applySlideOrigin() {
-		const { i, thumbnailCoords } = this.slideshow.props
-		const { x, y, width, height } = thumbnailCoords
+		const { i, imageElementCoords } = this.slideshow.props
+		const { x, y, width, height } = imageElementCoords
 		const originX = x + width / 2
 		const originY = y + height / 2
 		this.slideshow.setState({
@@ -169,4 +151,10 @@ export function calculateSlideCoordinates(
 		slideY = (slideshowHeight - getMargin('bottom')) - slideHeight
 	}
 	return [slideX, slideY]
+}
+
+const NO_OFFSET_STATE = {
+	offsetSlideIndex: undefined,
+	slideOriginX: undefined,
+	slideOriginY: undefined
 }

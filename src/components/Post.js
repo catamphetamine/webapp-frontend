@@ -27,9 +27,8 @@ function Post({
 	initialExpandContent,
 	onExpandContent,
 	initialExpandPostLinkQuotes,
-	onContentDidChange,
+	onRenderedContentDidChange,
 	youTubeApiKey,
-	onPostContentChange,
 	contentMaxLength,
 	resourceMessages,
 	fixAttachmentPictureSizes,
@@ -40,12 +39,16 @@ function Post({
 	attachmentThumbnailSize,
 	useSmallestThumbnailsForAttachments,
 	showPostThumbnailWhenThereAreMultipleAttachments,
+	showPostThumbnailWhenThereIsNoContent,
 	serviceIcons,
 	onAttachmentClick,
 	onPostUrlClick,
 	onPostLinkClick,
 	isPostLinkClickable,
+	isSocialClickable,
+	onSocialClick,
 	expandPostLinkBlockQuotes,
+	expandPostLinkBlockQuotesWhenNoOtherContent,
 	postLinkQuoteMinimizedComponent,
 	postLinkQuoteExpandTimeout,
 	onPostLinkQuoteExpand,
@@ -57,7 +60,6 @@ function Post({
 	onVote,
 	moreActions,
 	messages,
-	stretch,
 	className
 }, ref) {
 	return (
@@ -67,12 +69,13 @@ function Post({
 				// 'Post--has-title': post.title,
 				'Post--anonymous': !post.account,
 				// 'Post--no-content': !post.content,
-				'Post--has-content': post.content,
+				{/*'Post--has-content': post.content,*/}
 				'Post--compact': compact,
-				'Post--stretch': stretch
+				// 'Post--stretch': stretch
 			})}>
 			<PostHeader
 				post={post}
+				compact={compact}
 				url={url}
 				urlBasePath={urlBasePath}
 				onPostUrlClick={onPostUrlClick}
@@ -90,12 +93,12 @@ function Post({
 				onVote={onVote}/>
 			<PostContent
 				post={post}
+				compact={compact}
 				initialExpandContent={initialExpandContent}
 				onExpandContent={onExpandContent}
 				initialExpandPostLinkQuotes={initialExpandPostLinkQuotes}
-				onContentDidChange={onContentDidChange}
+				onRenderedContentDidChange={onRenderedContentDidChange}
 				youTubeApiKey={youTubeApiKey}
-				onPostContentChange={onPostContentChange}
 				contentMaxLength={contentMaxLength}
 				resourceMessages={resourceMessages}
 				fixAttachmentPictureSizes={fixAttachmentPictureSizes}
@@ -107,7 +110,10 @@ function Post({
 				onAttachmentClick={onAttachmentClick}
 				onPostLinkClick={onPostLinkClick}
 				isPostLinkClickable={isPostLinkClickable}
+				isSocialClickable={isSocialClickable}
+				onSocialClick={onSocialClick}
 				expandPostLinkBlockQuotes={expandPostLinkBlockQuotes}
+				expandPostLinkBlockQuotesWhenNoOtherContent={expandPostLinkBlockQuotesWhenNoOtherContent}
 				postLinkQuoteMinimizedComponent={postLinkQuoteMinimizedComponent}
 				postLinkQuoteExpandTimeout={postLinkQuoteExpandTimeout}
 				onPostLinkQuoteExpand={onPostLinkQuoteExpand}
@@ -117,7 +123,9 @@ function Post({
 				className={className}/>
 			<PostAttachments
 				post={post}
+				compact={compact}
 				showPostThumbnailWhenThereAreMultipleAttachments={showPostThumbnailWhenThereAreMultipleAttachments}
+				showPostThumbnailWhenThereIsNoContent={showPostThumbnailWhenThereIsNoContent}
 				expandFirstPictureOrVideo={expandFirstPictureOrVideo}
 				useSmallestThumbnails={useSmallestThumbnailsForAttachments}
 				maxAttachmentThumbnails={maxAttachmentThumbnails}
@@ -126,9 +134,9 @@ function Post({
 				onlyShowFirstAttachmentThumbnail={onlyShowFirstAttachmentThumbnail}
 				spoilerLabel={messages && messages.spoiler}
 				onAttachmentClick={onAttachmentClick}/>
-			{stretch &&
+			{/*stretch &&
 				<PostStretchVertically/>
-			}
+			*/}
 			<PostFooter
 				post={post}
 				badges={footerBadges}
@@ -163,7 +171,10 @@ Post.propTypes = {
 	onPostUrlClick: PropTypes.func,
 	onPostLinkClick: PropTypes.func,
 	isPostLinkClickable: PropTypes.func,
+	isSocialClickable: PropTypes.func,
+	onSocialClick: PropTypes.func,
 	expandPostLinkBlockQuotes: PropTypes.bool,
+	expandPostLinkBlockQuotesWhenNoOtherContent: PropTypes.bool,
 	postLinkQuoteMinimizedComponent: PropTypes.elementType,
 	postLinkQuoteExpandTimeout: PropTypes.number,
 	onPostLinkQuoteExpand: PropTypes.func,
@@ -180,17 +191,16 @@ Post.propTypes = {
 	initialExpandContent: PropTypes.bool,
 	onExpandContent: PropTypes.func,
 	initialExpandPostLinkQuotes: PropType.objectOf(PropTypes.bool),
-	onContentDidChange: PropTypes.func,
-	onPostContentChange: PropTypes.func,
+	onRenderedContentDidChange: PropTypes.func,
 	// `lynxchan` doesn't provide `width` and `height`
 	// neither for the picture not for the thumbnail
 	// in `/catalog.json` API response (which is a bug).
 	// http://lynxhub.com/lynxchan/res/722.html#q984
 	fixAttachmentPictureSizes: PropTypes.bool,
 	showPostThumbnailWhenThereAreMultipleAttachments: PropTypes.bool,
+	showPostThumbnailWhenThereIsNoContent: PropTypes.bool,
 	messages: postMessages,
 	resourceMessages: PropTypes.object,
-	stretch: PropTypes.bool,
 	className: PropTypes.string
 }
 

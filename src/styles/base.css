@@ -67,6 +67,7 @@ body {
 .document--background {
 	color: var(--Document-color);
 	background-color: var(--Document-backgroundColor);
+	background-image: var(--Document-backgroundImage);
 }
 
 a {

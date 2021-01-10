@@ -1,26 +1,22 @@
 .PostAttachments {
 	--PostAttachments-marginTop: 0px;
-	/* Reverts the effect of `margin-top` added by the first post attachments row. */
-	margin-top: calc(-1 * var(--PostContent-marginTop) + var(--PostAttachments-marginTop));
+	margin-top: calc(var(--PostAttachments-marginTop) - var(--PostContent-marginTop));
 }
 
-.Post--has-content {
-	.PostAttachments {
-		/* Add vertical spacing between post content and attachments. */
-		/* /* This is done via `padding-top` instead of `margin-top`
-		   because otherwise `margin-top` would overwrite the
-		   "negative" `margin-top` set on `.PostAttachments`
-		   in order to revert the effect of `margin-top`
-		   added by the first post attachments row. */
-		/*padding-top: var(--PostAttachments-marginTop--afterContent);*/
-		--PostAttachments-marginTop: var(--PostAttachments-marginTop--afterContent);
-	}
+.PostAttachments--compact {
+	--PostContent-marginTop: var(--PostContent-marginTop--compact);
+}
+
+.PostContent + .PostAttachments {
+	/* Add vertical spacing between post content and attachments. */
+	--PostAttachments-marginTop: var(--PostAttachments-marginTop--afterContent);
 }
 
 .PostAttachments-thumbnails {
 	display: flex;
 	align-items: center;
 	flex-wrap: wrap;
+	margin-right: calc(-1 * var(--PostContent-marginTop));
 	/* `.PostAttachmentThumbnail` is also used in `post-link` quotes,
 	   where `margin`s aren't required. */
 	.PostAttachmentThumbnail {

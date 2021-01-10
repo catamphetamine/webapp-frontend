@@ -9,7 +9,7 @@ import './PostLink.css'
 
 import LinkIcon from '../../assets/images/icons/external.svg'
 
-import getHumanReadableLinkAddress from 'social-components/commonjs/utility/post/getHumanReadableLinkAddress'
+import getHumanReadableLinkAddress from 'social-components/commonjs/utility/getHumanReadableLinkAddress'
 
 export default function PostLink({
 	url,
@@ -19,6 +19,8 @@ export default function PostLink({
 	onClick,
 	attachment,
 	onAttachmentClick,
+	onSocialClick,
+	isSocialClickable,
 	className,
 	children
 }) {
@@ -36,14 +38,25 @@ export default function PostLink({
 		// 		loadResourceLink(link, Resource, options).then(forceUpdate)
 		// }
 		if (!event.defaultPrevented) {
-			if (attachment && attachment.type === 'video') {
-				event.preventDefault()
-				onAttachmentClick(attachment)
+			if (attachment) {
+				if (attachment.type === 'video') {
+					event.preventDefault()
+					onAttachmentClick(attachment)
+				} else if (attachment.type === 'social') {
+					if (onSocialClick) {
+						if (!isSocialClickable || isSocialClickable(attachment.social)) {
+							event.preventDefault()
+							onSocialClick(attachment.social)
+						}
+					}
+				}
 			}
 		}
 	}, [
 		onClick,
 		onAttachmentClick,
+		onSocialClick,
+		isSocialClickable,
 		attachment
 	])
 
@@ -106,6 +119,8 @@ PostLink.propTypes = {
 	}),
 	onClick: PropTypes.func,
 	onAttachmentClick: PropTypes.func.isRequired,
+	onSocialClick: PropTypes.func,
+	isSocialClickable: PropTypes.func,
 	className: PropTypes.string,
 	children: PropTypes.node.isRequired
 }

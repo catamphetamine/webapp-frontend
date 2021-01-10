@@ -1,10 +1,16 @@
+// For some weird reason, in Chrome, `setTimeout()` would lag up to a second (or more) behind.
+// Turns out, Chrome developers have deprecated `setTimeout()` API entirely without asking anyone.
+// Replacing `setTimeout()` with `requestAnimationFrame()` can work around that Chrome bug.
+// https://github.com/bvaughn/react-virtualized/issues/722
+import { setTimeout, clearTimeout } from 'request-animation-frame-timeout'
+
 // For expand animation, in `PostAttachment.js`, in `onClick`,
 // after `setIsLoading(false)` (still before opening the slideshow):
-// import { openTransition } from './Slideshow.OpenCloseTransition'
+// import { openTransition } from './Slideshow.OpenCloseAnimationFade'
 // await openTransition(attachment.picture, thumbnailElement.current)
 
 import { getFitSize, getPreferredSize, TRANSPARENT_PIXEL } from './Picture'
-import { calculateSlideCoordinates } from './Slideshow.HoverPicture'
+import { calculateSlideCoordinates } from './Slideshow.OpenPictureInHoverMode'
 import { triggerRender } from '../utility/dom'
 
 const OPEN_ANIMATION_LOGARITHM_FACTOR = 5
@@ -15,7 +21,7 @@ const ANIMATION_MIN_DURATION = 120
 // This is a workaround for browsers not playing a CSS transition.
 const CSS_TRANSITION_DELAY = 30
 
-export default class SlideshowScaleOpenCloseTransition {
+export default class SlideshowOpenCloseAnimationFloat {
 	constructor(slideshow) {
 		this.slideshow = slideshow
 		slideshow.onCleanUp(this.cleanUp)
@@ -31,7 +37,7 @@ export default class SlideshowScaleOpenCloseTransition {
 	 * @return {Promise}
 	 */
 	onOpen(slideElement, {
-		thumbnailImage
+		imageElement: thumbnailElement
 	}) {
 		const slide = this.slideshow.getCurrentSlide()
 		// const [slideWidth, slideHeight] = this.getSlideSize()
@@ -46,7 +52,7 @@ export default class SlideshowScaleOpenCloseTransition {
 			timeout
 		} = openTransition(
 			getPreferredSize(slide.picture, slideWidth).url,
-			thumbnailImage,
+			thumbnailElement,
 			slideX,
 			slideY,
 			slideWidth,
@@ -72,7 +78,7 @@ export default class SlideshowScaleOpenCloseTransition {
 	 * @return {Promise}
 	 */
 	onClose(slideElement, {
-		thumbnailImage,
+		imageElement: thumbnailElement,
 		slideImage
 	}) {
 		const {
@@ -80,7 +86,7 @@ export default class SlideshowScaleOpenCloseTransition {
 			promise,
 			timeout
 		} = closeTransition(
-			thumbnailImage,
+			thumbnailElement,
 			slideElement,
 			slideImage
 		)
@@ -122,11 +128,11 @@ function openTransition(
 	slideshowHeight,
 	getMargin
 ) {
-	const thumbnailCoords = thumbnailElement.getBoundingClientRect()
+	const imageElementCoords = thumbnailElement.getBoundingClientRect()
 	const thumbnailWidth = thumbnailElement.width
 	const thumbnailHeight = thumbnailElement.height
-	const thumbnailX = thumbnailCoords.left
-	const thumbnailY = thumbnailCoords.top
+	const thumbnailX = imageElementCoords.left
+	const thumbnailY = imageElementCoords.top
 
 	// Calculating slide coordinates like this results
 	// in a buggy behavior in iOS Safari and Chrome,
@@ -137,7 +143,7 @@ function openTransition(
 	// positioning is different from `getViewportHeight() / 2`
 	// because of the same reason.
 	// const [slideX, slideY] = calculateSlideCoordinates(
-	// 	thumbnailCoords,
+	// 	imageElementCoords,
 	// 	slideWidth,
 	// 	slideHeight,
 	// 	slideshowWidth,
@@ -185,6 +191,8 @@ function openTransition(
 
 	let animationDuration = Math.max(slideWidth - thumbnailWidth, slideHeight - thumbnailHeight) / OPEN_ANIMATION_PIXELS_PER_SECOND
 	animationDuration = ANIMATION_MIN_DURATION + 1000 * Math.log(1 + animationDuration * 1) / 1
+	// Round intervals like "123.456789ms" to "123ms".
+	animationDuration = Math.round(animationDuration)
 
 	// thumbnailElement.style.opacity = 0.25
 
@@ -247,7 +255,7 @@ function openTransition(
 	expandedImage.style.top = '0'
 	expandedImage.style.zIndex = 'var(--Slideshow-zIndex)'
 	expandedImage.style.opacity = 0
-	expandedImage.style.boxShadow = 'var(--SlideshowSlide-boxShadow)'
+	expandedImage.style.boxShadow = 'var(--Slideshow-Slide-boxShadow)'
 	expandedImage.style.transition = `transform ${animationDuration}ms, box-shadow ${animationDuration}ms, opacity ${ANIMATION_MIN_DURATION}ms`
 	document.body.appendChild(expandedImage)
 
@@ -289,11 +297,11 @@ function closeTransition(
 	slideElement,
 	slideImage
 ) {
-	const thumbnailCoords = thumbnailElement.getBoundingClientRect()
+	const imageElementCoords = thumbnailElement.getBoundingClientRect()
 	const thumbnailWidth = thumbnailElement.width
 	const thumbnailHeight = thumbnailElement.height
-	const thumbnailX = thumbnailCoords.left
-	const thumbnailY = thumbnailCoords.top
+	const thumbnailX = imageElementCoords.left
+	const thumbnailY = imageElementCoords.top
 
 	const slideCoords = slideElement.getBoundingClientRect()
 	const slideWidth = slideCoords.width
@@ -303,6 +311,8 @@ function closeTransition(
 
 	let animationDuration = Math.max(slideWidth - thumbnailWidth, slideHeight - thumbnailHeight) / OPEN_ANIMATION_PIXELS_PER_SECOND
 	animationDuration = ANIMATION_MIN_DURATION + 1000 * Math.log(1 + animationDuration * 1) / 1
+	// Round intervals like "123.456789ms" to "123ms".
+	animationDuration = Math.round(animationDuration)
 
 	const thumbnailImageCopy = document.createElement('img')
 	thumbnailImageCopy.width = thumbnailWidth
@@ -329,8 +339,8 @@ function closeTransition(
 	expandedImage.style.opacity = 1
 	// `backgroundColor` is required for transparent PNGs
 	// and also for cases when `slideImage` is not defined.
-	expandedImage.style.backgroundColor = 'var(--SlideshowSlide-backgroundColor)'
-	expandedImage.style.boxShadow = 'var(--SlideshowSlide-boxShadow)'
+	expandedImage.style.backgroundColor = 'var(--Slideshow-Slide-backgroundColor)'
+	expandedImage.style.boxShadow = 'var(--Slideshow-Slide-boxShadow)'
 	expandedImage.style.transition = `transform ${animationDuration}ms, box-shadow ${animationDuration}ms, opacity ${ANIMATION_MIN_DURATION}ms`
 	document.body.appendChild(expandedImage)
 

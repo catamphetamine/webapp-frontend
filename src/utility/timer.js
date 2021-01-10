@@ -1,5 +1,4 @@
-export function periodical(action, interval, delay = 0)
-{
+export function periodical(action, interval, delay = 0) {
 	let cancelled = false
 
 	const iterate = () => {

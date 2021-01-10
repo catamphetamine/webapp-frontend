@@ -1,4 +1,4 @@
 // `react-time-ago` English language.
 import TimeAgo from 'javascript-time-ago'
 import en from 'javascript-time-ago/locale/en'
-TimeAgo.addLocale(en)
+TimeAgo.addDefaultLocale(en)

@@ -32,79 +32,111 @@ export default class SlideshowKeyboard {
 		}
 	}
 
-	getKeyboardDragDistance() {
-		return Math.max(this.slideshow.getSlideshowWidth(), this.slideshow.getSlideshowHeight()) / 10
+	getMatchingControl(event) {
+		// Handle "Drag and Scale" mode keyboard interaction.
+		const dragAndScaleMode = this.slideshow.isDragAndScaleMode()
+		for (const control of KEYBOARD_CONTROLS) {
+			if (control.dragAndScaleMode && !dragAndScaleMode) {
+				continue
+			}
+			let keyCombinations = control.keys
+			if (!Array.isArray(keyCombinations[0])) {
+				keyCombinations = [keyCombinations]
+			}
+			for (const keys of keyCombinations) {
+				if (isKey.apply(this, keys.concat(event))) {
+					return control
+				}
+			}
+		}
 	}
 
 	handleKey(event) {
-		// Handle "Drag and Scale" mode keyboard interaction.
-		if (this.slideshow.isDragAndScaleMode()) {
-			if (this.slideshow.locked) {
-				return
-			}
-			// Move right.
-			if (isKey('Right', event)) {
-				this.slideshow.pan.dragOffsetX += this.getKeyboardDragDistance()
-				this.slideshow.onDragOffsetChange({ animate: true })
-				return true
-			}
-			// Move left.
-			if (isKey('Left', event)) {
-				this.slideshow.pan.dragOffsetX -= this.getKeyboardDragDistance()
-				this.slideshow.onDragOffsetChange({ animate: true })
-				return true
-			}
-			// Move up.
-			if (isKey('Up', event)) {
-				this.slideshow.pan.dragOffsetY -= this.getKeyboardDragDistance()
-				this.slideshow.onDragOffsetChange({ animate: true })
-				return true
-			}
-			// Move down.
-			if (isKey('Down', event)) {
-				this.slideshow.pan.dragOffsetY += this.getKeyboardDragDistance()
-				this.slideshow.onDragOffsetChange({ animate: true })
-				return true
-			}
-			// Close.
-			if (isKey('Esc', event)) {
-				this.slideshow.exitDragAndScaleMode()
-				return true
-			}
+		const control = this.getMatchingControl(event)
+		if (!control) {
+			return
 		}
-		// Show previous slide.
-		if (isKey('Left', event) ||
-			isKey('Ctrl', 'Left', event) ||
-			isKey('PageUp', event)) {
-			this.slideshow.resetAnimations()
-			this.slideshow.showPrevious()
-			return true
+		event.preventDefault()
+		if (this.slideshow.locked) {
+			return
 		}
-		// Show next slide.
-		if (isKey('Right', event) ||
-			isKey('Ctrl', 'Right', event) ||
-			isKey('PageDown', event) ||
-			isKey('Space', event)) {
-			this.slideshow.resetAnimations()
-			this.slideshow.showNext()
-			return true
-		}
-		// Scale up.
-		if (isKey('Up', event) ||
-			isKey('Shift', 'Up', event)) {
-			this.slideshow.onScaleUp(event)
-			return true
-		}
-		// Scale down.
-		if (isKey('Down', event) ||
-			isKey('Shift', 'Down', event)) {
-			this.slideshow.onScaleDown(event)
-			return true
-		}
-		// Close.
-		if (isKey('Esc', event)) {
-			this.slideshow.close()
-			return true
-		}
+		control.action(this.slideshow)
+		return true
 	}
 }
+
+const KEYBOARD_CONTROLS = [
+	// Move right.
+	{
+		dragAndScaleMode: true,
+		keys: ['Right'],
+		action: slideshow => {
+			slideshow.pan.dragOffsetX += slideshow.getDragAndScaleModeMoveStep()
+			slideshow.onDragOffsetChange({ animate: true })
+		}
+	},
+	// Move left.
+	{
+		dragAndScaleMode: true,
+		keys: ['Left'],
+		action: slideshow => {
+			slideshow.pan.dragOffsetX -= slideshow.getDragAndScaleModeMoveStep()
+			slideshow.onDragOffsetChange({ animate: true })
+		}
+	},
+	// Move up.
+	{
+		dragAndScaleMode: true,
+		keys: ['Up'],
+		action: slideshow => {
+			slideshow.pan.dragOffsetY -= slideshow.getDragAndScaleModeMoveStep()
+			slideshow.onDragOffsetChange({ animate: true })
+		}
+	},
+	// Move down.
+	{
+		dragAndScaleMode: true,
+		keys: ['Down'],
+		action: slideshow => {
+			slideshow.pan.dragOffsetY += slideshow.getDragAndScaleModeMoveStep()
+			slideshow.onDragOffsetChange({ animate: true })
+		}
+	},
+	// Close.
+	{
+		dragAndScaleMode: true,
+		keys: ['Esc'],
+		action: slideshow => slideshow.exitDragAndScaleMode()
+	},
+	// Show previous slide.
+	{
+		keys: [['Left'], ['Ctrl', 'Left'], ['PageUp']],
+		action: slideshow => {
+			slideshow.resetAnimations()
+			slideshow.showPrevious()
+		}
+	},
+	// Show next slide.
+	{
+		keys: [['Right'], ['Ctrl', 'Right'], ['PageDown'], ['Space']],
+		action: slideshow => {
+			slideshow.resetAnimations()
+			slideshow.showNext()
+		}
+	},
+	// Scale up.
+	{
+		keys: [['Up'], ['Shift', 'Up']],
+		action: slideshow => slideshow.onScaleUp(event)
+	},
+	// Scale down.
+	{
+		keys: [['Down'], ['Shift', 'Down']],
+		action: slideshow => slideshow.onScaleDown(event)
+	},
+	// Close.
+	{
+		keys: ['Esc'],
+		action: slideshow => slideshow.close()
+	}
+]

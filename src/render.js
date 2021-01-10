@@ -1,4 +1,4 @@
-import { render } from 'react-pages'
+import { render } from 'react-pages/client'
 
 import settings from './react-pages'
 import { autoDarkMode } from './utility/style'

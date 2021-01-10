@@ -5,7 +5,7 @@ import { video } from '../PropTypes'
 
 import loadScript from '../utility/loadScript'
 
-function YouTubeVideo({
+function VideoYouTube({
 	video,
 	width,
 	height,
@@ -171,9 +171,9 @@ function YouTubeVideo({
 	)
 }
 
-YouTubeVideo = React.forwardRef(YouTubeVideo)
+VideoYouTube = React.forwardRef(VideoYouTube)
 
-YouTubeVideo.propTypes = {
+VideoYouTube.propTypes = {
 	video: video.isRequired,
 	autoPlay: PropTypes.bool,
 	width: PropTypes.oneOfType([
@@ -186,7 +186,7 @@ YouTubeVideo.propTypes = {
 	])
 }
 
-export default YouTubeVideo
+export default VideoYouTube
 
 /**
  * YouTube Player API should be loaded in advance

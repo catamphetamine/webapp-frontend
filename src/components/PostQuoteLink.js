@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect, useRef } from 'react'
+import React, { useCallback, useState, useLayoutEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-pages'
 import classNames from 'classnames'
@@ -7,6 +7,8 @@ import { postPostLinkShape } from '../PropTypes'
 
 import PostQuoteBlock from './PostQuoteBlock'
 import PostQuoteLinkMinimized from './PostQuoteLinkMinimized'
+
+import useMount from '../hooks/useMount'
 
 import './PostQuoteLink.css'
 
@@ -26,23 +28,24 @@ export default function PostQuoteLink({
 	className,
 	children
 }) {
-	const isMounted = useRef()
+	const [isMounted, onMount] = useMount()
 	const [expanded, setExpanded] = useState(
 		getInitiallyExpanded(postLink, minimized, isExpanded)
 	)
-	useEffect(() => {
-		if (isMounted.current) {
-			if (onDidExpand) {
-				onDidExpand()
+	// `onDidExpand()` calls `onRenderedContentDidChange()`
+	// that instructs `virtual-scroller` to re-measure the item's height.
+	// Therefore, it should happen immedately after a re-render,
+	// hence the use of `useLayoutEffect()` instead of `useEffect()`.
+	useLayoutEffect(() => {
+		// Ignore the initial render.
+		if (isMounted()) {
+			if (expanded) {
+				if (onDidExpand) {
+					onDidExpand()
+				}
 			}
 		}
-	}, [
-		expanded
-	])
-	useEffect(() => {
-		isMounted.current = true
-		return () => isMounted.current = false
-	}, [])
+	}, [expanded])
 	const _onExpand = useCallback(() => {
 		if (onExpand) {
 			onExpand(postLink)
@@ -66,6 +69,7 @@ export default function PostQuoteLink({
 		'PostQuoteLink--first': first,
 		// 'PostQuoteLink--inline': !block
 	})
+	onMount()
 	if (!expanded) {
 		return (
 			<PostQuoteLinkMinimized

@@ -24,9 +24,6 @@ export default function PostCode({
 	const className = classNames(
 		_className,
 		'PostCode',
-		// // Add `.PostBlock` CSS class to reduce `margin-top` in cases
-		// // when `<PostCode/>` block comes after a `<PostParagraph/>`.
-		// !inline && 'PostBlock',
 		!inline && 'PostCode--block',
 		inline && 'PostCode--inline',
 		inline && language && `language-${language}`
@@ -36,10 +33,9 @@ export default function PostCode({
 			return (
 				<SyntaxHighlighter
 					inline={inline}
-					PreTag={Pre}
 					useInlineStyles={false}
 					language={language}
-					realClassName={classNames(className, 'PostCode--highlighted')}
+					className={classNames(className, 'PostCode--highlighted')}
 					codeTagProps={codeTagProps}>
 					{children}
 				</SyntaxHighlighter>
@@ -73,23 +69,4 @@ PostCode.propTypes = {
 	language: PropTypes.string,
 	className: PropTypes.string,
 	children: postCode.isRequired
-}
-
-// Fixes `className` bug.
-// https://github.com/conorhastings/react-syntax-highlighter/issues/200
-// Fixes "`<pre/>` is always rendered" issue.
-// https://github.com/conorhastings/react-syntax-highlighter/issues/201
-function Pre({ inline, realClassName, children }) {
-	const Component = inline ? 'span' : 'pre'
-	return (
-		<Component className={realClassName}>
-			{children}
-		</Component>
-	)
-}
-
-Pre.propTypes = {
-	inline: PropTypes.bool,
-	realClassName: PropTypes.string,
-	children: PropTypes.node.isRequired
 }

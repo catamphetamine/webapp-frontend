@@ -1,18 +1,18 @@
-.rrui__video__play-icon-border {
+.VideoPlayIcon-border {
 	fill: rgba(255, 255, 255, 0.7);
 }
 
-.rrui__video__play-icon-background {
+.VideoPlayIcon-background {
 	fill: rgba(0, 0, 0, 0.6);
 	transition: fill 120ms;
 }
 
-.rrui__video__play-icon-triangle {
+.VideoPlayIcon-triangle {
 	fill: rgba(255, 255, 255, 1);
 }
 
-.rrui__video__play-icon--center,
-.rrui__video__play-icon--bottom-right {
+.VideoPlayIcon--center,
+.VideoPlayIcon--bottom-right {
 	--rrui-video-play-icon-size: 30%;
 	width  : var(--rrui-video-play-icon-size);
 	height : var(--rrui-video-play-icon-size);
@@ -20,13 +20,13 @@
 	pointer-events : none;
 }
 
-.rrui__video__play-icon--center {
+.VideoPlayIcon--center {
 	top  : 50%;
 	left : 50%;
 	transform : translateX(-50%) translateY(-50%);
 }
 
-.rrui__video__play-icon--bottom-right {
+.VideoPlayIcon--bottom-right {
 	right  : 0;
 	bottom : 0;
 	transform : translateX(-25%) translateY(-25%);

@@ -1,72 +1,46 @@
-.rrui__video {
+.Video {
 	display: block;
-/*	position: relative;
-	overflow: hidden;*/
 }
 
-/*
-.rrui__video iframe,
-.rrui__video object,
-.rrui__video embed {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-}
-*/
-
-/* `overflow: visible` is for the `box-shadow` to be visible. */
-/*.rrui__video {
-	overflow: visible;
-}*/
-
-.rrui__video video {
-	/* `<video/>`'s `display` is `inline` by default. */
-	display: block;
-	/* Don't show the `:focused` outline. */
-	outline: none;
-}
-
-.rrui__video--border {
+.Video--border {
 	--Video-borderColor: var(--Picture-borderColor);
 	/* Without `background-clip: padding-box` the border wouldn't blend with background. */
 	/* https://stackoverflow.com/questions/4062001/can-you-set-a-border-opacity-in-css */
   background-clip: padding-box;
 }
 
-.rrui__video--border:focus {
+.Video--border:focus {
 	--Video-borderColor: var(--Picture-borderColor--focus);
 }
 
-.rrui__video--border:not(.rrui__video__preview) {
+.Video--border:not(.Video--preview) {
 	border: 1px solid var(--Video-borderColor);
 }
 
-/*.rrui__video--border {
+/*.Video--border {
 	box-shadow: 0 0 0 1px var(--Picture-borderColor);
 }*/
 
-.rrui__video__preview:focus {
-	/*&.rrui__picture {
+.Video--preview:focus {
+	/*&.Picture {
 		box-shadow: 0 0 0 1px var(--Video-borderColor--focus);
 	}*/
-	.rrui__video__play-icon-border,
-	.rrui__video__play-icon-triangle {
+	.VideoPlayIcon-border,
+	.VideoPlayIcon-triangle {
 		fill: var(--base-color-400);
 	}
 }
 
-/*.rrui__video--aspect-ratio {
+/*.Video--aspect-ratio {
 	height: 0;
 }*/
 
-/*.rrui__video__button {
+/*.Video-button {
 	display: block;
 	width: 100%;
 }*/
 
-/*.rrui__video__preview {
+/*.Video--preview {
 	position: absolute;
 	top: 0;
 	width: 100%;
@@ -74,12 +48,10 @@
 	cursor: pointer;
 }*/
 
-.rrui__video__duration {
-	--PictureBadge-fontSize: 80%;
-}
-
-.rrui__video__player-container-inner {
-	/* Will be focused in case of an `<iframe/>` video player
-	   because `<iframe/>`s don't bubble events. */
+.Video-playerContainerInner {
+	/* The role of `.Video-playerContainerInner` is to receive focus
+		 when focusing the `<Video/>`: some video players render in an `<iframe/>`
+		 (for example, YouTube video player), and so they themselves aren't focuseable.
+	   In those cases, `.Video-playerContainerInner` receives focus and listens for keyboard events. */
 	outline: none;
 }

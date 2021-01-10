@@ -23,6 +23,7 @@ import './Padding.css'
 
 export default function PostHeader({
 	post,
+	compact,
 	url,
 	urlBasePath,
 	onPostUrlClick,
@@ -66,13 +67,14 @@ export default function PostHeader({
 			{Header &&
 				<Header post={post} locale={locale}/>
 			}
-			<PostTitle post={post}/>
+			<PostTitle post={post} compact={compact}/>
 		</header>
 	)
 }
 
 PostHeader.propTypes = {
 	post: post.isRequired,
+	compact: PropTypes.bool,
 	items: PropTypes.arrayOf(PropTypes.node),
 	badges: PropTypes.arrayOf(postBadge),
 	url: PropTypes.string,

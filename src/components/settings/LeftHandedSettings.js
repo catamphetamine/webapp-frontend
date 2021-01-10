@@ -44,6 +44,6 @@ export default function LeftHandedSettings({
 
 LeftHandedSettings.propTypes = {
 	messages: PropTypes.object.isRequired,
-	leftHanded: PropTypes.bool,
-	onLeftHandedChange: PropTypes.func.isRequired
+	value: PropTypes.bool,
+	onChange: PropTypes.func.isRequired
 }

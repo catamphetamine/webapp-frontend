@@ -1,3 +1,9 @@
+// For some weird reason, in Chrome, `setTimeout()` would lag up to a second (or more) behind.
+// Turns out, Chrome developers have deprecated `setTimeout()` API entirely without asking anyone.
+// Replacing `setTimeout()` with `requestAnimationFrame()` can work around that Chrome bug.
+// https://github.com/bvaughn/react-virtualized/issues/722
+import { setTimeout, clearTimeout } from 'request-animation-frame-timeout'
+
 export default class SlideshowScale {
 	constructor(slideshow) {
 		this.slideshow = slideshow
@@ -8,6 +14,7 @@ export default class SlideshowScale {
 		this.slideshow.isAnimatingScale = () => this.isAnimatingScale
 		this.slideshow.updateBoxShadow = this.updateBoxShadow
 		this.slideshow.resetBoxShadow = this.resetBoxShadow
+		this.slideshow.getDragAndScaleModeMoveStep = this.getDragAndScaleModeMoveStep
 		this.slideshow.onSlideChange(this.reset)
 		this.slideshow.onCleanUp(this.reset)
 		this.slideshow.onStateChange((newState, prevState) => {
@@ -28,29 +35,26 @@ export default class SlideshowScale {
 	 * @return {number}
 	 */
 	getInitialScaleForSlide(slide) {
-		let scale = this._getInitialScaleForSlide(slide)
-		// If slide size is same as thumbnail size, then artificially enlarge the slide,
-		// so that the user isn't confused on whether they have clicked the thumbnail or not.
-		if (this.isInitiallyOpenedSlide()) {
-			const { thumbnailCoords } = this.slideshow.props
-			if (thumbnailCoords) {
-				// Get current slide index.
-				// `state` is `undefined` when slideshow is being initialized.
-				const { children: slides } = this.slideshow.props
-				const i = slides.indexOf(slide)
-				if (this.slideshow.getSlideWidth(i) === thumbnailCoords.width) {
-					scale = Math.max(scale, 1 * MIN_THUMBNAIL_SCALE_FACTOR)
+		const scale = this._getInitialScaleForSlide(slide)
+		const i = this.slideshow.getCurrentSlideIndex()
+		const {
+			i: initialSlideIndex,
+			imageElementCoords,
+			minSlideScaleRelativeToThumbnail
+		} = this.slideshow.props
+		if (i === initialSlideIndex) {
+			if (imageElementCoords) {
+				// If a slide's size is the same (or nearly the same) as its thumbnail size,
+				// then artificially enlarge such slide, so that the user isn't confused
+				// on whether they have clicked the thumbnail or not (in "hover" picture mode).
+				const slideScaleRelativeToThumbnail = this.slideshow.getSlideWidth(slide) / imageElementCoords.width
+				if (slideScaleRelativeToThumbnail < minSlideScaleRelativeToThumbnail) {
+					return Math.max(scale, minSlideScaleRelativeToThumbnail / slideScaleRelativeToThumbnail)
 				}
 			}
 		}
 		// Return the scale.
 		return scale
-	}
-
-	isInitiallyOpenedSlide() {
-		return !this.slideshow.getState() || (
-			this.slideshow.getState().slideIndexAtWhichTheSlideshowIsBeingOpened === this.slideshow.getState().i
-		)
 	}
 
 	_getInitialScaleForSlide(slide) {
@@ -61,7 +65,8 @@ export default class SlideshowScale {
 		}
 		const maxWidth = this.slideshow.getMaxSlideWidth()
 		const maxHeight = this.slideshow.getMaxSlideHeight()
-		const { width, height } = plugin.getMaxSize(slide)
+		const width = this.slideshow.getSlideWidth(slide)
+		const height = this.slideshow.getSlideHeight(slide)
 		const widthRatio = width / maxWidth
 		const heightRatio = height / maxHeight
 		const ratio = Math.min(widthRatio, heightRatio)
@@ -76,8 +81,7 @@ export default class SlideshowScale {
 	_scaleUp(scale, scaleStep, { restrict = true } = {}) {
 		scale *= 1 + scaleStep
 		if (restrict) {
-			const { i } = this.slideshow.getState()
-			return Math.min(scale, this.getSlideMaxScale(i))
+			return Math.min(scale, this.getSlideMaxScale(this.slideshow.getCurrentSlide()))
 		}
 		return scale
 	}
@@ -96,25 +100,25 @@ export default class SlideshowScale {
 	}
 
 	_scaleToggle(scale) {
-		const { i } = this.slideshow.getState()
+		const slide = this.slideshow.getCurrentSlide()
 		// Compensates math precision (is supposed to).
-		return scale > 0.99 && scale < 1.01 ? this.getSlideMaxScale(i) : 1
+		return scale > 0.99 && scale < 1.01 ? this.getSlideMaxScale(slide) : 1
 	}
 
 	zoom(scale) {
 		if (this.slideshow.isDragAndScaleMode()) {
 			return scale
 		}
-		const { i } = this.slideshow.getState()
+		const slide = this.slideshow.getCurrentSlide()
 		return Math.min(
 			Math.max(scale, this.getMinScaleForCurrentSlide()),
-			this.getSlideMaxScale(i)
+			this.getSlideMaxScale(slide)
 		)
 	}
 
-	getSlideMaxScale(i) {
-		const fullScreenWidthScale = this.slideshow.getMaxSlideWidth() / this.slideshow.getSlideWidth(i)
-		const fullScreenHeightScale = this.slideshow.getMaxSlideHeight() / this.slideshow.getSlideHeight(i)
+	getSlideMaxScale(slide) {
+		const fullScreenWidthScale = this.slideshow.getMaxSlideWidth() / this.slideshow.getSlideWidth(slide)
+		const fullScreenHeightScale = this.slideshow.getMaxSlideHeight() / this.slideshow.getSlideHeight(slide)
 		return Math.min(fullScreenWidthScale, fullScreenHeightScale)
 	}
 
@@ -124,13 +128,15 @@ export default class SlideshowScale {
 		const {
 			minScaledSlideRatio,
 			i: initialSlideIndex,
-			thumbnailCoords
+			imageElementCoords,
+			minSlideScaleRelativeToThumbnail
 		} = this.slideshow.props
 		const { i } = this.slideshow.getState()
+		const slide = this.slideshow.getCurrentSlide()
 		if (i === initialSlideIndex) {
-			if (thumbnailCoords) {
-				const minScale = thumbnailCoords.width / this.slideshow.getSlideWidth(i)
-				return Math.min(minScale * MIN_THUMBNAIL_SCALE_FACTOR, 1)
+			if (imageElementCoords) {
+				const slideScaleRelativeToThumbnail = this.slideshow.getSlideWidth(slide) / imageElementCoords.width
+				return Math.min(minSlideScaleRelativeToThumbnail / slideScaleRelativeToThumbnail, 1)
 			}
 		}
 		// if (this.getPluginForSlide().isScaleDownAllowed) {
@@ -138,8 +144,8 @@ export default class SlideshowScale {
 		// 		return 1
 		// 	}
 		// }
-		const slideWidthRatio = this.slideshow.getSlideWidth(i) / this.slideshow.getMaxSlideWidth()
-		const slideHeightRatio = this.slideshow.getSlideHeight(i) / this.slideshow.getMaxSlideHeight()
+		const slideWidthRatio = this.slideshow.getSlideWidth(slide) / this.slideshow.getMaxSlideWidth()
+		const slideHeightRatio = this.slideshow.getSlideHeight(slide) / this.slideshow.getMaxSlideHeight()
 		// Averaged ratio turned out to work better than "min" ratio.
 		// const slideRatio = Math.min(slideWidthRatio, slideHeightRatio)
 		const slideRatio = (slideWidthRatio + slideHeightRatio) / 2
@@ -202,12 +208,12 @@ export default class SlideshowScale {
 		this.isStillInteractivelyZooming = true
 		// Measure stuff used when exiting "Drag and Scale" mode on fast zoom out.
 		// // Measure stuff used when closing the slideshow on fast zoom out.
-		const { i } = this.slideshow.getState()
+		const slide = this.slideshow.getCurrentSlide()
 		const maxSlideWidth = this.slideshow.getMaxSlideWidth()
 		const maxSlideHeight = this.slideshow.getMaxSlideHeight()
 		const maxSlideSizeRatio = maxSlideWidth / maxSlideHeight
-		const slideWidth = this.slideshow.getSlideWidth(i)
-		const slideHeight = this.slideshow.getSlideHeight(i)
+		const slideWidth = this.slideshow.getSlideWidth(slide)
+		const slideHeight = this.slideshow.getSlideHeight(slide)
 		const slideRatio = slideWidth / slideHeight
 		if (slideRatio >= maxSlideSizeRatio) {
 			this.interactiveZoomMaxWidth = maxSlideWidth
@@ -374,12 +380,12 @@ export default class SlideshowScale {
 		}
 		if (this.finishAnimateScaleTimeout) {
 			const { getSlideDOMNode } = this.slideshow.props
-			const { i } = this.slideshow.getState()
+			const slide = this.slideshow.getCurrentSlide()
 			// Get current scale of the slide.
 			// Getting `scale` from `transform` in real time would return a matrix.
 			// https://stackoverflow.com/questions/5603615/get-the-scale-value-of-an-element
 			// const scale = getSlideDOMNode().style.transform
-			const scale = getSlideDOMNode().getBoundingClientRect().width / this.slideshow.getSlideWidth(i)
+			const scale = getSlideDOMNode().getBoundingClientRect().width / this.slideshow.getSlideWidth(slide)
 			const { onScaleChange } = this.slideshow.props
 			// Apply the current scale in slideshow state.
 			if (onScaleChange) {
@@ -493,10 +499,10 @@ export default class SlideshowScale {
 	}
 
 	willScalingUpExceedMaxSize(scaleFactor) {
-		const { i } = this.slideshow.getState()
+		const slide = this.slideshow.getCurrentSlide()
 		// Adding `0.01`, because, for example, zoomed-in scale sometimes is
 		// `1.0000000000000002` instead of `1` due to some precision factors.
-		return this.getZoomedInScale(scaleFactor, { restrict: false }) > this.getSlideMaxScale(i) + 0.01
+		return this.getZoomedInScale(scaleFactor, { restrict: false }) > this.getSlideMaxScale(slide) + 0.01
 	}
 
 	scaleUp = (scaleFactor) => {
@@ -515,6 +521,10 @@ export default class SlideshowScale {
 		this.setState({
 			scale: this._scaleToggle(scale)
 		})
+	}
+
+	getDragAndScaleModeMoveStep = () => {
+		return Math.max(this.slideshow.getSlideshowWidth(), this.slideshow.getSlideshowHeight()) / 10
 	}
 }
 
@@ -543,5 +553,3 @@ function getBoxShadow(element) {
 		return boxShadow
 	}
 }
-
-const MIN_THUMBNAIL_SCALE_FACTOR = 1.25

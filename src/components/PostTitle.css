@@ -10,3 +10,7 @@
 	font-size: var(--PostTitle-fontSize);
 	font-weight: var(--PostTitle-fontWeight);
 }
+
+.PostTitle--compact {
+	--PostTitle-marginBottom: var(--PostContent-marginTop--compact);
+}

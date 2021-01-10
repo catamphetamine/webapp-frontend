@@ -5,13 +5,24 @@
 	align-items: center;
 	width: 100%;
 	top: var(--Header-height);
-	padding-left: var(--unit);
-	padding-right: var(--unit);
-	padding-top: calc(var(--unit) * 0.5);
-	padding-bottom: calc(var(--unit) * 0.5);
+	margin-top: var(--Announcement-marginTop);
+	margin-bottom: var(--Announcement-marginBottom);
+	padding-left: var(--Announcement-padding);
+	padding-right: var(--Announcement-padding);
+	padding-top: var(--Announcement-padding);
+	padding-bottom: var(--Announcement-padding);
 	background-color: var(--Announcement-backgroundColor);
 	color: var(--Announcement-color);
-	border-bottom: var(--Announcement-borderWidth) solid var(--Announcement-borderColor);
+	border: var(--Announcement-borderWidth) solid var(--Announcement-borderColor);
+	box-shadow: var(--Announcement-boxShadow);
+	a {
+		color: var(--Announcement-link-color);
+		text-decoration: var(--Announcement-link-textDecoration);
+		border-bottom: var(--Announcement-link-borderBottom);
+		&:active {
+			color: var(--Announcement-link-color--active);
+		}
+	}
 }
 
 @mixin upto-xs {

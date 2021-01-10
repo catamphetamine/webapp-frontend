@@ -1,3 +1,9 @@
+// For some weird reason, in Chrome, `setTimeout()` would lag up to a second (or more) behind.
+// Turns out, Chrome developers have deprecated `setTimeout()` API entirely without asking anyone.
+// Replacing `setTimeout()` with `requestAnimationFrame()` can work around that Chrome bug.
+// https://github.com/bvaughn/react-virtualized/issues/722
+import { setTimeout, clearTimeout } from 'request-animation-frame-timeout'
+
 import throttle from 'lodash/throttle'
 
 const PAN_SPEED_CALC_THROTTLE = 200  // in milliseconds
@@ -94,10 +100,10 @@ export default class SlideshowPan {
 
 	getAdjacentSlideTransitionDuration(pannedRatio) {
 		const {
-			slideInDuration,
-			minSlideInDuration
+			panSlideInAnimationDuration,
+			panSlideInAnimationDurationMin
 		} = this.props
-		return minSlideInDuration + Math.round(Math.abs(pannedRatio) * (slideInDuration - minSlideInDuration))
+		return panSlideInAnimationDurationMin + Math.round(Math.abs(pannedRatio) * (panSlideInAnimationDuration - panSlideInAnimationDurationMin))
 	}
 
 	animateDragEnd = () => {
@@ -129,13 +135,18 @@ export default class SlideshowPan {
 		})
 	}
 
-	onPanEnd(cancel) {
-		const {
-			inline
-		} = this.props
-
+	onPanEnd({ cancelled, ignorePan } = {}) {
+		const { inline } = this.props
 		const { i } = this.slideshow.getState()
 		const dragAndScaleMode = this.slideshow.isDragAndScaleMode()
+
+		if (cancelled) {
+			// If a user was panning and then the pointer moved out of the browser window,
+			// and if after that the user moves the pointer back to the browser window
+			// without releasing the mouse button (or touch), then this works around the bug
+			// when the slide would be closed due to a `click` event being processed.
+			this.slideshow.ignorePointerUpEvents = true
+		}
 
 		this.calculatePanSpeed()
 
@@ -143,22 +154,26 @@ export default class SlideshowPan {
 			this.resetDragOrigin()
 			this.animateDragEnd()
 		} else {
+			let hasClosedSlideshow
+			let hasChangedSlide
 			if (this.panOffsetX || this.panOffsetY) {
 				let slideIndex = i
 				let pannedRatio
 				if (this.panOffsetX) {
 					pannedRatio = Math.abs(this.panOffsetX) / this.slideshowWidth
 					// Switch slide (if panning wasn't taken over by zooming).
-					if (!cancel) {
+					if (!ignorePan) {
 						if (pannedRatio > 0.5 || this.panSpeed > 0.05) {
 							const animationDuration = this.getAdjacentSlideTransitionDuration(pannedRatio)
 							if (this.panOffsetX < 0) {
 								if (this.slideshow.showNext({ animationDuration, interaction: 'pan' })) {
 									slideIndex++
+									hasChangedSlide = true
 								}
 							} else {
 								if (this.slideshow.showPrevious({ animationDuration, interaction: 'pan' })) {
 									slideIndex--
+									hasChangedSlide = true
 								}
 							}
 						}
@@ -166,21 +181,47 @@ export default class SlideshowPan {
 				} else {
 					pannedRatio = Math.abs(this.panOffsetY) / this.slideshow.getSlideshowHeight()
 					// Close the slideshow if panned vertically far enough or fast enough.
-					if (!cancel) {
+					if (!ignorePan) {
 						if (pannedRatio > 0.5 || this.panSpeed > 0.05) {
+							hasClosedSlideshow = true
 							this.slideshow.close({ interaction: 'pan' })
 						}
 					}
 				}
+
+				let animateOverlay
+				let overlayOpacity
+				if (this.panOffsetY && !hasClosedSlideshow) {
+					animateOverlay = true
+					const { maxOverlayOpacity } = this.slideshow.state
+					overlayOpacity = maxOverlayOpacity
+				} else if (this.panOffsetX && this.slideshow.shouldAnimateOverlayOpacityWhenPagingThrough() && hasChangedSlide) {
+					animateOverlay = true
+					// `maxOverlayOpacity` is set in `state` in `Slideshow.Core`
+					// before this code is executed, but the `state` might not
+					// have updated yet, so using the value from `props` instead.
+					overlayOpacity = this.slideshow.getOverlayOpacityWhenPagingThrough()
+				}
+
 				// Reset pan offset so that `getSlideRollTransform()`
 				// moves the current slide to its initial position.
 				this.resetPanOffset()
-				this.onTransitionStart(this.getAdjacentSlideTransitionDuration(pannedRatio), slideIndex)
+				this.onTransitionStart({
+					duration: this.getAdjacentSlideTransitionDuration(pannedRatio),
+					slideIndex,
+					animateOverlay,
+					overlayOpacity
+				})
 			}
 		}
 		// Rest.
 		const { onPanEnd } = this.props
 		onPanEnd()
+		// `this.wasPanning` flag is read later
+		// to decide whether the "pointer up" event
+		// should be considered part of a click
+		// that closes the current slide, or whether
+		// it should be cancelled.
 		this.wasPanning = this.isActuallyPanning
 		setTimeout(() => {
 			const { isRendered } = this.props
@@ -194,10 +235,11 @@ export default class SlideshowPan {
 	onPan(positionX, positionY) {
 		const {
 			inline,
-			overlayOpacity,
-			emulatePanResistanceOnClose,
+			emulatePanResistanceOnFirstAndLastSlides,
 			panOffsetThreshold
 		} = this.props
+
+		const overlayOpacity = this.slideshow.getMaxOverlayOpacity()
 
 		const { i } = this.slideshow.getState()
 		const dragAndScaleMode = this.slideshow.isDragAndScaleMode()
@@ -250,7 +292,7 @@ export default class SlideshowPan {
 
 		// Emulate pan resistance when there are
 		// no more slides to navigate to.
-		if (emulatePanResistanceOnClose) {
+		if (emulatePanResistanceOnFirstAndLastSlides) {
 			if (this.panDirection === 'horizontal') {
 				if ((this.slideshow.isFirst() && this.panOffsetX > 0) ||
 					(this.slideshow.isLast() && this.panOffsetX < 0)) {
@@ -314,33 +356,43 @@ export default class SlideshowPan {
 	})
 
 	finishTransition() {
-		if (this.transitionOngoing) {
-			this.onTransitionEnd()
+		if (this.transitionEndTimer) {
 			clearTimeout(this.transitionEndTimer)
-			this.transitionEndTimer = undefined
+			this._onTransitionEnd()
 		}
 	}
 
-	onTransitionStart(duration, slideIndex) {
+	onTransitionStart({ duration, slideIndex, animateOverlay, overlayOpacity }) {
+		if (animateOverlay) {
+			const { setOverlayTransitionDuration } = this.props
+			setOverlayTransitionDuration(duration)
+			this.updateOverlayOpacity(overlayOpacity)
+		}
 		const { setSlideRollTransitionDuration } = this.props
 		setSlideRollTransitionDuration(duration)
 		this.updateSlideRollOffset(slideIndex)
 		// Transition the slide back to it's original position.
-		this.transitionOngoing = true
 		this.slideshow.lock()
-		this.transitionEndTimer = setTimeout(() => {
-			this.transitionEndTimer = undefined
-			const { isRendered } = this.props
-			if (isRendered()) {
-				this.onTransitionEnd()
-			}
-		}, duration)
+		this.transitionAnimatesOverlay = animateOverlay
+		this.transitionEndTimer = setTimeout(this._onTransitionEnd, duration)
+	}
+
+	_onTransitionEnd = () => {
+		const { isRendered } = this.props
+		if (isRendered()) {
+			this.onTransitionEnd()
+		}
+		this.transitionEndTimer = undefined
+		this.transitionAnimatesOverlay = undefined
 	}
 
 	onTransitionEnd = () => {
 		const { setSlideRollTransitionDuration } = this.props
 		setSlideRollTransitionDuration(0)
-		this.transitionOngoing = false
+		if (this.transitionAnimatesOverlay) {
+			const { setOverlayTransitionDuration } = this.props
+			setOverlayTransitionDuration(0)
+		}
 		this.slideshow.unlock()
 	}
 

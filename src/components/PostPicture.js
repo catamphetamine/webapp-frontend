@@ -1,8 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import classNames from 'classnames'
 
 import { getAspectRatio } from './Picture'
-import PostAttachmentThumbnail, { ATTACHMENT_THUMBNAIL_SIZE } from './PostAttachmentThumbnail'
+import PostAttachmentThumbnail from './PostAttachmentThumbnail'
 import PostEmbeddedAttachmentTitle from './PostEmbeddedAttachmentTitle'
 import { pictureAttachment } from '../PropTypes'
 
@@ -12,21 +13,34 @@ export default function PostPicture({
 	attachment,
 	maxHeight,
 	expand,
+	expandToTheFullest,
+	align,
+	border,
 	spoilerLabel,
-	onClick
+	link,
+	onClick,
+	className
 }) {
 	const picture = attachment.picture
 	const aspectRatio = getAspectRatio(picture)
 	return (
-		<section className="PostPicture">
+		<section
+			className={classNames(className, 'PostPicture', {
+				'PostPicture--alignLeft': align === 'left',
+				'PostPicture--alignCenter': align === 'center',
+				'PostPicture--alignRight': align === 'right'
+			})}>
 			<PostAttachmentThumbnail
 				attachment={attachment}
 				maxHeight={maxHeight}
 				expand={expand}
+				expandToTheFullest={expandToTheFullest}
 				spoilerLabel={spoilerLabel}
-				onClick={onClick}/>
+				url={link}
+				border={border}
+				onClick={link ? undefined : onClick}/>
 			{picture.title &&
-				<PostEmbeddedAttachmentTitle>
+				<PostEmbeddedAttachmentTitle link={link || picture.url}>
 					{picture.title}
 				</PostEmbeddedAttachmentTitle>
 			}
@@ -36,14 +50,19 @@ export default function PostPicture({
 
 PostPicture.propTypes = {
 	attachment: pictureAttachment.isRequired,
+	link: PropTypes.string,
 	onClick: PropTypes.func,
-	maxHeight: PropTypes.number.isRequired,
+	maxHeight: PropTypes.number,
 	expand: PropTypes.bool,
-	spoilerLabel: PropTypes.string
+	expandToTheFullest: PropTypes.bool,
+	align: PropTypes.oneOf(['left', 'center', 'right']),
+	border: PropTypes.bool,
+	spoilerLabel: PropTypes.string,
+	className: PropTypes.string
 }
 
 PostPicture.defaultProps = {
-	maxHeight: ATTACHMENT_THUMBNAIL_SIZE
+	align: 'center'
 }
 
 export const EXAMPLE = {

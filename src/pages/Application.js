@@ -19,7 +19,7 @@ import Header from '../components/Header'
 import Footer from '../components/Footer'
 import DeviceInfo from '../components/DeviceInfo'
 import Slideshow from '../components/Slideshow'
-import { loadYouTubeVideoPlayerApi } from '../components/YouTubeVideo'
+import { loadYouTubeVideoPlayerApi } from '../components/Video.YouTube'
 
 import { closeSlideshow } from '../redux/slideshow'
 
@@ -53,8 +53,7 @@ export default function App({ children }) {
 					i={slideshowIndex}
 					isOpen={slideshowIsOpen}
 					mode={slideshowMode}
-					onClose={onCloseSlideshow}
-					animateOpenCloseOnPanOut>
+					onClose={onCloseSlideshow}>
 					{slideshowSlides}
 				</Slideshow>
 			}

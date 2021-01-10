@@ -14,7 +14,7 @@
 	user-select: none;
 }
 
-.PostQuoteLink--attachment {
+.PostQuoteLink--attachments {
 	/* Attachments are `display: block`, so their container
 	   should be `display: inline-block`, not `display: inline`. */
 	display: inline-block;
@@ -56,12 +56,17 @@
   	border-top: 0;
 	}
 	*/
-	&:hover {
-		color: var(--PostQuoteLink-color--minimizedHover);
-		background-color: var(--PostQuoteLink-backgroundColor--minimizedHover);
-		/*box-shadow: inset 0 0 0 var(--PostQuoteBlock-borderWidth--generated) var(--PostQuoteBlock-borderColor--generated);*/
-		border-left-color: var(--PostQuoteLink-borderColor--minimizedHover);
-		border-top-color: var(--PostQuoteLink-borderColor--minimizedHover);
-		border-bottom-color: var(--PostQuoteLink-borderColor--minimizedHover);
-	}
+}
+
+/* Using `.PostQuoteLink--minimized--hover` selector instead of `:hover`
+   because this way it doesn't highlight a minimized post quote link
+   when a user scrolls the page and the mouse cursor unintentionally
+   hovers random minimized post quote links in the process. */
+.PostQuoteLink--minimized--hover {
+	color: var(--PostQuoteLink-color--minimizedHover);
+	background-color: var(--PostQuoteLink-backgroundColor--minimizedHover);
+	/*box-shadow: inset 0 0 0 var(--PostQuoteBlock-borderWidth--generated) var(--PostQuoteBlock-borderColor--generated);*/
+	border-left-color: var(--PostQuoteLink-borderColor--minimizedHover);
+	border-top-color: var(--PostQuoteLink-borderColor--minimizedHover);
+	border-bottom-color: var(--PostQuoteLink-borderColor--minimizedHover);
 }

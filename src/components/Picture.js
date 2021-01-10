@@ -6,6 +6,8 @@ import { ActivityIndicator, FadeInOut } from 'react-responsive-ui'
 
 import { picture } from '../PropTypes'
 
+import useMount from '../hooks/useMount'
+
 import getMinSize from 'social-components/commonjs/utility/picture/getMinSize'
 
 import './Picture.css'
@@ -70,7 +72,7 @@ function Picture({
 	const containerRef = useRef()
 	// `imageRef` property shouldn't change, otherwise hooks order will change.
 	imageRef = imageRef || useRef()
-	const isMounted = useRef()
+	const [isMounted, onMount] = useMount()
 	const cancelLoadingImage = useRef()
 	const [size, setSize] = useState(initialImageSize.current)
 	const [imageStatus, setImageStatus] = useState()
@@ -109,7 +111,7 @@ function Picture({
 				if (elapsed < DEV_MODE_WAIT_FOR_STYLES) {
 					setTimeout(
 						() => {
-							if (isMounted.current) {
+							if (isMounted()) {
 								setUpSizing()
 							}
 						},
@@ -121,16 +123,13 @@ function Picture({
 			}
 		}
 		return () => {
-			isMounted.current = false
 			window.interactiveResize.remove(refreshSize)
 		}
 	}, [])
 
 	useEffect(() => {
-		if (isMounted.current) {
+		if (isMounted()) {
 			refreshSize(true)
-		} else {
-			isMounted.current = true
 		}
 	}, [picture])
 
@@ -263,7 +262,7 @@ function Picture({
 					return
 				}
 				cancelLoadingImage.current = undefined
-				if (isMounted.current) {
+				if (isMounted()) {
 					setImageStatus(1)
 				}
 			},
@@ -273,7 +272,7 @@ function Picture({
 					return
 				}
 				cancelLoadingImage.current = undefined
-				if (isMounted.current) {
+				if (isMounted()) {
 					setImageStatus(-1)
 				}
 			}
@@ -300,6 +299,8 @@ function Picture({
 		return getAspectRatio(size || picture)
 	}
 
+	onMount()
+
 	const imageStyle = fit === 'cover' ? { height: '100%', objectFit: fit } : undefined
 
 	return (
@@ -308,14 +309,14 @@ function Picture({
 			{...componentProps}
 			ref={containerRef}
 			style={style ? { ...style, ...getContainerStyle() } : getContainerStyle()}
-			className={classNames(className, 'rrui__picture', {
-				'rrui__picture--border': border,
-				'rrui__picture--non-transparent-background': showLoadingPlaceholder && !picture.transparentBackground
+			className={classNames(className, 'Picture', {
+				'Picture--border': border,
+				'Picture--nonTransparentBackground': showLoadingPlaceholder && !picture.transparentBackground
 			})}>
 
 			{/* Placeholder must stretch the parent element vertically
 			    for maintaining the aspect ratio of the picture.
-			    Otherwise `.rrui__picture`'s height would be `0`
+			    Otherwise `.Picture`'s height would be `0`
 			    until the image file header has been parsed
 			    and that would result in "jumpiness" of the layout
 			    and would also cause bugs in a `virtual-scroller`.
@@ -330,12 +331,26 @@ function Picture({
 				}}/>
 			}
 
+			{/* When a `<Picture/>` is rendered in a `display: flex` container,
+			    it won't stretch to full page width by default, instead being
+			    as wide as the text inside that container, so if there's a lot
+			    of text, then the picture will be big, and if there's only
+			    a couple of words, then the text won't stretch the `display: flex`
+			    container to full page width, and the picture will be small.
+			    To work around such cases, a special "stretcher" element is rendered.
+			    If the `<img/>` was rendered without `position: absolute`,
+			    then it would stretch such container. But because the `<img/>` is
+			    rendered with `position: absolute`, it doesn't stretch the container. */}
+			{!(width || height) &&
+				<div style={FULL_WIDTH_STRETCHER_STYLE}/>
+			}
+
 			{/* Image "status" screen is displayed below the `<img/>`.
 			    This way, as the image loads, it hides the "loading" status below itself. */}
 			{/* `<span/>` is used instead of a `<div/>`
 			    because a `<div/>` isn't supposed to be inside a `<button/>`. */}
 			{imageStatus !== 1 &&
-				<span className="rrui__picture__status">
+				<span className="Picture-status">
 					<FadeInOut
 						show
 						fadeInInitially
@@ -345,11 +360,11 @@ function Picture({
 							<Close
 								onClick={retryImageLoad}
 								title="Retry"
-								className="rrui__picture__loading-error"/>
+								className="Picture-loadingError"/>
 							:
 							(showLoadingIndicator ?
-								<ActivityIndicator className="rrui__picture__loading-indicator"/> :
-								<span className="rrui__picture__loading-indicator-stub"/>
+								<ActivityIndicator className="Picture-loadingIndicator"/> :
+								<span className="Picture-loadingIndicatorStub"/>
 							)
 						}
 					</FadeInOut>
@@ -361,7 +376,7 @@ function Picture({
 					ref={imageRef}
 					src={typeof window === 'undefined' ? TRANSPARENT_PIXEL : (size && size.url || TRANSPARENT_PIXEL)}
 					style={blur ? addHiddenStyle(imageStyle) : imageStyle}
-					className="rrui__picture__image"/>
+					className="Picture-image"/>
 			}
 
 			{/* Maybe there could be a single <img/> instead of a blurred one and a non-blurred one. */}
@@ -369,7 +384,7 @@ function Picture({
 				<img
 					src={typeof window === 'undefined' ? TRANSPARENT_PIXEL : (size && size.url || TRANSPARENT_PIXEL)}
 					style={addBlur(imageStyle, calculateBlurRadius(blur))}
-					className="rrui__picture__image rrui__picture__image--blurred"/>
+					className="Picture-image Picture-image--blurred"/>
 			}
 
 			{children}
@@ -659,4 +674,9 @@ export function getFitSize(picture, availableWidth, availableHeight) {
 		const maxHeight = availableWidth / aspectRatio
 		return [availableWidth, maxHeight]
 	}
+}
+
+const FULL_WIDTH_STRETCHER_STYLE = {
+	width: '100vw',
+	maxWidth: '100%'
 }

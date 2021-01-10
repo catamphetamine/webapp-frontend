@@ -1,5 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import classNames from 'classnames'
+
+import getEmbeddedAttachment from 'social-components/commonjs/utility/post/getEmbeddedAttachment'
 
 import PostSubheading from './PostSubheading'
 import PostParagraph from './PostParagraph'
@@ -14,9 +17,14 @@ import PostReadMore from './PostReadMore'
 
 import PostInlineContent from './PostInlineContent'
 
+import { getAttachmentThumbnailSize } from './PostAttachmentThumbnail'
+
 import { postBlock, postAttachment } from '../PropTypes'
 
-export default function PostBlock({
+import './PostContentBlock.css'
+
+export default function PostContentBlock({
+	compact,
 	url,
 	onReadMore,
 	readMoreLabel,
@@ -35,7 +43,9 @@ export default function PostBlock({
 	postLinkQuoteExpandTimeout,
 	isPostLinkQuoteExpanded,
 	onPostLinkQuoteExpand,
-	onContentDidChange,
+	onRenderedContentDidChange,
+	isSocialClickable,
+	onSocialClick,
 	spoilerLabel,
 	locale,
 	children: content
@@ -52,6 +62,9 @@ export default function PostBlock({
 				onAttachmentClick={onAttachmentClick}
 				onPostLinkClick={onPostLinkClick}
 				isPostLinkClickable={isPostLinkClickable}
+				onRenderedContentDidChange={onRenderedContentDidChange}
+				onSocialClick={onSocialClick}
+				isSocialClickable={isSocialClickable}
 				useSmallestThumbnailsForAttachments={useSmallestThumbnailsForAttachments}
 				attachmentThumbnailSize={attachmentThumbnailSize}
 				spoilerLabel={spoilerLabel}
@@ -80,7 +93,11 @@ export default function PostBlock({
 		)
 	} else if (content.type === 'list') {
 		return (
-			<PostList>
+			<PostList
+				onSocialClick={onSocialClick}
+				isSocialClickable={isSocialClickable}
+				onAttachmentClick={onAttachmentClick}
+				serviceIcons={serviceIcons}>
 				{content.items}
 			</PostList>
 		)
@@ -107,44 +124,74 @@ export default function PostBlock({
 			</PostParagraph>
 		)
 	} else if (content.type === 'attachment') {
-		const attachment = attachments.find(_ => _.id === content.attachmentId)
+		const attachment = getEmbeddedAttachment(content, attachments)
 		if (!attachment) {
 			console.error(`Attachment not found: ${content.attachmentId}`)
 			return null
 		}
+		const className = 'PostContentBlock'
+		// const className = classNames({
+		// 	'PostContentBlock--marginLarge': content.margin === 'large',
+		// 	'PostContentBlock--marginMedium': content.margin === 'medium' || !content.margin,
+		// 	'PostContentBlock--marginSmall': content.margin === 'small'
+		// })
+		// Max recommended height for a picture or a video.
+		const maxHeight = content.maxHeight === 'none'
+			? undefined
+			: content.maxHeight || (
+				compact
+					? getAttachmentThumbnailSize(attachmentThumbnailSize)
+					: undefined
+			)
+		const align = compact ? 'left' : 'center'
 		switch (attachment.type) {
 			case 'picture':
 				return (
 					<PostPicture
-						expand={expandAttachments}
+						expand={expandAttachments || maxHeight === undefined}
+						expandToTheFullest={content.expand}
+						align={align}
+						border={content.border}
 						attachment={attachment}
 						spoilerLabel={spoilerLabel}
-						maxHeight={attachmentThumbnailSize}
+						maxHeight={maxHeight}
+						link={content.link}
 						onClick={onAttachmentClick ?
 							(event) => {
 								event.preventDefault()
-								onAttachmentClick(attachment, { thumbnailImage: event.target })
+								onAttachmentClick(attachment, { imageElement: event.target })
 							} :
 							undefined
-						}/>
+						}
+						className={className}/>
 				)
 			case 'video':
 				return (
 					<PostVideo
-						expand={expandAttachments}
+						expand={expandAttachments || maxHeight === undefined}
+						expandToTheFullest={content.expand}
+						align={align}
+						border={content.border}
 						attachment={attachment}
 						spoilerLabel={spoilerLabel}
-						maxHeight={attachmentThumbnailSize}
+						maxHeight={maxHeight}
 						onClick={onAttachmentClick ?
 							(event) => {
 								event.preventDefault()
-								onAttachmentClick(attachment, { thumbnailImage: event.target })
+								onAttachmentClick(attachment, { imageElement: event.target })
 							} :
 							undefined
-						}/>
+						}
+						className={className}/>
 				)
 			case 'audio':
-				return <PostAudio>{attachment}</PostAudio>
+				return (
+					<PostAudio
+						align={align}
+						className={className}>
+						{attachment}
+					</PostAudio>
+				)
 			case 'social':
 				return (
 					<PostSocial
@@ -152,7 +199,10 @@ export default function PostBlock({
 						social={attachment.social}
 						locale={locale}
 						attachmentThumbnailSize={attachmentThumbnailSize}
-						onAttachmentClick={onAttachmentClick}/>
+						onAttachmentClick={onAttachmentClick}
+						isClickable={isSocialClickable}
+						onClick={onSocialClick}
+						className={className}/>
 				)
 			default:
 				console.error(`Unknown embedded attachment type: "${attachment.type}"\n`, attachment)
@@ -172,11 +222,14 @@ export default function PostBlock({
 	}
 }
 
-PostBlock.propTypes = {
+PostContentBlock.propTypes = {
+	compact: PropTypes.bool,
 	url: PropTypes.string,
 	onReadMore: PropTypes.func.isRequired,
 	readMoreLabel: PropTypes.string,
-	attachments: PropTypes.arrayOf(postAttachment).isRequired,
+	// `attachments` property isn't passed when just
+	// rendering `<Content/>` from `PostContent.js`.
+	attachments: PropTypes.arrayOf(postAttachment),
 	attachmentThumbnailSize: PropTypes.number,
 	onAttachmentClick: PropTypes.func,
 	onPostLinkClick: PropTypes.func,
@@ -192,7 +245,9 @@ PostBlock.propTypes = {
 	postLinkQuoteExpandTimeout: PropTypes.number,
 	isPostLinkQuoteExpanded: PropTypes.func,
 	onPostLinkQuoteExpand: PropTypes.func,
-	onContentDidChange: PropTypes.func,
+	onRenderedContentDidChange: PropTypes.func,
+	isSocialClickable: PropTypes.func,
+	onSocialClick: PropTypes.func,
 	locale: PropTypes.string,
 	children: postBlock.isRequired
 }

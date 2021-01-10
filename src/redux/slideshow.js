@@ -9,7 +9,7 @@ const SLIDESHOW_PROPERTIES = [
 	'slides',
 	'index',
 	'mode',
-	'thumbnailImage',
+	'imageElement',
 	'goToSource'
 ]
 

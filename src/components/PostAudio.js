@@ -1,11 +1,21 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import classNames from 'classnames'
+
 import { audio } from '../PropTypes'
 
 import './PostAudio.css'
 
-export default function PostAudio({ audio }) {
-	const className = 'PostAudio'
+export default function PostAudio({
+	audio,
+	align,
+	className
+}) {
+	className = classNames(className, 'PostAudio', {
+		'PostAudio--alignLeft': align === 'left',
+		'PostAudio--alignCenter': align === 'center',
+		'PostAudio--alignRight': align === 'right'
+	})
 	if (!audio.provider) {
 		return <PostAudioFile audio={audio} className={className}/>
 	}
@@ -25,7 +35,9 @@ export default function PostAudio({ audio }) {
 }
 
 PostAudio.propTypes = {
-	audio: audio.isRequired
+	audio: audio.isRequired,
+	align: PropTypes.oneOf(['left', 'center', 'right']),
+	className: PropTypes.string
 }
 
 function SoundCloudAudio({ audio: { id } }) {
@@ -50,12 +62,12 @@ SoundCloudAudio.propTypes = {
 function PostAudioFile({ audio, className }) {
 	return (
 		<section className={className}>
-			<audio controls>
+			<audio controls className="PostAudio-audio">
 				<source
 					type={audio.type}
 					src={audio.url}/>
 			</audio>
-			<h1>
+			<h1 className="PostAudio-title">
 				{audio.author}
 				{audio.author && audio.title && ' — '}
 				{audio.title}

@@ -38,6 +38,7 @@
 	"noSearchResults": "Nothing found",
 	"post": {
 		"verified": "Identity verified",
+		"removed": "This comment has been removed",
 		"banned": "The author of this comment was banned",
 		"bannedReason": ". Reason: \"{0}\".",
 		"sticky": "Sticky thread",
@@ -70,6 +71,7 @@
 		"save": "Save",
 		"add": "Add",
 		"remove": "Remove",
+		"retry": "Retry",
 		"ok": "Ok",
 		"cancel": "Cancel",
 		"yes": "Yes",
@@ -119,7 +121,8 @@
 			"hideControls": "Hide controls",
 			"openExternalLink": "Open external link",
 			"exitDragAndScaleMode": "Exit Drag and Scale mode"
-		}
+		},
+		"scaleValueBefore": "Scale"
 	},
 	"cookies": {
 		"notice": "This website uses Cookies and Local Storage to personalise content, to provide social media features and to analyse traffic.",

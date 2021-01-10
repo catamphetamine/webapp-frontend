@@ -5,6 +5,7 @@
 	/* Document. */
 	--Document-color: var(--Content-color-900);
 	--Document-backgroundColor: var(--Content-backgroundColor);
+	--Document-backgroundImage: none;
 	--Document-fontFamily: Roboto, sans-serif;
 	--Document-fontWeight: normal;
 
@@ -15,6 +16,19 @@
 	--LinearProgress-animationTimingFactor: 1;
 	--LinearProgress-animationDuration: calc(2.1s * var(--LinearProgress-animationTimingFactor));
 	--LinearProgress-animationInterval: calc(1.18s * var(--LinearProgress-animationTimingFactor));
+
+	/* Announcement. */
+	--Announcement-backgroundColor: var(--Content-backgroundColor);
+	--Announcement-color: var(--Content-color-900);
+	--Announcement-borderWidth: 0px;
+	--Announcement-padding: var(--unit);
+	--Announcement-marginTop: 0px;
+	--Announcement-marginBottom: 0px;
+	--Announcement-link-color: var(--Clickable-color--text);
+	--Announcement-link-color--active: var(--Clickable-color--textActive);
+	--Announcement-link-borderBottom: none;
+	--Announcement-link-textDecoration: none;
+	--Announcement-boxShadow: none;
 
 	/* Quote. */
 	--Quote--before: '«';
@@ -93,7 +107,10 @@
 	--Post-backgroundColor: var(--Content-backgroundColor);
 	--Post-transition: none;
 	--Post-transition--onClick: background-color 60ms;
-	--PostContent-marginTop: 0.6em;
+	--PostContent-marginTop: 1.5em;
+	--PostContent-marginTop--compact: 0.6em;
+	--PostContentBlock-marginTop: 2em;
+	--PostContentBlock-marginTop--compact: var(--PostContent-marginTop--compact);
 
 	/* PostTitle. */
 	/*--PostTitle-marginTop: var(--PostContent-marginTop);*/
@@ -104,13 +121,6 @@
 	/*--PostTitle-marginBottom--compact: var(--PostTitle-marginBottom);*/
 	--PostTitle-fontSize: 1.17em;
 	--PostTitle-fontWeight: normal;
-
-	/* PostParagraph. */
-	/* Textual content has some inherent bottom spacing due to line height.
-   Other content (attachment thumbnails, embedded pictures and videos)
-   doesn't have such extra visual spacing. Therefore reduce it for text. */
-	--PostParagraph-marginTop: calc(var(--PostContent-marginTop) - var(--Post-textLineHeightBlankSpace));
-	--PostParagraph-marginBottom: calc(-1 * var(--Post-textLineHeightBlankSpace));
 
 	/* PostInlineSpoiler. */
 	--PostInlineSpoiler-opacity: initial;
@@ -237,13 +247,40 @@
 	--CommentTreeBranch-paddingLeft--firstLevel: 0;
 
 	/* Slideshow. */
-	--SlideshowSlide-boxShadow: 0 10px 38px rgba(0,0,0,0.2), 0 6px 12px rgba(0,0,0,0.16);
-	--SlideshowSlide-backgroundColor: var(--Content-color-100);
-	--SlideshowSlide-backgroundColor--video: black;
-	--SlideshowProgressDot-borderWidth: 1px;
-	--SlideshowProgressDot-borderColor: rgba(0, 0, 0, 0.5);
-	--SlideshowProgressDot-opacity: 0.8;
+	/*--Slideshow-Slide-boxShadow: 0 0 0 6px white, 0 8px 34px rgba(0,0,0,0.3), 0 4px 15px rgba(0,0,0,0.2);*/
+	/*--Slideshow-Slide-boxShadow: 0 10px 38px rgba(0,0,0,0.2), 0 6px 12px rgba(0,0,0,0.16);*/
+	--Slideshow-Slide-boxShadow: 0 10px 38px rgba(0,0,0,0.3), 0 6px 12px rgba(0,0,0,0.2);
+	--Slideshow-Slide-backgroundColor: var(--Content-color-100);
+	--Slideshow-Slide-backgroundColor--video: black;
+	--Slideshow-PaginationDot-borderWidth: 1px;
+	--Slideshow-PaginationDot-borderColor: rgba(0, 0, 0, 0.5);
+	--Slideshow-PaginationDot-borderWidth--highContrast: 2px;
+	--Slideshow-PaginationDot-borderColor--highContrast: black;
+	--Slideshow-PaginationDot-backgroundColor: rgba(255, 255, 255, 0.7);
+	--Slideshow-PaginationDot-backgroundColor--selected: var(--Clickable-color--active);
+	--Slideshow-PaginationDot-opacity: 0.8;
 	--Slideshow-zIndex: 1;
+	--Slideshow-Control-backgroundColor: rgba(0,0,0,0.7);
+	--Slideshow-Control-backgroundColor--active: var(--Clickable-color--active);
+	--Slideshow-Control-color: var(--white-color);
+	--Slideshow-Control-color--focus: var(--Clickable-color--active);
+	--Slideshow-Control-color--active: var(--white-color);
+	--Slideshow-Control-fontWeight: 300;
+	--Slideshow-Control-height: calc(var(--unit) * 3);
+	--Slideshow-Control-margin: var(--unit);
+	/* `--Slideshow-Control-paddingLeft` is used on "wide" action buttons. */
+	--Slideshow-Control-paddingLeft: calc((var(--Slideshow-Control-height) - 1em) / 2);
+	@mixin xxs {
+		--Slideshow-Control-margin: calc(var(--unit) / 2);
+	}
+	@mixin l-plus {
+		--Slideshow-Control-height: calc(var(--unit) * 3.5);
+	}
+	--Slideshow-DragAndScaleModeButton-height: calc(var(--unit) * 3);
+	--Slideshow-DragAndScaleModeButton-marginBottom: 0px;
+	@mixin xxs {
+		--Slideshow-DragAndScaleModeButton-marginBottom: calc(var(--unit) / 2);
+	}
 }
 
 /* Light mode. */
@@ -283,6 +320,7 @@
 
 	/* Content. */
 	--Content-backgroundColor: var(--white-color);
+	--Content-color-50:  var(--gray-color-50);
 	--Content-color-100: var(--gray-color-100);
 	--Content-color-200: var(--gray-color-200);
 	--Content-color-300: var(--gray-color-300);
@@ -331,6 +369,7 @@
 
 	/* PostSocial. */
 	--PostSocial-backgroundColor: rgba(0,0,0,0.03);
+	--PostSocial-backgroundColor--active: rgba(0,0,0,0.02);
 	--PostSocial-borderColor: rgba(0,0,0,0.06);
 
 	/* PostInlineSpoiler. */
@@ -394,6 +433,7 @@
 
 	/* Content. */
 	/* https://refactoringui.com/previews/building-your-color-palette */
+	--Content-color-50:  #3f3f3f;
 	--Content-color-100: #444444;
 	--Content-color-200: #555555;
 	--Content-color-300: #646464;
@@ -459,6 +499,7 @@
 
 	/* PostSocial. */
 	--PostSocial-backgroundColor: rgba(255,255,255,0.03);
+	--PostSocial-backgroundColor--active: rgba(255,255,255,0.02);
 	--PostSocial-borderColor: rgba(255,255,255,0.06);
 
 	/* PostInlineSpoiler. */

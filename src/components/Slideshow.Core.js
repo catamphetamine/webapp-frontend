@@ -1,3 +1,9 @@
+// For some weird reason, in Chrome, `setTimeout()` would lag up to a second (or more) behind.
+// Turns out, Chrome developers have deprecated `setTimeout()` API entirely without asking anyone.
+// Replacing `setTimeout()` with `requestAnimationFrame()` can work around that Chrome bug.
+// https://github.com/bvaughn/react-virtualized/issues/722
+import { setTimeout, clearTimeout } from 'request-animation-frame-timeout'
+
 import SlideshowSize from './Slideshow.Size'
 import SlideshowResize from './Slideshow.Resize'
 import SlideshowFullscreen from './Slideshow.Fullscreen'
@@ -6,13 +12,10 @@ import SlideshowPan from './Slideshow.Pan'
 import SlideshowPointer from './Slideshow.Pointer'
 import SlideshowTouch from './Slideshow.Touch'
 import SlideshowKeyboard from './Slideshow.Keyboard'
-import SlideshowOpenClose from './Slideshow.OpenClose'
-import SlideshowScaleOpenCloseTransition from './Slideshow.ScaleOpenCloseTransition'
-import SlideshowOpenCloseTransition from './Slideshow.OpenCloseTransition'
-import SlideshowHoverPicture from './Slideshow.HoverPicture'
-
-import PicturePlugin from './Slideshow.Picture'
-import VideoPlugin from './Slideshow.Video'
+import SlideshowOpenCloseAnimation from './Slideshow.OpenCloseAnimation'
+import SlideshowOpenCloseAnimationFloat from './Slideshow.OpenCloseAnimationFloat'
+import SlideshowOpenCloseAnimationFade from './Slideshow.OpenCloseAnimationFade'
+import SlideshowOpenPictureInHoverMode from './Slideshow.OpenPictureInHoverMode'
 
 import { roundScreenPixels } from '../utility/round'
 import { triggerRender } from '../utility/dom'
@@ -23,12 +26,15 @@ export default class Slideshow {
 	onStateChangeListeners = []
 	listeners = {
 		slideChange: [],
+		open: [],
 		close: []
 	}
 
 	constructor(props) {
-		props = SlideshowHoverPicture.getInitialProps(props)
-		props = SlideshowOpenClose.getInitialProps(props)
+		if (props.openPictureInHoverMode) {
+			props = SlideshowOpenPictureInHoverMode.getInitialProps(props)
+		}
+		props = SlideshowOpenCloseAnimation.getInitialProps(props)
 		new SlideshowResize(this)
 		this.size = new SlideshowSize(this, {
 			inline: props.inline,
@@ -42,23 +48,26 @@ export default class Slideshow {
 			fullScreenFitPrecisionFactor: props.fullScreenFitPrecisionFactor
 		})
 		this.fullscreen = new SlideshowFullscreen(this)
-		this.hoverPicture = new SlideshowHoverPicture(this)
-		this.openClose = new SlideshowOpenClose(this)
-		this.openCloseTransition = new SlideshowOpenCloseTransition(this)
-		this.scaleOpenCloseTransition = new SlideshowScaleOpenCloseTransition(this)
+		if (props.openPictureInHoverMode) {
+			this.openPictureInHoverMode = new SlideshowOpenPictureInHoverMode(this)
+		}
+		this.openCloseAnimation = new SlideshowOpenCloseAnimation(this)
+		this.openCloseAnimationFade = new SlideshowOpenCloseAnimationFade(this)
+		this.openCloseAnimationFloat = new SlideshowOpenCloseAnimationFloat(this)
 		this.scale = new SlideshowScale(this)
 		this.pan = new SlideshowPan(
 			this,
 			{
-				emulatePanResistanceOnClose: props.emulatePanResistanceOnClose,
+				emulatePanResistanceOnFirstAndLastSlides: props.emulatePanResistanceOnFirstAndLastSlides,
 				panOffsetThreshold: props.panOffsetThreshold,
 				onPanStart: props.onPanStart,
 				onPanEnd: props.onPanEnd,
 				inline: props.inline,
-				slideInDuration: props.slideInDuration,
-				minSlideInDuration: props.minSlideInDuration,
+				panSlideInAnimationDuration: props.panSlideInAnimationDuration,
+				panSlideInAnimationDurationMin: props.panSlideInAnimationDurationMin,
 				updateSlideRollOffset: (slideIndex) => props.setSlideRollTransform(this.getSlideRollTransform(slideIndex)),
 				setSlideRollTransitionDuration: props.setSlideRollTransitionDuration,
+				setOverlayTransitionDuration: props.setOverlayTransitionDuration,
 				// updateSlideRollTransitionDuration: () => props.setSlideRollTransitionDuration(this.getSlideRollTransitionDuration()),
 				// updateOverlayTransitionDuration: () => props.setOverlayTransitionDuration(this.getOverlayTransitionDuration()),
 				setOverlayBackgroundColor: props.setOverlayBackgroundColor,
@@ -87,6 +96,36 @@ export default class Slideshow {
 		}
 		this.markPicturesShown(props.i)
 		this.lock()
+		// Darken the overlay when started swiping slides.
+		this.onSlideChange((i, { interaction } = {}) => {
+			// Pan interaction performs its own overlay opacity animation,
+			// and after that animation is finished, it changes the slide.
+			// The slide could also change by a keyboard key press (Left/Right/etc).
+			if (this.shouldAnimateOverlayOpacityWhenPagingThrough()) {
+				// Turns out, animating overlay opacity on slide change by a
+				// keyboard key press (Left/Right/etc) doesn't look good,
+				// to the point that a simple "immediate" transition looks better.
+				// const ANIMATE_OVERLAY_OPACITY_DURATION_ON_SLIDE_CHANGE = 70
+				// const animateOverlayOpacityDurationOnSlideChange = interaction === 'pan' ? undefined : ANIMATE_OVERLAY_OPACITY_DURATION_ON_SLIDE_CHANGE
+				this.setState({
+					maxOverlayOpacity: this.getOverlayOpacityWhenPagingThrough(),
+					// animateOverlayOpacityDurationOnSlideChange
+				})
+				// if (animateOverlayOpacityDurationOnSlideChange) {
+				// 	let timer = setTimeout(() => {
+				// 		timer = undefined
+				// 		this.setState({
+				// 			animateOverlayOpacityDurationOnSlideChange: undefined
+				// 		})
+				// 	}, animateOverlayOpacityDurationOnSlideChange)
+				// 	this.onCleanUp(() => {
+				// 		if (timer) {
+				// 			clearTimeout(timer)
+				// 		}
+				// 	})
+				// }
+			}
+		})
 		// Focus slide on change slide.
 		this.onStateChange((newState, prevState) => {
 			const { i } = newState
@@ -120,6 +159,7 @@ export default class Slideshow {
 			// this.onHideSlide()
 			this.setState({
 				...this.getInitialSlideState(i),
+				hasChangedSlide: true,
 				slideIndexAtWhichTheSlideshowIsBeingOpened: undefined
 			})
 		})
@@ -139,18 +179,25 @@ export default class Slideshow {
 	 * @return {object}
 	 */
 	getInitialState() {
-		const { i, inline, children: slides } = this.props
+		const {
+			i,
+			inline,
+			overlayOpacity,
+			slides
+		} = this.props
 		return {
+			maxOverlayOpacity: overlayOpacity,
 			slidesShown: new Array(slides.length),
 			slideIndexAtWhichTheSlideshowIsBeingOpened: inline ? undefined : i,
-			...this.getInitialSlideState(i)
+			...this.getInitialSlideState(i),
+			...this.openCloseAnimation.getInitialState()
 		}
 	}
 
 	getInitialSlideState(i) {
 		return {
 			i,
-			scale: this.getInitialScaleForSlide(i)
+			scale: this.scale.getInitialScaleForSlide(this.getSlide(i))
 		}
 	}
 
@@ -234,7 +281,7 @@ export default class Slideshow {
 	}
 
 	markPicturesShown(i) {
-		const { children: slides } = this.props
+		const { slides } = this.props
 		const { slidesShown } = this.state
 		let j = 0
 		while (j < slides.length) {
@@ -263,7 +310,7 @@ export default class Slideshow {
 	}
 
 	showPreviousNextSlides() {
-		const { children: slides } = this.props
+		const { slides } = this.props
 		const { i } = this.state
 		let { slidesShown } = this.state
 		// Show previous slide.
@@ -584,15 +631,13 @@ export default class Slideshow {
 	}
 
 	exitDragAndScaleMode = () => {
-		if (this.locked) {
-			return
-		}
 		this.lock()
 		if (this.resetEmulateInteractiveZoom) {
 			this.resetEmulateInteractiveZoom()
 		}
 		this.pan.stopDragInertialMovement()
 		const { i } = this.state
+		const slide = this.getCurrentSlide()
 		// Calculate scale factor.
 		const { scale: currentScale } = this.state
 		let scale = this.scale.stopAnimateScale({ applyScale: false })
@@ -601,7 +646,7 @@ export default class Slideshow {
 		}
 		// Start animation.
 		const { getSlideDOMNode, scaleAnimationDuration } = this.props
-		const scaleFactor = this.getInitialScaleForSlide(i) / currentScale
+		const scaleFactor = this.scale.getInitialScaleForSlide(slide) / currentScale
 		const { transform, transformOrigin } = this.getSlideTransform(i, {
 			scale: scaleFactor,
 			ignoreDragAndScaleMode: true
@@ -661,7 +706,7 @@ export default class Slideshow {
 		const dx = offsetX - defaultOffsetX
 		const dy = offsetY - defaultOffsetY
 		const dr = Math.sqrt(dx * dx + dy * dy)
-		const dw = (this.getSlideWidth(i) * (scale - 1))
+		const dw = (this.getSlideWidth(slide) * (scale - 1))
 		const animationOffset = dr + dw / 2
 		const animationDuration = scaleAnimationDuration * (0.7 + 0.5 * animationOffset / 1000)
 		this.setSlideTransition(`transform ${animationDuration}ms, box-shadow ${animationDuration}ms`)
@@ -682,10 +727,10 @@ export default class Slideshow {
 	}
 
 	resetDragAndScaleMode = () => {
-		const { i } = this.state
+		const slide = this.getCurrentSlide()
 		this.dragAndScaleMode = undefined
 		this.setState({
-			scale: this.getInitialScaleForSlide(i),
+			scale: this.scale.getInitialScaleForSlide(slide),
 			// ...this.getSlideDragAndScaleInitialState()
 		})
 	}
@@ -717,21 +762,9 @@ export default class Slideshow {
 		this.updateSlideTransform()
 	}
 
-	/**
-	 * Returns a preferred initial scale for a slide depending on the slideshow element size.
-	 * Doesn't use `this.state`.
-	 * @param  {number} i
-	 * @return {number}
-	 */
-	getInitialScaleForSlide(i) {
-		const { children: slides } = this.props
-		const slide = slides[i]
-		// This error handling case is specifically for `new Slideshow()`
-		// case when `this.state` is `undefined`.
-		if (!slide) {
-			throw new Error(`Slide #${i} not found`)
-		}
-		return this.scale.getInitialScaleForSlide(slide)
+	getMaxOverlayOpacity() {
+		const { maxOverlayOpacity } = this.state
+		return maxOverlayOpacity
 	}
 
 	onOpenExternalLink = (event) => {
@@ -743,13 +776,23 @@ export default class Slideshow {
 	}
 
 	getSlide = (i) => {
-		const { children: slides } = this.props
+		const { slides } = this.props
 		return slides[i]
 	}
 
+	getCurrentSlideIndex = () => {
+		// `this.state` is `undefined` when slideshow is being initialized,
+		// that's why `i` isn't simply always read from it.
+		if (this.state) {
+			// If the slideshow has been initialized.
+			return this.state.i
+		}
+		// If the slideshow hasn't been initialized yet.
+		return this.props.i
+	}
+
 	getCurrentSlide = () => {
-		const { i } = this.state
-		return this.getSlide(i)
+		return this.getSlide(this.getCurrentSlideIndex())
 	}
 
 	hasScaleOriginBeenSet() {
@@ -801,14 +844,14 @@ export default class Slideshow {
 		// Calculate offset X and offset Y for `transform-origin` "center cetner"
 		// so that the slide coordinates are the same as if `scale` parameter was passed
 		// with `transform-origin` being the fixed one.
-		const { i } = this.state
+		const slide = this.getCurrentSlide()
 		const {
 			scaleOriginRatio,
 			scaleOriginPrevRatio,
 			scaleOriginPrevScale
 		} = this
-		const nonScaledWidth = this.getSlideWidth(i)
-		const nonScaledHeight = this.getSlideHeight(i)
+		const nonScaledWidth = this.getSlideWidth(slide)
+		const nonScaledHeight = this.getSlideHeight(slide)
 		// // The math:
 		// const newWidth = nonScaledWidth * scale
 		// const prevWidth = nonScaledWidth * prevScale
@@ -847,7 +890,7 @@ export default class Slideshow {
 				// Don't fit the slide on screen in "Drag and Scale" mode.
 			} else {
 				return this.size.getFittedSlideOffset(
-					i,
+					this.getSlide(i),
 					// this.getSlideScale(i),
 					scaleFactor === undefined ? scale : scale * scaleFactor,
 					slideOriginX,
@@ -872,9 +915,10 @@ export default class Slideshow {
 			scale *= scaleFactor
 		}
 		// debug('Scale', scale)
-		const width = this.getSlideWidth(j) * scale
-		const height = this.getSlideHeight(j) * scale
-		// debug('Default width', this.getSlideWidth(j))
+		const slide = this.getSlide(j)
+		const width = this.getSlideWidth(slide) * scale
+		const height = this.getSlideHeight(slide) * scale
+		// debug('Default width', this.getSlideWidth(slide))
 		// debug('Width', width)
 		let [offsetX, offsetY] = this.getDefaultSlideOffset(j, {
 			scaleFactor,
@@ -932,7 +976,6 @@ export default class Slideshow {
 	 */
 	validateSlideCoordinates(rect) {
 		// const debug = CONSOLE
-		const { i } = this.state
 		const { getSlideDOMNode } = this.props
 		const rect2 = getSlideDOMNode().getBoundingClientRect()
 		function differs(a, b) {
@@ -955,7 +998,6 @@ export default class Slideshow {
 		// const debug = CONSOLE
 		// debug('### Get Slide Transform')
 		// debug('# Scale', scale)
-		const { i } = this.state
 		let transformOrigin
 		if (this.isCustomOriginTransform(j) && !ignoreDragAndScaleMode) {
 			const { scaleOriginRatio } = this
@@ -1022,18 +1064,20 @@ export default class Slideshow {
 
 	updateSlideTransform(options) {
 		const { getSlideDOMNode } = this.props
-		const { i } = this.state
 		// Reset CSS scale transform.
 		const {
 			transform,
 			transformOrigin
-		} = this.getSlideTransform(i, options)
+		} = this.getSlideTransform(this.getCurrentSlideIndex(), options)
 		this.setSlideTransform(transform, transformOrigin)
 	}
 
 	onBackgroundClick = (event) => {
 		if (this.ignoreBackgroundClick) {
 			this.ignoreBackgroundClick = undefined
+			return
+		}
+		if (this.ignorePointerUpEvents) {
 			return
 		}
 		if (this.locked) {
@@ -1070,7 +1114,7 @@ export default class Slideshow {
 		// because otherwise clicks while panning wouldn't be cancelled.
 		// A "click" event is emitted on mouse up
 		// when a user finishes panning to next/previous slide.
-		if (this.pan.wasPanning) {
+		if (this.pan.wasPanning || this.ignorePointerUpEvents) {
 			// Prevent default so that the video slide doesn't play.
 			event.preventDefault()
 			// Stop propagation so that `onBackgroundClick` is not called.
@@ -1105,6 +1149,22 @@ export default class Slideshow {
 			return false
 		}
 		return true
+	}
+
+	shouldAnimateOverlayOpacityWhenPagingThrough() {
+		const { maxOverlayOpacity } = this.state
+		if (maxOverlayOpacity !== this.getOverlayOpacityWhenPagingThrough()) {
+			return true
+		}
+	}
+
+	getOverlayOpacityWhenPagingThrough() {
+		const { overlayOpacityWhenPagingThrough } = this.props
+		if (overlayOpacityWhenPagingThrough !== undefined) {
+			return overlayOpacityWhenPagingThrough
+		}
+		const { maxOverlayOpacity } = this.props
+		return maxOverlayOpacity
 	}
 
 	shouldShowShowMoreControlsButton() {
@@ -1193,9 +1253,14 @@ export default class Slideshow {
 		const results = this.triggerListeners('close', { interaction })
 		for (const result of results) {
 			if (result) {
-				const { animationDuration } = result
+				const { animationDuration, useLongerOpenCloseAnimation } = result
 				if (animationDuration) {
 					closeAnimationDuration = animationDuration
+				}
+				if (useLongerOpenCloseAnimation) {
+					this.setState({
+						useLongerOpenCloseAnimation: true
+					})
 				}
 			}
 		}
@@ -1214,6 +1279,11 @@ export default class Slideshow {
 	closeAfter(duration) {
 		this.lock()
 		this.closeTimeout = setTimeout(this._close, duration)
+	}
+
+	opened() {
+		this.unlock()
+		this.triggerListeners('open')
 	}
 
 	lock = () => {
@@ -1252,7 +1322,7 @@ export default class Slideshow {
 
 	goToSlide = (number) => {
 		const { i } = this.state
-		const { children: slides } = this.props
+		const { slides } = this.props
 		if (number > 0 && number <= slides.length) {
 			this.didScrollThroughSlides = true
 			this.showSlide(number - 1)
@@ -1276,7 +1346,7 @@ export default class Slideshow {
 	}
 
 	isLast = () => {
-		const { children: slides } = this.props
+		const { slides } = this.props
 		const { i } = this.state
 		return i === slides.length - 1
 	}
@@ -1316,6 +1386,7 @@ export default class Slideshow {
 				if (isButton(event.target)) {
 					return
 				}
+				this.ignorePointerUpEvents = undefined
 				const { x, y } = this.touch.getTouch()
 				this.pan.onPanStart(x, y)
 				break
@@ -1325,7 +1396,7 @@ export default class Slideshow {
 				// when the center between the touches shifts,
 				// the slide shifts accordingly.
 				if (this.pan.isPanning) {
-					this.pan.onPanEnd(true)
+					this.pan.onPanEnd({ ignorePan: true })
 				}
 				this.startInteractiveZoom(
 					this.touch.getCenterBetweenTouches,
@@ -1350,7 +1421,7 @@ export default class Slideshow {
 		}
 		// If it was single-touch panning mode, then exit it.
 		if (this.pan.isPanning) {
-			this.pan.onPanEnd()
+			this.pan.onPanEnd({ cancelled: true })
 		}
 		// If it was double-touch zooming mode, then exit it.
 		else if (this.isInteractivelyZooming()) {
@@ -1410,6 +1481,7 @@ export default class Slideshow {
 		if (isButton(event.target)) {
 			return
 		}
+		this.ignorePointerUpEvents = undefined
 		this.pan.onPanStart(
 			event.clientX,
 			event.clientY
@@ -1442,7 +1514,7 @@ export default class Slideshow {
 		// when starting to pan on touch devices.
 		if (!this.touch.isTouchDevice) {
 			if (this.pan.isPanning) {
-				this.pan.onPanEnd()
+				this.pan.onPanEnd({ cancelled: true })
 			}
 		}
 	}
@@ -1459,13 +1531,13 @@ export default class Slideshow {
 	 */
 	getSlideScale(j) {
 		const { i, scale } = this.state
-		return i === j ? scale : this.getInitialScaleForSlide(j)
+		return i === j ? scale : this.scale.getInitialScaleForSlide(this.getSlide(j))
 	}
 
 	getPluginForSlide = (slide = this.getCurrentSlide()) => {
 		// j = this.state.i
 		const { plugins } = this.props
-		// const { children: slides } = this.props
+		// const { slides } = this.props
 		// const slide = slides[j]
 		const plugin = getPluginForSlide(slide, plugins)
 		if (plugin) {
@@ -1493,7 +1565,7 @@ export default class Slideshow {
 		const {
 			showControls,
 			inline,
-			children: slides
+			slides
 		} = this.props
 		if (!showControls) {
 			return false
@@ -1592,24 +1664,13 @@ export default class Slideshow {
 	// }
 }
 
-function getPluginForSlide(slide, plugins) {
+export function getPluginForSlide(slide, plugins) {
 	for (const plugin of plugins) {
 		if (plugin.canRender(slide)) {
 			return plugin
 		}
 	}
 }
-
-export function isSlideSupported(slide) {
-	if (getPluginForSlide(slide, PLUGINS)) {
-		return true
-	}
-}
-
-export const PLUGINS = [
-	VideoPlugin,
-	PicturePlugin
-]
 
 const CENTER_RATIO = { x: 0.5, y: 0.5 }
 
@@ -1654,7 +1715,7 @@ class Bouncer {
 			const keyframe = keyframes[0]
 			this.slideshow.setSlideTransition(`transform ${keyframe.duration}ms`) // ${BOUNCE_ANIMATION_EASING}`)
 			this.slideshow.setSlideTransform(this.getTransform(keyframe.scale), this.transformOrigin)
-			// getSlideDOMNode().classList.add('rrui__slideshow__slide--bounce')
+			// getSlideDOMNode().classList.add('Slideshow-Slide--bounce')
 			setTimer(setTimeout(() => {
 				setTimer()
 				animateKeyframes(keyframes.slice(1), callback)

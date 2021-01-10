@@ -40,14 +40,14 @@ import PostFile, {
 	EXAMPLE_3 as FILE_EXAMPLE_3
 } from './PostFile'
 
-import PostAttachmentThumbnail from './PostAttachmentThumbnail'
+import PostAttachmentThumbnail, { getAttachmentThumbnailSize } from './PostAttachmentThumbnail'
 import PictureStack from './PictureStack'
 
 import {
 	postAttachment
 } from '../PropTypes'
 
-import getPostThumbnail from 'social-components/commonjs/utility/post/getPostThumbnail'
+import getPostThumbnailAttachment from 'social-components/commonjs/utility/post/getPostThumbnailAttachment'
 
 import './PostAttachments.css'
 
@@ -56,6 +56,7 @@ const TEST = false
 
 export default function PostAttachments({
 	post,
+	compact,
 	expandFirstPictureOrVideo,
 	expandAttachments,
 	onlyShowFirstAttachmentThumbnail,
@@ -64,7 +65,8 @@ export default function PostAttachments({
 	spoilerLabel,
 	onAttachmentClick,
 	maxAttachmentThumbnails,
-	showPostThumbnailWhenThereAreMultipleAttachments
+	showPostThumbnailWhenThereAreMultipleAttachments,
+	showPostThumbnailWhenThereIsNoContent
 }) {
 	const attachments = TEST ? TEST_ATTACHMENTS : getAttachments(post)
 
@@ -118,13 +120,14 @@ export default function PostAttachments({
 	function createOnAttachmentClick(i) {
 		return (event) => {
 			event.preventDefault()
-			onAttachmentClick(allPicturesAndVideos[i], { thumbnailImage: event.target })
+			onAttachmentClick(allPicturesAndVideos[i], { imageElement: event.target })
 		}
 	}
 
-	// `<Post/>`s with no `content` don't have a "post thumbnail" shown:
-	// they just show all attachments.
-	const postThumbnailCandidate = getPostThumbnail(post, { showPostThumbnailWhenThereAreMultipleAttachments })
+	const postThumbnailAttachment = getPostThumbnailAttachment(post, {
+		showPostThumbnailWhenThereAreMultipleAttachments,
+		showPostThumbnailWhenThereIsNoContent
+	})
 
 	let Container = PassthroughContainer
 	if (onlyShowFirstAttachmentThumbnail) {
@@ -139,10 +142,12 @@ export default function PostAttachments({
 	}
 
 	const attachmentsCount = picturesAndVideos.length + audios.length + links.length + files.length
+	const align = compact ? 'left' : 'center'
 
 	return (
 		<div className={classNames('PostAttachments', {
-			'PostAttachments--onlyPostThumbnail': attachmentsCount === 1 && picturesAndVideos.length === 1 && picturesAndVideos[0] === postThumbnailCandidate
+			'PostAttachments--compact': compact,
+			'PostAttachments--onlyPostThumbnail': attachmentsCount === 1 && picturesAndVideos.length === 1 && picturesAndVideos[0] === postThumbnailAttachment
 		})}>
 			{expandAttachments &&
 				picturesAndVideos.map((pictureOrVideo, i) => {
@@ -152,6 +157,7 @@ export default function PostAttachments({
 								<PostPicture
 									key={i}
 									expand
+									align={align}
 									attachment={pictureOrVideo}
 									spoilerLabel={spoilerLabel}
 									onClick={onAttachmentClick ? createOnAttachmentClick(i) : undefined}/>
@@ -161,6 +167,7 @@ export default function PostAttachments({
 								<PostVideo
 									key={i}
 									expand
+									align={align}
 									attachment={pictureOrVideo}
 									spoilerLabel={spoilerLabel}
 									onClick={onAttachmentClick ? createOnAttachmentClick(i) : undefined}/>
@@ -171,6 +178,7 @@ export default function PostAttachments({
 			{!expandAttachments && titlePictureOrVideo && titlePictureOrVideo.type === 'picture' &&
 				<Container count={allPicturesAndVideos.length}>
 					<PostPicture
+						align={align}
 						attachment={titlePictureOrVideo}
 						spoilerLabel={spoilerLabel}
 						onClick={onAttachmentClick ? createOnAttachmentClick(0) : undefined}/>
@@ -179,6 +187,7 @@ export default function PostAttachments({
 			{!expandAttachments && titlePictureOrVideo && titlePictureOrVideo.type === 'video' &&
 				<Container count={allPicturesAndVideos.length}>
 					<PostVideo
+						align={align}
 						attachment={titlePictureOrVideo}
 						spoilerLabel={spoilerLabel}
 						onClick={onAttachmentClick ? createOnAttachmentClick(0) : undefined}/>
@@ -194,17 +203,18 @@ export default function PostAttachments({
 								key={`picture-or-video-${i}`}
 								count={allPicturesAndVideos.length}
 								pictureStackClassName={classNames('PostAttachments-pictureStack', {
-									'PostAttachments-pictureStack--postThumbnail': pictureOrVideo === postThumbnailCandidate
+									'PostAttachments-pictureStack--postThumbnail': pictureOrVideo === postThumbnailAttachment
 								})}>
 								<PostAttachmentThumbnail
+									border
 									attachment={pictureOrVideo}
 									useSmallestThumbnail={useSmallestThumbnails}
-									maxSize={attachmentThumbnailSize}
+									maxSize={getAttachmentThumbnailSize(attachmentThumbnailSize)}
 									spoilerLabel={spoilerLabel}
 									onClick={onAttachmentClick ? createOnAttachmentClick(i + (titlePictureOrVideo ? 1 : 0)) : undefined}
 									moreAttachmentsCount={i === picturesAndVideos.length - 1 ? picturesAndVideosMoreCount : undefined}
 									className={classNames({
-										'PostAttachmentThumbnail--postThumbnail': pictureOrVideo === postThumbnailCandidate
+										'PostAttachmentThumbnail--postThumbnail': pictureOrVideo === postThumbnailAttachment
 									})}/>
 							</Container>
 						)
@@ -230,6 +240,7 @@ export default function PostAttachments({
 
 PostAttachments.propTypes = {
 	post: PropTypes.object,
+	compact: PropTypes.bool,
 	onAttachmentClick: PropTypes.func,
 	expandFirstPictureOrVideo: PropTypes.bool.isRequired,
 	expandAttachments: PropTypes.bool,
@@ -243,6 +254,8 @@ PostAttachments.propTypes = {
 		PropTypes.oneOf([false]),
 		PropTypes.number
 	]).isRequired,
+	showPostThumbnailWhenThereAreMultipleAttachments: PropTypes.bool,
+	showPostThumbnailWhenThereIsNoContent: PropTypes.bool,
 	children: PropTypes.arrayOf(postAttachment)
 }
 

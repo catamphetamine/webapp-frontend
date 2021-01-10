@@ -15,50 +15,73 @@ import {
 	isMediumScreenSizeOrLarger
 } from './DeviceInfo'
 
-import SlideshowProgress from './Slideshow.Progress'
-import Slideshow, { PLUGINS } from './Slideshow.Core'
-export { isSlideSupported } from './Slideshow.Core'
+import SlideshowCore, { getPluginForSlide } from './Slideshow.Core'
 import SlideshowSize from './Slideshow.Size'
+import SlideshowControls from './Slideshow.Controls'
+import { roundScale, getDragAndScaleModeButtonClassName } from './Slideshow.DragAndScaleModeControls'
+import SlideshowPropTypes, { defaultProps as SlideshowDefaultProps, SlideshowStateTypes } from './Slideshow.PropTypes'
 
-import { Button } from './Button'
+import PicturePlugin from './Slideshow.Picture'
+import VideoPlugin from './Slideshow.Video'
 
 import { roundScreenPixels } from '../utility/round'
 
-// import Download from '../../assets/images/icons/download-cloud.svg'
-import ExternalIcon from '../../assets/images/icons/external.svg'
-import LeftArrow from '../../assets/images/icons/left-arrow-minimal.svg'
-import RightArrow from '../../assets/images/icons/right-arrow-minimal.svg'
-import ScaleFrame from '../../assets/images/icons/scale-frame.svg'
-import Plus from '../../assets/images/icons/plus.svg'
-import Minus from '../../assets/images/icons/minus.svg'
-import Close from '../../assets/images/icons/close.svg'
-// import SearchIcon from '../../assets/images/icons/search.svg'
-import LeftArrowCounterform from '../../assets/images/icons/left-arrow-minimal-counterform.svg'
-import RightArrowCounterform from '../../assets/images/icons/right-arrow-minimal-counterform.svg'
-import CloseCounterform from '../../assets/images/icons/close-counterform.svg'
-import EllipsisVerticalCounterform from '../../assets/images/icons/ellipsis-vertical-counterform.svg'
-import GoToIconCounterform from '../../assets/images/icons/go-to-counterform.svg'
-
-import LeftArrowCounterformThickStroke from '../../assets/images/icons/left-arrow-minimal-counterform-thick-stroke.svg'
-import RightArrowCounterformThickStroke from '../../assets/images/icons/right-arrow-minimal-counterform-thick-stroke.svg'
-import CloseCounterformThickStroke from '../../assets/images/icons/close-counterform-thick-stroke.svg'
-import EllipsisVerticalCounterformThickStroke from '../../assets/images/icons/ellipsis-vertical-counterform-thick-stroke.svg'
-
 import './Slideshow.css'
+import './Slideshow.Pan.css'
+import './Slideshow.Picture.css'
+import './Slideshow.Scale.css'
+import './Slideshow.Video.css'
+
+const PLUGINS = [
+	VideoPlugin,
+	PicturePlugin
+]
 
 export default function SlideshowWrapper(props) {
 	props = {
 		...props,
+		// Add `headerHeight` and `footerHeight` properties
+		// that are used both in `<Slideshow/>` and in `SlideshowSize`.
 		headerHeight: props.header && props.header.offsetHeight,
 		footerHeight: props.footer && props.footer.offsetHeight
 	}
 	// `window.SlideshowSize` is used in `preloadPictureSlide()` in `Slideshow.Picture.js`.
-	window.SlideshowSize = new SlideshowSize({}, props)
+	// To preload a picture slide, it should know the exact size of the picture
+	// that will be loaded when the slideshow opens, not larger, not smaller.
+	// `SlideshowSize` should be available before the slideshow is rendered,
+	// because that's when a picture slide is preloaded.
+	// `SlideshowSize` uses some slideshow props: for example, `margin` and
+	// `fullScreenFitPrecisionFactor`.
+	// `undefined` is passed as the first argument to `SlideshowSize()` constructor,
+	// because the `SlideshowCore` instance doesn't exist yet.
+	// In fact, only `.getMaxSlideWidth()` and `.getMaxSlideHeight()`
+	// are used when preloading picture slides.
+	window.SlideshowSize = useMemo(() => new SlideshowSize(undefined, {
+		// `inline` is supposed to be `false`.
+		margin: props.margin,
+		minMargin: props.minMargin
+	}), [
+		props.margin,
+		props.minMargin
+	])
 	if (props.isOpen) {
-		return <SlideshowComponent {...props}/>
-	} else {
-		return null
+		return <SlideshowComponent {...props} slides={props.children}/>
 	}
+	// React would complain if "nothing was returned from render".
+	return null
+}
+
+SlideshowWrapper.propTypes = {
+	...SlideshowPropTypes,
+	isOpen: PropTypes.bool,
+	header: PropTypes.any, // `Element` is not defined on server side. // PropTypes.instanceOf(Element),
+	footer: PropTypes.any, // `Element` is not defined on server side. // PropTypes.instanceOf(Element),
+	children: SlideshowPropTypes.slides
+}
+
+SlideshowWrapper.defaultProps = {
+	...SlideshowDefaultProps,
+	plugins: PLUGINS
 }
 
 function SlideshowComponent(props) {
@@ -70,7 +93,7 @@ function SlideshowComponent(props) {
 	const nextButtonRef = useRef()
 	const closeButtonRef = useRef()
 
-	const slide = props.children[props.i]
+	const slide = props.slides[props.i]
 
 	const focus = useCallback((direction = 'next') => {
 		if (currentSlideRef.current.focus) {
@@ -94,40 +117,40 @@ function SlideshowComponent(props) {
 	}, [])
 
 	const slideshow = useMemo(() => {
-		return new Slideshow({
+		return new SlideshowCore({
 			...props,
 			getSlideDOMNode: () => currentSlideRef.current && currentSlideContainerRef.current.firstChild,
 			// getSlideElement: () => currentSlideRef.current && currentSlideRef.current.getDOMNode && currentSlideRef.current.getDOMNode(),
-			onPanStart: () => container.current.classList.add('rrui__slideshow--panning'),
-			onPanEnd: () => container.current.classList.remove('rrui__slideshow--panning'),
-			setOverlayTransitionDuration: (duration) => container.current.style.transitionDuration = duration,
+			onPanStart: () => container.current.classList.add('Slideshow--panning'),
+			onPanEnd: () => container.current.classList.remove('Slideshow--panning'),
+			setOverlayTransitionDuration: (duration) => container.current.style.transition = duration ? `background-color ${duration}ms` : null,
 			setOverlayBackgroundColor: (color) => container.current.style.backgroundColor = color,
 			setSlideRollTransitionDuration: (duration) => slidesRef.current.style.transitionDuration = duration + 'ms',
 			setSlideRollTransform: (transform) => slidesRef.current.style.transform = transform,
-			isRendered: () => slidesRef.current !== undefined,
+			isRendered: () => slidesRef.current ? true : false,
 			getWidth: () => slidesRef.current.clientWidth,
 			getHeight: () => slidesRef.current.clientHeight,
-			isOverlay: (element) => element.classList.contains('rrui__slideshow__slide-wrapper'),
+			isOverlay: (element) => element.classList.contains('Slideshow-SlideWrapper'),
 			isSmallScreen: () => !isMediumScreenSizeOrLarger(),
 			isTouchDevice,
 			isButton,
 			focus,
 			onDragAndScaleModeChange: (isEnabled) => {
-				const dragAndScaleModeButton = document.querySelector('.rrui__slideshow__action--drag-and-scale-mode')
+				const dragAndScaleModeButton = document.querySelector('.Slideshow-DragAndScaleModeButton')
 				if (dragAndScaleModeButton) {
 					if (isEnabled) {
-						dragAndScaleModeButton.classList.remove('rrui__slideshow__action--hidden')
+						dragAndScaleModeButton.classList.remove('Slideshow-DragAndScaleModeButton--hidden')
 					} else {
-						dragAndScaleModeButton.classList.add('rrui__slideshow__action--hidden')
+						dragAndScaleModeButton.classList.add('Slideshow-DragAndScaleModeButton--hidden')
 					}
 				}
 			},
 			onScaleChange: (scale) => {
-				const dragAndScaleModeButton = document.querySelector('.rrui__slideshow__action--drag-and-scale-mode')
+				const dragAndScaleModeButton = document.querySelector('.Slideshow-DragAndScaleModeButton')
 				if (dragAndScaleModeButton) {
 					const roundedScale = roundScale(scale)
 					dragAndScaleModeButton.className = getDragAndScaleModeButtonClassName(roundedScale, slideshow.isDragAndScaleMode())
-					const scaleValue = document.querySelector('.rrui__slideshow__scale')
+					const scaleValue = document.querySelector('.Slideshow-DragAndScaleModeButtonScaleValue')
 					if (scaleValue) {
 						scaleValue.innerText = roundedScale
 					}
@@ -147,8 +170,7 @@ function SlideshowComponent(props) {
 		if (!hasBeenMeasured) {
 			return
 		}
-		slideshow.unlock()
-		slideshow.onOpen()
+		slideshow.opened()
 	}, [hasBeenMeasured])
 
 	// Emulates `forceUpdate()`
@@ -234,25 +256,26 @@ function SlideshowComponent(props) {
 		}
 	}, [])
 
-	return SlideshowComponent_({
-		slideshow,
-		props,
-		slideshowState,
-		hasBeenMeasured,
-		// refs.
-		container,
-		slidesRef,
-		currentSlideRef,
-		currentSlideContainerRef,
-		previousButtonRef,
-		nextButtonRef,
-		closeButtonRef
-	})
+	return (
+		<Slideshow
+			slideshow={slideshow}
+			slideshowState={slideshowState}
+			hasBeenMeasured={hasBeenMeasured}
+			container={container}
+			slidesRef={slidesRef}
+			currentSlideRef={currentSlideRef}
+			currentSlideContainerRef={currentSlideContainerRef}
+			previousButtonRef={previousButtonRef}
+			nextButtonRef={nextButtonRef}
+			closeButtonRef={closeButtonRef}/>
+	)
 }
 
-function SlideshowComponent_({
-	slideshow: _this,
-	props,
+SlideshowComponent.propTypes = SlideshowPropTypes
+SlideshowComponent.defaultProps = SlideshowDefaultProps
+
+function Slideshow({
+	slideshow,
 	slideshowState,
 	hasBeenMeasured,
 	// refs.
@@ -268,16 +291,18 @@ function SlideshowComponent_({
 		inline,
 		mode,
 		animateOpen,
-		animateClose,
-		overlayOpacity,
+		animateOpenSlideAndBackgroundSeparately,
+		// overlayOpacity,
 		showScaleButtons,
+		showControls: _showControls,
 		highContrastControls,
-		slideCardMinOverlayOpacity,
+		useCardsForSlidesMaxOverlayOpacity,
 		scaleAnimationDuration,
+		paginationDotsMaxSlidesCount,
 		messages,
 		goToSource,
-		children: slides
-	} = props
+		slides
+	} = slideshow.props
 
 	const {
 		i,
@@ -285,18 +310,22 @@ function SlideshowComponent_({
 		slidesShown,
 		slideIndexAtWhichTheSlideshowIsBeingOpened,
 		showMoreControls,
+		animateClose,
+		animateCloseSlideAndBackgroundSeparately,
+		// animateOverlayOpacityDurationOnSlideChange,
 		hasStartedOpening,
 		hasFinishedOpening,
-		openingAnimationDuration,
 		hasStartedClosing,
 		hasFinishedClosing,
-		closingAnimationDuration,
-		slideOriginX,
-		slideOriginY,
-		offsetSlideIndex
+		openAnimationDuration,
+		closeAnimationDuration
 	} = slideshowState
 
-	const dragAndScaleMode = _this.isDragAndScaleMode()
+	const showPagination = slideshow.shouldShowPagination()
+
+	const overlayOpacity = slideshow.getMaxOverlayOpacity()
+
+	const dragAndScaleMode = slideshow.isDragAndScaleMode()
 
 	// `react-focus-lock` doesn't focus `<video/>` when cycling the Tab key.
 	// https://github.com/theKashey/react-focus-lock/issues/61
@@ -304,15 +333,56 @@ function SlideshowComponent_({
 	// Safari doesn't support pointer events.
 	// https://caniuse.com/#feat=pointer
 	// https://webkit.org/status/#?search=pointer%20events
-	// onPointerDown={_this.onPointerDown}
-	// onPointerUp={_this.onPointerUp}
-	// onPointerMove={_this.onPointerMove}
-	// onPointerOut={_this.onPointerOut}
+	// onPointerDown={slideshow.onPointerDown}
+	// onPointerUp={slideshow.onPointerUp}
+	// onPointerMove={slideshow.onPointerMove}
+	// onPointerOut={slideshow.onPointerOut}
 
 	// React doesn't support setting up non-passive listeners.
 	// https://github.com/facebook/react/issues/14856
-	// onTouchMove={_this.onTouchMove}
-	// onWheel={_this.onWheel}>
+	// onTouchMove={slideshow.onTouchMove}
+	// onWheel={slideshow.onWheel}>
+
+	const overlayOpacityForAnimation =
+		hasStartedOpening ?
+			(hasFinishedOpening ?
+				(hasStartedClosing && animateClose ? 0 : overlayOpacity) :
+				overlayOpacity
+			) :
+			(animateOpen ? 0 : overlayOpacity)
+
+	const slideshowOpacityForAnimation =
+		hasStartedOpening ?
+			(hasFinishedOpening ?
+				(hasStartedClosing && animateClose ? 0 : 1) :
+				1
+			) :
+			(animateOpen ? 0 : 1)
+
+	const animateOpenCloseSlideAndBackgroundSeparately =
+		hasStartedOpening ?
+			(hasFinishedOpening ?
+				(hasStartedClosing ? animateCloseSlideAndBackgroundSeparately : undefined) :
+				animateOpenSlideAndBackgroundSeparately
+			) :
+			animateOpenSlideAndBackgroundSeparately
+
+	const openCloseAnimationDuration =
+		hasStartedOpening ?
+			(hasFinishedOpening ?
+				(hasStartedClosing && animateClose ? closeAnimationDuration : undefined) :
+				openAnimationDuration
+			) :
+			undefined
+
+	const showActions = _showControls && (
+		hasStartedOpening ?
+			(hasFinishedOpening ?
+				(hasStartedClosing && animateClose ? false : true) :
+				true
+			) :
+			(animateOpen ? false : true)
+	)
 
 	// `tabIndex={ -1 }` makes the `<div/>` focusable.
 	return (
@@ -323,45 +393,46 @@ function SlideshowComponent_({
 				ref={container}
 				tabIndex={-1}
 				style={inline ? undefined : {
-					// paddingRight: _this.containerPaddingRight,
-					// transitionDuration: _this.getOverlayTransitionDuration(),
-					// `_this.props.overlayOpacity` is the default overlay opacity
-					// and doesn't reflect the current overlay opacity.
-					// Overlay opacity only changes when user swipes up/down
-					// or left on the first slide or right on the last slide,
-					// and slides get re-rendered only on `_this.setState()`
-					// which doesn't interfere with the opacity change.
-					backgroundColor: _this.getOverlayBackgroundColor(
-						hasStartedOpening ?
-							(hasFinishedOpening ?
-								(hasStartedClosing && animateClose ? 0 : overlayOpacity) :
-								overlayOpacity
-							) :
-							(animateOpen ? 0 : overlayOpacity)
-					),
-					transition: hasStartedOpening ?
-						(hasFinishedOpening ?
-							(hasStartedClosing && animateClose ? `background-color ${closingAnimationDuration}ms` : undefined) :
-							`background-color ${openingAnimationDuration}ms`
-						) :
-						undefined
+					// paddingRight: slideshow.containerPaddingRight,
+					// transitionDuration: slideshow.getOverlayTransitionDuration(),
+					//
+					// backgroundColor: slideshow.getOverlayBackgroundColor(overlayOpacityForAnimation),
+					// transition: openCloseAnimationDuration ? `background-color ${openCloseAnimationDuration}ms` : undefined
+					//
+					backgroundColor: slideshow.getOverlayBackgroundColor(animateOpenCloseSlideAndBackgroundSeparately ? overlayOpacityForAnimation : overlayOpacity),
+					opacity: animateOpenCloseSlideAndBackgroundSeparately ? undefined : slideshowOpacityForAnimation,
+					transition: (
+						openCloseAnimationDuration
+							? `${animateOpenCloseSlideAndBackgroundSeparately ? 'background-color' : 'opacity'} ${openCloseAnimationDuration}ms`
+							: undefined
+							// Turns out, animating overlay opacity on slide change by a
+							// keyboard key press (Left/Right/etc) doesn't look good,
+							// to the point that a simple "immediate" transition looks better.
+							// : (
+							// 	animateOverlayOpacityDurationOnSlideChange
+							// 		? `background-color ${animateOverlayOpacityDurationOnSlideChange}ms`
+							// 		: undefined
+							// )
+					)
 				}}
-				className={classNames('rrui__slideshow', {
-					'rrui__slideshow--fullscreen': !inline,
-					'rrui__slideshow--panning': _this.isActuallyPanning
+				className={classNames('Slideshow', {
+					'Slideshow--fullscreen': !inline,
+					'Slideshow--panning': slideshow.isActuallyPanning,
+					'Slideshow--showPagination': showPagination,
+					'Slideshow--paginationNumeric': slides.length > paginationDotsMaxSlidesCount
 				})}
-				onKeyDown={_this.onKeyDown}
-				onDragStart={_this.onDragStart}
-				onTouchStart={_this.onTouchStart}
-				onTouchEnd={_this.onTouchEnd}
-				onTouchCancel={_this.onTouchCancel}
-				onMouseDown={_this.onPointerDown}
-				onMouseUp={_this.onPointerUp}
-				onMouseMove={_this.onPointerMove}
-				onMouseLeave={_this.onPointerOut}
-				onClick={_this.onBackgroundClick}>
+				onKeyDown={slideshow.onKeyDown}
+				onDragStart={slideshow.onDragStart}
+				onTouchStart={slideshow.onTouchStart}
+				onTouchEnd={slideshow.onTouchEnd}
+				onTouchCancel={slideshow.onTouchCancel}
+				onMouseDown={slideshow.onPointerDown}
+				onMouseUp={slideshow.onPointerUp}
+				onMouseMove={slideshow.onPointerMove}
+				onMouseLeave={slideshow.onPointerOut}
+				onClick={slideshow.onBackgroundClick}>
 				<div style={INNER_CONTAINER_STYLE}>
-					<ul
+					<div
 						ref={slidesRef}
 						style={{
 							// `will-change` performs the costly "Composite Layers"
@@ -369,20 +440,20 @@ function SlideshowComponent_({
 							// Otherwise that "Composite Layers" operation would take about
 							// 30ms a couple of times sequentially causing a visual lag.
 							willChange: 'transform',
-							// transitionDuration: hasBeenMeasured ? _this.getSlideRollTransitionDuration() : undefined,
-							transform: hasBeenMeasured ? _this.getSlideRollTransform(i) : undefined,
+							// transitionDuration: hasBeenMeasured ? slideshow.getSlideRollTransitionDuration() : undefined,
+							transform: hasBeenMeasured ? slideshow.getSlideRollTransform(i) : undefined,
 							opacity: hasBeenMeasured ? 1 : 0
 						}}
-						className="rrui__slideshow__slides">
+						className="Slideshow-Slides">
 						{hasBeenMeasured && slides.map((slide, j) => (
-							<li
+							<div
 								key={j}
 								ref={j === i ? currentSlideContainerRef : undefined}
-								className={classNames('rrui__slideshow__slide-wrapper', {
-									'rrui__slideshow__slide-wrapper--current': i === j
+								className={classNames('Slideshow-SlideWrapper', {
+									'Slideshow-SlideWrapper--current': i === j
 								})}>
-								{slidesShown[j] && _this.getPluginForSlide(slide) &&
-									_this.getPluginForSlide(slide).render({
+								{slidesShown[j] && slideshow.getPluginForSlide(slide) &&
+									slideshow.getPluginForSlide(slide).render({
 										slide,
 										ref: i === j ? currentSlideRef : undefined,
 										tabIndex: i === j ? 0 : -1,
@@ -390,13 +461,14 @@ function SlideshowComponent_({
 										autoPlay: slideIndexAtWhichTheSlideshowIsBeingOpened === j,
 										mode,
 										// // `scale` is passed as `pixelRatioMultiplier` to `<Picture/>`.
-										// scale: _this.getSlideScale(j),
-										onClick: _this.onSlideClick,
-										width: roundScreenPixels(_this.getSlideWidth(j) * _this.getSlideScale(j)),
-										height: roundScreenPixels(_this.getSlideHeight(j) * _this.getSlideScale(j)),
-										className: classNames('rrui__slideshow__slide', {
-											'rrui__slideshow__slide--current': i === j,
-											'rrui__slideshow__slide--card': overlayOpacity < slideCardMinOverlayOpacity
+										// scale: slideshow.getSlideScale(j),
+										onClick: slideshow.onSlideClick,
+										width: roundScreenPixels(slideshow.getSlideWidth(slide) * slideshow.getSlideScale(j)),
+										height: roundScreenPixels(slideshow.getSlideHeight(slide) * slideshow.getSlideScale(j)),
+										dragAndScaleMode,
+										className: classNames('Slideshow-Slide', {
+											'Slideshow-Slide--current': i === j,
+											'Slideshow-Slide--card': overlayOpacity < useCardsForSlidesMaxOverlayOpacity
 										}),
 										style: {
 											/* Can be scaled via `style="transform: scale(...)". */
@@ -410,16 +482,16 @@ function SlideshowComponent_({
 											// whether they're scaled via a CSS transform
 											// or by scaling `width` and `height`.
 											// Same's for `<video/>`s.
-											// transform: _this.getSlideScale(j) === 1 ? undefined : `scale(${_this.getSlideScale(j)})`
-											..._this.getSlideTransform(j),
+											// transform: slideshow.getSlideScale(j) === 1 ? undefined : `scale(${slideshow.getSlideScale(j)})`
+											...slideshow.getSlideTransform(j),
 											// Adjacent slides have `box-shadow`.
 											// If its `opacity` isn't animated during open/close
 											// then the non-smoothness is noticeable.
 											transition: j === i ? undefined : (
 												hasStartedOpening ?
 													(hasFinishedOpening ?
-														(hasStartedClosing && animateClose ? `opacity ${closingAnimationDuration}ms` : undefined) :
-														`opacity ${openingAnimationDuration}ms`
+														(hasStartedClosing && animateClose ? `opacity ${closeAnimationDuration}ms` : undefined) :
+														`opacity ${openAnimationDuration}ms`
 													) :
 													undefined
 											),
@@ -432,60 +504,41 @@ function SlideshowComponent_({
 													(animateOpen ? 0 : undefined)
 											)
 										}
-										// shouldUpscaleSmallSlides: _this.shouldUpscaleSmallSlides()
+										// shouldUpscaleSmallSlides: slideshow.shouldUpscaleSmallSlides()
 									})
 								}
-							</li>
+							</div>
 						))}
-					</ul>
+					</div>
 
-					{(
-						hasStartedOpening ?
-							(hasFinishedOpening ?
-								(hasStartedClosing && animateClose ? false : true) :
-								true
-							) :
-							(animateOpen ? false : true)
-					) &&
-						<Controls
-							slideshow={_this}
-							slides={slides}
-							i={i}
-							scale={scale}
-							messages={messages}
-							dragAndScaleMode={dragAndScaleMode}
-							showScaleButtons={showScaleButtons}
-							showMoreControls={showMoreControls}
-							showPagination={!hasStartedClosing}
-							goToSource={goToSource}
-							closeButtonRef={closeButtonRef}
-							previousButtonRef={previousButtonRef}
-							nextButtonRef={nextButtonRef}
-							highContrastControls={highContrastControls}/>
-					}
+					<SlideshowControls
+						slideshow={slideshow}
+						slides={slides}
+						i={i}
+						scale={scale}
+						messages={messages}
+						dragAndScaleMode={dragAndScaleMode}
+						showActions={showActions}
+						showScaleButtons={showScaleButtons}
+						showMoreControls={showMoreControls}
+						showPagination={showPagination && !hasStartedClosing}
+						goToSource={goToSource}
+						closeButtonRef={closeButtonRef}
+						previousButtonRef={previousButtonRef}
+						nextButtonRef={nextButtonRef}
+						highContrastControls={highContrastControls}/>
 				</div>
 			</div>
 		</FocusLock>
 	)
 }
 
-SlideshowComponent_.propTypes = {
-	slideshow: PropTypes.object.isRequired,
-	props: PropTypes.object.isRequired,
-	overlayOpacity: PropTypes.number,
-	animateOpen: PropTypes.bool,
-	animateClose: PropTypes.bool,
-	slideshowState: PropTypes.object.isRequired,
+Slideshow.propTypes = {
+	slideshow: PropTypes.shape({
+		props: PropTypes.shape(SlideshowPropTypes).isRequired
+	}).isRequired,
+	slideshowState: PropTypes.shape(SlideshowStateTypes).isRequired,
 	hasBeenMeasured: PropTypes.bool,
-	hasStartedOpening: PropTypes.bool,
-	hasFinishedOpening: PropTypes.bool,
-	openingAnimationDuration: PropTypes.number,
-	hasStartedClosing: PropTypes.bool,
-	hasFinishedClosing: PropTypes.bool,
-	closingAnimationDuration: PropTypes.number,
-	slideOriginX: PropTypes.number,
-	slideOriginY: PropTypes.number,
-	offsetSlideIndex: PropTypes.number,
 	// refs.
 	container: PropTypes.object.isRequired,
 	slidesRef: PropTypes.object.isRequired,
@@ -493,348 +546,21 @@ SlideshowComponent_.propTypes = {
 	currentSlideContainerRef: PropTypes.object.isRequired,
 	previousButtonRef: PropTypes.object.isRequired,
 	nextButtonRef: PropTypes.object.isRequired,
-	closeButtonRef: PropTypes.object.isRequired,
-	goToSource: PropTypes.func
-}
-
-function Controls({
-	slideshow: _this,
-	slides,
-	i,
-	scale,
-	messages,
-	dragAndScaleMode,
-	showScaleButtons,
-	showMoreControls,
-	showPagination,
-	goToSource,
-	closeButtonRef,
-	previousButtonRef,
-	nextButtonRef,
-	highContrastControls
-}) {
-	const LeftArrowCounterForm = highContrastControls ? LeftArrowCounterformThickStroke : LeftArrowCounterform
-	const RightArrowCounterForm = highContrastControls ? RightArrowCounterformThickStroke : RightArrowCounterform
-	const CloseCounterForm = highContrastControls ? CloseCounterformThickStroke : CloseCounterform
-	const EllipsisVerticalCounterForm = highContrastControls ? EllipsisVerticalCounterformThickStroke : EllipsisVerticalCounterform
-	const onGoToSource = useCallback(() => {
-		goToSource(slides[i])
-	}, [goToSource, slides, i])
-	const roundedScale = roundScale(scale)
-	return (
-		<React.Fragment>
-			<ul className="rrui__slideshow__actions">
-				{_this.shouldShowMoreControls() && _this.shouldShowScaleButtons() &&
-					<li className={classNames('rrui__slideshow__action-item', {
-						'rrui__slideshow__action-group': showScaleButtons
-					})}>
-						{showScaleButtons &&
-							<Button
-								title={messages.actions.scaleDown}
-								onClick={_this.onScaleDown}
-								className="rrui__slideshow__action">
-								<Minus className="rrui__slideshow__action-icon"/>
-							</Button>
-						}
-						<Button
-							title={messages.actions.scaleReset}
-							onClick={_this.onScaleToggle}
-							className="rrui__slideshow__action">
-							<ScaleFrame className="rrui__slideshow__action-icon"/>
-						</Button>
-						{showScaleButtons &&
-							<Button
-								title={messages.actions.scaleUp}
-								onClick={_this.onScaleUp}
-								className="rrui__slideshow__action">
-								<Plus className="rrui__slideshow__action-icon"/>
-							</Button>
-						}
-					</li>
-				}
-
-				{true &&
-					<li className="rrui__slideshow__action-item">
-						<button
-							type="button"
-							title={messages.actions.exitDragAndScaleMode}
-							onClick={_this.onExitDragAndScaleMode}
-							className={getDragAndScaleModeButtonClassName(roundedScale, dragAndScaleMode)}>
-							<ScaleFrame className="rrui__slideshow__action-icon"/>
-							<span className="rrui__slideshow__scale">{roundedScale}</span>
-							<span style={SCALE_X_STYLE}>x</span>
-						</button>
-					</li>
-				}
-
-				{_this.shouldShowMoreControls() && _this.shouldShowOpenExternalLinkButton() &&
-					<li className="rrui__slideshow__action-item">
-						<a
-							target="_blank"
-							title={messages.actions.openExternalLink}
-							onKeyDown={clickTheLinkOnSpacebar}
-							href={_this.getPluginForSlide().getExternalLink(_this.getCurrentSlide())}
-							className="rrui__slideshow__action rrui__slideshow__action--link">
-							<ExternalIcon className="rrui__slideshow__action-icon"/>
-						</a>
-					</li>
-				}
-
-				{/*_this.shouldShowMoreControls() && _this.shouldShowDownloadButton() &&
-					<li className="rrui__slideshow__action-item">
-						<a
-							download
-							target="_blank"
-							title={messages.actions.download}
-							onKeyDown={clickTheLinkOnSpacebar}
-							href={_this.getPluginForSlide().getDownloadUrl(_this.getCurrentSlide())}
-							className="rrui__slideshow__action rrui__slideshow__action--link">
-							<Download className="rrui__slideshow__action-icon"/>
-						</a>
-					</li>
-				*/}
-
-				{_this.shouldShowMoreControls() && _this.getOtherActions().map(({ name, icon: Icon, link, action }) => {
-					const icon = <Icon className={`rrui__slideshow__action-icon rrui__slideshow__action-icon--${name}`}/>
-					return (
-						<li key={name} className="rrui__slideshow__action-item">
-							{link &&
-								<a
-									target="_blank"
-									href={link}
-									title={messages.actions[name]}
-									className="rrui__slideshow__action rrui__slideshow__action--link">
-									{icon}
-								</a>
-							}
-							{!link &&
-								<Button
-									onClick={(event) => {
-										if (!_this.slideshow.isLocked()) {
-											action(event)
-										}
-									}}
-									title={messages.actions[name]}
-									className="rrui__slideshow__action">
-									{icon}
-								</Button>
-							}
-						</li>
-					)
-				})}
-
-				{/* "Go to source" */}
-				{goToSource &&
-					<li className="rrui__slideshow__action-item">
-						<Button
-							title={messages.actions.goToSource}
-							onClick={onGoToSource}
-							className="rrui__slideshow__action rrui__slideshow__action--counterform">
-							<GoToIconCounterform className="rrui__slideshow__action-icon"/>
-						</Button>
-					</li>
-				}
-
-				{/* "Show/Hide controls" */}
-				{/* Is visible only on small screens. */}
-				{!_this.shouldShowMoreControls() && _this.hasHidableControls() && _this.shouldShowShowMoreControlsButton() &&
-					<li className="rrui__slideshow__action-item rrui__slideshow__action-item--toggle-controls">
-						<Button
-							title={showMoreControls ? messages.actions.hideControls : messages.actions.showControls}
-							onClick={_this.onShowMoreControls}
-							className={classNames('rrui__slideshow__action', 'rrui__slideshow__action--counterform', {
-								'rrui__slideshow__action--toggled': showMoreControls
-							})}>
-							<EllipsisVerticalCounterForm className="rrui__slideshow__action-icon"/>
-						</Button>
-					</li>
-				}
-
-				{_this.shouldShowCloseButton() &&
-					<li className="rrui__slideshow__action-item">
-						<Button
-							ref={closeButtonRef}
-							title={messages.actions.close}
-							onClick={_this.onRequestClose}
-							className="rrui__slideshow__action rrui__slideshow__action--counterform">
-							<CloseCounterForm className="rrui__slideshow__action-icon"/>
-						</Button>
-					</li>
-				}
-			</ul>
-
-			{slides.length > 1 && i > 0 && _this.shouldShowPreviousNextButtons() &&
-				<Button
-					ref={previousButtonRef}
-					title={messages.actions.previous}
-					onClick={_this.onShowPrevious}
-					className="rrui__slideshow__action rrui__slideshow__action--counterform rrui__slideshow__previous">
-					<LeftArrowCounterForm className="rrui__slideshow__action-icon"/>
-				</Button>
-			}
-
-			{slides.length > 1 && i < slides.length - 1 && _this.shouldShowPreviousNextButtons() &&
-				<Button
-					ref={nextButtonRef}
-					title={messages.actions.next}
-					onClick={_this.onShowNext}
-					className="rrui__slideshow__action rrui__slideshow__action rrui__slideshow__action--counterform rrui__slideshow__next">
-					<RightArrowCounterForm className="rrui__slideshow__action-icon"/>
-				</Button>
-			}
-
-			{slides.length > 1 && showPagination &&
-				<div className="rrui__slideshow__progress rrui__slideshow__controls-center rrui__slideshow__controls-bottom">
-					<SlideshowProgress
-						i={i}
-						count={slides.length}
-						isDisabled={_this.isLocked}
-						onShowSlide={_this.showSlide}
-						onShowNextSlide={_this.showNext}
-						onGoToSlide={_this.goToSlide}
-						highContrast={highContrastControls}/>
-				</div>
-			}
-		</React.Fragment>
-	)
-}
-
-Controls.propTypes = {
-	slides,
-	i,
-	scale: PropTypes.number.isRequired,
-	messages,
-	dragAndScaleMode: PropTypes.bool,
-	showScaleButtons,
-	showMoreControls,
-	showPagination: PropTypes.bool,
-	goToSource: PropTypes.func,
-	closeButtonRef: PropTypes.object,
-	previousButtonRef: PropTypes.object,
-	nextButtonRef: PropTypes.object,
-	highContrastControls: PropTypes.bool,
-	slideshow: PropTypes.object.isRequired
-}
-
-SlideshowComponent.propTypes = {
-	messages: PropTypes.object.isRequired,
-	onClose: PropTypes.func.isRequired,
-	i: PropTypes.number.isRequired,
-	// Set to `true` to open slideshow in inline mode (rather than in a modal).
-	inline: PropTypes.bool.isRequired,
-	// Set to `true` to open slideshow in "native" browser fullscreen mode.
-	fullScreen: PropTypes.bool.isRequired,
-	overlayOpacity: PropTypes.number.isRequired,
-	overlayOpacityFlowMode: PropTypes.number,
-	// overlayOpenCloseAnimationDuration: PropTypes.number.isRequired,
-	// previousNextClickRatio: PropTypes.number.isRequired,
-	closeOnOverlayClick: PropTypes.bool.isRequired,
-	closeOnSlideClick: PropTypes.bool,
-	panOffsetThreshold: PropTypes.number.isRequired,
-	emulatePanResistanceOnClose: PropTypes.bool.isRequired,
-	slideInDuration: PropTypes.number.isRequired,
-	minSlideInDuration: PropTypes.number.isRequired,
-	showScaleButtons: PropTypes.bool.isRequired,
-	scaleStep: PropTypes.number.isRequired,
-	minScaledSlideRatio: PropTypes.number.isRequired,
-	mouseWheelScaleFactor: PropTypes.number.isRequired,
-	// minInitialScale: PropTypes.number.isRequired,
-	scaleAnimationDuration: PropTypes.number.isRequired,
-	fullScreenFitPrecisionFactor: PropTypes.number.isRequired,
-	margin: PropTypes.number.isRequired,
-	minMargin: PropTypes.number.isRequired,
-	animateOpenClose: PropTypes.bool,
-	animateOpenCloseSmallScreen: PropTypes.bool,
-	animateOpenCloseOnPanOut: PropTypes.bool,
-	animateOpenCloseScaleSmallScreen: PropTypes.bool,
-	smallScreenMaxWidth: PropTypes.number,
-	mode: PropTypes.oneOf(['flow']),
-	showControls: PropTypes.bool.isRequired,
-	highContrastControls: PropTypes.bool,
-	slideCardMinOverlayOpacity: PropTypes.number.isRequired,
-	showPagination: PropTypes.bool,
-	thumbnailImage: PropTypes.any, // `Element` is not defined on server side. // PropTypes.instanceOf(Element),
-	header: PropTypes.any, // `Element` is not defined on server side. // PropTypes.instanceOf(Element),
-	plugins: PropTypes.arrayOf(PropTypes.shape({
-		getMaxSize: PropTypes.func.isRequired,
-		getAspectRatio: PropTypes.func.isRequired,
-		getOtherActions: PropTypes.func,
-		preload: PropTypes.func,
-		minInitialScale: PropTypes.number,
-		allowChangeSlideOnClick: PropTypes.bool,
-		// isScaleDownAllowed: PropTypes.func.isRequired,
-		canOpenExternalLink: PropTypes.func,
-		getExternalLink: PropTypes.func,
-		canSwipe: PropTypes.func,
-		// hasCloseButtonClickingIssues: PropTypes.func,
-		// capturesArrowKeys: PropTypes.func,
-		onKeyDown: PropTypes.func,
-		canRender: PropTypes.func.isRequired,
-		render: PropTypes.func.isRequired,
-		// showCloseButtonForSingleSlide: PropTypes.bool
-	})).isRequired,
-	children: PropTypes.arrayOf(PropTypes.any).isRequired
-}
-
-SlideshowComponent.defaultProps = {
-	i: 0,
-	inline: false,
-	fullScreen: false,
-	overlayOpacity: 0.85,
-	// overlayOpenCloseAnimationDuration: 0,
-	// // previousNextClickRatio: 0.33,
-	// previousNextClickRatio: 0,
-	closeOnOverlayClick: true,
-	panOffsetThreshold: 5,
-	emulatePanResistanceOnClose: false,
-	slideInDuration: 500,
-	minSlideInDuration: 150,
-	showScaleButtons: true,
-	showControls: true,
-	slideCardMinOverlayOpacity: 0.2,
-	scaleStep: 0.5,
-	minScaledSlideRatio: 0.1,
-	mouseWheelScaleFactor: 0.33,
-	// minInitialScale: 0.5,
-	scaleAnimationDuration: 120,
-	fullScreenFitPrecisionFactor: 0.875,
-	margin: 0.025, // %
-	minMargin: 10, // px
-	plugins: PLUGINS,
-	messages: {
-		actions: {
-			//
-		}
-	}
-}
-
-SlideshowWrapper.propTypes = {
-	...SlideshowComponent.propTypes,
-	children: PropTypes.arrayOf(PropTypes.any)
-}
-
-SlideshowWrapper.defaultProps = SlideshowComponent.defaultProps
-
-// function getTranslateX(element) {
-// 	return getComputedStyle(element).transform.match(/\d+/g)[4]
-// }
-
-function clickTheLinkOnSpacebar(event) {
-	switch (event.keyCode) {
-		// "Spacebar".
-		// Play video
-		case 32:
-			event.preventDefault()
-			event.target.click()
-	}
+	closeButtonRef: PropTypes.object.isRequired
 }
 
 function isButton(element) {
-	if (element.classList && element.classList.contains('rrui__slideshow__action')) {
+	if (element.classList && (
+		// // Previous/Next buttons are `.Slideshow-Action`s
+		// // and aren't rendered inside `.Slideshow-Actions`.
+		// element.classList.contains('Slideshow-Action') ||
+		// element.classList.contains('Slideshow-Actions') ||
+		element.classList.contains('Slideshow-Controls')
+	)) {
 		return true
 	}
 	// `<button/>` tag name didn't work on "Open external link" hyperlink
-	// and also did reset dragging on Video slides (which are buttons).
+	// and also did reset dragging on Video slides (which are buttons themselves).
 	// if (element.tagName === 'BUTTON') {
 	// 	return true
 	// }
@@ -842,27 +568,6 @@ function isButton(element) {
 		return isButton(element.parentNode)
 	}
 	return false
-}
-
-function roundScale(scale) {
-	if (scale < 0.95) {
-		if (scale < 0.095) {
-			return Math.round(scale * 100) / 100
-		} else {
-			return Math.round(scale * 10) / 10
-		}
-	} else {
-		return Math.round(scale)
-	}
-}
-
-function getDragAndScaleModeButtonClassName(roundedScale, dragAndScaleMode) {
-	return classNames('ButtonReset', 'rrui__slideshow__action', 'rrui__slideshow__action--drag-and-scale-mode', {
-		'rrui__slideshow__action--hidden': !dragAndScaleMode,
-		'rrui__slideshow__action--fontSize-s': roundedScale >= 1 && roundedScale < 10,
-		'rrui__slideshow__action--fontSize-xs': roundedScale >= 10 && roundedScale < 100 || roundedScale >= 0.1 && roundedScale < 1,
-		'rrui__slideshow__action--fontSize-xxs': roundedScale >= 100 || roundedScale >= 0.01 && roundedScale < 0.1,
-	})
 }
 
 const FOCUS_OPTIONS = {
@@ -873,11 +578,6 @@ const INNER_CONTAINER_STYLE = {
 	position: 'relative',
 	width: '100%',
 	height: '100%'
-}
-
-const SCALE_X_STYLE = {
-	marginLeft: '0.1em',
-	fontSize: '85%'
 }
 
 window.Slideshow = {
@@ -891,5 +591,11 @@ window.Slideshow = {
 				onCancel()
 			}
 		}
+	}
+}
+
+export function isSlideSupported(slide) {
+	if (getPluginForSlide(slide, PLUGINS)) {
+		return true
 	}
 }

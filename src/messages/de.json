@@ -38,6 +38,7 @@
 	"noSearchResults": "Nichts gefunden",
 	"post": {
 		"verified": "Identität verifiziert",
+		"removed": "Dieser Kommentar wurde entfernt",
 		"banned": "Der Autor dieses Kommentars wurde gesperrt",
 		"bannedReason": ". Grund: \"{0}\".",
 		"sticky": "klebriger Thema",
@@ -70,6 +71,7 @@
 		"save": "Speichern",
 		"add": "Hinzufügen",
 		"remove": "Entfernen",
+		"retry": "Wiederholen",
 		"ok": "Ok",
 		"cancel": "Stornieren",
 		"yes": "Ja",
@@ -119,7 +121,8 @@
 			"hideControls": "Steuerelemente ausblenden",
 			"openExternalLink": "Externen Link öffnen",
 			"exitDragAndScaleMode": "Beenden Sie den Drag & Scale-Modus"
-		}
+		},
+		"scaleValueBefore": "Ausmaß"
 	},
 	"cookies": {
 		"notice": "Diese Website verwendet Cookies und lokalen Speicher, um Inhalte zu personalisieren, Funktionen für soziale Medien bereitzustellen und den Datenverkehr zu analysieren.",

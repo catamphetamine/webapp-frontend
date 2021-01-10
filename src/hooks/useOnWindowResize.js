@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import throttle from 'lodash/throttle'
 
-export default function onWindowResize(callback, options) {
+export default function useOnWindowResize(callback, options) {
 	useEffect(() => {
 		if (options && options.alsoOnMount) {
 			callback()

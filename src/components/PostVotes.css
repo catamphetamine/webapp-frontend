@@ -9,7 +9,7 @@
 	margin-right: 0.5em;
 	/* Disable text selection cursor on votes count.
 	   Could be "cursor: default" instead but that would
-	   override `<OnClick/>`'s `cursor: pointer`. */
+	   override `<Clickable/>`'s `cursor: pointer`. */
 	pointer-events: none;
 	opacity: 0.75;
 }

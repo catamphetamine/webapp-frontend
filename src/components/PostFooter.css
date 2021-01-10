@@ -35,7 +35,7 @@
 	margin-right: var(--unit);
 	/* Fallback for really small screens. */
 	flex-wrap: wrap;
-	/* `cursor: default` overrides <OnClick/>'s `cursor: pointer`. */
+	/* `cursor: default` overrides <Clickable/>'s `cursor: pointer`. */
 	/* cursor: default; */
 	user-select: none;
 }

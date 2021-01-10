@@ -263,15 +263,16 @@ const social = shape({
 		'Instagram',
 		'Twitter'
 	]).isRequired,
+	id: string.isRequired,
 	url: string,
 	content: string,
 	date: date,
 	author: shape({
+		id: string.isRequired,
 		name: string,
-		id: oneOfType([string, number]),
 		url: string,
 		picture
-	}).isRequired,
+	}),
 	attachments: arrayOf(postAttachment)
 })
 
@@ -316,20 +317,6 @@ export const postList = shape({
 	type: oneOf(['list']).isRequired,
 	items: arrayOf(postInlineContent).isRequired
 })
-
-export const postEmbeddedAttachmentShape = shape({
-	type: oneOf(['attachment']).isRequired,
-	attachmentId: number.isRequired
-})
-
-export const postBlock = oneOfType([
-	postSubheading,
-	postParagraph,
-	postList,
-	postQuote,
-	postEmbeddedAttachmentShape,
-	postReadMore
-])
 
 export const pictureAttachment = shape({
 	id,
@@ -382,6 +369,32 @@ export const postAttachment = oneOfType([
 	socialAttachment,
 	linkAttachment,
 	fileAttachment
+])
+
+const postEmbeddedAttachmentProperties = {
+	type: oneOf(['attachment']).isRequired,
+	expand: bool,
+	align: oneOf(['center'])
+}
+
+const postEmbeddedAttachment = oneOfType([
+	shape({
+		...postEmbeddedAttachmentProperties,
+		attachmentId: number.isRequired
+	}),
+	shape({
+		...postEmbeddedAttachmentProperties,
+		attachment: postAttachment.isRequired
+	})
+])
+
+export const postBlock = oneOfType([
+	postSubheading,
+	postParagraph,
+	postList,
+	postQuote,
+	postEmbeddedAttachment,
+	postReadMore
 ])
 
 export const postContent = oneOfType([

@@ -1,20 +1,22 @@
-import React, { useState, useRef, useEffect, useLayoutEffect, useImperativeHandle, useMemo } from 'react'
+import React, { useState, useRef, useEffect, useLayoutEffect, useImperativeHandle } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
 
 import { video } from '../PropTypes'
-import { getEmbeddedVideoUrl, getVideoUrl } from '../utility/video'
+import { getVideoUrl } from '../utility/video'
 import { requestFullScreen, exitFullScreen as _exitFullScreen } from '../utility/dom'
 
-import Picture, { getMaxFitSize } from './Picture'
-import VideoPlayIcon from './VideoPlayIcon'
-import HtmlVideo from './HtmlVideo'
-import YouTubeVideo, {
-	loadYouTubeVideoPlayerApi,
-	hasYouTubeVideoPlayerApiLoaded
-} from './YouTubeVideo'
+import AspectRatioWrapper from './AspectRatioWrapper'
 import ButtonOrLink from './ButtonOrLink'
-import PictureBadge from './PictureBadge'
+import Picture, { getMaxFitSize } from './Picture'
+import VideoDuration from './VideoDuration'
+import VideoPlayIcon from './VideoPlayIcon'
+import VideoPlayer from './VideoPlayer'
+import VideoProgress from './VideoProgress'
+
+import { loadYouTubeVideoPlayerApi } from './Video.YouTube'
+
+import useMount from '../hooks/useMount'
 
 import './Video.css'
 
@@ -63,9 +65,22 @@ function Video({
 	const previewRef = useRef()
 	const playerRef = useRef()
 	const playerContainerInnerRef = useRef()
-	const hasMounted = useRef()
+	const [isMounted, onMount] = useMount()
 	const isFullScreen = useRef()
 	const playState = useRef(Promise.resolve())
+
+	// YouTube hides the embedded video progress bar while playing.
+	// On open, the embedded YouTube video player itself is not focused
+	// because it's rendered in an `<iframe/>` and therefore the browser
+	// doesn't  provide any access to it.
+	// To support seeking with a keyboard, the `<Video/>` component itself
+	// listens for `keydown` events and calls `.seekTo()` manually.
+	// But, in this scenario, the embedded YouTube video player doesn't show
+	// the progress bar, which results in a confusing user experience.
+	// Because YouTube embedded player doesn't want to show the progress bar
+	// automatically on seek, the `<Video/>` component shows its own
+	// progress bar in such cases.
+	const onKeyboardSeek = useRef()
 
 	useEffect(() => {
 		// YouTube Player API should be loaded in advance
@@ -100,7 +115,7 @@ function Video({
 	// instead of `useEffect()` here makes any difference.
 	useLayoutEffect(() => {
 		// The initial call is ignored.
-		if (!hasMounted.current) {
+		if (!isMounted()) {
 			return
 		}
 		if (shouldStartPlaying) {
@@ -144,21 +159,21 @@ function Video({
 
 	// On `preview` property change.
 	useEffect(() => {
-		if (hasMounted.current) {
+		if (isMounted()) {
 			updateShowPreview()
 		}
 	}, [preview])
 
 	// On `expand` property change.
 	useEffect(() => {
-		if (hasMounted.current) {
+		if (isMounted()) {
 			updateShowPreview()
 		}
 	}, [expand])
 
 	// On `playable` property change.
 	useEffect(() => {
-		if (hasMounted.current) {
+		if (isMounted()) {
 			updateShowPreview()
 			setShouldStartPlaying(playable && autoPlay ? true : false)
 		}
@@ -166,15 +181,11 @@ function Video({
 
 	// On `autoPlay` property change.
 	useEffect(() => {
-		if (hasMounted.current) {
+		if (isMounted()) {
 			updateShowPreview()
 			setShouldStartPlaying(playable && autoPlay ? true : false)
 		}
 	}, [autoPlay])
-
-	useEffect(() => {
-		hasMounted.current = true
-	}, [])
 
 	useImperativeHandle(ref, () => ({
 		focus
@@ -214,7 +225,7 @@ function Video({
 				playerRef.current.stop()
 				return true
 			}
-			// `<HtmlVideo/>` doesn't have a `.stop()` method.
+			// `<VideoHtml/>` doesn't have a `.stop()` method.
 			// Emulate `stop()` via `pause()` and `seekTo()`.
 			else {
 				return pause() && seekTo(0)
@@ -250,10 +261,17 @@ function Video({
 		}
 	}
 
+	function getCurrentTime() {
+		if (playerRef.current && playerRef.current.getCurrentTime) {
+			return playerRef.current.getCurrentTime()
+		}
+	}
+
 	function seek(forward) {
 		const delta = forward ? seekStep : -1 * seekStep
-		if (playerRef.current && playerRef.current.getCurrentTime) {
-			return seekTo(playerRef.current.getCurrentTime() + delta)
+		const currentTime = getCurrentTime()
+		if (currentTime !== undefined) {
+			return seekTo(currentTime + delta)
 		}
 	}
 
@@ -281,7 +299,7 @@ function Video({
 		// Even if `video` didn't contain `duration`
 		// YouTube player can return its duration.
 		if (playerRef.current && playerRef.current.getDuration) {
-			return playerRef.current.getDuration
+			return playerRef.current.getDuration()
 		}
 		return video.duration
 	}
@@ -378,6 +396,16 @@ function Video({
 				) {
 					if (seek(false)) {
 						event.preventDefault()
+						// `isPaused()` is always true when the progress as at the end.
+						// `if (!isPaused())` would result in the progress being stale
+						// when the user hits `End` and then `Home` or Left Arrow.
+						// if (!isPaused()) {
+							if (onKeyboardSeek.current) {
+								onKeyboardSeek.current(
+									Math.max(0, (getCurrentTime() - seekStep) / getDuration())
+								)
+							}
+						// }
 					}
 				}
 				break
@@ -389,6 +417,15 @@ function Video({
 				) {
 					if (seek(true)) {
 						event.preventDefault()
+						// `isPaused()` is commented out on Left Arrow, so, for consistency,
+						// it's also commented out here (on Right Arrow).
+						// if (!isPaused()) {
+							if (onKeyboardSeek.current) {
+								onKeyboardSeek.current(
+									Math.min(1, (getCurrentTime() + seekStep) / getDuration())
+								)
+							}
+						// }
 					}
 				}
 				break
@@ -397,6 +434,14 @@ function Video({
 			case 36:
 				if (seekTo(0)) {
 					event.preventDefault()
+					// `isPaused()` is always true when the progress as at the end.
+					// `if (!isPaused())` would result in the progress being stale
+					// when the user hits `End` and then `Home` or Left Arrow.
+					// if (!isPaused()) {
+						if (onKeyboardSeek.current) {
+							onKeyboardSeek.current(0)
+						}
+					// }
 				}
 				break
 
@@ -404,6 +449,13 @@ function Video({
 			case 35:
 				if (seekTo(video.duration)) {
 					event.preventDefault()
+					// `isPaused()` is commented out on `Home`, so, for consistency,
+					// it's also commented out here (on `End`).
+					// if (!isPaused()) {
+						if (onKeyboardSeek.current) {
+							onKeyboardSeek.current(1)
+						}
+					// }
 				}
 				break
 
@@ -502,6 +554,8 @@ function Video({
 		}
 	}
 
+	onMount()
+
 	if (showPreview) {
 		return (
 			<Picture
@@ -521,13 +575,13 @@ function Video({
 				style={style}
 				className={classNames(
 					className,
-					'rrui__video',
-					'rrui__video__preview', {
-						'rrui__video--border': border
+					'Video',
+					'Video--preview', {
+						'Video--border': border
 					}
 				)}>
 				{showPlayIcon &&
-					<VideoPlayIcon className="rrui__video__play-icon--center"/>
+					<VideoPlayIcon className="VideoPlayIcon--center"/>
 				}
 				{!showPlayIcon &&
 					<VideoDuration duration={video.duration}/>
@@ -552,10 +606,10 @@ function Video({
 			onKeyDown={onKeyDown}
 			aspectRatio={getAspectRatio(video)}
 			innerTabIndex={!shouldFocusPlayer(video) ? tabIndex : -1}
-			innerClassName="rrui__video__player-container-inner"
+			innerClassName="Video-playerContainerInner"
 			style={style ? { ...style, ...getContainerStyle() } : getContainerStyle()}
-			className={classNames(className, 'rrui__video', {
-				'rrui__video--border': !shouldFocusPlayer(video) && border
+			className={classNames(className, 'Video', {
+				'Video--border': !shouldFocusPlayer(video) && border
 			})}>
 			<VideoPlayer
 				ref={playerRef}
@@ -565,8 +619,15 @@ function Video({
 				tabIndex={shouldFocusPlayer(video) ? tabIndex : undefined}
 				onClick={onClick}
 				className={classNames({
-					'rrui__video--border': shouldFocusPlayer(video) && border
+					'Video--border': shouldFocusPlayer(video) && border
 				})}/>
+			{video.provider === 'YouTube' &&
+				<VideoProgress
+					provider={video.provider}
+					onKeyboardSeek={onKeyboardSeek}
+					getDuration={getDuration}
+					getCurrentTime={getCurrentTime}/>
+			}
 		</AspectRatioWrapper>
 	)
 }
@@ -611,80 +672,6 @@ Video.defaultProps = {
 
 export default Video
 
-function VideoPlayer({
-	video,
-	preview,
-	autoPlay,
-	tabIndex,
-	onClick
-}, ref) {
-	if (!video.provider) {
-		// `onClick` is used to prevent Chrome Video player
-		// triggering "pause"/"play" on click while dragging.
-		return (
-			<HtmlVideo
-				width="100%"
-				height="100%"
-				preview={preview}
-				ref={ref}
-				onClick={onClick}
-				tabIndex={tabIndex}
-				video={video}
-				autoPlay={autoPlay}/>
-		)
-	}
-
-	if (video.provider === 'YouTube' && hasYouTubeVideoPlayerApiLoaded()) {
-		// `<video/>` can maintain its aspect ratio during layout
-		// while `<iframe/>` can't, so using the `paddingBottom` trick here
-		// to preserve aspect ratio.
-		return (
-			<YouTubeVideo
-				ref={ref}
-				tabIndex={tabIndex}
-				video={video}
-				width="100%"
-				height="100%"
-				autoPlay={autoPlay}/>
-		)
-	}
-
-	if (video.provider === 'Vimeo' || video.provider === 'YouTube') {
-		// https://developers.google.com/web/updates/2017/09/autoplay-policy-changes
-		// `allowFullScreen` property is for legacy browsers support.
-		//
-		// `<video/>` can maintain its aspect ratio during layout
-		// while `<iframe/>` can't, so using the `paddingBottom` trick here
-		// to preserve aspect ratio.
-		return (
-			<iframe
-				ref={ref}
-				src={getEmbeddedVideoUrl(video.id, video.provider, {
-					autoPlay,
-					startAt: video.startAt
-				})}
-				width="100%"
-				height="100%"
-				frameBorder={0}
-				allow="autoplay; fullscreen"
-				allowFullScreen/>
-		)
-	}
-
-	console.error(`Unsupported video provider: ${video.provider}`)
-	return null
-}
-
-VideoPlayer = React.forwardRef(VideoPlayer)
-
-VideoPlayer.propTypes = {
-	video: video.isRequired,
-	preview: PropTypes.bool,
-	autoPlay: PropTypes.bool,
-	tabIndex: PropTypes.number,
-	onClick: PropTypes.func
-}
-
 function getPlayerNode(playerRef, video) {
 	if (video.provider === 'Vimeo') {
 		return playerRef
@@ -692,7 +679,7 @@ function getPlayerNode(playerRef, video) {
 	if (video.provider === 'YouTube') {
 		// YouTube video could be shown in a YouTube player
 		// or as an `<iframe/>` (as a fallback).
-		if (playerRef instanceof YouTubeVideo) {
+		if (playerRef instanceof VideoYouTube) {
 			return playerRef.getDOMNode()
 		}
 		return playerRef
@@ -747,73 +734,4 @@ export function getMaxSize(video) {
 		return video
 	}
 	return video.picture
-}
-
-export function VideoDuration({ duration }) {
-	return (
-		<PictureBadge
-			placement="bottom-right"
-			className={classNames('rrui__video__duration', {
-				'rrui__video__duration--time': duration
-			})}>
-			{duration ? formatVideoDuration(duration) : '▶'}
-		</PictureBadge>
-	)
-}
-
-VideoDuration.propTypes = {
-	duration: PropTypes.number,
-	children: PropTypes.string
-}
-
-function formatVideoDuration(seconds) {
-	let minutes = Math.floor(seconds / 60)
-	seconds = seconds % 60
-	const hours = Math.floor(minutes / 60)
-	minutes = minutes % 60
-	if (hours === 0) {
-		return minutes + ':' + formatTwoPositions(seconds)
-	}
-	return hours + ':' + formatTwoPositions(minutes) + ':' + formatTwoPositions(seconds)
-}
-
-function formatTwoPositions(number) {
-	if (number < 10) {
-		return '0' + number
-	}
-	return number
-}
-
-function AspectRatioWrapper({ innerRef, innerTabIndex, innerClassName, aspectRatio, children, ...rest }, ref) {
-	const aspectRatioStyle = useMemo(() => ({
-		position: 'relative',
-		width: '100%',
-		paddingBottom: 100 / aspectRatio + '%'
-	}), [aspectRatio])
-	return (
-		<div ref={ref} {...rest}>
-			<div style={aspectRatioStyle}>
-				<div
-					ref={innerRef}
-					tabIndex={innerTabIndex}
-					style={ASPECT_RATIO_WRAPPER_INNER_STYLE}
-					className={innerClassName}>
-					{children}
-				</div>
-			</div>
-		</div>
-	)
-}
-
-AspectRatioWrapper = React.forwardRef(AspectRatioWrapper)
-
-AspectRatioWrapper.propTypes = {
-	aspectRatio: PropTypes.number.isRequired,
-	children: PropTypes.node.isRequired
-}
-
-const ASPECT_RATIO_WRAPPER_INNER_STYLE = {
-	position: 'absolute',
-	width: '100%',
-	height: '100%'
 }

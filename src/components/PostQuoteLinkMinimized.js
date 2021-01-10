@@ -1,7 +1,17 @@
 import React, { useCallback, useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
 
+// For some weird reason, in Chrome, `setTimeout()` would lag up to a second (or more) behind.
+// Turns out, Chrome developers have deprecated `setTimeout()` API entirely without asking anyone.
+// Replacing `setTimeout()` with `requestAnimationFrame()` can work around that Chrome bug.
+// https://github.com/bvaughn/react-virtualized/issues/722
+import { setTimeout, clearTimeout } from 'request-animation-frame-timeout'
+
 import { postPostLinkShape } from '../PropTypes'
+
+const DocumentMouseMove = {
+	wasMouseMoved: false
+}
 
 export default function PostQuoteLinkMinimized({
 	postLink,
@@ -10,52 +20,71 @@ export default function PostQuoteLinkMinimized({
 	expandTimeout,
 	...rest
 }) {
+	const container = useRef()
 	const mouseEntered = useRef()
-	const mouseMoved = useRef()
 	const expandTimer = useRef()
-	const onMinimizedQuoteMouseEnter = useCallback(() => {
-		mouseEntered.current = true
-		if (mouseMoved.current) {
-			if (!expandTimer.current) {
-				expandTimer.current = setTimeout(() => {
-					expandTimer.current = undefined
-					onExpand()
-				}, expandTimeout)
-			}
-		}
-	}, [mouseEntered, mouseMoved, expandTimer, onExpand, expandTimeout])
-	const onMinimizedQuoteMouseLeave = useCallback(() => {
-		mouseEntered.current = false
+	const scheduleExpand = useCallback(() => {
+		container.current.classList.add('PostQuoteLink--minimized--hover')
+		expandTimer.current = setTimeout(() => {
+			expandTimer.current = undefined
+			onExpand()
+		}, expandTimeout)
+	}, [
+		onExpand,
+		expandTimeout
+	])
+	const cancelExpand = useCallback(() => {
 		if (expandTimer.current) {
 			clearTimeout(expandTimer.current)
 			expandTimer.current = undefined
 		}
-	}, [mouseEntered, expandTimer])
-	const onScroll = useCallback(() => {
-		mouseMoved.current = false
-	}, [mouseMoved])
+	}, [])
+	// This listener doesn't declare any "dependencies"
+	// because a listener reference should stay the same
+	// in order to be removed later.
 	const onMouseMove = useCallback(() => {
-		if (!mouseMoved.current) {
-			mouseMoved.current = true
-			if (mouseEntered.current) {
-				onMinimizedQuoteMouseEnter()
-			}
-		}
-	}, [mouseMoved, mouseEntered, onMinimizedQuoteMouseEnter])
-	useEffect(() => {
-		document.addEventListener('mousemove', onMouseMove)
-		document.addEventListener('scroll', onScroll)
-		return () => {
-			document.removeEventListener('mousemove', onMouseMove)
-			document.removeEventListener('scroll', onScroll)
+		document.removeEventListener('mousemove', onMouseMove)
+		scheduleExpand()
+	}, [])
+	// This listener doesn't declare any "dependencies"
+	// because a listener reference should stay the same
+	// in order to be removed later.
+	const onMouseEnter = useCallback(() => {
+		if (DocumentMouseMove.wasMouseMoved) {
+			scheduleExpand()
+		} else {
+			// This code handles the case when a user has scrolled
+			// and the mouse pointer got placed over the minimized quote
+			// but that didn't trigger the "expand" action (intentionally)
+			// and then the user moves the mouse and that should expand
+			// the minimized quote.
+			document.addEventListener('mousemove', onMouseMove)
 		}
 	}, [])
+	// This listener doesn't declare any "dependencies"
+	// because a listener reference should stay the same
+	// in order to be removed later.
+	const onMouseLeave = useCallback(() => {
+		container.current.classList.remove('PostQuoteLink--minimized--hover')
+		cleanUp()
+	}, [])
+	const cleanUp = useCallback(() => {
+		cancelExpand()
+		// The `mousemove` listener might have, or might have not,
+		// been added, so remove it (if it has been added).
+		document.removeEventListener('mousemove', onMouseMove)
+	}, [
+		cancelExpand,
+		onMouseMove
+	])
+	useEffect(() => cleanUp, [])
 	return (
 		<span
+			ref={container}
 			{...rest}
 			onClick={onExpand}
-			onMouseEnter={onMinimizedQuoteMouseEnter}
-			onMouseLeave={onMinimizedQuoteMouseLeave}>
+			onMouseEnter={onMouseEnter}
+			onMouseLeave={onMouseLeave}>
 			<MinimizedComponent postLink={postLink}/>
 		</span>
 	)
@@ -70,7 +99,7 @@ PostQuoteLinkMinimized.propTypes = {
 
 PostQuoteLinkMinimized.defaultProps = {
 	minimizedComponent: MinimizedQuoteComponent,
-	expandTimeout: 400
+	expandTimeout: 360
 }
 
 function MinimizedQuoteComponent({ postLink }) {
@@ -80,4 +109,21 @@ function MinimizedQuoteComponent({ postLink }) {
 
 MinimizedQuoteComponent.propTypes = {
 	postLink: postPostLinkShape.isRequired
+}
+
+function onDocumentMouseMove() {
+	DocumentMouseMove.wasMouseMoved = true
+}
+
+function onDocumentScroll() {
+	DocumentMouseMove.wasMouseMoved = false
+}
+
+// There could be several thousand minimized post link quotes on a page
+// (when not using `<VirtualScroller/>`). So, in order not to add
+// several thousand `mousemove` and `scroll` listeners,
+// a single one for each of these two events is added instead.
+if (typeof document !== 'undefined') {
+	document.addEventListener('mousemove', onDocumentMouseMove)
+	document.addEventListener('scroll', onDocumentScroll)
 }

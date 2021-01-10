@@ -95,6 +95,7 @@ export default {
 		height,
 		// maxWidth,
 		// maxHeight,
+		dragAndScaleMode,
 		tabIndex,
 		style,
 		className
@@ -118,8 +119,10 @@ export default {
 				tabIndex={tabIndex}
 				preview={mode === 'flow' ? false : undefined}
 				seekOnArrowKeysAtBorders={false}
+				seekOnArrowKeys={dragAndScaleMode ? false : undefined}
+				changeVolumeOnArrowKeys={dragAndScaleMode ? false : undefined}
 				style={style}
-				className={classNames('rrui__slideshow__video', className)}/>
+				className={classNames('Slideshow-Video', className)}/>
 		)
 	}
 }

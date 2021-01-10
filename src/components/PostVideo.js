@@ -1,9 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import classNames from 'classnames'
 
 import Video, { getUrl, getMaxSize, getAspectRatio } from './Video'
 import PostEmbeddedAttachmentTitle from './PostEmbeddedAttachmentTitle'
-import { ATTACHMENT_THUMBNAIL_SIZE } from './PostAttachmentThumbnail'
 import { videoAttachment } from '../PropTypes'
 
 import './PostVideo.css'
@@ -14,18 +14,33 @@ export default function PostVideo({
 	},
 	maxSize,
 	maxHeight,
+	border,
 	expand,
+	expandToTheFullest,
+	align,
 	spoilerLabel,
-	onClick
+	onClick,
+	className
 }) {
 	const url = getUrl(video)
 	return (
-		<section className="PostVideo">
+		<section
+			className={classNames(className, 'PostVideo', {
+				'PostVideo--alignLeft': align === 'left',
+				'PostVideo--alignCenter': align === 'center',
+				'PostVideo--alignRight': align === 'right'
+			})}>
 			<Video
-				border
+				border={border}
 				expand={expand}
 				video={video}
-				maxWidth={expand ? getMaxSize(video).width : (maxSize || maxHeight ? getMaxWidth(video, maxSize, maxHeight) : undefined)}
+				maxWidth={expandToTheFullest
+					? undefined
+					: (expand
+						? getMaxSize(video).width
+						: (maxSize || maxHeight ? getMaxWidth(video, maxSize, maxHeight) : undefined)
+					)
+				}
 				spoilerLabel={spoilerLabel}
 				onClick={onClick}/>
 			{video.title &&
@@ -42,11 +57,15 @@ PostVideo.propTypes = {
 	maxSize: PropTypes.number,
 	maxHeight: PropTypes.number,
 	expand: PropTypes.bool,
-	spoilerLabel: PropTypes.string
+	expandToTheFullest: PropTypes.bool,
+	border: PropTypes.bool,
+	align: PropTypes.oneOf(['left', 'center', 'right']),
+	spoilerLabel: PropTypes.string,
+	className: PropTypes.string
 }
 
 PostVideo.defaultProps = {
-	maxHeight: ATTACHMENT_THUMBNAIL_SIZE
+	align: 'center'
 }
 
 function getMaxWidth(video, maxSize, maxHeight) {

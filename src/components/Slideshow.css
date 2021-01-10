@@ -1,17 +1,6 @@
 @import "../styles/common";
 
-:root {
-	--slideshow-button-size: calc(var(--unit) * 3);
-	--slideshow-button-margin: var(--unit);
-	@mixin xxs {
-		--slideshow-button-margin: calc(var(--unit) / 2);
-	}
-	@mixin l-plus {
-		--slideshow-button-size: calc(var(--unit) * 3.5);
-	}
-}
-
-.rrui__slideshow {
+.Slideshow {
 	/* Slideshow is focused upon opening. */
 	outline: none;
 	/* Update: doesn't seem to disable neither scroll nor pinch-zoom, */
@@ -23,7 +12,7 @@
 	/*touch-action: none;*/
 }
 
-.rrui__slideshow--fullscreen {
+.Slideshow--fullscreen {
 	position: fixed;
 	left: 0;
 	right: 0;
@@ -32,7 +21,7 @@
 	z-index: var(--Slideshow-zIndex);
 }
 
-.rrui__slideshow__slides {
+.Slideshow-Slides {
 	display: flex;
 	align-items: center;
 	justify-content: flex-start;
@@ -45,7 +34,7 @@
 	transition-property: transform;
 }
 
-.rrui__slideshow__slide-wrapper {
+.Slideshow-SlideWrapper {
 	flex: 0 0 100%;
 	/* `width: 100%` and `height: 100%` are required, otherwise
 	   slides larger than viewport won't be centered on screen. */
@@ -56,243 +45,27 @@
 	justify-content: center;
 }
 
-.rrui__slideshow__slide {
-	/* Without `flex: 0 0 auto` it wouldn't allow scaling the slide
-	   larger than slideshow width. */
-	flex: 0 0 auto;
-}
-
-.rrui__slideshow__video {
-	background-color: black;
-	/* Sometimes `video.width` and `video.height` are incorrect
-	   which would result in a wrong placement on screen.
-	   Centering such videos works around such bugs. */
-	display: flex;
-	align-items: center;
-}
-
 /* Show a border around the current slide
    so that it can be discerned from the next/previous slides. */
-.rrui__slideshow__slide-wrapper--current {
+.Slideshow-SlideWrapper--current {
 	/* Elevating the current slide using `z-index`
 	   so that its `box-shadow` is above the next slide's. */
 	position: relative;
 	z-index: 1;
 }
 
-.rrui__slideshow__slide--current {
+.Slideshow-Slide {
+	/* Without `flex: 0 0 auto` it wouldn't allow scaling the slide
+	   larger than slideshow width. */
+	flex: 0 0 auto;
+}
+
+.Slideshow-Slide--current {
 	--Video-borderColor--focus: var(--Picture-borderColor);
 }
 
-.rrui__slideshow__slides--dragging {
-	transition-duration: 0s;
-	transform: translateX(-600px);
-}
-
-.rrui__slideshow__slides--released {
-	transition-duration: 0.01234s;
-	transform: translateX(-789px);
-}
-
-.rrui__slideshow__picture {
-	cursor: pointer;
-}
-
-.rrui__slideshow__slide--card {
-	box-shadow: var(--SlideshowSlide-boxShadow);
+.Slideshow-Slide--card {
+	box-shadow: var(--Slideshow-Slide-boxShadow);
 	/* PNG images can be transparent. */
-	background-color: var(--SlideshowSlide-backgroundColor);
-	&.rrui__slideshow__video {
-		background-color: var(--SlideshowSlide-backgroundColor--video);
-	}
-}
-
-/* https://daneden.github.io/animate.css/ */
-/* https://github.com/daneden/animate.css/blob/master/source/bouncing_entrances/bounceIn.css */
-@keyframes bounce {
-	from, 25%, 47%, 72%, to {
-		animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
-	}
-	0% {
-		transform: scale3d(1, 1, 1);
-	}
-	25% {
-		transform: scale3d(.99, .99, .99);
-	}
-	47% {
-		transform: scale3d(1.01, 1.01, 1.01);
-	}
-	72% {
-		transform: scale3d(0.995, 0.995, 0.995);
-	}
-	to {
-		transform: scale3d(1, 1, 1);
-	}
-}
-
-.rrui__slideshow__slide--bounce {
-	animation: bounce 0.6s;
-	/*transform: translate3d(0, 0, 0);*/
-}
-
-.rrui__slideshow--panning {
-	cursor: grabbing;
-}
-
-/* Overrides "cursor: pointer" on a picture slide. */
-.rrui__slideshow--panning .rrui__slideshow__picture {
-	cursor: grabbing;
-}
-
-.rrui__slideshow__picture .rrui__picture__loading {
-	color: var(--white-color);
-}
-
-/* Even though slideshow actions are shown above a YouTube video <iframe/>
-   clicks are being captured by that video <iframe/> for some reason. */
-.rrui__slideshow__actions {
-	position: absolute;
-	top: var(--slideshow-button-margin);
-	right: 0;
-	margin: 0;
-	padding: 0;
-	list-style: none;
-	line-height: 0;
-	display: flex;
-}
-
-.rrui__slideshow__controls-center {
-	position: absolute;
-	left: 50%;
-	transform: translateX(-50%);
-	display: inline-block;
-	padding: 0;
-	margin: 0;
-}
-
-.rrui__slideshow__controls-top {
-	top: var(--slideshow-button-margin);
-}
-
-.rrui__slideshow__controls-bottom {
-	bottom: var(--slideshow-button-margin);
-}
-
-.rrui__slideshow__action {
-	display: block;
-	position: relative;
-
-	width: var(--slideshow-button-size);
-	height: var(--slideshow-button-size);
-
-	border-radius: 50%;
-	background-color: rgba(0,0,0,0.7);
-	color: var(--white-color);
-	font-weight: 300;
-
-	outline: none;
-
-	&:hover, &:focus {
-		color: var(--Clickable-color--active);
-	}
-}
-
-.rrui__slideshow__action--hidden {
-	visibility: hidden;
-}
-
-.rrui__slideshow__action--fontSize-s {
-	font-size: 75%;
-}
-
-.rrui__slideshow__action--fontSize-xs {
-	font-size: 60%;
-}
-
-.rrui__slideshow__action--fontSize-xxs {
-	font-size: 45%;
-}
-
-.rrui__slideshow__action:active,
-.rrui__slideshow__action--toggled {
-	/* Override link buttons :active color. */
-	color: var(--white-color);
-	background-color: var(--Clickable-color--active);
-	/*box-shadow: 0 0 0 1px var(--Clickable-color--active);*/
-}
-
-.rrui__slideshow__action--counterform {
-	background-color: transparent;
-}
-
-.rrui__slideshow__action--counterform:active,
-.rrui__slideshow__action--counterform.rrui__slideshow__action--toggled {
-	background-color: var(--Clickable-color--active);
-	.svg-icon-counter-form {
-		color: var(--Clickable-color--active);
-		fill: var(--white-color);
-	}
-}
-
-.rrui__slideshow__actions .rrui__slideshow__action {
-	margin-left: var(--slideshow-button-margin);
-}
-
-.rrui__slideshow__action-item {
-	line-height: 0;
-	margin-right: var(--slideshow-button-margin);
-}
-
-.rrui__slideshow__action:first-child,
-.rrui__slideshow__action-group:first-child {
-	margin-left: 0;
-}
-
-.rrui__slideshow__action:active {
-	background-color: var(--Clickable-color--active);
-}
-
-.rrui__slideshow__action-icon {
-	position: absolute;
-	top: 25%;
-	left: 25%;
-	width: 50%;
-}
-
-.rrui__slideshow__action-group {
-	display: flex;
-}
-
-.rrui__slideshow__action-group .rrui__slideshow__action {
-	margin: 0;
-	border-radius: 0;
-	&:first-child {
-		border-top-left-radius: 50%;
-		border-bottom-left-radius: 50%;
-	}
-	&:last-child {
-		border-top-right-radius: 50%;
-		border-bottom-right-radius: 50%;
-	}
-}
-
-.rrui__slideshow__previous,
-.rrui__slideshow__next {
-	position: absolute;
-	top: 50%;
-	margin-left: var(--slideshow-button-margin);
-	margin-right: var(--slideshow-button-margin);
-	transform: translateY(-50%);
-}
-
-.rrui__slideshow__previous {
-	left: 0;
-}
-
-.rrui__slideshow__next {
-	right: 0;
-}
-
-.rrui__slideshow__video .rrui__video__play-icon {
-	--rrui-video-play-icon-size: 20%;
+	background-color: var(--Slideshow-Slide-backgroundColor);
 }
